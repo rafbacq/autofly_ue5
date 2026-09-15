@@ -1,0 +1,14 @@
+# large or generated content: never commit
+/engine/
+/platform/
+/.venv/
+/runs/
+/checkpoints/
+/data/
+ue_project/Binaries/
+ue_project/Intermediate/
+ue_project/Saved/
+ue_project/DerivedDataCache/
+ue_project/Packaged/
+__pycache__/
+*.pyc
