@@ -1,6 +1,6 @@
 # AutoFly-style dataset collection on UE5 + Project AirSim: design
 
-Date: 2026-09-15. Status: **design approved section by section in chat; awaiting user review of this document.**
+Date: 2026-09-15. Status: **approved by the user on 2026-09-15** ("the goal design is correct"); §8.1 added on the user's request as an optional source.
 Project root: `/home/jk_edge/research_uav/autofly_ue5/` (ROOT). Everything in this project lives under ROOT.
 
 ## 1. Goal and scope
@@ -228,6 +228,45 @@ One module wraps Project AirSim so nothing else imports it:
 - Throughput gate (M2): measure environment steps per second per instance, the number of instances the RTX 4090 holds,
   and time to 95 % on s01; project the cost of all agents before M5.
 
+### 8.1 Additional pilot: AutoFly checkpoint (optional)
+
+User request: "use the autofly checkpoints to load it and generate the dataset with that, but add this as an additional".
+The SAC expert (§8) stays the primary pilot. This pilot is an optional second data source. It stays **inactive** until the
+activation condition below holds.
+
+- **Availability (checked 2026-09-15): no public checkpoint.** `github.com/xiaolousun/AutoFly-VLA` is still at `08b5039`,
+  with no tags, releases or licence, and `train/`, `val/`, `deploy/` contain only empty READMEs. On issue #1 (2026-06-19) the author said code,
+  pretrained models and data are under "internal review and compliance approval", with no timeline. The project page's
+  model link `huggingface.co/xlsun/AutoFly` returns 401, and user `xlsun` has 0 public models. ModelScope has 0 models for
+  `jacksun001`, `xiaolousun` or `xlsun`; it only has the TFDS dataset. The paper says "the model, data and code are publicly available", which is currently false for the model and the code.
+- **Model:** Prismatic `prism-dinosiglip+7b` (LLaMA-2 7B), plus a Siamese depth projector and a frozen Depth Anything V2. The
+  Depth Anything size is not stated: Small is Apache-2.0, while Base, Large and Giant are CC-BY-NC-4.0. Stock OpenVLA code cannot load the depth branch, so the
+  authors' model code must also be released. The model runs as a separate server process in `.venv`, with the released library versions pinned.
+- **Inputs:** only the current front RGB frame (256×256, resized to 224 by the processor, no history) and the instruction.
+  **a0 is not a model input.** It is a setup phase: zero linear velocity and a proportional yaw-rate turn toward the
+  target bearing until roughly aligned, recorded as the first step(s) (reported from the authors' OpenReview rebuttal to reviewer nXwK, Q3; the rebuttal
+  could not be re-fetched on 2026-09-15, so this is unverified). This differs from §9 step 4; M3 settles §9 step 4 against
+  the two real episodes.
+- **Action decoding:** each action uses 256 bins over [−1, 1], mapped to the last 256 LLaMA-2 tokens. Decode as OpenVLA does (255 bin centres,
+  `a = 0.5·(n+1)·(q99−q01) + q01`) with the checkpoint's `unnorm_key` statistics, and check the decoded ranges against the
+  released `dataset_statistics_*.json`. Those statistics set a forward-speed floor of 0.37–1.09 m/s. The policy cannot hover or stop, so
+  the §9 step 5 end conditions end episodes. Per step: `predict_action(do_sample=False)` → `command_velocity(v_fwd,
+  yaw_rate, v_z)` → `step(0.2)`. The signs of yaw and v_z are checked against the §3.2 episodes.
+- **VRAM (estimate):** about 15.1 GB of bf16 weights, 0.05–0.7 GB for the depth model and 0.5–1 GB of activations, about 16–17 GB in total.
+  That leaves about 7 GB of the 24.5 GB for one UE5 instance, whose use is unmeasured, so measure it first. SAC training cannot use the GPU
+  at the same time. Estimated output is about 400 kept episodes per day (unconfirmed).
+- **Separation:** provenance (§10.2) gains `"pilot": "sac_expert" | "autofly_checkpoint"`. For this pilot it also records the
+  checkpoint SHA-256, the statistics key and the sampling mode. Its episodes go to their own `<dataset_name>` with their own manifest. Sources are
+  only combined in an explicit step that lists per-pilot counts in the dataset card, never silently. The record stays
+  AutoFly-only (§10.1). The §9 step 6 filter applies: an episode is kept only if it ends within 5 m and ≤ 15° of the target with no
+  collision; all others go to `data/rejects/`. This pilot flies `train` scenes only, and `test_*` episodes never enter training data.
+- **Limits:** AutoFly reports 47.9 % SR (55.4 % seen, 42.3 % unseen) and 21.9 % collisions in its own AirSim scenes. Our
+  UE5 scenes and assets are outside its training distribution, so SR is likely lower. Kept episodes may still take detours (PER 77 %) and carry
+  its biases (no stop, a speed floor, no memory), which weakens any later comparison between a student model and AutoFly.
+- **Activation:** weights **and** inference code (including the depth branch) are released under a licence that permits our
+  use. The pilot then slots in after M3 as optional M3b, because it needs the collector, writer and validator, and it starts only with the user's go-ahead.
+  Signs to watch for: `git ls-remote` of AutoFly-VLA moving from `08b5039`, new comments on issue #1, and `huggingface.co/api/models/xlsun/AutoFly` changing from 401 to 200.
+
 ## 9. Episode protocol (`autofly_ue5/collect/`)
 
 Dataset collection runs on the 10 `train` scenes with seen targets. M6 reuses this protocol for evaluation episodes on
@@ -239,7 +278,7 @@ Dataset collection runs on the 10 `train` scenes with seen targets. M6 reuses th
 3. Instruction: one template filled with `{target}` and `{obstacle}`. Templates are copied verbatim from the real
    episodes, including the original spelling: `go through and avoid the {obstacle} or other obstacles to reach the
    {target}` and `advance to {target} while avioding {obstacle} and other obstacles`.
-4. Step 0 records the coarse-direction action a0: zero forward speed, yaw rate toward the target's bearing quantised
+4. (Settled at M3 against the real episodes and §8.1's reported a0 description.) Step 0 records the coarse-direction action a0: zero forward speed, yaw rate toward the target's bearing quantised
    to 8 sectors, clipped to ±1 rad/s, zero vertical speed (matches the turn-in-place first actions in §3.2).
 5. The SAC expert flies with stochastic actions until success, collision, bounds exit or 300 steps.
 6. Only successful, collision-free episodes enter the dataset; every other episode goes to `data/rejects/` with its
@@ -297,6 +336,7 @@ NaN; images decode; episode lengths; per-scene and per-target counts.
 | M1 | `sim/` module; scene s01 built from its JSON file into a packaged map | live checks of §11 pass on s01 |
 | M2 | SAC on s01 | ≥ 95 % success over 200 episodes; throughput numbers recorded |
 | M3 | collector, dataset writer, validator; state[9] decoding | 100-episode pilot passes the validator |
+| M3b | optional AutoFly-checkpoint pilot (only if the §8.1 activation condition holds) | decoded action ranges match the statistics files; an s01 pilot passes the validator with "pilot": "autofly_checkpoint" in every provenance file |
 | M4 | asset library; scenes s02–s12 and s05r/s06r | every scene builds, passes reachability and live checks |
 | M5 | SAC experts for s02–s10; full collection on the 10 train scenes; rebalancing | per-scene expert gate; dataset validator passes |
 | M6 | test splits and evaluation harness (SR, CR, PER) | harness scores a scripted baseline end to end |
@@ -313,3 +353,4 @@ Each milestone stops for the user's go-ahead before the next one starts.
 - **Success distance:** real episodes end ≈ 7.2 m from the state-0 reference while the paper says 5 m; M3 checks
   whether distance is measured to the object's surface or centre.
 - **d_col** for the collision metric is not given in the paper; M6 picks a value and records it.
+- **AutoFly checkpoint:** not public as of 2026-09-15. If released, its ~48 % SR, out-of-distribution scenes, forward-speed floor and unknown licence limit it to a separately tagged optional source (§8.1).
