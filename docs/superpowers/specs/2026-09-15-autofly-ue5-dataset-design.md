@@ -82,28 +82,42 @@ one validation episode exported from the release before it was deleted (sources 
 
 - **Unreal Engine 5, Epic's prebuilt Linux zip**, unzipped to `ROOT/engine/`. The user downloads it with their Epic
   account; nothing in this project signs in on their behalf.
-- **Project AirSim** (`https://github.com/iamaisim/ProjectAirSim`, releases v1.0.0–v1.0.2 in 2026-09), checked out to
-  `ROOT/platform/` at a pinned tag.
-- **Version rule (M0 gate):** the UE5 version is the one the pinned Project AirSim tag documents for Linux, and it must
-  be available as a prebuilt Linux zip. If the tag needs a source-built engine, an OS other than Ubuntu 24.04 that
-  cannot be worked around, or lacks one of the capabilities in §4.1 with no workaround, M0 stops and reports; the
-  fallback is Colosseum or Cosys-AirSim on the version their Linux docs name, decided with the user.
-- Machine: Ubuntu 24.04.4, glibc 2.39, 32 cores, 61 GB RAM, RTX 4090 (driver 595.84), 717 GB free, X11 on `:1`.
-  Known engine risks to check at M0: UE 5.7 SDL3/Wayland editor input issues (use X11), a reported Vulkan Xid 31 crash
-  with UE 5.7.4 on 595.71, packaging on Ubuntu 24.04.
+- **Project AirSim** (`https://github.com/iamaisim/ProjectAirSim`, MIT), checked out to `ROOT/platform/`.
+- **Pinned versions** (checked 2026-09-15 against the repo, its release assets and PyPI):
+  - Engine: **`Linux_Unreal_Engine_5.7.4.zip`**, the last 5.7 hotfix. Project AirSim's README supports Unreal Engine
+    "5.2 or 5.7" and its Linux guide recommends an installed build, which is what Epic's prebuilt zip is. UE 5.8 is not
+    supported on Project AirSim `main` yet (an open pull request).
+  - Plugin: the prebuilt release asset **`ProjectAirSim-Plugin-Linux-UE5_7-1.0.1.zip`** (669,317,542 bytes, tag `v1.0.1`
+    = `0975545`). Its SimLibs are Release-only, so project builds use Development or Shipping configurations.
+  - Source checkout: `main` at `4d878bf` ("Prepare Project AirSim 1.0.2 release"; no `v1.0.2` tag exists). Its C++ code
+    is reported identical to `v1.0.1`; M0 verifies this with `git diff 0975545 4d878bf -- unreal core_sim`.
+  - Python client: **`projectairsim==1.0.2`** from PyPI (uploaded 2026-09-11, pure-Python wheel, Python ≥ 3.7).
+  - Sample project: `platform/unreal/Blocks`, copied to `ROOT/ue_project/` with the prebuilt plugin in `Plugins/`.
+- **Ubuntu 24.04 is not Project AirSim's supported OS** (22.04 is). Mitigations: use the engine's bundled toolchain
+  (`v26_clang-20.1.8-rockylinux8`, installed by `Engine/Build/BatchFiles/Linux/SetupToolchain.sh` if missing), use the
+  prebuilt plugin instead of building SimLibs, and skip `setup_linux_dev_tools.sh` (it adds an LLVM apt repository that
+  returns 404 on 24.04) and `setup_linux_unreal_prereqs.sh`. Run the editor and simulator with `SDL_VIDEODRIVER=x11` and
+  every Python process with `env -u PYTHONPATH` (the host's ROS Jazzy path is also Python 3.12).
+- **M0 fallback trigger:** switch platforms only if, after about a day of fixing, one of these still holds: the
+  `BlocksEditor` build with the prebuilt plugin fails even with `SetupToolchain.sh` and an Ubuntu 22.04 container;
+  `get_images` after `world.step()` deadlocks or returns stale frames; `step()` reports no collisions for the drone; or
+  NVIDIA Xid 31 / `VK_ERROR_DEVICE_LOST` crashes keep happening on driver 595.84. The fallback is Cosys-AirSim
+  `5.8-v3.4.1` on `Linux_Unreal_Engine_5.8.2.zip`, decided with the user (the 5.7.4 engine cannot be reused by it).
+- Machine: Ubuntu 24.04.4, glibc 2.39, 32 cores, 61 GB RAM, RTX 4090 (proprietary driver 595.84), 717 GB free, X11 on
+  `:1`. Reported engine risk to watch at M0: Vulkan Xid 31 crashes with UE 5.7.4 on nvidia-open 595.71 (RTX 5070 Ti).
 
 ### 4.1 Capabilities the platform must provide
 
-| Need | Used by |
-|---|---|
-| Build levels headless from Python in the editor, package a Linux binary with several maps | scenes |
-| Spawn and destroy static meshes at runtime with pose and scale; set a material or colour | targets, distractors |
-| Multirotor velocity command: forward (body), vertical, yaw rate | expert, collector |
-| Teleport/reset the vehicle to a pose, zero velocity | every episode |
-| Front RGB camera 256×256, 90° HFOV; front depth camera | collector (RGB), expert (depth) |
-| Collision events with timestamps | expert reward, rejects |
-| Pause / fixed step / simulator clock; ideally faster than real time | expert training, exact 5 Hz records |
-| Several simulator instances on one GPU | expert training throughput |
+| Need | Used by | Project AirSim (per its docs and source; verified live at M0) |
+|---|---|---|
+| Build levels headless from Python in the editor, package a Linux binary with several maps | scenes | not a Project AirSim feature: UE's PythonScriptPlugin plus `RunUAT.sh BuildCookRun` |
+| Spawn and destroy static meshes at runtime with pose and scale; set a material or colour | targets, distractors | `world.spawn_object`, `destroy_object`, `set_object_pose`, `set_object_scale`; colour only via pre-authored material instances and `set_object_material`; spawnable meshes must be cooked (`+DirectoriesToAlwaysCook`) |
+| Multirotor velocity command: forward (body), vertical, yaw rate | expert, collector | `move_by_velocity_body_frame_async(v_forward, v_right, v_down, duration, yaw_is_rate=True, yaw=rad/s)`, NED (+down); a new command replaces the previous one |
+| Teleport/reset the vehicle to a pose, zero velocity | every episode | `drone.set_pose(pose, reset_kinematics=True)`; flight-controller stability after teleport unverified (fallback: reload the scene) |
+| Front RGB camera 256×256, 90° HFOV; front depth camera | collector (RGB), expert (depth) | robot config `capture-settings`: image types 0 (RGB) and 1 (DepthPlanar, float16 metres), `fov-degrees`; `get_images` |
+| Collision events with timestamps | expert reward, rejects | `world.step()` returns `collision` events with `sim_time_ns`; `collision_info` topic |
+| Pause / fixed step / simulator clock; ideally faster than real time | expert training, exact 5 Hz records | steppable clock with `pause-on-start`; `world.step(dt_ns)`; camera capture is tied to rendering, so throughput is GPU-bound |
+| Several simulator instances on one GPU | expert training throughput | separate processes with `-topicsport` / `-servicesport`; not documented as tested, VRAM per instance unmeasured |
 
 ## 5. Folder layout
 
