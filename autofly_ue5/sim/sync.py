@@ -28,6 +28,9 @@ class FrameCollector:
         def _on_message(_topic: object, msg: dict) -> None:
             with self._cond:
                 self.received += 1
+                current = self._slots.get(key)
+                if current is not None and int(current["time_stamp"]) == self._target:
+                    return  # slot already holds the exact-target frame; a later arrival cannot displace it
                 if self._target is not None and int(msg["time_stamp"]) >= self._target:
                     self._slots[key] = msg
                     self._cond.notify_all()

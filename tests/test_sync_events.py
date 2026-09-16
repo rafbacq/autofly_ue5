@@ -68,6 +68,26 @@ def test_unknown_stream_is_rejected():
         FrameCollector().callback("segmentation")
 
 
+def test_collector_keeps_first_exact_target_frame_despite_late_duplicate():
+    fc = FrameCollector()
+    fc.arm(1000)
+    fc.callback("rgb")(None, _msg(1000))
+    fc.callback("depth")(None, _msg(1000))
+    fc.callback("rgb")(None, _msg(1000 + 5_000_000))  # late duplicate/reorder for an already-filled key
+    frames = fc.wait(timeout_s=0.5)
+    assert frames["rgb"]["time_stamp"] == 1000 and frames["depth"]["time_stamp"] == 1000
+    assert fc.received == 3
+
+
+def test_collector_still_rejects_when_only_a_late_frame_ever_arrives():
+    fc = FrameCollector()
+    fc.arm(1000)
+    fc.callback("rgb")(None, _msg(1000 + 5_000_000))  # no exact-target frame for rgb ever arrives
+    fc.callback("depth")(None, _msg(1000))
+    with pytest.raises(FrameTimestampError):
+        fc.wait(timeout_s=0.5)
+
+
 STEP_EVENT = {"type": "collision", "sim_time_ns": 400, "object_name": "StaticMeshActor_12",
               "impact_point": {"x": 1.0, "y": 2.0, "z": -1.5}, "normal": {"x": -1.0, "y": 0.0, "z": 0.0}}
 TOPIC_MSG = {"time_stamp": 400, "object_name": "StaticMeshActor_12", "segmentation_id": 3,
