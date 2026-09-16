@@ -1,0 +1,85 @@
+{
+  "started_at": "2026-09-15 21:43:19",
+  "boot_id": "0cda57b5-cffd-40c9-9b5a-482961aa864b",
+  "checks": {
+    "engine_version": {
+      "value": "5.7.4-51494982",
+      "pass": true
+    },
+    "installed_build": {
+      "pass": true
+    },
+    "toolchain": {
+      "clang": "20.1.8",
+      "pass": true
+    },
+    "linux_sdk_json": {
+      "main": "v26_clang-20.1.8-rockylinux8",
+      "pass": true
+    },
+    "editor_binaries": {
+      "pass": true
+    },
+    "engine_plugins": {
+      "present": {
+        "PythonScriptPlugin": true,
+        "EditorScriptingUtilities": true,
+        "SunPosition": true,
+        "ChaosVehiclesPlugin": true
+      },
+      "pass": true
+    },
+    "editor_shared_libs": {
+      "missing": [],
+      "pass": true
+    },
+    "platform_checkout": {
+      "head": "4d878bff556fad2d07da763babb2faa10b03922b",
+      "cpp_identical_to_v1_0_1": true,
+      "pass": true
+    },
+    "gpu_idle": {
+      "used_mib": 495,
+      "total_mib": 24564,
+      "pass": true
+    },
+    "editor_opens_x11": {
+      "pid": 273016,
+      "alive_after_wait": true,
+      "exit_code_before_stop": null,
+      "stop": "terminated",
+      "fatal_lines": [],
+      "gpu_named_in_log": true,
+      "documents_unreal_projects": {
+        "existed_before": false,
+        "created_by_probe": false,
+        "removed_empty": false
+      },
+      "log": "/home/jk_edge/research_uav/autofly_ue5/runs/m0/editor_open.log",
+      "pass": true
+    },
+    "zen_data_path_redirected": {
+      "matched_log_line": "[2026.09.16-01.43.22:820][  0]LogZenServiceInstance: Found command line override ZenDataPath=/home/jk_edge/research_uav/autofly_ue5/ue_project/DerivedDataCache/Zen",
+      "zen_data_dir_exists_and_nonempty": true,
+      "pass": true
+    },
+    "nvidia_xid": {
+      "since": "2026-09-15 21:43:19",
+      "before": 0,
+      "after": 0,
+      "current_boot_total_at_start": 0,
+      "pass": true
+    }
+  },
+  "epic_config_before": {
+    "kib": 361840,
+    "zen_default_data_exists": true
+  },
+  "out_of_root_before": {
+    "unreal_trace_store": false,
+    "unreal_trace_server_pid": false,
+    "documents_unreal_projects": false,
+    "documents_unreal_engine_logs": false
+  },
+  "pass": true
+}

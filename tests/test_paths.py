@@ -22,6 +22,6 @@ def test_derived_paths():
 
 def test_ue_cache_env_stays_inside_root():
     assert paths.UE_CACHE_ENV == {
-        "UE-ZenDataPath": "/home/jk_edge/research_uav/autofly_ue5/ue_project/DerivedDataCache/Zen",
-        "UE-LocalDataCachePath": "/home/jk_edge/research_uav/autofly_ue5/ue_project/DerivedDataCache",
+        "UE_ZenDataPath": "/home/jk_edge/research_uav/autofly_ue5/ue_project/DerivedDataCache/Zen",
+        "UE_LocalDataCachePath": "/home/jk_edge/research_uav/autofly_ue5/ue_project/DerivedDataCache",
     }

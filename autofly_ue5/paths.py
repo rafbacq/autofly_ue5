@@ -21,4 +21,7 @@ PACKAGED_BINARY = (
 # Derived-data cache inside ROOT (git-ignored) instead of ~/.config/Epic/UnrealEngine/Common/Zen/Data.
 DDC_DIR = UE_PROJECT_DIR / "DerivedDataCache"
 ZEN_DATA_DIR = DDC_DIR / "Zen"
-UE_CACHE_ENV = {"UE-ZenDataPath": str(ZEN_DATA_DIR), "UE-LocalDataCachePath": str(DDC_DIR)}
+# Underscore keys, not hyphens: FUnixPlatformMisc::GetEnvironmentVariable replaces "-" with "_" before
+# calling secure_getenv (engine/Engine/Source/Runtime/Core/Private/Unix/UnixPlatformMisc.cpp:289-317), so
+# the engine actually looks up UE_ZenDataPath / UE_LocalDataCachePath, never the hyphenated names.
+UE_CACHE_ENV = {"UE_ZenDataPath": str(ZEN_DATA_DIR), "UE_LocalDataCachePath": str(DDC_DIR)}
