@@ -162,8 +162,15 @@ One JSON file per scene in `scenes/`, validated by a schema in `autofly_ue5/scen
 
 The generator expands a scene file into concrete obstacle instances with the file's seed. A 2D occupancy check then
 rejects layouts where any start cell cannot reach any target cell with at least 1.0 m clearance to inflated obstacle
-footprints. The check only guarantees solvable layouts; it never produces actions. `test_seen` scenes reuse a train
-scene's file with a different seed.
+footprints. The check additionally runs inside a corridor around the start-target line, not the whole scene, so a
+route must be able to cross the obstacle field itself rather than merely detour around it near the perimeter. The
+corridor's half-width is `p_extent + 2 * inflate_m`, clipped to the scene bounds, where `p_extent` is the line's
+perpendicular extent -- the farthest any obstacle's surface reaches from the centreline -- and `inflate_m` is the
+same `drone_radius_m + clearance_m` margin the occupancy grid already inflates obstacles by. The extra
+`2 * inflate_m` exists because a corridor sized to the line alone can be severed by a single obstacle sitting at its
+edge that a real flight would simply fly around, which made the original rule reject layouts that are trivially
+flyable (see `autofly_ue5/scenes/reachability.py`). The check only guarantees solvable layouts; it never produces
+actions. `test_seen` scenes reuse a train scene's file with a different seed.
 
 ### 6.3 The 12 scenes (from Fig. 8)
 
@@ -241,7 +248,12 @@ R5–R9.
   differently depending on where the camera looked before, which an (image → action) dataset and an RL agent cannot
   tolerate. **Exposure is now history-free, but rendering is not bit-exact**: two captures of the identical pose differ by
   about 2.4 grey levels (temporal anti-aliasing). Treat frames as reproducible to a few grey levels, never as identical,
-  and never gate anything on exact pixel equality.
+  and never gate anything on exact pixel equality. That 2.4-level figure is for timestamp-exact frames reached by the
+  same reset sequence (two `reset(PILLAR_VIEW)` calls within one run); two committed measurements at the identical pose
+  reached differently — `docs/gates/exposure_calibration.json`'s calibration probe (direct `set_pose` plus steps,
+  decoding the first RGB frame received) versus `docs/gates/m1_gate.json`'s gate check (the timestamp-filtered
+  `reset()` path) — differ by 10.7 grey levels (109.33 vs. 119.99) at the same −11.0 EV. Nothing should assume the
+  rendered image is a function of pose alone.
 - **Runtime colour needs a base `UMaterial`.** `set_object_material` accepts `/Game/Geometry/Materials/M_Orange`
   (patch change 55–70) and rejects the `MaterialInstanceConstant` `M_Blue`, as the server filters on `UMaterial`.
   Scene-authored colour (M1 §6.4) uses material instances created in the editor instead.

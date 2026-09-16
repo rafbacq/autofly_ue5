@@ -7,11 +7,13 @@
 /data/
 /downloads/
 ue_project/Binaries/
+ue_project/Build/
 ue_project/Intermediate/
 ue_project/Saved/
 ue_project/Saved_*/
 ue_project/DerivedDataCache/
 ue_project/Packaged/
+ue_project/Samples/
 ue_project/Plugins/
 ue_project/Content/
 ue_project/projectairsim_server.log

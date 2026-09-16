@@ -20,7 +20,7 @@ EXPOSURE_TAG = "AF_Exposure"
 # where the camera looked before, which is not reproducible for (image, action) pairs or for RL training
 # on these frames. build_level.py spawns an unbound PostProcessVolume with AutoExposureMethod=Manual and
 # AutoExposureApplyPhysicalCameraExposure=False, which (per the engine's eye-adaptation math -- see
-# EV100ToLuminance/EyeAdaptationCommon.usf) makes the final image-intensity multiplier exactly
+# EV100ToLuminance/EyeAdaptationCommon.ush) makes the final image-intensity multiplier exactly
 # 2**EXPOSURE_BIAS_EV, a pure function of this one number: independent of scene content, pose and camera
 # history. This is a design choice the AutoFly paper does not specify; the value below was chosen
 # empirically (Task 16 fix, at most 3 build+package+probe iterations) against the S01 pillar field --

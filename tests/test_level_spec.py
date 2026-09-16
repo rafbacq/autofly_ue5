@@ -49,7 +49,7 @@ def test_exposure_block_is_manual_and_deterministic():
     exposure = spec["exposure"]
     assert exposure["tag"] == EXPOSURE_TAG == "AF_Exposure"
     assert exposure["method"] == "manual"
-    assert exposure["bias_ev"] == EXPOSURE_BIAS_EV
+    assert exposure["bias_ev"] == EXPOSURE_BIAS_EV == -11.0
     assert exposure["apply_physical_camera_exposure"] is EXPOSURE_APPLY_PHYSICAL_CAMERA is False
 
 

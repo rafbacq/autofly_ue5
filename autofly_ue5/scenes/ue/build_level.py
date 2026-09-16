@@ -60,7 +60,7 @@ def spawn_exposure_volume(spec, eas):
     Auto-exposure (eye adaptation) carries temporal state, so the same pose would render different pixels
     depending on where the camera looked before -- not reproducible for (image, action) pairs. With
     AutoExposureApplyPhysicalCameraExposure off, the engine's eye-adaptation math (EV100ToLuminance /
-    EyeAdaptationCommon.usf) collapses the final image-intensity multiplier to exactly 2**bias_ev, a pure
+    EyeAdaptationCommon.ush) collapses the final image-intensity multiplier to exactly 2**bias_ev, a pure
     function of the one number in the level spec's `exposure` block -- independent of scene content, pose
     and camera history."""
     volume = eas.spawn_actor_from_class(unreal.PostProcessVolume, unreal.Vector(0.0, 0.0, -500.0))
