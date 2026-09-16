@@ -41,7 +41,8 @@ def test_target_geometry_is_in_the_body_frame():
     dist, bearing, dz = target_geometry(Pose(0.0, 0.0, -2.0, 0.0), (10.0, 0.0, -2.0))
     assert dist == pytest.approx(10.0) and bearing == pytest.approx(0.0) and dz == pytest.approx(0.0)
 
-    # Same target, but the drone is yawed 90 deg: the target is now 90 deg to its right -> bearing -pi/2.
+    # Same target, but the drone is yawed 90 deg, so it faces East while the target is due North: the
+    # target is now 90 deg to its LEFT -> bearing -pi/2. Negative bearing is left, positive is right.
     dist, bearing, _ = target_geometry(Pose(0.0, 0.0, -2.0, math.pi / 2), (10.0, 0.0, -2.0))
     assert dist == pytest.approx(10.0) and bearing == pytest.approx(-math.pi / 2)
 
