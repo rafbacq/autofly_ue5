@@ -26,6 +26,23 @@ interpreter-shutdown sequence blocks forever joining it. `main()` therefore forc
 (`os._exit`) after writing the gate record, rather than trusting a plain `return`/`sys.exit()` to actually
 terminate it -- otherwise a 12-hour run's *own* process could hang forever exactly like a worker once did.
 
+That shakedown's *second* attempt (after the two fixes above) surfaced a third, more fundamental bug, in
+`autofly_ue5/gpu.py` (unclosed for this one fix; every other file in the closed list stayed closed):
+`check_gpu_for_launch`'s "no simulator of ours is running, but the GPU looks busy -> assume a foreign job"
+rule was written in M0, when nothing but the packaged simulator itself ever touched the GPU. Once a
+training process shares the GPU with the simulator instance it relaunches, that rule is a false premise --
+`used_mib` legitimately includes several GiB of *this training process's own* torch/CUDA context, which
+`own_running == 0` (correctly reporting no simulator instance running, mid-relaunch) does nothing to
+exclude. Measured live: `CameraPoseError` fired 10 times in 2,592 steps (~1/259, well above Task 7's
+"few hundred to ~1000" random-action estimate) and one of the resulting relaunches correctly tore its
+simulator down, then immediately failed to bring a new one up -- `check_gpu_for_launch` saw the training
+process's own ~2.6 GiB and concluded another job owned the GPU, ending the run. Fixed: `own_process_gpu_mib()`
+sums `nvidia-smi --query-compute-apps`' per-PID figures for this process's own tree (self + descendants,
+via one `ps` snapshot) and `check_gpu_for_launch` subtracts it before judging idleness -- a genuinely
+foreign process (outside our tree) still blocks a launch exactly as before. The separate free-headroom
+check is deliberately left unadjusted: a new simulator instance still cannot use VRAM this process is
+genuinely holding, whoever it belongs to.
+
 Early SB3 versions' `SubprocVecEnv` propagate an uncaught worker exception straight out of the worker
 process -- but Task 7 measured, live, that this does not cleanly kill the worker either: the projectairsim
 client leaves a non-daemon background thread running, so CPython's interpreter-shutdown sequence
@@ -246,6 +263,11 @@ class ResilientAutoFlyEnv(gym.Wrapper):
         except FAULT_ERRORS_STEP as err:
             name = type(err).__name__
             self.fault_counts[name] += 1
+            print(
+                f"FAULT instance {self._instance}: caught {name} during step() (occurrence "
+                f"#{self.fault_counts[name]} this instance); truncating the episode and recovering via reset()",
+                file=sys.stderr,
+            )
             obs, info = self._reset_with_retry(seed=None, options=None)
             self.recovered_counts[name] += 1
             info = {**info, "sim_fault": name}
@@ -253,19 +275,37 @@ class ResilientAutoFlyEnv(gym.Wrapper):
         return obs, reward, terminated, truncated, info
 
     def _reset_with_retry(self, *, seed: int | None, options: dict | None):
+        # Every occurrence and every recovery is logged (not just counted) so a run's exact fault sequence
+        # -- which single attempts recovered on the very next try vs. which needed a full relaunch -- is
+        # reconstructable from the log alone afterward, rather than left to be inferred from the final
+        # aggregate counts (Task 8 coordinator review: a live shakedown's 10 faults / 5 recovered could not
+        # otherwise be distinguished from "half the retries just don't work" vs. "one relaunch's follow-up
+        # attempt happened to hit a separate, unrelated crash").
         faults_so_far: list[str] = []  # accumulated across every round: a later relaunch still "recovers"
         # every fault an earlier round hit, because the overall call went on to succeed regardless.
         for relaunch_round in range(self._max_relaunch_attempts + 1):
-            for _attempt in range(self._max_reset_attempts):
+            for attempt in range(self._max_reset_attempts):
                 try:
                     obs, info = self.env.reset(seed=seed, options=options)
                 except FAULT_ERRORS_RESET as err:
                     name = type(err).__name__
                     self.fault_counts[name] += 1
                     faults_so_far.append(name)
+                    print(
+                        f"FAULT instance {self._instance}: caught {name} during reset() (occurrence "
+                        f"#{self.fault_counts[name]} this instance, in-place attempt {attempt + 1}/"
+                        f"{self._max_reset_attempts}, relaunch round {relaunch_round}/{self._max_relaunch_attempts}); retrying",
+                        file=sys.stderr,
+                    )
                     continue
                 for name in faults_so_far:
                     self.recovered_counts[name] += 1
+                if faults_so_far:
+                    print(
+                        f"RECOVERED instance {self._instance}: reset() succeeded after {len(faults_so_far)} "
+                        f"fault(s) ({faults_so_far}) and {self.relaunch_count} relaunch(es) this call",
+                        file=sys.stderr,
+                    )
                 return obs, info
             if relaunch_round < self._max_relaunch_attempts:
                 self._relaunch()
@@ -278,6 +318,7 @@ class ResilientAutoFlyEnv(gym.Wrapper):
         )
 
     def _relaunch(self) -> None:
+        print(f"RELAUNCH instance {self._instance}: relaunching (this will be relaunch #{self.relaunch_count + 1})", file=sys.stderr)
         finished = _bounded_close(self.env, self._close_timeout_s)
         if not finished:
             print(

@@ -200,6 +200,25 @@ def test_resilient_env_retries_reset_in_place_and_recovers(error):
             assert env.fault_counts[other] == 0
 
 
+def test_fault_and_recovery_events_are_logged_not_just_counted(capsys):
+    # Coordinator review (Task 8): a live shakedown's aggregate "10 faults / 5 recovered" could not be
+    # distinguished from "half the retries just don't work" vs. "one relaunch's follow-up attempt happened
+    # to hit an unrelated crash" without a per-event log. Every catch, every successful recovery, and every
+    # relaunch must be individually greppable from stderr afterward, not just reflected in the final counts.
+    factory = _sequenced_factory([
+        {"fail_on_reset_calls": set(range(1, 10)), "error": CameraPoseError},  # exhausts round 0 entirely
+        {},  # round 1's fresh connection succeeds immediately
+    ])
+    env = _make_resilient(factory, max_reset_attempts=2, max_relaunch_attempts=1)
+
+    env.reset(seed=1)
+    err = capsys.readouterr().err
+
+    assert err.count("FAULT instance 0: caught CameraPoseError during reset()") == 2
+    assert "RELAUNCH instance 0: relaunching (this will be relaunch #1)" in err
+    assert "RECOVERED instance 0: reset() succeeded after 2 fault(s)" in err
+
+
 def test_resilient_env_retries_reset_when_episode_setup_raises(monkeypatch):
     # EpisodeSetupError is raised by sample_setup() (episode.py) before any Simulator call happens, so it
     # cannot be injected through a Simulator double the way the other four can; monkeypatch the name
