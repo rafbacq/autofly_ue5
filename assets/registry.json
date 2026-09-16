@@ -51,6 +51,10 @@
       "kind": "engine",
       "ue_path": "/Engine/EngineMaterials/WorldGridMaterial"
     },
+    "orange": {
+      "kind": "engine",
+      "ue_path": "/Game/Geometry/Materials/M_Orange"
+    },
     "white": {
       "kind": "color_instance",
       "ue_path": "/Game/AutoFly/Materials/MI_White",

@@ -200,3 +200,39 @@ def test_apply_setup_tears_down_a_partial_spawn_on_failure():
     assert sorted(sim.destroyed) == sorted(sim.spawned), (
         "every object spawned before the failure must be torn down before the error propagates"
     )
+
+
+def test_the_target_material_is_one_the_packaged_binary_actually_accepts():
+    """apply_setup paints the target with "orange" if the registry has it, else the first material that is
+    not the obstacle's. With only {grid, white} registered and s01's obstacles painted "white", that
+    fallback could only ever resolve to "grid" -- the engine WorldGridMaterial -- which the packaged binary
+    rejects in set_object_material. That is not seed-dependent: it failed 100% of live episodes and blocked
+    Task 7's measurement and Task 8's training entirely, while every offline test stayed green because
+    FakeSimulator accepts any material string.
+
+    docs/gates/m1_gate.json is the evidence for the fix: on this exact SHA-256-verified binary, spawning a
+    cube with /Game/Geometry/Materials/M_Orange produced centre RGB [97, 55, 36] and orange_dominant=True.
+    Adding "orange" to the registry does not touch the level spec -- layout_to_level_spec emits only the
+    materials the layout actually uses -- so the M1 provenance chain and its recorded hash are unaffected.
+    """
+    import json
+
+    from autofly_ue5.expert.episode import sample_setup
+    from autofly_ue5.paths import ROOT
+    from autofly_ue5.scenes.model import load_registry
+
+    registry = load_registry()
+    assert "orange" in registry.materials, (
+        "the target material is gone; live spawns will fall back to the ground material and every "
+        "episode will fail against the real simulator while every offline test still passes"
+    )
+    proven = json.loads((ROOT / "docs" / "gates" / "m1_gate.json").read_text())
+    assert registry.materials["orange"].ue_path == proven["checks"]["spawn_destroy_packaged"]["material"], (
+        "the target material must be the one M1 proved the packaged binary accepts"
+    )
+    # And the selection logic must actually reach it rather than the ground material.
+    scene, layout = scene_and_layout()
+    setup = sample_setup(scene, layout, np.random.default_rng(3))
+    chosen = "orange" if "orange" in registry.materials else next(
+        (n for n in registry.materials if n != setup.obstacle_material), None)
+    assert chosen == "orange" and chosen != scene.ground
