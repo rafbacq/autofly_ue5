@@ -1,0 +1,26 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "5.7",
+	"Category": "",
+	"Description": "AutoFly UE5 dataset simulator, derived from the Project AirSim Blocks sample",
+	"Modules": [
+		{
+			"Name": "Blocks",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	],
+	"Plugins": [
+		{ "Name": "ProjectAirSim", "Enabled": true },
+		{ "Name": "USDImporter", "Enabled": false },
+		{ "Name": "GLTFExporter", "Enabled": false },
+		{ "Name": "SunPosition", "Enabled": true },
+		{ "Name": "StaticMeshEditorModeling", "Enabled": true },
+		{ "Name": "ChaosVehiclesPlugin", "Enabled": true },
+		{ "Name": "Drone", "Enabled": true },
+		{ "Name": "Rover", "Enabled": true },
+		{ "Name": "PythonScriptPlugin", "Enabled": true, "TargetAllowList": [ "Editor" ] },
+		{ "Name": "EditorScriptingUtilities", "Enabled": true, "TargetAllowList": [ "Editor" ] }
+	],
+	"TargetPlatforms": [ "Linux" ]
+}
