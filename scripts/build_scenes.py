@@ -1,4 +1,4 @@
-"""Expand a scene file into a layout, check reachability and write <out-dir>/<id>.layout.json.
+"""Expand a scene file into a layout, check reachability, write <id>.layout.json and <id>.level.json.
 
 env -u PYTHONPATH .venv/bin/python scripts/build_scenes.py scenes/s01_white_pillars.json
 """
@@ -10,6 +10,7 @@ from pathlib import Path
 
 from autofly_ue5.paths import RUNS_DIR
 from autofly_ue5.scenes.generate import generate_layout
+from autofly_ue5.scenes.level_spec import layout_to_level_spec
 from autofly_ue5.scenes.model import load_registry, load_scene_file
 from autofly_ue5.scenes.reachability import check_reachability
 
@@ -20,13 +21,19 @@ def main() -> int:
     parser.add_argument("--out-dir", type=Path, default=RUNS_DIR / "levels")
     args = parser.parse_args()
     scene = load_scene_file(args.scene)
-    layout = generate_layout(scene, load_registry())
+    registry = load_registry()
+    layout = generate_layout(scene, registry)
     reach = check_reachability(layout, scene.start_band, scene.target_band)
     args.out_dir.mkdir(parents=True, exist_ok=True)
-    out = args.out_dir / f"{scene.id}.layout.json"
-    out.write_text(json.dumps({"scene_path": str(args.scene), "scene_sha256": scene.sha256,
-                               "layout": layout.to_json(), "reachability": reach.to_json()}, indent=2))
-    print(json.dumps({"scene": scene.id, "instances": len(layout.instances), "reachability": reach.to_json(), "layout": str(out)}))
+    layout_out = args.out_dir / f"{scene.id}.layout.json"
+    layout_out.write_text(json.dumps({"scene_path": str(args.scene), "scene_sha256": scene.sha256,
+                                      "layout": layout.to_json(), "reachability": reach.to_json()}, indent=2))
+    summary = {"scene": scene.id, "instances": len(layout.instances), "reachability": reach.to_json(), "layout": str(layout_out)}
+    if reach.ok:
+        level_out = args.out_dir / f"{scene.id}.level.json"
+        level_out.write_text(json.dumps(layout_to_level_spec(layout, scene, registry), indent=2))
+        summary["level_spec"] = str(level_out)
+    print(json.dumps(summary))
     return 0 if reach.ok else 1
 
 
