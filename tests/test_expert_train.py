@@ -217,6 +217,26 @@ def test_fault_and_recovery_events_are_logged_not_just_counted(capsys):
     assert err.count("FAULT instance 0: caught CameraPoseError during reset()") == 2
     assert "RELAUNCH instance 0: relaunching (this will be relaunch #1)" in err
     assert "RECOVERED instance 0: reset() succeeded after 2 fault(s)" in err
+    # The exception's own message (a real CameraPoseError's carries "X.XXX m from kinematics ...") must be
+    # in the log line itself, not just the class name -- coordinator review: "the exception carries the
+    # actual error in metres but the wrapper logs only its own line", so the magnitude was ungreppable.
+    assert "injected reset failure on call 1" in err
+
+
+def test_step_fault_log_line_includes_the_exceptions_own_message(capsys):
+    from autofly_ue5.expert.env import AutoFlyEnv
+    from autofly_ue5.expert.train import ResilientAutoFlyEnv
+
+    scene, layout = scene_and_layout()
+    sim = _FlakyFakeSimulator(fail_on_step_calls=(2,), error=CameraPoseError)
+    base = AutoFlyEnv(scene, layout, lambda: sim, map_path="/Game/AutoFly/Maps/S01", instance=0)
+    env = ResilientAutoFlyEnv(base, instance=0)
+
+    env.reset(seed=1)
+    env.step(np.array([0.0, 0.0, 0.0], dtype=np.float32))
+    err = capsys.readouterr().err
+
+    assert "injected step failure on call 2" in err
 
 
 def test_resilient_env_retries_reset_when_episode_setup_raises(monkeypatch):
@@ -504,3 +524,19 @@ def test_outcome_histogram_tallies_only_completed_episodes():
     cb._on_step()
 
     assert cb.histogram == {"success": 1, "collision": 1}
+
+
+def test_outcome_histogram_buckets_a_fault_truncation_under_its_own_hazard_not_running():
+    # Live finding (Task 8 shakedown3): a ResilientAutoFlyEnv fault-truncation's info["outcome"] is the
+    # FRESH episode's own "running", not the truncated episode's real fate -- info["sim_fault"] is. Without
+    # preferring it, every fault-truncated episode is indistinguishable from a genuine "running" bucket.
+    from autofly_ue5.expert.train import OutcomeHistogramCallback
+
+    cb = OutcomeHistogramCallback()
+    cb.locals = {
+        "infos": [{"outcome": "running", "sim_fault": "CameraPoseError"}, {"outcome": "success"}],
+        "dones": [True, True],
+    }
+    cb._on_step()
+
+    assert cb.histogram == {"CameraPoseError": 1, "success": 1}

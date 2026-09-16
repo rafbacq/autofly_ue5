@@ -265,7 +265,7 @@ class ResilientAutoFlyEnv(gym.Wrapper):
             self.fault_counts[name] += 1
             print(
                 f"FAULT instance {self._instance}: caught {name} during step() (occurrence "
-                f"#{self.fault_counts[name]} this instance); truncating the episode and recovering via reset()",
+                f"#{self.fault_counts[name]} this instance): {err}; truncating the episode and recovering via reset()",
                 file=sys.stderr,
             )
             obs, info = self._reset_with_retry(seed=None, options=None)
@@ -294,7 +294,8 @@ class ResilientAutoFlyEnv(gym.Wrapper):
                     print(
                         f"FAULT instance {self._instance}: caught {name} during reset() (occurrence "
                         f"#{self.fault_counts[name]} this instance, in-place attempt {attempt + 1}/"
-                        f"{self._max_reset_attempts}, relaunch round {relaunch_round}/{self._max_relaunch_attempts}); retrying",
+                        f"{self._max_reset_attempts}, relaunch round {relaunch_round}/{self._max_relaunch_attempts}): "
+                        f"{err}; retrying",
                         file=sys.stderr,
                     )
                     continue
@@ -553,8 +554,17 @@ class StopOnWallClock(BaseCallback):
 
 
 class OutcomeHistogramCallback(BaseCallback):
-    """Tallies `info["outcome"]` at every completed episode (terminated or truncated), across training --
-    "if success_rate is flat at ~0 after 100k steps ... check the outcome histogram" (brief)."""
+    """Tallies the outcome at every completed episode (terminated or truncated), across training --
+    "if success_rate is flat at ~0 after 100k steps ... check the outcome histogram" (brief).
+
+    A `ResilientAutoFlyEnv` fault-truncation's `info["outcome"]` is the FRESH episode's own initial value
+    ("running" -- see `AutoFlyEnv._info`), not a real outcome of the episode that just got cut short; that
+    episode's actual fate is `info["sim_fault"]` (the error class name). Live finding (Task 8 shakedown3, a
+    45-fault run): without preferring `sim_fault` when present, every fault-truncated episode was tallied
+    as "running", indistinguishable from a policy/reward-shaping bucket rather than a backend hazard -- this
+    keeps backend faults out of the same buckets as genuine policy outcomes (success/collision/out_of_bounds
+    /timeout), mirroring the same separation Task 9's own gate now requires.
+    """
 
     def __init__(self, verbose: int = 0) -> None:
         super().__init__(verbose)
@@ -565,7 +575,7 @@ class OutcomeHistogramCallback(BaseCallback):
         dones = self.locals.get("dones", [])
         for info, done in zip(infos, dones):
             if done:
-                self.histogram[info.get("outcome", "unknown")] += 1
+                self.histogram[info.get("sim_fault") or info.get("outcome", "unknown")] += 1
         return True
 
 
