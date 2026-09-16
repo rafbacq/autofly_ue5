@@ -115,8 +115,10 @@ def test_distractor_count_and_spacing():
 def test_distractors_keep_clear_of_the_start_pose():
     """A distractor spawning on top of the drone's start pose makes the episode unwinnable from step 0
     (an immediate collision) regardless of the policy, which silently eats into the M2 gate's success-rate
-    budget. The bug this pins showed up in about 1 seed in 200 (closest observed: 0.07 m), so it is
-    checked across many seeds -- a single seed could pass by luck.
+    budget. Measured before the fix, over 2000 seeds: a distractor landed within 8 m of the start in
+    ~22 % of episodes, within 5 m in 12.5 %, within 1 m in about 1 seed in 200, closest 0.07 m -- i.e.
+    the outright unwinnable cases are rare while the keep-out this test pins is violated often. Checked
+    across many seeds either way: a single seed proves nothing here.
     """
     from autofly_ue5.expert.episode import START_KEEPOUT_M, sample_setup
 
