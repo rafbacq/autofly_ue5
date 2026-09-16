@@ -157,8 +157,21 @@ def check_tracking(sim: Simulator) -> dict:
             "pass": all(axes[k]["relative_error"] is not None and axes[k]["relative_error"] <= 0.2 for k in gated)}
 
 
+NOTE_ONE_STEP = (
+    "This check cannot actually fail: frame_times_match is guaranteed by FrameCollector.wait() "
+    "(FrameTimestampError otherwise, sync.py), dt_ns==200_000_000/steps==1 by Observation.sim_time_ns "
+    "and StepTimingError (airsim_backend.py), and kinematics agreement by StaleStateError. An "
+    "Observation cannot exist unless all three already held, so a pass here is not independent "
+    "evidence of them -- it reduces to 'the backend ran 20 steps without raising'. Kept as a gate "
+    "check anyway because that is still worth recording: it demonstrates the invariants held in a "
+    "live run, on the packaged binary, not just in the unit tests that pin the raises."
+)
+
+
 def check_one_step(sim: Simulator) -> dict:
-    """Each record: one clock step of 200 ms, and the RGB, depth and kinematics that built it all carry that step's time."""
+    """Each record: one clock step of 200 ms, and the RGB, depth and kinematics that built it all carry that step's
+    time. This criterion cannot fail on its own: it passes iff the backend's own invariants held (see NOTE_ONE_STEP)
+    and is not independent evidence of them -- only evidence that 20 steps ran without one of those raising."""
     sim.reset(OPEN_POSE)
     rows = []
     start = time.monotonic()
@@ -172,7 +185,7 @@ def check_one_step(sim: Simulator) -> dict:
                      "frame_times_match": obs.rgb_time_ns == obs.depth_time_ns == obs.kinematics_time_ns == t})
     wall = time.monotonic() - start
     ok = all(r["steps"] == 1 and r["dt_ns"] == 200_000_000 and r["frame_times_match"] for r in rows)
-    return {"records": len(rows), "records_per_s": len(rows) / wall, "rows": rows, "pass": ok}
+    return {"records": len(rows), "records_per_s": len(rows) / wall, "rows": rows, "pass": ok, "note": NOTE_ONE_STEP}
 
 
 def check_spawn_destroy(sim: Simulator) -> dict:
