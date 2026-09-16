@@ -6,7 +6,15 @@ import math
 import numpy as np
 
 from autofly_ue5.frames import wrap_pi
-from autofly_ue5.sim.types import CONTROL_DT_S, CollisionEvent, ObjectNotFoundError, Observation, Pose, dt_to_ns
+from autofly_ue5.sim.types import (
+    CONTROL_DT_S,
+    CollisionEvent,
+    ObjectNotFoundError,
+    Observation,
+    Pose,
+    SessionNotResetError,
+    dt_to_ns,
+)
 
 
 class FakeSimulator:
@@ -82,7 +90,7 @@ class FakeSimulator:
     def step(self, dt: float = CONTROL_DT_S) -> int:
         self._require_launched()
         if not self._reset_done:
-            raise RuntimeError("step() called before reset() on this session")
+            raise SessionNotResetError("step() called before reset() on this session")
         dt_ns = dt_to_ns(dt)
         if self._pending is None:
             raise RuntimeError("command_velocity must be called before every step")
@@ -106,7 +114,7 @@ class FakeSimulator:
 
     def observe(self) -> Observation:
         if not self._reset_done:
-            raise RuntimeError("no observation before reset() or step()")
+            raise SessionNotResetError("no observation before reset() or step()")
         return Observation(
             rgb=self._render_rgb(),
             depth=np.full((self._size, self._size), np.inf, dtype=np.float32),

@@ -12,6 +12,15 @@ class ObjectNotFoundError(KeyError):
     """destroy() was given a name that no spawned object has."""
 
 
+class SessionNotResetError(RuntimeError):
+    """step()/observe() called before reset() has run on this session; frame 0 of a session is corrupt (spec §7.1).
+
+    Lives here, not beside the backend's own errors, because it belongs to the Simulator interface rather than to one
+    implementation: both ProjectAirSimSimulator and FakeSimulator raise it, so M2/M3 code can catch it portably while
+    developing against the fake.
+    """
+
+
 @dataclass(frozen=True)
 class Pose:
     x: float

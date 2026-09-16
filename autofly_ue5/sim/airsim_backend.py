@@ -28,7 +28,15 @@ from autofly_ue5.sim.process import (
     wait_ready,
 )
 from autofly_ue5.sim.sync import FrameCollector
-from autofly_ue5.sim.types import CONTROL_DT_S, STEP_NS, ObjectNotFoundError, Observation, Pose, dt_to_ns
+from autofly_ue5.sim.types import (
+    CONTROL_DT_S,
+    STEP_NS,
+    ObjectNotFoundError,
+    Observation,
+    Pose,
+    SessionNotResetError,
+    dt_to_ns,
+)
 
 ROBOT = "Drone1"
 CAMERA = "FrontCamera"
@@ -68,10 +76,6 @@ class CommandTimeoutError(RuntimeError):
 
 class CameraPoseError(RuntimeError):
     """The camera pose stamped in the image disagrees with kinematics (Unreal actor left behind by a set_pose sweep)."""
-
-
-class SessionNotResetError(RuntimeError):
-    """step()/observe() called before reset() has run on this connection; frame 0 of a session is corrupt (spec §7.1)."""
 
 
 class ProjectAirSimSimulator:

@@ -17,8 +17,10 @@ from autofly_ue5.sim.airsim_backend import (
 )
 from autofly_ue5.sim.process import SimPorts
 from autofly_ue5.sim.protocol import Simulator
-from autofly_ue5.sim.sync import FrameTimeoutError
+from autofly_ue5.sim.fake import FakeSimulator
+from autofly_ue5.sim.sync import FrameCollector, FrameTimeoutError
 from autofly_ue5.sim.types import ObjectNotFoundError, Pose
+from autofly_ue5.sim.types import SessionNotResetError as TypesSessionNotResetError
 
 
 class FakeClient:
@@ -372,3 +374,41 @@ def test_reconnect_does_not_dedupe_a_collision_seen_in_a_previous_session():
     second = crash_once(sim)
     assert second.collided is True
     assert second.step_collisions and second.step_collisions[0].object_name == "StaticMeshActor_1"
+
+
+def test_reconnect_restores_the_long_first_frame_timeout(monkeypatch):
+    # A relaunched simulator process is cold: its first frame takes far longer than a steady-state one,
+    # which is why _frame_steps picks first_frame_timeout_s over frame_timeout_s. _frame_steps is
+    # per-session, so a reconnect that left it set would time the new process's first frame out early.
+    seen = []
+    real_wait = FrameCollector.wait
+    monkeypatch.setattr(FrameCollector, "wait", lambda self, timeout: (seen.append(timeout), real_wait(self, timeout))[1])
+    sim = make_sim(frame_timeout_s=0.2, first_frame_timeout_s=9.0)
+    sim.reset(Pose(0.0, 0.0, -2.0, 0.0))
+    sim.command_velocity(0.0, 0.0, 0.0)
+    sim.step()
+    assert seen[0] == 9.0 and seen[-1] == 0.2  # first frame long, steady state short
+
+    seen.clear()
+    sim.connect(SimPorts(8989, 8990))
+    sim.reset(Pose(0.0, 0.0, -2.0, 0.0))
+    assert seen[0] == 9.0, "a reconnected session's first frame must get the cold-start budget again"
+
+
+def test_both_simulators_raise_the_same_reset_precondition_error():
+    # M2/M3 develop against FakeSimulator and run against the real backend, so `except
+    # SessionNotResetError` has to work for both -- the error belongs to the interface, not to one
+    # implementation (same precedent as ObjectNotFoundError).
+    assert SessionNotResetError is TypesSessionNotResetError
+    fake = FakeSimulator()
+    fake.launch("/Game/AutoFly/Maps/S01", 0)
+    fake.command_velocity(0.0, 0.0, 0.0)
+    with pytest.raises(TypesSessionNotResetError):
+        fake.step()
+    with pytest.raises(TypesSessionNotResetError):
+        fake.observe()
+
+    real = make_sim(mark_reset=False)
+    real.command_velocity(0.0, 0.0, 0.0)
+    with pytest.raises(TypesSessionNotResetError):
+        real.step()
