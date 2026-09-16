@@ -1,0 +1,86 @@
+{
+  "engine_check": true,
+  "plugin_manifest": true,
+  "blocks_editor_build": true,
+  "editor_python_probe": true,
+  "smoke_single_instance": true,
+  "second_instance": true,
+  "two_instance_concurrency": {
+    "overlap_s": 17.63507652282715,
+    "vram_samples_inside_overlap": true
+  },
+  "gpu_faults": true,
+  "steps_per_s_rtur_3ms": 7.42695832395037,
+  "steps_per_s_rtur_1ms": 18.02089795232702,
+  "rtur_1ms_lockstep_pass": true,
+  "steps_per_s_two_instances": [
+    5.670517697712097,
+    5.652563537710697
+  ],
+  "vram_mib": {
+    "baseline": 501,
+    "idle_instance": 1630,
+    "one_instance_capturing": 1743,
+    "two_instances_capturing": 3131
+  },
+  "vram_one_instance_capturing_mib": 1242,
+  "vram_two_instances_capturing_mib": 2630,
+  "vram_per_instance_mib": 1315.0,
+  "yaw_rate_ratio": 0.7172802476676408,
+  "get_images_probe": {
+    "ok": true,
+    "time_stamps": {
+      "0": 11000000000,
+      "1": 11000000000
+    },
+    "sim_time_ns": 11000000000,
+    "elapsed_s": 0.011
+  },
+  "teleport_through_camera_error_m": 6.018522224468363,
+  "hfov_face_width_px": [
+    54,
+    54.10236653824987
+  ],
+  "set_object_material_instance_ok": false,
+  "faults": {
+    "xid_since": "2026-09-15 21:43:19",
+    "xid_baseline": 0,
+    "xid_now": 0,
+    "xid_delta": 0,
+    "boot_id_m0_start": "0cda57b5-cffd-40c9-9b5a-482961aa864b",
+    "boot_id_now": "0cda57b5-cffd-40c9-9b5a-482961aa864b",
+    "boot_changed": false,
+    "device_lost": {
+      "/home/jk_edge/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-02.26.55.log": 0,
+      "/home/jk_edge/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-02.51.10.log": 0,
+      "/home/jk_edge/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-03.05.28.log": 0,
+      "/home/jk_edge/research_uav/autofly_ue5/runs/sim/inst0/sim.log": 0,
+      "/home/jk_edge/research_uav/autofly_ue5/runs/sim/inst1/sim.log": 0,
+      "/home/jk_edge/research_uav/autofly_ue5/runs/m0/editor_open-backup-2026.09.16-01.32.21.log": 0,
+      "/home/jk_edge/research_uav/autofly_ue5/runs/m0/editor_open.log": 0
+    },
+    "epic_config_before": {
+      "kib": 361840,
+      "zen_default_data_exists": true
+    },
+    "epic_config_after": {
+      "kib": 361916,
+      "zen_default_data_exists": true
+    },
+    "zen_default_data_created": false,
+    "out_of_root_before": {
+      "unreal_trace_store": false,
+      "unreal_trace_server_pid": false,
+      "documents_unreal_projects": false,
+      "documents_unreal_engine_logs": false
+    },
+    "out_of_root_after": {
+      "unreal_trace_store": false,
+      "unreal_trace_server_pid": false,
+      "documents_unreal_projects": false,
+      "documents_unreal_engine_logs": false
+    },
+    "out_of_root_created": []
+  },
+  "pass": true
+}
