@@ -1,0 +1,25 @@
+{
+  "layout": "runs/levels/s01.layout.json",
+  "obstacles": [
+    {
+      "found": true,
+      "center_error_m": 2.751757089464606e-06,
+      "size_error_m": 9.993762969973119e-05,
+      "tag": "obs_0000"
+    },
+    {
+      "found": true,
+      "center_error_m": 5.595541082676015e-07,
+      "size_error_m": 2.975463875287687e-07,
+      "tag": "obs_0040"
+    },
+    {
+      "found": true,
+      "center_error_m": 7.178185888584329e-07,
+      "size_error_m": 9.997062683109181e-05,
+      "tag": "obs_0079"
+    }
+  ],
+  "ground_top_z_ned": 0.0,
+  "pass": true
+}

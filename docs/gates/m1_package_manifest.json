@@ -1,0 +1,28 @@
+{
+  "binary": {
+    "path": "ue_project/Packaged/Development/Linux/Blocks/Binaries/Linux/Blocks",
+    "sha256": "5c1863bf4b96159afa281b7f77f1b0034d068e2b1a4c335d938c289fea8c14e7"
+  },
+  "paks": {
+    "ue_project/Packaged/Development/Linux/Blocks/Content/Paks/Blocks-Linux.pak": "af311b475e09104f69a33d117ca810836eb0e077e8c27fa9656da10b262f78bc"
+  },
+  "git_head": "8ca106086f6c0b2940ed1ace91fc7217d71d494b",
+  "level_spec_sha256": "da9eaaf86ffca90ffd0fdf740aa66d151842a2e697ecdbaadbb5fd8345d1c369",
+  "level_verify": {
+    "map_path": "/Game/AutoFly/Maps/S01",
+    "pass": true,
+    "obstacles": 80,
+    "worst_location_error_cm": 0.0,
+    "game_mode": "/Script/ProjectAirSim.ProjectAirSimGameMode"
+  },
+  "engine_build_version": {
+    "MajorVersion": 5,
+    "MinorVersion": 7,
+    "PatchVersion": 4,
+    "Changelist": 51494982,
+    "CompatibleChangelist": 47537391,
+    "IsLicenseeVersion": 0,
+    "IsPromotedBuild": 1,
+    "BranchName": "++UE5+Release-5.7"
+  }
+}
