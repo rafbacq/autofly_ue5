@@ -97,6 +97,26 @@ def test_gate_requires_build_plugin_and_probe_evidence():
     assert _gate(probe={})["pass"] is False
 
 
+def test_gate_fails_on_failing_engine_check():
+    gate = _gate(engine={"pass": False})
+    assert gate["engine_check"] is False
+    assert gate["pass"] is False
+    # the failure came from engine_check specifically, not a wholesale collapse of the assembled dict
+    assert gate["plugin_manifest"] is True and gate["blocks_editor_build"] is True
+    assert gate["editor_python_probe"] is True and gate["smoke_single_instance"] is True
+    assert gate["second_instance"] is True and gate["gpu_faults"] is True
+
+
+def test_gate_fails_on_failing_single_instance_smoke():
+    gate = _gate(smoke=_smoke(False))
+    assert gate["smoke_single_instance"] is False
+    assert gate["pass"] is False
+    # the failure came from smoke_single_instance specifically, not a wholesale collapse
+    assert gate["engine_check"] is True and gate["plugin_manifest"] is True
+    assert gate["blocks_editor_build"] is True and gate["editor_python_probe"] is True
+    assert gate["second_instance"] is True and gate["gpu_faults"] is True
+
+
 def test_gate_fails_on_new_xid_reboot_device_lost_default_zen_cache_or_out_of_root_writes():
     new_xid = fault_record(ENGINE, 1, {"sim.log": 0}, EPIC_AFTER, "boot-a", OUT_OF_ROOT_CLEAN)
     assert new_xid["xid_delta"] == 1 and _gate(faults=new_xid)["gpu_faults"] is False
