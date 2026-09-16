@@ -83,14 +83,23 @@ def spawn_exposure_volume(spec, eas):
     readback = volume.get_editor_property("settings")
     got_method = readback.get_editor_property("auto_exposure_method")
     got_bias = readback.get_editor_property("auto_exposure_bias")
+    got_physical_camera = readback.get_editor_property("auto_exposure_apply_physical_camera_exposure")
     check(readback.get_editor_property("override_auto_exposure_method"), "PostProcessVolume override_auto_exposure_method not set")
     check(got_method == unreal.AutoExposureMethod.AEM_MANUAL, "auto_exposure_method readback " + str(got_method))
     check(readback.get_editor_property("override_auto_exposure_bias"), "PostProcessVolume override_auto_exposure_bias not set")
     check(abs(got_bias - spec["bias_ev"]) < 1e-4, "auto_exposure_bias readback %s != %s" % (got_bias, spec["bias_ev"]))
+    # R17 (Finding 2): this override was set alongside method/bias but never read back -- close the same
+    # gap the surrounding checks already close for the other two properties (struct properties are
+    # returned by value in UE python, so a silently-dropped set here would defeat the determinism claim
+    # without anything in build, verify or the live gate catching it).
+    check(readback.get_editor_property("override_auto_exposure_apply_physical_camera_exposure"),
+          "PostProcessVolume override_auto_exposure_apply_physical_camera_exposure not set")
+    check(got_physical_camera == bool(spec["apply_physical_camera_exposure"]),
+          "auto_exposure_apply_physical_camera_exposure readback %s != %s" % (got_physical_camera, spec["apply_physical_camera_exposure"]))
     check(volume.get_editor_property("unbound") is True, "PostProcessVolume is not unbound")
     check(volume.get_editor_property("enabled") is True, "PostProcessVolume is not enabled")
     REPORT["exposure"] = {"tag": spec["tag"], "auto_exposure_method": str(got_method), "auto_exposure_bias": got_bias,
-                          "apply_physical_camera_exposure": spec["apply_physical_camera_exposure"],
+                          "apply_physical_camera_exposure": got_physical_camera,
                           "unbound": True, "enabled": True}
     return volume
 

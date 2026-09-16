@@ -57,7 +57,16 @@ def main():
     check(settings.get_editor_property("override_auto_exposure_bias"), "override_auto_exposure_bias not set on reload")
     bias = settings.get_editor_property("auto_exposure_bias")
     check(abs(bias - exposure_spec["bias_ev"]) < 1e-4, "auto_exposure_bias on reload %s != %s" % (bias, exposure_spec["bias_ev"]))
-    REPORT["exposure"] = {"tag": exposure_spec["tag"], "auto_exposure_method": str(method), "auto_exposure_bias": bias}
+    # R17 (Finding 2): the identical gap existed here on reload -- this property is the one the
+    # determinism claim depends on most, so a silent revert must be caught on reload too, not just at
+    # build time.
+    check(settings.get_editor_property("override_auto_exposure_apply_physical_camera_exposure"),
+          "override_auto_exposure_apply_physical_camera_exposure not set on reload")
+    physical_camera = settings.get_editor_property("auto_exposure_apply_physical_camera_exposure")
+    check(physical_camera == bool(exposure_spec["apply_physical_camera_exposure"]),
+          "auto_exposure_apply_physical_camera_exposure on reload %s != %s" % (physical_camera, exposure_spec["apply_physical_camera_exposure"]))
+    REPORT["exposure"] = {"tag": exposure_spec["tag"], "auto_exposure_method": str(method), "auto_exposure_bias": bias,
+                          "apply_physical_camera_exposure": physical_camera}
     REPORT.update({"obstacles": len(obstacle_tags), "worst_location_error_cm": worst, "game_mode": game_mode_path, "pass": True})
 
 

@@ -4,10 +4,10 @@
   "scene_sha256": "a6b461b38cf65867d6f97a749a2a0a0b9d1aa1eec3f71b2b2028017c22ef7acc",
   "checks": {
     "rgb_changes_with_pose": {
-      "diff_pillar_vs_empty": 39.43914286295573,
-      "diff_pillar_repeat": 2.4278717041015625,
-      "brightness_pillar_view": 120.06886800130208,
-      "brightness_empty_view": 126.42850240071614,
+      "diff_pillar_vs_empty": 39.438130696614586,
+      "diff_pillar_repeat": 2.315282185872396,
+      "brightness_pillar_view": 119.99027506510417,
+      "brightness_empty_view": 126.4284159342448,
       "pass": true
     },
     "depth_matches_geometry": {
@@ -75,57 +75,57 @@
     "crash_raises_collision": {
       "steps_to_collision": 20,
       "object_name": "StaticMeshActor_1",
-      "impact_to_pillar_axis_m": 0.5364487182623626,
+      "impact_to_pillar_axis_m": 0.5364487182687048,
       "pillar_radius_m": 0.5364,
       "collided_flag": true,
-      "camera_pose_error_at_collision_m": 4.4770842968708165e-08,
+      "camera_pose_error_at_collision_m": 1.4925905638978872e-06,
       "pass": true,
       "reset_after_crash": {
-        "camera_pose_error_m": 1.5261334409448386e-06,
+        "camera_pose_error_m": 1.525890227303507e-06,
         "depth": {
           "mask_agreement": 0.9999542236328125,
           "pixels_compared": 46963,
-          "median_relative_diff": 0.0007256894023157656
+          "median_relative_diff": 0.0007564296247437596
         },
-        "rgb_mean_abs_diff": 1.5859476725260417,
+        "rgb_mean_abs_diff": 1.6660970052083333,
         "pass": true
       }
     },
     "velocity_tracking": {
       "axes": {
         "forward": {
-          "mean_abs_error": 0.1875058889389186,
+          "mean_abs_error": 0.18750542402263753,
           "mean_commanded": 2.0,
-          "mean_measured": 1.8124941110610813,
-          "relative_error": 0.0937529444694593,
+          "mean_measured": 1.8124945759773623,
+          "relative_error": 0.09375271201131877,
           "samples": 10
         },
         "vertical_up": {
-          "mean_abs_error": 0.005069279670715332,
+          "mean_abs_error": 0.005069756507873535,
           "mean_commanded": 0.5,
-          "mean_measured": 0.5050692796707154,
-          "relative_error": 0.010138559341430663,
+          "mean_measured": 0.5050697565078736,
+          "relative_error": 0.01013951301574707,
           "samples": 5
         },
         "vertical_down": {
-          "mean_abs_error": 0.0305763840675354,
+          "mean_abs_error": 0.03057633638381958,
           "mean_commanded": -0.5,
-          "mean_measured": -0.5305763840675354,
-          "relative_error": 0.0611527681350708,
+          "mean_measured": -0.5305763363838196,
+          "relative_error": 0.06115267276763916,
           "samples": 5
         },
         "yaw_rate": {
-          "mean_abs_error": 0.02464437417143661,
+          "mean_abs_error": 0.02464420562249936,
           "mean_commanded": 0.5,
-          "mean_measured": 0.47535562582856344,
-          "relative_error": 0.04928874834287322,
+          "mean_measured": 0.47535579437750064,
+          "relative_error": 0.04928841124499872,
           "samples": 10
         },
         "yaw_rate_body_angular_z": {
-          "mean_abs_error": 0.020590439438819885,
+          "mean_abs_error": 0.02059040665626526,
           "mean_commanded": 0.5,
-          "mean_measured": 0.4794095605611801,
-          "relative_error": 0.04118087887763977,
+          "mean_measured": 0.47940959334373473,
+          "relative_error": 0.04118081331253052,
           "samples": 10
         }
       },
@@ -134,7 +134,7 @@
     },
     "one_step_per_record": {
       "records": 20,
-      "records_per_s": 6.449547346228351,
+      "records_per_s": 6.460482499643694,
       "rows": [
         {
           "steps": 1,
@@ -345,9 +345,9 @@
       "center_depth_with_cube_m": 2.099609375,
       "expected_m": 2.1,
       "center_rgb_with_cube": [
-        96.96875,
-        55.14453125,
-        36.1484375
+        97.00390625,
+        55.19921875,
+        36.171875
       ],
       "orange_dominant": true,
       "center_depth_after_destroy_m": null,
@@ -380,14 +380,16 @@
     "pass": true
   },
   "package_manifest": {
+    "description": "Fingerprints the packaged Development Linux binary and content archive (pak) actually produced by scripts/package_sim.sh, plus the git tree that produced them. built_from_git_head is the repo's HEAD at package time, which routinely precedes the commit that later records this file -- packaging happens before committing, not after. working_tree_dirty says whether uncommitted changes were present in that tree (e.g. an in-progress fix not yet committed). Do not compare built_from_git_head to the current HEAD to judge freshness; that comparison is circular. Gate on binary.sha256 instead.",
     "binary": {
       "path": "ue_project/Packaged/Development/Linux/Blocks/Binaries/Linux/Blocks",
       "sha256": "5c1863bf4b96159afa281b7f77f1b0034d068e2b1a4c335d938c289fea8c14e7"
     },
     "paks": {
-      "ue_project/Packaged/Development/Linux/Blocks/Content/Paks/Blocks-Linux.pak": "c30406d3037004a5bd40a28720bcbac29e5b88149507c5aaa149f81046f63957"
+      "ue_project/Packaged/Development/Linux/Blocks/Content/Paks/Blocks-Linux.pak": "ff8f0bd15f6d66dc0d76ce9862e37f0983fa0a6cfdb333f45a1d9fa14383f73c"
     },
-    "git_head": "eedbc28b3d119e5e6cd014929b89adb7d8e0a6b5",
+    "built_from_git_head": "a0d188e118d70cd525dccee33dc56184b8548b3e",
+    "working_tree_dirty": true,
     "level_spec_sha256": "188f9e4118945b7966fa3a03281e0c1663b0e2193c228430bdc06287a40f955a",
     "level_verify": {
       "map_path": "/Game/AutoFly/Maps/S01",
@@ -408,10 +410,10 @@
     }
   },
   "package_matches_manifest": true,
-  "launch_s": 2.499092515994562,
-  "vram_used_mib": 1874,
+  "launch_s": 2.4910991709984955,
+  "vram_used_mib": 1882,
   "faults": {
-    "xid_since": "2026-09-16 03:01:29",
+    "xid_since": "2026-09-16 03:23:39",
     "xid_before": 0,
     "xid_after": 0,
     "boot_id": "0cda57b5-cffd-40c9-9b5a-482961aa864b",
@@ -427,6 +429,8 @@
       "/home/jk_edge/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-06.57.47.log": 0,
       "/home/jk_edge/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-06.59.21.log": 0,
       "/home/jk_edge/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-07.01.22.log": 0,
+      "/home/jk_edge/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-07.01.55.log": 0,
+      "/home/jk_edge/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-07.23.32.log": 0,
       "/home/jk_edge/research_uav/autofly_ue5/runs/sim/inst0/sim.log": 0
     }
   },
