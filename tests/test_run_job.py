@@ -40,3 +40,29 @@ def test_wait_times_out_duplicate_start_is_refused_and_stop_ends_the_group(tmp_p
     assert stopped.returncode == 0 and stopped.stdout.strip() == "terminated"
     assert subprocess.run(["pgrep", "-g", str(pgid)], capture_output=True).returncode == 1
     assert run_job(tmp_path, "wait", "slow", "5").returncode == 3
+
+
+def test_stop_refuses_a_process_it_did_not_launch(tmp_path):
+    # A real process started outside run_job.sh: its own session/process group,
+    # so a bug that let `stop` reach it could not also reach the test runner.
+    foreign = subprocess.Popen(["sleep", "60"], start_new_session=True)
+    try:
+        foreign_pgid = os.getpgid(foreign.pid)
+        (tmp_path / "foreign.pid.json").write_text(
+            json.dumps(
+                {
+                    "pid": foreign.pid,
+                    "pgid": foreign_pgid,
+                    "started": "2026-01-01T00:00:00+0000",
+                    "log": str(tmp_path / "foreign.log"),
+                    "cmd": ["sleep", "60"],
+                }
+            )
+        )
+        stopped = run_job(tmp_path, "stop", "foreign")
+        assert stopped.returncode == 1
+        assert "does not match job foreign" in stopped.stdout + stopped.stderr
+        assert foreign.poll() is None  # refused: the foreign process is still alive
+    finally:
+        foreign.terminate()
+        foreign.wait(timeout=5)
