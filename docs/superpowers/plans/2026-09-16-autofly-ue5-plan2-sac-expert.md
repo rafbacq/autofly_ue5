@@ -868,7 +868,12 @@ MSG
   - `observation_space = Dict({"depth": Box(0, 1, (1, 84, 84), float32), "vector": Box(-inf, inf, (8,), float32)})`
   - `action_space = Box(low=[0, -1, -1], high=[2, 1, 1], dtype=float32)`
   - `reset(seed=None, options=None) -> (obs, info)`, `step(action) -> (obs, reward, terminated, truncated, info)`, `close()`
-  - `info` on a terminal step carries `{"outcome": str, "steps": int, "final_distance_m": float, "is_success": bool}` — SB3's `Monitor` copies `is_success` into its episode record, which is what Task 9's evaluation reads.
+  - `info` on a terminal step carries `{"outcome": str, "steps": int, "final_distance_m": float, "is_success": bool}`.
+    **Measured correction (2026-09-16):** a plain `Monitor` does **not** copy `is_success` into its episode record —
+    `info["episode"]` carries only `r`, `l` and `t`. Task 9 must therefore read `info["is_success"]` off the final
+    step directly (which is what SB3's `EvalCallback._log_success_callback` does), or wrap the env as
+    `Monitor(env, info_keywords=("is_success",))`. Writing Task 9 against the original wording would have made the
+    gate report nothing rather than something wrong — loud rather than silent, but still wrong.
 
 `sim_factory` is injected so the tests can pass `FakeSimulator` and training can pass the real backend; the env never imports `airsim_backend` itself.
 
@@ -1237,6 +1242,13 @@ Report the table (n, total steps/s, per-instance steps/s, VRAM) and the projecti
 - `learning_starts = 5_000`, `batch_size = 256`, `train_freq = 1`, `gradient_steps = 1`, `gamma = 0.99`, `tau = 0.005`, `learning_rate = 3e-4`, `device = "cuda"`.
 - `CheckpointCallback` every 10,000 steps, `EvalCallback` every 25,000 steps over 20 episodes into `best/`, `Monitor` wrapping every env.
 - A `StopTrainingOnMaxTime`-style callback implementing D7's wall-clock budget, and `--resume` loading the newest checkpoint **and** its replay buffer, because a SAC resume that drops the buffer restarts exploration from scratch.
+
+**Four hazards measured during Task 5–6's review. Each is invisible until GPU hours have already been spent, and each is cheap to prevent here.**
+
+1. **Give every worker a distinct `seed_base`.** Two `AutoFlyEnv`s constructed with the same `seed_base` fly byte-identical episode streams — measured directly under a real `SubprocVecEnv`. N workers at the default would collect N copies of the same sequence: an N-fold loss of scene diversity that presents as "SAC plateaued", not as an error. Use `worker_seed_base(rank) = rank * 1_000_000` and keep the disjointness test.
+2. **Stagger or serialise the workers' first `reset()`.** Each env launches its simulator lazily inside its first reset, so all N workers hit `check_gpu_for_launch` simultaneously, all read the same pre-launch VRAM figure, all pass, and can then collectively exhaust the GPU. `SubprocVecEnv.__init__` itself is safe — only the first reset launches.
+3. **Sweep stale simulator instances before launching.** `AutoFlyEnv` has no `__del__`, so a hard crash of a previous run can leave Unreal children holding VRAM; `launch_process` then refuses with "already running" or "port already in use". Use Plan 1's `own_running_instances()` / `stop(instance)` pidfile machinery to reap them first.
+4. **Wrap the rollout so a backend error retries instead of killing the run.** `AutoFlyEnv.step()` deliberately propagates `CameraPoseError`, `StepTimingError`, `CommandTimeoutError` and `StaleStateError`; under `SubprocVecEnv` an uncaught one kills the worker and aborts training. At ~300 steps × tens of thousands of episodes there are millions of chances. `reset()` can likewise raise `EpisodeSetupError` (measured 0 failures in 3000 s01 seeds, so rare but not impossible by construction). Checkpoint often and relaunch the failed instance rather than losing the run.
 
 - [ ] **Step 1: Write the offline tests**
 
