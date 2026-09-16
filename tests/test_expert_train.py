@@ -10,10 +10,17 @@ import numpy as np
 import pytest
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv
 
+from pynng.exceptions import Timeout as NngTimeout
+
 from autofly_ue5.sim.airsim_backend import CameraPoseError, CommandTimeoutError, StaleStateError, StepTimingError
 from autofly_ue5.sim.fake import FakeSimulator
 from autofly_ue5.sim.types import CONTROL_DT_S
 from tests.test_expert_episode import scene_and_layout
+
+# All five step-time hazards ResilientAutoFlyEnv must recover from -- the spec's four documented siblings
+# plus the raw NNG transport timeout found live during this task's own shakedown (train.py's docstring has
+# the full story). Shared here so both parametrized tests below stay in sync with train.py's own set.
+ALL_STEP_FAULTS = [CameraPoseError, StepTimingError, StaleStateError, CommandTimeoutError, NngTimeout]
 
 
 # ------------------------------------------------------------------------------------------------------
@@ -111,8 +118,9 @@ def test_scene_and_layout_raises_a_clear_error_for_an_unknown_scene():
 # ------------------------------------------------------------------------------------------------------
 class _FlakyFakeSimulator(FakeSimulator):
     """A FakeSimulator that raises `error` on chosen (1-indexed) call numbers of reset()/step(), then
-    behaves normally. The four backend hazards this trainer must survive only ever occur against the real
-    ProjectAirSimSimulator; this stands in for one without needing a live GPU/simulator."""
+    behaves normally. The five backend hazards this trainer must survive only ever occur against the real
+    ProjectAirSimSimulator (or, for NngTimeout, the third-party client library underneath it); this stands
+    in for one without needing a live GPU/simulator."""
 
     def __init__(self, *args, fail_on_reset_calls=(), fail_on_step_calls=(), error=CameraPoseError, **kwargs):
         super().__init__(*args, **kwargs)
@@ -123,6 +131,13 @@ class _FlakyFakeSimulator(FakeSimulator):
         self._step_call_count = 0
         self.close_count = 0
 
+    def _raise(self, msg: str):
+        # pynng's NNGException subclasses (unlike our other four error types) require an `errno` argument;
+        # 110 is Linux's real ETIMEDOUT, matching what a genuine pynng.exceptions.Timeout carries.
+        if issubclass(self._error, NngTimeout):
+            raise self._error(msg, 110)
+        raise self._error(msg)
+
     def close(self):
         self.close_count += 1
         super().close()
@@ -130,13 +145,13 @@ class _FlakyFakeSimulator(FakeSimulator):
     def reset(self, pose):
         self._reset_call_count += 1
         if self._reset_call_count in self._fail_on_reset_calls:
-            raise self._error(f"injected reset failure on call {self._reset_call_count}")
+            self._raise(f"injected reset failure on call {self._reset_call_count}")
         return super().reset(pose)
 
     def step(self, dt=CONTROL_DT_S):
         self._step_call_count += 1
         if self._step_call_count in self._fail_on_step_calls:
-            raise self._error(f"injected step failure on call {self._step_call_count}")
+            self._raise(f"injected step failure on call {self._step_call_count}")
         return super().step(dt)
 
 
@@ -163,19 +178,58 @@ def _make_resilient(sim_factory, **wrapper_kwargs):
     return ResilientAutoFlyEnv(base, instance=0, **wrapper_kwargs)
 
 
-def test_resilient_env_retries_reset_in_place_and_recovers():
-    factory = _sequenced_factory([{"fail_on_reset_calls": (1,), "error": CameraPoseError}])
+@pytest.mark.parametrize("error", ALL_STEP_FAULTS)
+def test_resilient_env_retries_reset_in_place_and_recovers(error):
+    # Deterministic, offline proof that each of the four backend hazards is actually handled -- not
+    # something we wait to observe by luck during a live run (Task 7 measured them as "roughly one per a
+    # few hundred to ~1000 steps", which is not a guarantee any given window hits all four).
+    factory = _sequenced_factory([{"fail_on_reset_calls": (1,), "error": error}])
     env = _make_resilient(factory, max_reset_attempts=3, max_relaunch_attempts=1)
 
     obs, info = env.reset(seed=1)
 
     assert env.observation_space.contains(obs)
-    assert env.fault_counts["CameraPoseError"] == 1
-    assert env.recovered_counts["CameraPoseError"] == 1
+    assert env.fault_counts[error.__name__] == 1
+    assert env.recovered_counts[error.__name__] == 1
     assert env.relaunch_count == 0, "one in-place retry should be enough; no relaunch needed"
+    # Every other known fault type must still show an explicit 0, not be silently absent.
+    from autofly_ue5.expert.train import KNOWN_FAULT_NAMES
+
+    for other in KNOWN_FAULT_NAMES:
+        if other != error.__name__:
+            assert env.fault_counts[other] == 0
 
 
-@pytest.mark.parametrize("error", [CameraPoseError, StepTimingError, StaleStateError, CommandTimeoutError])
+def test_resilient_env_retries_reset_when_episode_setup_raises(monkeypatch):
+    # EpisodeSetupError is raised by sample_setup() (episode.py) before any Simulator call happens, so it
+    # cannot be injected through a Simulator double the way the other four can; monkeypatch the name
+    # AutoFlyEnv.reset() actually calls (env.py's own imported binding) instead. This does not edit any
+    # closed file -- it is a per-test monkeypatch, undone automatically at teardown.
+    import autofly_ue5.expert.env as env_module
+    from autofly_ue5.expert.episode import EpisodeSetupError
+
+    real_sample_setup = env_module.sample_setup
+    calls = {"n": 0}
+
+    def flaky_sample_setup(*args, **kwargs):
+        calls["n"] += 1
+        if calls["n"] == 1:
+            raise EpisodeSetupError("injected: rejection sampling exhausted")
+        return real_sample_setup(*args, **kwargs)
+
+    monkeypatch.setattr(env_module, "sample_setup", flaky_sample_setup)
+
+    env = _make_resilient(FakeSimulator, max_reset_attempts=3, max_relaunch_attempts=1)
+    obs, info = env.reset(seed=1)
+
+    assert env.observation_space.contains(obs)
+    assert env.fault_counts["EpisodeSetupError"] == 1
+    assert env.recovered_counts["EpisodeSetupError"] == 1
+    assert env.relaunch_count == 0
+    assert calls["n"] == 2, "the retry must actually call sample_setup() again, not just swallow the error"
+
+
+@pytest.mark.parametrize("error", ALL_STEP_FAULTS)
 def test_resilient_env_step_fault_truncates_and_recovers(error):
     from autofly_ue5.expert.env import AutoFlyEnv
     from autofly_ue5.expert.train import ResilientAutoFlyEnv
@@ -248,17 +302,18 @@ def test_resilient_env_relaunch_closes_the_old_connection():
 
 
 def test_get_fault_summary_and_combine_fault_summaries():
-    from autofly_ue5.expert.train import combine_fault_summaries
+    from autofly_ue5.expert.train import KNOWN_FAULT_NAMES, combine_fault_summaries
 
     factory = _sequenced_factory([{"fail_on_reset_calls": (1,), "error": CameraPoseError}])
     env = _make_resilient(factory, max_reset_attempts=3, max_relaunch_attempts=1)
     env.reset(seed=1)
 
+    zero_except_camera_pose = {name: 0 for name in KNOWN_FAULT_NAMES}
     summary = env.get_fault_summary()
     assert summary == {
         "instance": 0,
-        "fault_counts": {"CameraPoseError": 1},
-        "recovered_counts": {"CameraPoseError": 1},
+        "fault_counts": {**zero_except_camera_pose, "CameraPoseError": 1},
+        "recovered_counts": {**zero_except_camera_pose, "CameraPoseError": 1},
         "relaunch_count": 0,
     }
 
@@ -266,11 +321,84 @@ def test_get_fault_summary_and_combine_fault_summaries():
         {"fault_counts": {"CameraPoseError": 2}, "recovered_counts": {"CameraPoseError": 2}, "relaunch_count": 0},
         {"fault_counts": {"CameraPoseError": 1, "StepTimingError": 1}, "recovered_counts": {"CameraPoseError": 1}, "relaunch_count": 1},
     ])
-    assert combined == {
-        "fault_counts": {"CameraPoseError": 3, "StepTimingError": 1},
-        "recovered_counts": {"CameraPoseError": 3},
-        "relaunch_count": 1,
-    }
+    assert combined["fault_counts"] == {**zero_except_camera_pose, "CameraPoseError": 3, "StepTimingError": 1}
+    assert combined["recovered_counts"] == {**zero_except_camera_pose, "CameraPoseError": 3}
+    assert combined["relaunch_count"] == 1
+
+
+def test_fault_counters_are_explicit_zeros_when_nothing_ever_faults():
+    # The coordinator's own concern: a 12-hour run that never hits any fault must be distinguishable, in
+    # the run record, from one whose counting is silently broken -- so the zeros must be present keys, not
+    # an empty {} that could mean either.
+    from autofly_ue5.expert.train import KNOWN_FAULT_NAMES, combine_fault_summaries
+
+    env = _make_resilient(FakeSimulator)
+    env.reset(seed=1)
+
+    summary = env.get_fault_summary()
+    assert summary["fault_counts"] == {name: 0 for name in KNOWN_FAULT_NAMES}
+    assert summary["recovered_counts"] == {name: 0 for name in KNOWN_FAULT_NAMES}
+
+    combined = combine_fault_summaries([])  # e.g. an early failure before any env was ever built
+    assert combined["fault_counts"] == {name: 0 for name in KNOWN_FAULT_NAMES}
+    assert combined["recovered_counts"] == {name: 0 for name in KNOWN_FAULT_NAMES}
+    assert combined["relaunch_count"] == 0
+
+
+# ------------------------------------------------------------------------------------------------------
+# Checkpoint retention: keep every model .zip, prune all but the newest DEFAULT_KEEP_REPLAY_BUFFERS
+# replay-buffer pickles.
+# ------------------------------------------------------------------------------------------------------
+def _touch(path: Path, size: int = 1) -> Path:
+    path.write_bytes(b"x" * size)
+    return path
+
+
+def test_prune_old_replay_buffers_keeps_only_the_newest_two(tmp_path):
+    from autofly_ue5.expert.train import prune_old_replay_buffers
+
+    for n in (1000, 2000, 3000, 4000):
+        _touch(tmp_path / f"rl_model_replay_buffer_{n}_steps.pkl")
+        _touch(tmp_path / f"rl_model_{n}_steps.zip")  # model checkpoints must never be touched
+
+    deleted = prune_old_replay_buffers(tmp_path, keep=2)
+
+    remaining_buffers = sorted(p.name for p in tmp_path.glob("rl_model_replay_buffer_*_steps.pkl"))
+    assert remaining_buffers == ["rl_model_replay_buffer_3000_steps.pkl", "rl_model_replay_buffer_4000_steps.pkl"]
+    assert {p.name for p in deleted} == {"rl_model_replay_buffer_1000_steps.pkl", "rl_model_replay_buffer_2000_steps.pkl"}
+    remaining_models = sorted(p.name for p in tmp_path.glob("rl_model_*_steps.zip"))
+    assert remaining_models == [f"rl_model_{n}_steps.zip" for n in (1000, 2000, 3000, 4000)], "model checkpoints must be kept forever"
+
+
+def test_prune_old_replay_buffers_is_a_noop_with_at_most_keep_files(tmp_path):
+    from autofly_ue5.expert.train import prune_old_replay_buffers
+
+    _touch(tmp_path / "rl_model_replay_buffer_1000_steps.pkl")
+    assert prune_old_replay_buffers(tmp_path, keep=2) == []
+    assert (tmp_path / "rl_model_replay_buffer_1000_steps.pkl").exists()
+
+
+def test_prune_old_replay_buffers_with_a_missing_directory_is_a_noop(tmp_path):
+    from autofly_ue5.expert.train import prune_old_replay_buffers
+
+    assert prune_old_replay_buffers(tmp_path / "does_not_exist", keep=2) == []
+
+
+def test_prune_old_replay_buffers_callback_fires_on_the_save_cadence(tmp_path):
+    from autofly_ue5.expert.train import PruneOldReplayBuffersCallback
+
+    for n in (10, 20, 30):
+        _touch(tmp_path / f"rl_model_replay_buffer_{n}_steps.pkl")
+
+    cb = PruneOldReplayBuffersCallback(save_freq=5, checkpoints_dir=tmp_path, keep=1)
+    cb.n_calls = 4
+    cb._on_step()  # not a multiple of save_freq: must not prune yet
+    assert len(list(tmp_path.glob("rl_model_replay_buffer_*_steps.pkl"))) == 3
+
+    cb.n_calls = 5
+    cb._on_step()  # a multiple of save_freq: must prune down to `keep`
+    remaining = list(tmp_path.glob("rl_model_replay_buffer_*_steps.pkl"))
+    assert len(remaining) == 1 and remaining[0].name == "rl_model_replay_buffer_30_steps.pkl"
 
 
 # ------------------------------------------------------------------------------------------------------

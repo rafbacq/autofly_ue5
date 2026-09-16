@@ -8,6 +8,24 @@ few hundred to ~1000 environment steps under random actions -- common, not rare,
 training when the policy IS effectively random. Spec §7.1 documents it as a genuine, expected simulator
 hazard (the Unreal actor a `set_pose` sweep left behind), not a code defect.
 
+**A sixth hazard, found live during this task's own 30-minute shakedown, not in the spec's list**:
+`pynng.exceptions.Timeout` -- a raw NNG transport-level timeout -- propagated uncaught straight out of the
+third-party `projectairsim` client library (not through any of `airsim_backend.py`'s own named exceptions)
+and crashed the run at ~3000 steps. Same character as `CommandTimeoutError` (a transient communication
+timeout a fresh reset recovers from, not a logic error), so it is treated identically here -- see
+`FAULT_ERRORS_STEP` -- rather than left to end the run. The broader `pynng.exceptions.NNGException` is
+deliberately *not* caught: some of its other subclasses (`NotSupported`, `InvalidOperation`, ...) indicate
+real configuration/protocol bugs that retrying cannot fix and should fail loudly, not be silently retried
+forever on a 12-hour budget.
+
+That crash also surfaced a second, independent finding: the top-level training process itself (this
+script, not a `SubprocVecEnv` worker -- Task 7's chosen_n=1 means the real backend's connections live
+in-process here) hung after printing its own traceback, never exiting, for the exact reason Task 7 already
+documented for worker processes: the projectairsim client leaves a non-daemon thread alive, and CPython's
+interpreter-shutdown sequence blocks forever joining it. `main()` therefore force-exits the process
+(`os._exit`) after writing the gate record, rather than trusting a plain `return`/`sys.exit()` to actually
+terminate it -- otherwise a 12-hour run's *own* process could hang forever exactly like a worker once did.
+
 Early SB3 versions' `SubprocVecEnv` propagate an uncaught worker exception straight out of the worker
 process -- but Task 7 measured, live, that this does not cleanly kill the worker either: the projectairsim
 client leaves a non-daemon background thread running, so CPython's interpreter-shutdown sequence
@@ -56,6 +74,12 @@ without redoing that sum), `learning_starts=5_000`, `batch_size=256`, `gamma=0.9
 `learning_rate=3e-4`. `optimize_memory_usage` is asserted unsupported for `DictReplayBuffer` by SB3 2.9
 itself (`assert not optimize_memory_usage`, `stable_baselines3/common/buffers.py`), confirmed live in this
 venv before writing this module -- it stays off, at the spec'd 150k buffer.
+
+That same ~8.5 GiB-per-buffer arithmetic means `CheckpointCallback(save_replay_buffer=True)` -- which has no
+retention policy of its own -- would otherwise let a 12-hour run accumulate on the order of 200 GiB of
+replay-buffer pickles. `PruneOldReplayBuffersCallback`/`prune_old_replay_buffers` keep every model `.zip`
+(cheap, the whole training history) but only the newest `DEFAULT_KEEP_REPLAY_BUFFERS` replay buffers (one
+to resume from, one as a fallback if the newest was mid-write when a crash landed).
 """
 
 from __future__ import annotations
@@ -63,9 +87,11 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import re
 import sys
 import threading
+import traceback
 import time
 from collections import Counter
 from pathlib import Path
@@ -90,6 +116,12 @@ from autofly_ue5.sim.airsim_backend import (
     StaleStateError,
     StepTimingError,
 )
+
+# pynng.exceptions.Timeout: a raw NNG transport-level timeout. Discovered live during this task's own
+# shakedown -- see FAULT_ERRORS_STEP's comment -- propagating straight out of the third-party
+# `projectairsim` client (not through any of airsim_backend.py's own named exceptions). Not a new project
+# dependency: pynng is already installed transitively (projectairsim depends on it).
+from pynng.exceptions import Timeout as NngTimeout
 from autofly_ue5.sim.process import instance_dir, route_client_log
 from autofly_ue5.validate.engine_check import boot_id, count_device_lost, xid_count
 
@@ -143,8 +175,13 @@ def scene_and_layout(scene: str) -> tuple[SceneFile, Layout]:
 # --------------------------------------------------------------------------------------------------------
 # Hazard #4: a resilient wrapper around AutoFlyEnv (see module docstring for the full design rationale).
 # --------------------------------------------------------------------------------------------------------
-FAULT_ERRORS_STEP = (CameraPoseError, StepTimingError, StaleStateError, CommandTimeoutError)
+FAULT_ERRORS_STEP = (CameraPoseError, StepTimingError, StaleStateError, CommandTimeoutError, NngTimeout)
 FAULT_ERRORS_RESET = FAULT_ERRORS_STEP + (EpisodeSetupError,)
+# Every fault name this wrapper knows how to recover from. Seeded into every fault/recovery counter dict
+# (see ResilientAutoFlyEnv.__init__, combine_fault_summaries) so the run record always shows an explicit 0
+# for a hazard that never fired, rather than omitting the key -- a 12-hour run that never faults must be
+# distinguishable from one whose counting is silently broken.
+KNOWN_FAULT_NAMES = tuple(err.__name__ for err in FAULT_ERRORS_RESET)
 DEFAULT_MAX_RESET_ATTEMPTS = 5
 DEFAULT_MAX_RELAUNCH_ATTEMPTS = 3
 DEFAULT_CLOSE_TIMEOUT_S = 20.0  # matches measure_instances.py's VEC_ENV_CLOSE_TIMEOUT_S philosophy.
@@ -196,8 +233,8 @@ class ResilientAutoFlyEnv(gym.Wrapper):
         self._max_reset_attempts = max_reset_attempts
         self._max_relaunch_attempts = max_relaunch_attempts
         self._close_timeout_s = close_timeout_s
-        self.fault_counts: Counter[str] = Counter()
-        self.recovered_counts: Counter[str] = Counter()
+        self.fault_counts: Counter[str] = Counter({name: 0 for name in KNOWN_FAULT_NAMES})
+        self.recovered_counts: Counter[str] = Counter({name: 0 for name in KNOWN_FAULT_NAMES})
         self.relaunch_count = 0
 
     def reset(self, seed: int | None = None, options: dict | None = None):
@@ -273,8 +310,12 @@ class ResilientAutoFlyEnv(gym.Wrapper):
 
 
 def combine_fault_summaries(summaries: list[dict]) -> dict:
-    fault_counts: Counter[str] = Counter()
-    recovered_counts: Counter[str] = Counter()
+    """Sums fault_counts/recovered_counts/relaunch_count across every worker's get_fault_summary(). Always
+    seeded with an explicit 0 for every KNOWN_FAULT_NAMES entry -- even if `summaries` is empty (e.g. an
+    early failure before any env was built) -- so the run record never shows an ambiguous {} that could
+    mean either "nothing faulted" or "this was never computed"."""
+    fault_counts: Counter[str] = Counter({name: 0 for name in KNOWN_FAULT_NAMES})
+    recovered_counts: Counter[str] = Counter({name: 0 for name in KNOWN_FAULT_NAMES})
     relaunch_count = 0
     for s in summaries:
         fault_counts.update(s.get("fault_counts", {}))
@@ -400,6 +441,54 @@ def replay_buffer_for(checkpoint: Path) -> Path:
     if not m:
         raise ValueError(f"{checkpoint} does not look like a checkpoint (rl_model_<N>_steps.zip)")
     return checkpoint.with_name(f"rl_model_replay_buffer_{m.group(1)}_steps.pkl")
+
+
+# --------------------------------------------------------------------------------------------------------
+# Checkpoint retention: SB3's CheckpointCallback has no retention policy at all. Each replay-buffer pickle
+# is ~8.5 GiB (buffer_size=150_000's own arithmetic, see the module docstring); over a 12-hour run at the
+# production checkpoint_freq=10_000 that is dozens of them -- on the order of 200 GiB -- for a resume path
+# that only ever needs the newest one. Model checkpoints (.zip) are a few tens of MB each and are the run's
+# whole training history, so those are kept forever; only replay buffers are pruned.
+# --------------------------------------------------------------------------------------------------------
+_REPLAY_BUFFER_RE = re.compile(r"^rl_model_replay_buffer_(\d+)_steps\.pkl$")
+DEFAULT_KEEP_REPLAY_BUFFERS = 2  # one to resume from, one as a fallback if the newest was mid-write on a crash
+
+
+def prune_old_replay_buffers(checkpoints_dir: Path, keep: int = DEFAULT_KEEP_REPLAY_BUFFERS) -> list[Path]:
+    """Deletes every `rl_model_replay_buffer_<N>_steps.pkl` under `checkpoints_dir` except the `keep` ones
+    with the highest step count. Never touches model checkpoints (`rl_model_<N>_steps.zip`). Returns the
+    paths actually deleted."""
+    checkpoints_dir = Path(checkpoints_dir)
+    if not checkpoints_dir.is_dir() or keep < 0:
+        return []
+    candidates = sorted(
+        ((int(m.group(1)), p) for p in checkpoints_dir.iterdir() if (m := _REPLAY_BUFFER_RE.match(p.name))),
+        key=lambda t: t[0],
+        reverse=True,
+    )
+    to_delete = [p for _, p in candidates[keep:]]
+    for p in to_delete:
+        p.unlink()
+    return to_delete
+
+
+class PruneOldReplayBuffersCallback(BaseCallback):
+    """Runs prune_old_replay_buffers() on the same cadence CheckpointCallback saves on, immediately after
+    it (callbacks in a CallbackList run in list order within one _on_step(), so the just-written replay
+    buffer is already on disk when this checks). Placed after CheckpointCallback in main()'s CallbackList."""
+
+    def __init__(self, save_freq: int, checkpoints_dir: Path, keep: int = DEFAULT_KEEP_REPLAY_BUFFERS, verbose: int = 0) -> None:
+        super().__init__(verbose)
+        self._save_freq = save_freq
+        self._checkpoints_dir = Path(checkpoints_dir)
+        self._keep = keep
+
+    def _on_step(self) -> bool:
+        if self.n_calls % self._save_freq == 0:
+            deleted = prune_old_replay_buffers(self._checkpoints_dir, keep=self._keep)
+            if deleted and self.verbose:
+                print(f"pruned {len(deleted)} old replay buffer(s): {[p.name for p in deleted]}")
+        return True
 
 
 # --------------------------------------------------------------------------------------------------------
@@ -565,15 +654,20 @@ def main(argv: list[str] | None = None) -> int:
                 batch_size=args.batch_size, tensorboard_log=str(tb_dir), seed=args.seed,
             )
 
+        checkpoint_save_freq = max(args.checkpoint_freq // args.instances, 1)
         checkpoint_cb = CheckpointCallback(
-            save_freq=max(args.checkpoint_freq // args.instances, 1), save_path=str(checkpoints_dir),
+            save_freq=checkpoint_save_freq, save_path=str(checkpoints_dir),
             name_prefix="rl_model", save_replay_buffer=True,
         )
+        # Immediately after CheckpointCallback in the list (same _on_step(), same save_freq): keeps every
+        # model .zip forever but only the newest DEFAULT_KEEP_REPLAY_BUFFERS replay buffers -- see the
+        # prune_old_replay_buffers()/PruneOldReplayBuffersCallback docstring for why.
+        prune_cb = PruneOldReplayBuffersCallback(save_freq=checkpoint_save_freq, checkpoints_dir=checkpoints_dir, verbose=1)
         eval_cb = EvalCallback(
             eval_env, n_eval_episodes=args.eval_episodes, eval_freq=max(args.eval_freq // args.instances, 1),
             best_model_save_path=str(best_dir), log_path=str(run_root / "eval_logs"), deterministic=True,
         )
-        callbacks: list[BaseCallback] = [checkpoint_cb, eval_cb, outcome_cb]
+        callbacks: list[BaseCallback] = [checkpoint_cb, prune_cb, eval_cb, outcome_cb]
         if args.hours is not None:
             callbacks.append(StopOnWallClock(args.hours))
 
@@ -589,7 +683,12 @@ def main(argv: list[str] | None = None) -> int:
     except Exception as err:
         error_message = f"{type(err).__name__}: {err}"
         print(f"training failed: {error_message}", file=sys.stderr)
+        traceback.print_exc()  # the one-line summary above is not enough to diagnose an unclassified fault
     finally:
+        # Every step here is itself wrapped: a failure while cleaning up after a failure must still reach
+        # the gate-record write below (docs/gates/m2_train.json must describe what happened even when
+        # teardown itself hits a surprise, e.g. the live TOCTOU race sweep_stale_instances() now guards
+        # against) rather than crashing main() before it can write anything.
         fault_summaries: list[dict] = []
         for env in (train_env, eval_env):
             if env is None:
@@ -598,8 +697,15 @@ def main(argv: list[str] | None = None) -> int:
                 fault_summaries.extend(env.env_method("get_fault_summary"))
             except Exception as err:
                 print(f"WARNING: could not collect a fault summary: {type(err).__name__}: {err}", file=sys.stderr)
-            teardown(env)  # bounded close + force-kill + sweep_stale_instances -- reused, not reinvented
-        sweep_stale_instances()
+            try:
+                teardown(env)  # bounded close + force-kill + sweep_stale_instances -- reused, not reinvented
+            except Exception as err:
+                print(f"WARNING: teardown() raised {type(err).__name__}: {err}; continuing cleanup", file=sys.stderr)
+                traceback.print_exc()
+        try:
+            sweep_stale_instances()
+        except Exception as err:
+            print(f"WARNING: final sweep_stale_instances() raised {type(err).__name__}: {err}", file=sys.stderr)
 
     wall_s = time.monotonic() - t_wall_start
     num_timesteps = int(model.num_timesteps) if model is not None else 0
@@ -633,6 +739,7 @@ def main(argv: list[str] | None = None) -> int:
             "device": args.device,
             "target_entropy_expected": TARGET_ENTROPY_EXPECTED,
             "checkpoint_freq": args.checkpoint_freq,
+            "keep_replay_buffers": DEFAULT_KEEP_REPLAY_BUFFERS,
             "eval_freq": args.eval_freq,
             "eval_episodes": args.eval_episodes,
             "hours_budget": args.hours,
@@ -665,4 +772,14 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    _code = main()
+    # Not sys.exit(): Task 7 measured live (and this task's own shakedown reproduced, in this very
+    # process, not just a SubprocVecEnv worker) that the projectairsim client can leave a non-daemon
+    # thread alive, which blocks CPython's interpreter-shutdown sequence forever -- the process prints its
+    # own traceback/summary and then never actually exits, so run_job.sh's wrapper never sees an exit code
+    # and the job looks permanently "still running". Everything that must be durable (the gate JSON) is
+    # already written by main() above; os._exit() skips the thread-join step entirely and guarantees this
+    # process actually terminates.
+    sys.stdout.flush()
+    sys.stderr.flush()
+    os._exit(_code)

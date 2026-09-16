@@ -146,10 +146,22 @@ def make_env_fn(scene: SceneFile, layout: Layout, instance: int, seed_base: int)
 def sweep_stale_instances() -> list[dict]:
     """Stop any simulator this project owns that is still recorded as running. A crashed earlier run can
     leave Unreal children holding VRAM, and launch_process() then refuses with "already running" or "port
-    already in use"."""
+    already in use".
+
+    Tolerates a live-measured TOCTOU race (Task 8 shakedown, 2026-09-16): `stop()` (autofly_ue5/sim/process.py,
+    closed for editing) checks the pid file exists, then later unconditionally unlinks it -- if a second,
+    concurrent path stops the SAME instance in between (e.g. this function called once per vec env while
+    each vec env's own close() also stops its own instance independently -- exactly Task 8's train.py,
+    which tears down a training and an eval simulator separately), that unlink() can raise
+    FileNotFoundError. The pid file being gone is proof the instance is already stopped, not a real
+    failure, so this is caught and recorded rather than left to crash the caller.
+    """
     swept = []
     for sp in own_running_instances():
-        result = stop(sp.instance)
+        try:
+            result = stop(sp.instance)
+        except FileNotFoundError:
+            result = "already_stopped_concurrently"
         swept.append({"instance": sp.instance, "pid": sp.pid, "result": result})
     return swept
 
