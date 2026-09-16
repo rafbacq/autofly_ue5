@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "autofly_ue5"
+version = "0.1.0"
+description = "AutoFly-format UAV navigation dataset generation on UE 5.7.4 + Project AirSim"
+requires-python = ">=3.12,<3.13"
+
+[tool.setuptools.packages.find]
+include = ["autofly_ue5*"]
+
+[tool.setuptools.package-data]
+"autofly_ue5.scenes" = ["*.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--import-mode=importlib -q"
