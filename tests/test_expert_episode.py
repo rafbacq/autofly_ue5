@@ -1,0 +1,136 @@
+import math
+
+import numpy as np
+import pytest
+
+from autofly_ue5.paths import ROOT
+from autofly_ue5.scenes.model import load_scene_file
+from autofly_ue5.sim.fake import FakeSimulator
+from autofly_ue5.sim.types import Pose
+
+
+def scene_and_layout():
+    import json
+
+    from autofly_ue5.scenes.model import Bounds, Instance, Layout
+
+    scene = load_scene_file(ROOT / "scenes" / "s01_white_pillars.json")
+    raw = json.loads((ROOT / "runs" / "levels" / "s01.layout.json").read_text())["layout"]
+    b = Bounds(**raw["bounds"])
+    inst = tuple(Instance(**i) for i in raw["instances"])
+    return scene, Layout(scene_id=raw["scene_id"], seed=raw["seed"], bounds=b, instances=inst)
+
+
+def test_instruction_templates_are_verbatim_including_the_misspelling():
+    from autofly_ue5.expert.episode import INSTRUCTION_TEMPLATES
+
+    joined = " | ".join(INSTRUCTION_TEMPLATES)
+    assert "avioding" in joined, "the released episodes misspell 'avoiding'; do not correct it"
+    assert "go through and avoid the {obstacle} or other obstacles to reach the {target}" in INSTRUCTION_TEMPLATES
+
+
+def test_start_and_target_are_on_opposite_edges():
+    from autofly_ue5.expert.episode import OPPOSITE, sample_setup
+
+    scene, layout = scene_and_layout()
+    for seed in range(25):
+        s = sample_setup(scene, layout, np.random.default_rng(seed))
+        assert OPPOSITE[s.start_edge] == s.target_edge, "a same-edge episode would be a metre long"
+
+
+def test_start_is_in_the_start_band_and_altitude_band():
+    from autofly_ue5.expert.episode import sample_setup
+
+    scene, layout = scene_and_layout()
+    lo, hi = scene.start_band
+    a_lo, a_hi = scene.altitude_band
+    for seed in range(25):
+        s = sample_setup(scene, layout, np.random.default_rng(seed))
+        b = layout.bounds
+        d = min(s.start.x - b.x_min, b.x_max - s.start.x, s.start.y - b.y_min, b.y_max - s.start.y)
+        assert lo - 1e-6 <= d <= hi + 1e-6
+        assert a_lo - 1e-6 <= -s.start.z <= a_hi + 1e-6, "z is NED; altitude is -z"
+
+
+def test_start_altitude_is_inset_from_the_hard_altitude_band():
+    """Task 3's altitude band is a hard boundary with no margin: at v_z in [-1, 1] m/s over a 0.2 s
+    control step, one step covers 0.2 m, so a start drawn from within a few centimetres of either edge
+    could terminate the episode on its first downward step through no fault of the policy. The start
+    must be drawn from the band's *interior*, inset by START_ALTITUDE_MARGIN_M at each end -- the band
+    itself (where the drone may fly) stays the full spec range; only where it may *begin* is narrowed.
+    This pins the inset explicitly so a later edit that widens the start back to the full band fails
+    loudly, even though such an edit would still satisfy the looser altitude-band assertion above.
+    """
+    from autofly_ue5.expert.episode import START_ALTITUDE_MARGIN_M, sample_setup
+
+    scene, layout = scene_and_layout()
+    a_lo, a_hi = scene.altitude_band
+    inset_lo, inset_hi = a_lo + START_ALTITUDE_MARGIN_M, a_hi - START_ALTITUDE_MARGIN_M
+    for seed in range(25):
+        s = sample_setup(scene, layout, np.random.default_rng(seed))
+        altitude = -s.start.z
+        assert inset_lo - 1e-6 <= altitude <= inset_hi + 1e-6, (
+            f"seed {seed}: altitude {altitude:.3f} m is outside the inset start band "
+            f"[{inset_lo}, {inset_hi}]; start altitude must not use the full hard band"
+        )
+
+
+def test_the_crossing_is_long():
+    from autofly_ue5.expert.episode import sample_setup
+
+    scene, layout = scene_and_layout()
+    for seed in range(25):
+        s = sample_setup(scene, layout, np.random.default_rng(seed))
+        d = math.hypot(s.target_xy_z[0] - s.start.x, s.target_xy_z[1] - s.start.y)
+        assert d > 50.0, f"seed {seed} produced a {d:.1f} m episode; the scene is 70 m across"
+
+
+def test_nothing_spawns_inside_an_obstacle():
+    from autofly_ue5.expert.episode import sample_setup, spawn_clearance_m
+
+    scene, layout = scene_and_layout()
+    for seed in range(25):
+        s = sample_setup(scene, layout, np.random.default_rng(seed))
+        points = [(s.start.x, s.start.y), (s.target_xy_z[0], s.target_xy_z[1])]
+        points += [(d[0], d[1]) for d in s.distractors]
+        for px, py in points:
+            for inst in layout.instances:
+                gap = math.hypot(px - inst.x, py - inst.y) - inst.radius_m
+                assert gap >= spawn_clearance_m(), f"seed {seed}: point {px:.1f},{py:.1f} sits in {inst.tag}"
+
+
+def test_distractor_count_and_spacing():
+    from autofly_ue5.expert.episode import sample_setup
+
+    scene, layout = scene_and_layout()
+    for seed in range(25):
+        s = sample_setup(scene, layout, np.random.default_rng(seed))
+        assert 3 <= len(s.distractors) <= 5
+        pts = [s.target_xy_z] + list(s.distractors)
+        for i in range(len(pts)):
+            for j in range(i + 1, len(pts)):
+                assert math.hypot(pts[i][0] - pts[j][0], pts[i][1] - pts[j][1]) >= 4.0 - 1e-6
+
+
+def test_sampling_is_deterministic_for_a_seed():
+    from autofly_ue5.expert.episode import sample_setup
+
+    scene, layout = scene_and_layout()
+    a = sample_setup(scene, layout, np.random.default_rng(7))
+    b = sample_setup(scene, layout, np.random.default_rng(7))
+    assert a == b
+    assert a != sample_setup(scene, layout, np.random.default_rng(8))
+
+
+def test_apply_then_clear_round_trips_against_the_fake():
+    from autofly_ue5.expert.episode import apply_setup, clear_setup, sample_setup
+
+    scene, layout = scene_and_layout()
+    setup = sample_setup(scene, layout, np.random.default_rng(3))
+    sim = FakeSimulator()
+    sim.launch("/Game/AutoFly/Maps/S01", 0)
+    sim.reset(setup.start)
+    names = apply_setup(sim, setup)
+    assert len(names) == 1 + len(setup.distractors)
+    clear_setup(sim, names)
+    clear_setup(sim, names)  # must tolerate an already-destroyed name, so a failed episode can always clean up
