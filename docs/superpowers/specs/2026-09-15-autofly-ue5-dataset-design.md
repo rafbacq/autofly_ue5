@@ -232,6 +232,16 @@ R5–R9.
 - **Geometry and optics agree with prediction.** A spawned 1×3×12 m pillar at 7.1 m measured 7.0977 m of depth (2.3 mm
   error) and 54 px wide against 54.10 px predicted from the 90° FOV — so scene geometry can be checked against the
   camera arithmetic rather than by eye.
+- **Built levels carry a fixed manual exposure, and frames are still not bit-identical.** A level built by
+  `autofly_ue5/scenes/ue/build_level.py` contains an unbound `PostProcessVolume` with `AutoExposureMethod = Manual`,
+  `AutoExposureApplyPhysicalCameraExposure = false` and a bias carried in the level spec (s01: −11.0 EV, calibrated to
+  mean brightness 109 of 255). Without it the physically-based SunSky saturates every pixel to pure white — the M1 gate's
+  first run measured 255.0 flat, which is why an image check belongs in every scene's gate and bounding-box checks are
+  not enough. Auto-exposure is deliberately NOT used: eye adaptation carries view history, so the same pose would render
+  differently depending on where the camera looked before, which an (image → action) dataset and an RL agent cannot
+  tolerate. **Exposure is now history-free, but rendering is not bit-exact**: two captures of the identical pose differ by
+  about 2.4 grey levels (temporal anti-aliasing). Treat frames as reproducible to a few grey levels, never as identical,
+  and never gate anything on exact pixel equality.
 - **Runtime colour needs a base `UMaterial`.** `set_object_material` accepts `/Game/Geometry/Materials/M_Orange`
   (patch change 55–70) and rejects the `MaterialInstanceConstant` `M_Blue`, as the server filters on `UMaterial`.
   Scene-authored colour (M1 §6.4) uses material instances created in the editor instead.
