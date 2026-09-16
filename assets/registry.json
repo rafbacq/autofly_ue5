@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "assets": {
+    "cylinder": {
+      "ue_path": "/Engine/BasicShapes/Cylinder",
+      "base_size_m": [1.0, 1.0, 1.0],
+      "pivot": "center",
+      "footprint": "circle",
+      "category": "geometry",
+      "role": "obstacle",
+      "seen": null,
+      "measured_extent_cm_at_unit_scale": null,
+      "source": "Unreal Engine 5.7.4 engine content (BasicShapes)",
+      "licence": "Unreal Engine EULA",
+      "size_and_pivot_verified_by": "scripts/build_level.sh bounds assertion (Task 14)"
+    },
+    "cube": {
+      "ue_path": "/Engine/BasicShapes/Cube",
+      "base_size_m": [1.0, 1.0, 1.0],
+      "pivot": "center",
+      "footprint": "none",
+      "category": "geometry",
+      "role": "ground",
+      "seen": null,
+      "measured_extent_cm_at_unit_scale": null,
+      "source": "Unreal Engine 5.7.4 engine content (BasicShapes)",
+      "licence": "Unreal Engine EULA",
+      "size_and_pivot_verified_by": "scripts/build_level.sh bounds assertion (Task 14)"
+    }
+  },
+  "materials": {
+    "grid": { "kind": "engine", "ue_path": "/Engine/EngineMaterials/WorldGridMaterial" },
+    "white": {
+      "kind": "color_instance",
+      "ue_path": "/Game/AutoFly/Materials/MI_White",
+      "parent": "/Engine/BasicShapes/BasicShapeMaterial",
+      "parameter": "Color",
+      "rgba": [0.9, 0.9, 0.9, 1.0]
+    }
+  }
+}
