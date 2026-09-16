@@ -7,6 +7,13 @@ name = "autofly_ue5"
 version = "0.1.0"
 description = "AutoFly-format UAV navigation dataset generation on UE 5.7.4 + Project AirSim"
 requires-python = ">=3.12,<3.13"
+dependencies = [
+  "numpy==1.26.4",          # projectairsim 1.0.2 is built against this; do not upgrade
+  "torch>=2.14,<3",
+  "stable-baselines3>=2.9,<3",
+  "gymnasium>=1.3,<2",
+  "tensorboard>=2.21,<3",
+]
 
 [tool.setuptools.packages.find]
 include = ["autofly_ue5*"]
