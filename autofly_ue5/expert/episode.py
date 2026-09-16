@@ -275,6 +275,15 @@ def apply_setup(sim: Simulator, setup: EpisodeSetup) -> tuple[str, ...]:
     the target can be told apart from the field even before M4's asset pool lands. Distractors are painted
     with the obstacle material itself, so they read as more of the same obstacle field they are meant to
     be confused with.
+
+    If a `spawn` partway through the loop raises, whatever was already spawned is torn down before the
+    error propagates. This matters because the real backend's `spawn()` can raise AFTER the actor already
+    exists server-side (WorldSimApi creates the object, then raises if `set_object_material` fails on it),
+    and this function otherwise only reports names on a full, uncaught success -- so a mid-spawn failure
+    would leave 1-5 actors that nothing will ever destroy (`self._spawned` in the caller stays empty,
+    since this call never returns). Plan 1 named exactly this kind of actor accumulation as a trap, and a
+    training run calls this tens of thousands of times, so one rare mid-spawn failure per some large
+    number of episodes would otherwise leak forever.
     """
     registry = load_registry()
     if "orange" in registry.materials:
@@ -283,12 +292,16 @@ def apply_setup(sim: Simulator, setup: EpisodeSetup) -> tuple[str, ...]:
         target_material = next((name for name in registry.materials if name != setup.obstacle_material), None)
 
     names: list[str] = []
-    tx, ty, tz = setup.target_xy_z
-    names.append(sim.spawn("target", "cylinder", Pose(x=tx, y=ty, z=tz, yaw=0.0), setup.target_scale, target_material))
-    for i, (dx, dy, dz) in enumerate(setup.distractors):
-        names.append(
-            sim.spawn(f"distractor_{i}", "cylinder", Pose(x=dx, y=dy, z=dz, yaw=0.0), setup.target_scale, setup.obstacle_material)
-        )
+    try:
+        tx, ty, tz = setup.target_xy_z
+        names.append(sim.spawn("target", "cylinder", Pose(x=tx, y=ty, z=tz, yaw=0.0), setup.target_scale, target_material))
+        for i, (dx, dy, dz) in enumerate(setup.distractors):
+            names.append(
+                sim.spawn(f"distractor_{i}", "cylinder", Pose(x=dx, y=dy, z=dz, yaw=0.0), setup.target_scale, setup.obstacle_material)
+            )
+    except Exception:
+        clear_setup(sim, tuple(names))
+        raise
     return tuple(names)
 
 

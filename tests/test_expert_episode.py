@@ -155,3 +155,48 @@ def test_apply_then_clear_round_trips_against_the_fake():
     assert len(names) == 1 + len(setup.distractors)
     clear_setup(sim, names)
     clear_setup(sim, names)  # must tolerate an already-destroyed name, so a failed episode can always clean up
+
+
+def test_apply_setup_tears_down_a_partial_spawn_on_failure():
+    """The real backend's spawn() can raise AFTER the actor already exists server-side (WorldSimApi
+    creates the object, then raises if set_object_material fails on it) -- apply_setup only reports its
+    name list on a full, uncaught success, so a failure partway through the loop must not leave 1-5
+    actors that nothing will ever destroy (the caller's own bookkeeping never learns their names, since
+    apply_setup never returns). Plan 1 named exactly this kind of actor accumulation as a trap, and a
+    training run calls apply_setup tens of thousands of times.
+
+    A minimal simulator double stands in for FakeSimulator here (rather than FakeSimulator itself)
+    because FakeSimulator's own spawn() never raises -- there is no way to make the closed fake fail
+    mid-spawn without a double that can.
+    """
+    from autofly_ue5.expert.episode import apply_setup, sample_setup
+
+    class FailingThirdSpawn:
+        def __init__(self) -> None:
+            self.spawned: list[str] = []
+            self.destroyed: list[str] = []
+            self._calls = 0
+
+        def spawn(self, name, asset, pose, scale, material=None):
+            self._calls += 1
+            if self._calls == 3:
+                raise RuntimeError("set_object_material failed after the actor was already created")
+            self.spawned.append(name)
+            return name
+
+        def destroy(self, name):
+            self.destroyed.append(name)
+
+    scene, layout = scene_and_layout()
+    # N_DISTRACTORS_DEFAULT is (3, 5), so every setup spawns at least 1 + 3 = 4 objects -- the 3rd spawn
+    # call always exists to fail, regardless of seed.
+    setup = sample_setup(scene, layout, np.random.default_rng(0))
+    sim = FailingThirdSpawn()
+
+    with pytest.raises(RuntimeError):
+        apply_setup(sim, setup)
+
+    assert sim.spawned, "the failure must happen after at least one object was actually spawned"
+    assert sorted(sim.destroyed) == sorted(sim.spawned), (
+        "every object spawned before the failure must be torn down before the error propagates"
+    )

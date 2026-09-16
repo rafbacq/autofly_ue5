@@ -1,8 +1,15 @@
-"""SAC feature extractor (spec §8): strided CNN on depth + MLP on the target vector, shared by actor and critics.
+"""SAC feature extractor (spec §8): strided CNN on depth + MLP on the target vector.
 
-Depth and vector are fused into one `features_dim`-wide embedding so SAC's actor and twin critics all read
-the same representation, rather than each learning their own -- the standard SB3 `BaseFeaturesExtractor`
-pattern. The CNN geometry below is the Nature-DQN stack, which is what fixes `DEPTH_SIZE` at 84 in
+Depth and vector are fused into one `features_dim`-wide embedding. Within SB3's SAC, the twin Q-heads of
+one critic network share a single `DepthVectorExtractor` instance -- that pair genuinely is "shared", per
+spec §8 -- but the actor network and the target critic network each get their own separate instance:
+`POLICY_KWARGS` deliberately leaves `share_features_extractor` at SB3's default (`False`), which shares an
+extractor only *within* a network, never *between* the actor and the critic. Sharing one extractor between
+actor and critic would couple their gradients -- the actor's loss would backprop into the critic's
+features -- a known instability source for off-policy algorithms like SAC, which is exactly why SB3
+defaults it off. The cost of not sharing is one extra CNN forward pass per gradient step, which is
+negligible next to the simulator's own throughput (on the order of 7 env steps/s dominates by orders of
+magnitude). The CNN geometry below is the Nature-DQN stack, which is what fixes `DEPTH_SIZE` at 84 in
 `obs.py`: those strides only land on an exact 7x7 output for an 84x84 input.
 """
 

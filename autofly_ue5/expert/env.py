@@ -118,6 +118,18 @@ class AutoFlyEnv(gym.Env):
         # otherwise collide with objects placed where the drone is about to be teleported to.
         self._spawned = apply_setup(sim, setup)
         self._setup = setup
+
+        # `obs` above was rendered before apply_setup ran, so its depth frame is missing the
+        # target/distractors just spawned. Re-render with a zero-velocity step so the observation this
+        # method actually returns reflects the completed scene: M3's dataset collector inherits this
+        # env's reset() contract and treats its first frame as a0, so a stale s_0 would propagate a wrong
+        # "expert demonstration" into the dataset itself, not just cost SAC one bad transition in ~300.
+        # This step must not count against the episode's step budget -- it is a render, not a policy
+        # action -- so self._step_index is set to 0 afterward, not incremented.
+        sim.command_velocity(0.0, 0.0, 0.0)
+        sim.step(CONTROL_DT_S)
+        obs = sim.observe()
+
         self._prev_dist, _, _ = target_geometry(obs.pose, setup.target_xy_z)
         self._step_index = 0
 
