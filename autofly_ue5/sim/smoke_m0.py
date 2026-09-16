@@ -141,6 +141,10 @@ class Smoke:
         client.subscribe(drone.robot_info["collision_info"], lambda _t, m: self.collision_msgs.append(m))
 
     def record(self, v_forward: float = 0.0, yaw_rate: float = 0.0, v_up: float = 0.0) -> dict:
+        """Advance one lock-step and return the resulting frame. R8 (controller ruling, M0 smoke test):
+        the first record() of a session returns a frame captured before the depth buffer has stabilised
+        (measured: frame 0 had no_hit_px=14, min_finite_m=0.0425, max_finite_m=0.998, vs. no_hit_px~24,690,
+        min_finite_m~1.4 on every later frame) and must be discarded, never treated as real data."""
         target = self.t_ns + DT_NS
         wall_start = time.monotonic()
         task = self.loop.run_until_complete(self.drone.move_by_velocity_body_frame_async(
@@ -495,7 +499,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--scene", default="scene_autofly_m0.jsonc")
     parser.add_argument("--phases", default=",".join(PHASE_ORDER))
     parser.add_argument("--steps", type=int, default=50)
-    parser.add_argument("--warmup-steps", type=int, default=0)
+    parser.add_argument("--warmup-steps", type=int, default=1)
     parser.add_argument("--start-at", type=float, default=None)
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--fixtures-dir", type=Path, default=None)
@@ -503,6 +507,16 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--first-frame-timeout", type=float, default=120.0)
     parser.add_argument("--command-timeout", type=float, default=10.0)
     args = parser.parse_args(argv)
+    if args.warmup_steps < 1:
+        # R8 (controller ruling): frame 0 of a session is captured before the depth buffer has stabilised
+        # (measured: no_hit_px=14, min_finite_m=0.0425, max_finite_m=0.998, vs. no_hit_px~24,690,
+        # min_finite_m~1.4 on every later frame) and must be discarded, never scored as real data.
+        parser.error(
+            f"--warmup-steps must be >= 1, got {args.warmup_steps}: record()'s first frame is captured "
+            "before the depth buffer has stabilised (measured frame 0: no_hit_px=14, min_finite_m=0.0425, "
+            "max_finite_m=0.998, vs. no_hit_px~24,690, min_finite_m~1.4 on every later frame) and must be "
+            "discarded, not scored"
+        )
     phases = args.phases.split(",")
     unknown = set(phases) - set(PHASE_ORDER)
     if unknown:
