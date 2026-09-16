@@ -1,14 +1,17 @@
 import asyncio
 import math
+from types import SimpleNamespace
 
 import pytest
 
 from autofly_ue5.frames import quat_to_yaw, yaw_to_quat
+from autofly_ue5.sim import airsim_backend
 from autofly_ue5.sim.airsim_backend import (
     CameraPoseError,
     CommandTimeoutError,
     PasApi,
     ProjectAirSimSimulator,
+    SessionNotResetError,
     StaleStateError,
     StepTimingError,
 )
@@ -142,11 +145,16 @@ class FakeDrone:
 API = PasApi(client_cls=FakeClient, world_cls=FakeWorld, drone_cls=FakeDrone, pose_cls=dict, yaw_mode_max_dof=0)
 
 
-def make_sim(**kwargs):
+def make_sim(*, mark_reset: bool = True, **kwargs):
+    """`mark_reset` pokes past the reset-before-step precondition for tests that exercise some other
+    step() behaviour and don't want reset()'s own multi-step recovery sequence polluting their step
+    counts/timing. Tests of the precondition itself pass `mark_reset=False`."""
     options = dict(api=API, frame_timeout_s=0.2, first_frame_timeout_s=0.2, collision_grace_s=0.0, command_timeout_s=0.2)
     options.update(kwargs)
     sim = ProjectAirSimSimulator(**options)
     sim.connect(SimPorts(8989, 8990))
+    if mark_reset:
+        sim._reset_done = True
     return sim
 
 
@@ -286,3 +294,81 @@ def test_invalid_dt_is_rejected():
     sim.command_velocity(0.0, 0.0, 0.0)
     with pytest.raises(ValueError):
         sim.step(0.203)
+
+
+def test_step_before_any_reset_raises():
+    # Frame 0 of a session is corrupt (spec §7.1); only reset()'s own steps may consume it.
+    sim = make_sim(mark_reset=False)
+    sim.command_velocity(0.0, 0.0, 0.0)
+    with pytest.raises(SessionNotResetError):
+        sim.step()
+
+
+def test_observe_before_any_reset_raises():
+    sim = make_sim(mark_reset=False)
+    with pytest.raises(SessionNotResetError):
+        sim.observe()
+
+
+def test_reset_allows_step_and_observe_afterward():
+    sim = make_sim(mark_reset=False)
+    sim.reset(Pose(0.0, 0.0, -2.0, 0.0))
+    sim.command_velocity(0.0, 0.0, 0.0)
+    sim.step()  # must not raise now that reset() has run once on this connection
+    assert sim.observe() is not None
+
+
+def test_close_stops_process_even_when_disconnect_raises(monkeypatch):
+    # A raising disconnect() must not skip stop(), or the simulator process leaks (~1.7 GiB of VRAM) and
+    # the next launch() fails permanently ("already running" / "port already in use").
+    sim = make_sim()
+    sim._proc = SimpleNamespace(instance=3)
+    stopped = []
+    monkeypatch.setattr(airsim_backend, "stop", lambda instance, run_root=None: stopped.append(instance))
+    sim._client.disconnect = lambda: (_ for _ in ()).throw(RuntimeError("disconnect boom"))
+
+    with pytest.raises(RuntimeError, match="disconnect boom"):
+        sim.close()
+
+    assert stopped == [3]
+    assert sim._proc is None and sim._client is None and sim._world is None and sim._drone is None
+
+
+def test_connect_clears_per_session_state():
+    sim = make_sim()
+    sim.reset(Pose(0.0, 0.0, -2.0, 0.0))
+    sim.command_velocity(1.0, 0.0, 0.0)
+    sim.step()
+    assert sim.observe() is not None
+
+    sim.connect(SimPorts(8989, 8990))
+    assert sim._reset_done is False and sim._last_obs is None and sim._pending is None
+    with pytest.raises(SessionNotResetError):
+        sim.observe()
+
+
+def test_reconnect_does_not_dedupe_a_collision_seen_in_a_previous_session():
+    def crash_once(sim):
+        # After reset() (2 waypoint steps + 2 settle steps, from a fresh world at t=0), _t_ns ==
+        # 800_000_000; one more step lands on exactly 1_000_000_000 -- identically in both sessions,
+        # since a reconnect gives a fresh FakeWorld starting at t=0 again (as a relaunched simulator
+        # process's sim time also restarts near 0).
+        sim._world.pending_events = [{
+            "type": "collision", "sim_time_ns": 1_000_000_000, "object_name": "StaticMeshActor_1",
+            "impact_point": {"x": 0.0, "y": 0.0, "z": -2.0}, "normal": {"x": -1.0, "y": 0.0, "z": 0.0},
+        }]
+        sim.command_velocity(1.0, 0.0, 0.0)
+        sim.step()
+        return sim.observe()
+
+    sim = make_sim()
+    sim.reset(Pose(0.0, 0.0, -2.0, 0.0))
+    first = crash_once(sim)
+    assert first.collided is True
+
+    # Simulate a simulator restart on the same object: reconnect, then reset() as any new episode would.
+    sim.connect(SimPorts(8989, 8990))
+    sim.reset(Pose(0.0, 0.0, -2.0, 0.0))
+    second = crash_once(sim)
+    assert second.collided is True
+    assert second.step_collisions and second.step_collisions[0].object_name == "StaticMeshActor_1"

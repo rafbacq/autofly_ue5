@@ -30,6 +30,21 @@ def test_step_requires_launch_and_command():
         sim.step()
 
 
+def test_step_and_observe_require_reset_first():
+    # Mirrors ProjectAirSimSimulator's reset-before-step precondition (spec §7.1) so an (M2/M3) caller
+    # bug that only breaks against the real backend does not pass silently against the fake.
+    sim = FakeSimulator()
+    sim.launch("/Game/AutoFly/Maps/S01", 0)
+    with pytest.raises(RuntimeError, match="before reset"):
+        sim.observe()
+    sim.command_velocity(0.0, 0.0, 0.0)
+    with pytest.raises(RuntimeError, match="before reset"):
+        sim.step()
+    sim.reset(Pose(0.0, 0.0, -2.0, 0.0))
+    sim.command_velocity(0.0, 0.0, 0.0)
+    sim.step()  # no longer raises once reset() has run
+
+
 def test_reset_advances_the_clock_like_the_backend():
     sim = FakeSimulator()
     sim.launch("/Game/AutoFly/Maps/S01", 0)

@@ -36,7 +36,11 @@ class Simulator(Protocol):
         """Set the command held for the next step: body forward m/s, yaw rate rad/s, vertical m/s (positive up)."""
 
     def step(self, dt: float = CONTROL_DT_S) -> int:
-        """Advance the simulator clock by exactly dt; returns the simulator time in ns after the step."""
+        """Advance the simulator clock by exactly dt; returns the simulator time in ns after the step.
+
+        Requires reset() to have already run at least once on this connection: frame 0 of a session is
+        corrupt (spec §7.1) and reset()'s own steps are the only thing allowed to consume it."""
 
     def observe(self) -> Observation:
-        """Observation at the end of the last step or reset."""
+        """Observation at the end of the last step or reset. Also requires reset() to have already run
+        at least once on this connection, for the same reason as step()."""

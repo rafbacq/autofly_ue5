@@ -34,6 +34,7 @@ ROBOT = "Drone1"
 CAMERA = "FrontCamera"
 NO_EPISODE_NS = 2**62
 CAMERA_RECHECK_S = 0.2
+FRAME_KEYS = ("rgb", "depth")
 
 
 @dataclass(frozen=True)
@@ -67,6 +68,10 @@ class CommandTimeoutError(RuntimeError):
 
 class CameraPoseError(RuntimeError):
     """The camera pose stamped in the image disagrees with kinematics (Unreal actor left behind by a set_pose sweep)."""
+
+
+class SessionNotResetError(RuntimeError):
+    """step()/observe() called before reset() has run on this connection; frame 0 of a session is corrupt (spec §7.1)."""
 
 
 class ProjectAirSimSimulator:
@@ -103,7 +108,7 @@ class ProjectAirSimSimulator:
         self._command_timeout_s = command_timeout_s
         self._camera_offset_m = camera_offset_m
         self._camera_pose_tolerance_m = camera_pose_tolerance_m
-        self._frames = FrameCollector(("rgb", "depth"))
+        self._frames = FrameCollector(FRAME_KEYS)
         self._collisions = CollisionLog()
         self._loop: asyncio.AbstractEventLoop | None = None
         self._client = self._world = self._drone = None
@@ -115,6 +120,10 @@ class ProjectAirSimSimulator:
         self._collided = False
         self._episode_start_ns = 0
         self._last_obs: Observation | None = None
+        # Per-session: whether reset() has run at least once on the current connection. step()/observe()
+        # refuse until it has, since frame 0 of a session is corrupt (spec §7.1) and only reset()'s
+        # internal steps are allowed to consume it. Cleared in connect(), set at the end of reset().
+        self._reset_done = False
 
     @property
     def steps_taken(self) -> int:
@@ -136,6 +145,24 @@ class ProjectAirSimSimulator:
             raise
 
     def connect(self, ports: SimPorts) -> None:
+        # A new connection is a new session: a relaunched simulator process's sim time and step timing
+        # both restart from ~0, so any state keyed by them, or carried over from the previous session's
+        # episode, must not survive. Otherwise a session-2 collision can collide (sim_time_ns,
+        # object_name)-wise with a session-1 one and be dropped as a duplicate (silent data corruption),
+        # a session-2 first frame can be timed out early with the short steady-state timeout instead of
+        # the long first-frame one, and _current_pose() (used by reset()) can hand back a pose left over
+        # from the previous session instead of querying the new one's kinematics. _steps is deliberately
+        # left alone: steps_taken is documented (protocol.py) as counted since construction, not per
+        # session, and callers that care about a single session's count already take a delta (see
+        # tests, live_m1.check_one_step).
+        self._reset_done = False
+        self._collisions.clear()
+        self._frames = FrameCollector(FRAME_KEYS)
+        self._frame_steps = 0
+        self._last_obs = None
+        self._pending = None
+        self._collided = False
+        self._episode_start_ns = 0
         api = self._api if self._api is not None else real_api()
         self._api = api
         self._loop = asyncio.new_event_loop()
@@ -155,15 +182,20 @@ class ProjectAirSimSimulator:
         self._t_ns = int(self._world.get_sim_time())
 
     def close(self) -> None:
-        if self._client is not None:
-            self._client.disconnect()
+        try:
+            if self._client is not None:
+                self._client.disconnect()
+        finally:
+            # A raising disconnect() must not leave the simulator process running: it would keep ~1.7 GiB
+            # of VRAM held and make the next launch() fail permanently (process.py: "already running" /
+            # "port already in use"). stop()/loop teardown run regardless of what disconnect() did.
             self._client = self._world = self._drone = None
-        if self._loop is not None:
-            self._loop.close()
-            self._loop = None
-        if self._proc is not None:
-            stop(self._proc.instance, run_root=self._run_root)
-            self._proc = None
+            if self._loop is not None:
+                self._loop.close()
+                self._loop = None
+            if self._proc is not None:
+                stop(self._proc.instance, run_root=self._run_root)
+                self._proc = None
 
     def _require_connected(self) -> None:
         if self._drone is None:
@@ -194,14 +226,15 @@ class ProjectAirSimSimulator:
         for waypoint in (Pose(current.x, current.y, safe_z, current.yaw), Pose(pose.x, pose.y, safe_z, pose.yaw)):
             self._teleport(waypoint)
             self.command_velocity(0.0, 0.0, 0.0)
-            self.step()
+            self._step_impl()  # bypasses the reset_done gate: these steps are what consumes frame 0
         self._teleport(pose)
         for _ in range(self._settle_steps):
             self.command_velocity(0.0, 0.0, 0.0)
-            self.step()
+            self._step_impl()
         self._episode_start_ns = self._t_ns
         self._collided = False
         self._last_obs = dataclasses.replace(self._last_obs, collided=False, step_collisions=())
+        self._reset_done = True
         return self._last_obs
 
     def spawn(self, name: str, asset: str, pose: Pose, scale: tuple[float, float, float], material: str | None = None) -> str:
@@ -232,6 +265,14 @@ class ProjectAirSimSimulator:
 
     def step(self, dt: float = CONTROL_DT_S) -> int:
         self._require_connected()
+        if not self._reset_done:
+            raise SessionNotResetError(
+                "step() called before reset() on this connection: frame 0 of a session is corrupt "
+                "(spec §7.1) and only reset()'s own steps may consume it"
+            )
+        return self._step_impl(dt)
+
+    def _step_impl(self, dt: float = CONTROL_DT_S) -> int:
         dt_ns = dt_to_ns(dt, STEP_NS)
         if self._pending is None:
             raise RuntimeError("command_velocity must be called before every step")
@@ -297,6 +338,6 @@ class ProjectAirSimSimulator:
         return target
 
     def observe(self) -> Observation:
-        if self._last_obs is None:
-            raise RuntimeError("no observation before reset() or step()")
+        if not self._reset_done:
+            raise SessionNotResetError("observe() called before reset() on this connection")
         return self._last_obs

@@ -25,7 +25,12 @@ class FakeSimulator:
         self._collided = False
         self._step_collisions: tuple[CollisionEvent, ...] = ()
         self._objects: dict[str, tuple[str, Pose, tuple[float, float, float], str | None]] = {}
-        self._has_observation = False
+        # Mirrors ProjectAirSimSimulator's reset-before-step precondition (spec §7.1): frame 0 of a real
+        # session is corrupt, so the backend requires reset() before step()/observe() will run. The fake
+        # has no such corrupt frame, but skipping reset() here would let an (M2/M3) caller bug that only
+        # breaks against the real backend pass silently against the fake. Per-session: cleared in launch(),
+        # also doubles as "an observation exists" for observe().
+        self._reset_done = False
 
     @property
     def steps_taken(self) -> int:
@@ -35,6 +40,7 @@ class FakeSimulator:
         if instance < 0:
             raise ValueError("instance must be >= 0")
         self._launched = (map_path, instance)
+        self._reset_done = False
 
     def close(self) -> None:
         self._launched = None
@@ -53,7 +59,7 @@ class FakeSimulator:
         self._pending = None
         self._collided = False
         self._step_collisions = ()
-        self._has_observation = True
+        self._reset_done = True
         return self.observe()
 
     def spawn(self, name: str, asset: str, pose: Pose, scale: tuple[float, float, float], material: str | None = None) -> str:
@@ -75,6 +81,8 @@ class FakeSimulator:
 
     def step(self, dt: float = CONTROL_DT_S) -> int:
         self._require_launched()
+        if not self._reset_done:
+            raise RuntimeError("step() called before reset() on this session")
         dt_ns = dt_to_ns(dt)
         if self._pending is None:
             raise RuntimeError("command_velocity must be called before every step")
@@ -94,11 +102,10 @@ class FakeSimulator:
         self._pose, self._velocity, self._yaw_rate = new, (vx, vy, vz_ned), yaw_rate
         self._step_collisions = hits
         self._collided = self._collided or bool(hits)
-        self._has_observation = True
         return self._t_ns
 
     def observe(self) -> Observation:
-        if not self._has_observation:
+        if not self._reset_done:
             raise RuntimeError("no observation before reset() or step()")
         return Observation(
             rgb=self._render_rgb(),
