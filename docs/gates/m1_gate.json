@@ -1,0 +1,435 @@
+{
+  "map": "/Game/AutoFly/Maps/S01",
+  "layout": "/home/jk_edge/research_uav/autofly_ue5/runs/levels/s01.layout.json",
+  "scene_sha256": "a6b461b38cf65867d6f97a749a2a0a0b9d1aa1eec3f71b2b2028017c22ef7acc",
+  "checks": {
+    "rgb_changes_with_pose": {
+      "diff_pillar_vs_empty": 39.43914286295573,
+      "diff_pillar_repeat": 2.4278717041015625,
+      "brightness_pillar_view": 120.06886800130208,
+      "brightness_empty_view": 126.42850240071614,
+      "pass": true
+    },
+    "depth_matches_geometry": {
+      "probes": [
+        {
+          "tag": "obs_0000",
+          "distance_m": 3.0,
+          "measured_m": 3.0009765625,
+          "expected_m": 3.000000653076817,
+          "error_m": 0.0009759094231829302,
+          "tolerance_m": 0.15,
+          "width_px": 40,
+          "expected_width_px": 39.28452289123711,
+          "width_tolerance_px": 3.9284522891237112,
+          "hfov_consistent": true,
+          "pose": [
+            -27.225200653076172,
+            -24.940399169921875,
+            -1.9967390298843384,
+            0.0
+          ],
+          "pass": true
+        },
+        {
+          "tag": "obs_0000",
+          "distance_m": 6.0,
+          "measured_m": 6.001953125,
+          "expected_m": 6.000000653076818,
+          "error_m": 0.001952471923181598,
+          "tolerance_m": 0.15,
+          "width_px": 22,
+          "expected_width_px": 21.079357859687555,
+          "width_tolerance_px": 2.1079357859687557,
+          "hfov_consistent": true,
+          "pose": [
+            -30.225200653076172,
+            -24.940399169921875,
+            -1.9980113506317139,
+            0.0
+          ],
+          "pass": true
+        },
+        {
+          "tag": "obs_0000",
+          "distance_m": 12.0,
+          "measured_m": 12.0078125,
+          "expected_m": 11.999999673438415,
+          "error_m": 0.007812826561584885,
+          "tolerance_m": 0.24,
+          "width_px": 10,
+          "expected_width_px": 10.963615957426972,
+          "width_tolerance_px": 2.0,
+          "hfov_consistent": true,
+          "pose": [
+            -14.14138412475586,
+            -15.792984008789062,
+            -1.9986673593521118,
+            -2.356194524230446
+          ],
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    "crash_raises_collision": {
+      "steps_to_collision": 20,
+      "object_name": "StaticMeshActor_1",
+      "impact_to_pillar_axis_m": 0.5364487182623626,
+      "pillar_radius_m": 0.5364,
+      "collided_flag": true,
+      "camera_pose_error_at_collision_m": 4.4770842968708165e-08,
+      "pass": true,
+      "reset_after_crash": {
+        "camera_pose_error_m": 1.5261334409448386e-06,
+        "depth": {
+          "mask_agreement": 0.9999542236328125,
+          "pixels_compared": 46963,
+          "median_relative_diff": 0.0007256894023157656
+        },
+        "rgb_mean_abs_diff": 1.5859476725260417,
+        "pass": true
+      }
+    },
+    "velocity_tracking": {
+      "axes": {
+        "forward": {
+          "mean_abs_error": 0.1875058889389186,
+          "mean_commanded": 2.0,
+          "mean_measured": 1.8124941110610813,
+          "relative_error": 0.0937529444694593,
+          "samples": 10
+        },
+        "vertical_up": {
+          "mean_abs_error": 0.005069279670715332,
+          "mean_commanded": 0.5,
+          "mean_measured": 0.5050692796707154,
+          "relative_error": 0.010138559341430663,
+          "samples": 5
+        },
+        "vertical_down": {
+          "mean_abs_error": 0.0305763840675354,
+          "mean_commanded": -0.5,
+          "mean_measured": -0.5305763840675354,
+          "relative_error": 0.0611527681350708,
+          "samples": 5
+        },
+        "yaw_rate": {
+          "mean_abs_error": 0.02464437417143661,
+          "mean_commanded": 0.5,
+          "mean_measured": 0.47535562582856344,
+          "relative_error": 0.04928874834287322,
+          "samples": 10
+        },
+        "yaw_rate_body_angular_z": {
+          "mean_abs_error": 0.020590439438819885,
+          "mean_commanded": 0.5,
+          "mean_measured": 0.4794095605611801,
+          "relative_error": 0.04118087887763977,
+          "samples": 10
+        }
+      },
+      "threshold_relative_error": 0.2,
+      "pass": true
+    },
+    "one_step_per_record": {
+      "records": 20,
+      "records_per_s": 6.449547346228351,
+      "rows": [
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            24600000000,
+            24600000000,
+            24600000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            24800000000,
+            24800000000,
+            24800000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            25000000000,
+            25000000000,
+            25000000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            25200000000,
+            25200000000,
+            25200000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            25400000000,
+            25400000000,
+            25400000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            25600000000,
+            25600000000,
+            25600000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            25800000000,
+            25800000000,
+            25800000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            26000000000,
+            26000000000,
+            26000000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            26200000000,
+            26200000000,
+            26200000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            26400000000,
+            26400000000,
+            26400000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            26600000000,
+            26600000000,
+            26600000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            26800000000,
+            26800000000,
+            26800000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            27000000000,
+            27000000000,
+            27000000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            27200000000,
+            27200000000,
+            27200000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            27400000000,
+            27400000000,
+            27400000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            27600000000,
+            27600000000,
+            27600000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            27800000000,
+            27800000000,
+            27800000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            28000000000,
+            28000000000,
+            28000000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            28200000000,
+            28200000000,
+            28200000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            28400000000,
+            28400000000,
+            28400000000
+          ],
+          "frame_times_match": true
+        }
+      ],
+      "pass": true
+    },
+    "spawn_destroy_packaged": {
+      "spawned_name": "AF_M1_Cube",
+      "material": "/Game/Geometry/Materials/M_Orange",
+      "center_depth_with_cube_m": 2.099609375,
+      "expected_m": 2.1,
+      "center_rgb_with_cube": [
+        96.96875,
+        55.14453125,
+        36.1484375
+      ],
+      "orange_dominant": true,
+      "center_depth_after_destroy_m": null,
+      "pass": true
+    }
+  },
+  "check_map": {
+    "layout": "runs/levels/s01.layout.json",
+    "obstacles": [
+      {
+        "found": true,
+        "center_error_m": 2.751757089464606e-06,
+        "size_error_m": 9.993762969973119e-05,
+        "tag": "obs_0000"
+      },
+      {
+        "found": true,
+        "center_error_m": 5.595541082676015e-07,
+        "size_error_m": 2.975463875287687e-07,
+        "tag": "obs_0040"
+      },
+      {
+        "found": true,
+        "center_error_m": 7.178185888584329e-07,
+        "size_error_m": 9.997062683109181e-05,
+        "tag": "obs_0079"
+      }
+    ],
+    "ground_top_z_ned": 0.0,
+    "pass": true
+  },
+  "package_manifest": {
+    "binary": {
+      "path": "ue_project/Packaged/Development/Linux/Blocks/Binaries/Linux/Blocks",
+      "sha256": "5c1863bf4b96159afa281b7f77f1b0034d068e2b1a4c335d938c289fea8c14e7"
+    },
+    "paks": {
+      "ue_project/Packaged/Development/Linux/Blocks/Content/Paks/Blocks-Linux.pak": "c30406d3037004a5bd40a28720bcbac29e5b88149507c5aaa149f81046f63957"
+    },
+    "git_head": "eedbc28b3d119e5e6cd014929b89adb7d8e0a6b5",
+    "level_spec_sha256": "188f9e4118945b7966fa3a03281e0c1663b0e2193c228430bdc06287a40f955a",
+    "level_verify": {
+      "map_path": "/Game/AutoFly/Maps/S01",
+      "pass": true,
+      "obstacles": 80,
+      "worst_location_error_cm": 0.0,
+      "game_mode": "/Script/ProjectAirSim.ProjectAirSimGameMode"
+    },
+    "engine_build_version": {
+      "MajorVersion": 5,
+      "MinorVersion": 7,
+      "PatchVersion": 4,
+      "Changelist": 51494982,
+      "CompatibleChangelist": 47537391,
+      "IsLicenseeVersion": 0,
+      "IsPromotedBuild": 1,
+      "BranchName": "++UE5+Release-5.7"
+    }
+  },
+  "package_matches_manifest": true,
+  "launch_s": 2.499092515994562,
+  "vram_used_mib": 1874,
+  "faults": {
+    "xid_since": "2026-09-16 03:01:29",
+    "xid_before": 0,
+    "xid_after": 0,
+    "boot_id": "0cda57b5-cffd-40c9-9b5a-482961aa864b",
+    "device_lost": {
+      "/home/jk_edge/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-02.26.55.log": 0,
+      "/home/jk_edge/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-02.51.10.log": 0,
+      "/home/jk_edge/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-03.05.28.log": 0,
+      "/home/jk_edge/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-03.33.26.log": 0,
+      "/home/jk_edge/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-06.10.23.log": 0,
+      "/home/jk_edge/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-06.28.41.log": 0,
+      "/home/jk_edge/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-06.34.43.log": 0,
+      "/home/jk_edge/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-06.55.35.log": 0,
+      "/home/jk_edge/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-06.57.47.log": 0,
+      "/home/jk_edge/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-06.59.21.log": 0,
+      "/home/jk_edge/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-07.01.22.log": 0,
+      "/home/jk_edge/research_uav/autofly_ue5/runs/sim/inst0/sim.log": 0
+    }
+  },
+  "faults_ok": true,
+  "pass": true
+}
