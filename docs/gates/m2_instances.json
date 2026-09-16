@@ -1,0 +1,74 @@
+{
+  "description": "Task 7: instance-scaling throughput measurement with an RL env in the loop (spec \u00a78/\u00a712).",
+  "map": "/Game/AutoFly/Maps/S01",
+  "candidate_ns": [
+    1,
+    2,
+    4,
+    6
+  ],
+  "attempted_ns": [
+    1,
+    2
+  ],
+  "warmup_s": 30.0,
+  "timed_window_target_s": 180.0,
+  "vram_budget_mib": 20000,
+  "gpu_total_mib": 24564,
+  "baseline_vram_mib": 514,
+  "per_n": {
+    "1": {
+      "env_steps_per_s_total": 5.380521619563202,
+      "env_steps_per_s_per_instance": 5.380521619563202,
+      "vram_mib": 1929,
+      "vram_samples_mib": [
+        1923,
+        1929,
+        1929,
+        1929,
+        1929,
+        1929,
+        1929,
+        1929,
+        1929,
+        1929,
+        1929,
+        1929
+      ],
+      "launch_s": 3.4092129369964823,
+      "per_instance_launch_s": [
+        3.3909862709988374
+      ],
+      "episodes_completed": 34,
+      "total_env_steps": 969,
+      "warmup_s": 30.0,
+      "timed_window_s": 180.0940630880068,
+      "faults": {
+        "xid_delta": 0,
+        "boot_changed": false,
+        "device_lost": {
+          "/home/jk_edge/research_uav/autofly_ue5/runs/sim/inst0/sim.log": 0
+        }
+      },
+      "faults_ok": true
+    }
+  },
+  "failures": {
+    "2": {
+      "attempts": 2,
+      "error": "TimeoutError: worker 0 did not reply to step() within 30.0s -- it likely crashed without exiting (check the job log for a worker traceback) and must be torn down forcibly"
+    }
+  },
+  "chosen_n": 1,
+  "stop_reason": "n=2 failed to launch/measure after 2 attempt(s): TimeoutError: worker 0 did not reply to step() within 30.0s -- it likely crashed without exiting (check the job log for a worker traceback) and must be torn down forcibly",
+  "projection": {
+    "hours_per_scene": 51.62655173948137,
+    "hours_all_scenes": 516.2655173948137,
+    "days_all_scenes": 21.511063224783907,
+    "assumed_steps_needed_per_scene": 1000000,
+    "assumed_n_scenes": 10,
+    "note": "D7 (plan2 decisions): training runs on a wall-clock budget, not a fixed step count, so the steps-needed figure below is an assumption for costing purposes, not a measured requirement. 1,000,000 env steps/scene is used as a round, order-of-magnitude planning figure for a SAC agent converging on a single ~70x70 m crossing task; n_scenes=10 is the train split (s01-s10, spec \u00a76)."
+  },
+  "run_started": "2026-09-16 12:39:01",
+  "run_finished": "2026-09-16 12:52:15"
+}
