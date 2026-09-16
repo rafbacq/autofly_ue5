@@ -65,6 +65,13 @@ VEC_ENV_CLOSE_TIMEOUT_S = 20.0
 # try/finally. Polling with a timeout is the only way this orchestrator can guarantee it reaches
 # teardown. 300s is generous next to every launch measured so far (single digits to tens of seconds).
 LAUNCH_REPLY_TIMEOUT_S = 300.0
+# How long to wait for one worker's reply to a single step() before treating it as hung. Measured live:
+# the same non-daemon-thread hang that afflicted the staggered launch also happens mid-measurement, not
+# just at launch -- a worker's step() auto-reset-on-done can hit a real, documented-but-rare simulator
+# hazard (CameraPoseError: "the Unreal actor was probably stopped by a sweep", spec Sec7.1) that leaves it
+# hung the same way a spawn crash did. A single step is milliseconds in the successful case (M0: ~135 ms
+# at 7.43 steps/s), so 30s is already two orders of magnitude of margin, not a tight bound.
+STEP_REPLY_TIMEOUT_S = 30.0
 
 
 def project_cost(steps_per_s_total: float, steps_needed: int, n_scenes: int) -> dict:
@@ -221,16 +228,44 @@ def _random_actions(vec_env: SubprocVecEnv, n: int) -> np.ndarray:
     return np.stack([vec_env.action_space.sample() for _ in range(n)])
 
 
-def _step_for(vec_env: SubprocVecEnv, n: int, duration_s: float) -> None:
+def _step_all(vec_env: SubprocVecEnv, actions: np.ndarray, timeout_s: float = STEP_REPLY_TIMEOUT_S) -> list[bool]:
+    """Advance every worker by one step, bounded; returns each worker's `done` flag.
+
+    Deliberately bypasses SB3's `step_async()`/`step_wait()` (together, equivalent to this): `step_wait()`
+    does an unbounded `remote.recv()` per worker, which is exactly the hazard `_call_reset_with_timeout`
+    exists for, except here it can strike mid-measurement rather than only at launch -- measured live, a
+    worker's step() auto-reset-on-done hit a real CameraPoseError (a documented, expected-to-be-rare
+    hazard, not a code defect) and hung the whole orchestrator in step_wait() for the rest of the run,
+    holding the real Unreal process's VRAM the entire time. This script only needs `done` (for
+    episodes_completed) and the step count, never the observation/reward/info SB3 normally stacks, so
+    there is no need to reconstruct step_wait()'s full return shape.
+    """
+    remotes = vec_env.remotes
+    for remote, action in zip(remotes, actions, strict=True):
+        remote.send(("step", action))
+    deadline = time.monotonic() + timeout_s
+    dones: list[bool] = []
+    for i, remote in enumerate(remotes):
+        remaining = deadline - time.monotonic()
+        if remaining <= 0 or not remote.poll(remaining):
+            raise TimeoutError(
+                f"worker {i} did not reply to step() within {timeout_s}s -- it likely crashed without "
+                f"exiting (check the job log for a worker traceback) and must be torn down forcibly"
+            )
+        _obs, _reward, done, _info, _reset_info = remote.recv()
+        dones.append(bool(done))
+    return dones
+
+
+def _step_for(vec_env: SubprocVecEnv, n: int, duration_s: float, timeout_s: float = STEP_REPLY_TIMEOUT_S) -> None:
     deadline = time.monotonic() + duration_s
     while time.monotonic() < deadline:
-        vec_env.step_async(_random_actions(vec_env, n))
-        vec_env.step_wait()
+        _step_all(vec_env, _random_actions(vec_env, n), timeout_s)
 
 
 def measure_n(
     n: int, scene: SceneFile, layout: Layout, warmup_s: float = WARMUP_S, timed_s: float = TIMED_S,
-    launch_reply_timeout_s: float = LAUNCH_REPLY_TIMEOUT_S,
+    launch_reply_timeout_s: float = LAUNCH_REPLY_TIMEOUT_S, step_reply_timeout_s: float = STEP_REPLY_TIMEOUT_S,
 ) -> dict:
     """Launch n AutoFlyEnv workers (staggered, VRAM-checked between each), warm up, then measure random-
     action throughput over a fixed wall-clock window. Always tears down its own workers before returning
@@ -255,7 +290,7 @@ def measure_n(
             per_instance_launch_s.append(time.monotonic() - t0)
         launch_s = time.monotonic() - launch_start
 
-        _step_for(vec_env, n, warmup_s)  # untimed: shader warm-up, first-episode settle
+        _step_for(vec_env, n, warmup_s, step_reply_timeout_s)  # untimed: shader warm-up, first-episode settle
 
         vram_samples: list[int] = []
         next_sample = time.monotonic()
@@ -264,10 +299,9 @@ def measure_n(
         window_start = time.monotonic()
         window_end = window_start + timed_s
         while time.monotonic() < window_end:
-            vec_env.step_async(_random_actions(vec_env, n))
-            _obs, _rews, dones, _infos = vec_env.step_wait()
+            dones = _step_all(vec_env, _random_actions(vec_env, n), step_reply_timeout_s)
             total_steps += n
-            episodes_completed += int(np.sum(dones))
+            episodes_completed += sum(dones)
             now = time.monotonic()
             if now >= next_sample:
                 vram_samples.append(gpu_memory_mib()[0])
@@ -297,7 +331,7 @@ def measure_n(
 
 def run(
     out_path: Path, candidate_ns: tuple[int, ...] = CANDIDATE_NS, warmup_s: float = WARMUP_S, timed_s: float = TIMED_S,
-    launch_reply_timeout_s: float = LAUNCH_REPLY_TIMEOUT_S,
+    launch_reply_timeout_s: float = LAUNCH_REPLY_TIMEOUT_S, step_reply_timeout_s: float = STEP_REPLY_TIMEOUT_S,
 ) -> dict:
     scene, layout = scene_and_layout()
     baseline_used_mib, gpu_total_mib = gpu_memory_mib()
@@ -326,7 +360,8 @@ def run(
             wait_for_vram_drop(baseline_used_mib)
             try:
                 record = measure_n(
-                    n, scene, layout, warmup_s=warmup_s, timed_s=timed_s, launch_reply_timeout_s=launch_reply_timeout_s
+                    n, scene, layout, warmup_s=warmup_s, timed_s=timed_s, launch_reply_timeout_s=launch_reply_timeout_s,
+                    step_reply_timeout_s=step_reply_timeout_s,
                 )
             except Exception as err:
                 last_error = f"{type(err).__name__}: {err}"
@@ -404,10 +439,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--warmup-s", type=float, default=WARMUP_S)
     parser.add_argument("--timed-s", type=float, default=TIMED_S)
     parser.add_argument("--launch-reply-timeout-s", type=float, default=LAUNCH_REPLY_TIMEOUT_S)
+    parser.add_argument("--step-reply-timeout-s", type=float, default=STEP_REPLY_TIMEOUT_S)
     args = parser.parse_args(argv)
     gate = run(
         args.out, candidate_ns=tuple(args.candidate_ns), warmup_s=args.warmup_s, timed_s=args.timed_s,
-        launch_reply_timeout_s=args.launch_reply_timeout_s,
+        launch_reply_timeout_s=args.launch_reply_timeout_s, step_reply_timeout_s=args.step_reply_timeout_s,
     )
     if not gate["per_n"]:
         print(f"no N could be measured safely: {gate['stop_reason']}", file=sys.stderr)
