@@ -207,6 +207,38 @@ One module wraps Project AirSim so nothing else imports it:
 - `observe()`: front RGB 256×256, front depth, pose, velocity, simulator time, collision flag.
 - A fake implementation with the same interface drives all offline tests.
 
+### 7.1 Measured simulator contract (M0, 2026-09-16)
+
+Facts measured on this build during M0. They bind every later milestone; where they contradict earlier text in this
+spec, they win. Evidence: `docs/gates/m0_smoke_inst0.json`, `tests/fixtures/pas/`, and the Plan 1 ledger's rulings
+R5–R9.
+
+- **No-hit depth is `0.0`, not `+inf`.** DepthPlanar returns 0.0 for pixels with no geometry (sky). Measured: 20,145
+  zero pixels, all in the frame's upper half, `inf_count` 0, finite range 1.484–254.5 m.
+  `autofly_ue5.sim.decode.decode_depth` maps exact 0.0 to `+inf`, which is the project's canonical no-hit value, so
+  every consumer — above all the SAC expert of §8, whose only sensor is depth — sees "nothing there" rather than an
+  obstacle at the lens. Never feed raw DepthPlanar bytes to a policy or a reward.
+- **Discard the first frame of every session.** The first `record()` after a scene loads returns a depth frame captured
+  before the buffer stabilises: 65,522 of 65,536 pixels read closer than 1 m, against a stable ≈24,690 no-hit pixels
+  and a 1.4 m minimum on every later frame. The M0 smoke tool refuses a zero warm-up; every episode runner must do the
+  same (warm-up ≥ 1 record, or discard record 0).
+- **Reset by the recovery sequence, not by teleporting through geometry.** A single `set_pose` that sweeps the drone
+  through a solid object does fire a collision event, and its camera-versus-state agreement is not reproducible
+  (0.000127 m in one run, 6.019 m in another). The up–across–down recovery sequence is reproducible to 1e-7–1e-6 m in
+  every run and is the supported episode reset.
+- **Lock-step holds exactly at 5 Hz.** 55/55 records had simulator time, image timestamps and kinematics timestamps
+  equal to the step target; camera-to-state pose error stayed at 2.4e-7 m. The velocity command's duration is
+  `dt − 2·step-ns = 0.19 s`, sent before the step, with the reply awaited after it.
+- **Geometry and optics agree with prediction.** A spawned 1×3×12 m pillar at 7.1 m measured 7.0977 m of depth (2.3 mm
+  error) and 54 px wide against 54.10 px predicted from the 90° FOV — so scene geometry can be checked against the
+  camera arithmetic rather than by eye.
+- **Runtime colour needs a base `UMaterial`.** `set_object_material` accepts `/Game/Geometry/Materials/M_Orange`
+  (patch change 55–70) and rejects the `MaterialInstanceConstant` `M_Blue`, as the server filters on `UMaterial`.
+  Scene-authored colour (M1 §6.4) uses material instances created in the editor instead.
+- **Throughput and footprint:** 7.3–7.4 steps/s with `real-time-update-rate` 3 ms, 1,734 MiB of VRAM for one instance
+  with cameras capturing. §8's SAC budget and §12's M2 gate use the M0 gate's measured numbers, not these single-run
+  figures.
+
 ## 8. SAC expert (`autofly_ue5/expert/`)
 
 - One agent per **train** scene (s01–s10); accepted when its evaluation success is ≥ 95 % over ≥ 200 fresh episodes.
