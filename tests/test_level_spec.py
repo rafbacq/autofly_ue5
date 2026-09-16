@@ -2,7 +2,15 @@ import pytest
 
 from autofly_ue5.paths import SCENES_DIR
 from autofly_ue5.scenes.generate import generate_layout
-from autofly_ue5.scenes.level_spec import GAME_MODE_CLASS, SUNSKY_CLASS, layout_to_level_spec, map_path_for
+from autofly_ue5.scenes.level_spec import (
+    EXPOSURE_APPLY_PHYSICAL_CAMERA,
+    EXPOSURE_BIAS_EV,
+    EXPOSURE_TAG,
+    GAME_MODE_CLASS,
+    SUNSKY_CLASS,
+    layout_to_level_spec,
+    map_path_for,
+)
 from autofly_ue5.scenes.model import Bounds, Instance, Layout, load_registry, load_scene_file
 
 SCENE = load_scene_file(SCENES_DIR / "s01_white_pillars.json")
@@ -32,6 +40,17 @@ def test_ground_top_is_at_ue_zero():
     assert ground["expected_extent_cm"] == pytest.approx([10000.0, 10000.0, 10.0])
     assert ground["location_cm"][2] + ground["expected_extent_cm"][2] == pytest.approx(0.0)
     assert ground["material"] == "grid"
+
+
+def test_exposure_block_is_manual_and_deterministic():
+    # R16: fixed manual exposure, carried as data in the level spec (not a magic number in the UE script),
+    # so every scene the builder produces shares the same deterministic-exposure mechanism.
+    spec = layout_to_level_spec(Layout("s01", 1001, SCENE.bounds, ()), SCENE, REGISTRY)
+    exposure = spec["exposure"]
+    assert exposure["tag"] == EXPOSURE_TAG == "AF_Exposure"
+    assert exposure["method"] == "manual"
+    assert exposure["bias_ev"] == EXPOSURE_BIAS_EV
+    assert exposure["apply_physical_camera_exposure"] is EXPOSURE_APPLY_PHYSICAL_CAMERA is False
 
 
 def test_full_s01_spec():

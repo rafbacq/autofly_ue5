@@ -55,6 +55,46 @@ def make_material(entry, ass):
     return mic
 
 
+def spawn_exposure_volume(spec, eas):
+    """R16 (controller ruling): fixed MANUAL exposure via an unbound PostProcessVolume, not auto-exposure.
+    Auto-exposure (eye adaptation) carries temporal state, so the same pose would render different pixels
+    depending on where the camera looked before -- not reproducible for (image, action) pairs. With
+    AutoExposureApplyPhysicalCameraExposure off, the engine's eye-adaptation math (EV100ToLuminance /
+    EyeAdaptationCommon.usf) collapses the final image-intensity multiplier to exactly 2**bias_ev, a pure
+    function of the one number in the level spec's `exposure` block -- independent of scene content, pose
+    and camera history."""
+    volume = eas.spawn_actor_from_class(unreal.PostProcessVolume, unreal.Vector(0.0, 0.0, -500.0))
+    check(volume is not None, "spawn PostProcessVolume")
+    volume.set_actor_label("Exposure")
+    volume.set_editor_property("tags", [spec["tag"]])
+    volume.set_editor_property("unbound", True)
+    volume.set_editor_property("enabled", True)
+    check(spec["method"] == "manual", "exposure method " + str(spec["method"]) + " is not implemented (only manual)")
+    settings = volume.get_editor_property("settings")
+    settings.set_editor_property("override_auto_exposure_method", True)
+    settings.set_editor_property("auto_exposure_method", unreal.AutoExposureMethod.AEM_MANUAL)
+    settings.set_editor_property("override_auto_exposure_apply_physical_camera_exposure", True)
+    settings.set_editor_property("auto_exposure_apply_physical_camera_exposure", bool(spec["apply_physical_camera_exposure"]))
+    settings.set_editor_property("override_auto_exposure_bias", True)
+    settings.set_editor_property("auto_exposure_bias", float(spec["bias_ev"]))
+    volume.set_editor_property("settings", settings)
+    # Struct properties are returned by value in UE python (confirmed live, R16 probe): read the actor's
+    # settings back fresh rather than trusting the local `settings` object, to catch a silently-dropped set.
+    readback = volume.get_editor_property("settings")
+    got_method = readback.get_editor_property("auto_exposure_method")
+    got_bias = readback.get_editor_property("auto_exposure_bias")
+    check(readback.get_editor_property("override_auto_exposure_method"), "PostProcessVolume override_auto_exposure_method not set")
+    check(got_method == unreal.AutoExposureMethod.AEM_MANUAL, "auto_exposure_method readback " + str(got_method))
+    check(readback.get_editor_property("override_auto_exposure_bias"), "PostProcessVolume override_auto_exposure_bias not set")
+    check(abs(got_bias - spec["bias_ev"]) < 1e-4, "auto_exposure_bias readback %s != %s" % (got_bias, spec["bias_ev"]))
+    check(volume.get_editor_property("unbound") is True, "PostProcessVolume is not unbound")
+    check(volume.get_editor_property("enabled") is True, "PostProcessVolume is not enabled")
+    REPORT["exposure"] = {"tag": spec["tag"], "auto_exposure_method": str(got_method), "auto_exposure_bias": got_bias,
+                          "apply_physical_camera_exposure": spec["apply_physical_camera_exposure"],
+                          "unbound": True, "enabled": True}
+    return volume
+
+
 def spawn_mesh(a, eas, materials):
     mesh = unreal.load_asset(a["mesh"])
     check(mesh is not None, "mesh " + a["mesh"])
@@ -97,6 +137,7 @@ def main():
     check(sunsky is not None, "spawn SunSky")
     sunsky.set_actor_label("SunSky")
     sunsky.set_editor_property("tags", ["SunSky"])
+    spawn_exposure_volume(SPEC["exposure"], eas)
     game_mode = unreal.load_class(None, SPEC["game_mode_class"])
     check(game_mode is not None, "GameMode class " + SPEC["game_mode_class"])
     ues.get_editor_world().get_world_settings().set_editor_property("default_game_mode", game_mode)

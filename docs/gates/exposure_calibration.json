@@ -1,0 +1,32 @@
+{
+  "ruling": "R16",
+  "mechanism": "Unbound PostProcessVolume, AutoExposureMethod=Manual, AutoExposureApplyPhysicalCameraExposure=False; final image-intensity multiplier is exactly 2**bias_ev, independent of scene content, pose and camera history.",
+  "target_band": {"metric": "mean RGB over a single frame at the pillar-field pose (PILLAR_VIEW, Pose(-31, 0, -2, 0))", "low": 20, "high": 235, "aim": "near the middle (127.5), not the edge"},
+  "probe": "throwaway script (not part of deliverables): connect, set_pose to PILLAR_VIEW, step the steppable clock 6x0.2s, decode the first RGB frame received after the last step, report mean/min/max/saturated-fraction",
+  "iterations": [
+    {
+      "n": 1,
+      "bias_ev": -15.0,
+      "rationale": "physically-derived starting guess: SunSky ~1e5 lux on an albedo-0.9 diffuse surface implies scene luminance far above the manual-mode EV100=0 baseline (with physical camera off); needed roughly -log2(scene_luminance) stops to bring the target white point back down to the scene's actual brightness",
+      "measured": {"mean_rgb": [13.97, 14.07, 14.40], "mean_brightness": 14.15, "min": 0, "max": 65, "frac_saturated_255": 0.0, "frac_zero": 0.058},
+      "verdict": "fixed the saturation (no longer 255 everywhere) but overcorrected: mean 14.15 is below the 20 floor"
+    },
+    {
+      "n": 2,
+      "bias_ev": -12.0,
+      "rationale": "empirical correction from iteration 1's single data point, splitting a linear-response estimate (-11.83 EV to reach the theoretical middle) against a gamma-response estimate (-8.0 EV), rounded to -12.0 to stay on the safe (darker, non-clipping) side of the uncertainty",
+      "measured": {"mean_rgb": [72.29, 75.41, 78.55], "mean_brightness": 75.42, "min": 2, "max": 196, "frac_saturated_255": 0.0, "frac_zero": 0.0},
+      "verdict": "comfortably inside (20, 235) with no clipping at either end, but still below the middle"
+    },
+    {
+      "n": 3,
+      "bias_ev": -11.0,
+      "rationale": "interpolated from the two real measured points (-15 EV -> 14.15, -12 EV -> 75.42): a 3-EV step multiplied the mean by 5.35x, i.e. ~1.746x per EV; one more EV step predicted a mean near 75.42*1.746 = 131.7, close to the band's middle (127.5)",
+      "measured": {"mean_rgb": [104.37, 109.24, 114.38], "mean_brightness": 109.33, "min": 8, "max": 224, "frac_saturated_255": 0.0, "frac_zero": 0.0},
+      "verdict": "PASS: comfortably inside (20, 235), close to the middle (127.5), no saturation and no crushed blacks"
+    }
+  ],
+  "chosen": {"bias_ev": -11.0, "apply_physical_camera_exposure": false, "method": "manual", "mean_brightness_at_pillar_view": 109.33},
+  "iterations_used": 3,
+  "iterations_budget": 3
+}

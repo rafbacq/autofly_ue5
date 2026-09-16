@@ -42,6 +42,22 @@ def main():
     game_mode = ues.get_editor_world().get_world_settings().get_editor_property("default_game_mode")
     game_mode_path = game_mode.get_path_name() if game_mode is not None else None
     check(game_mode_path == SPEC["game_mode_class"], "GameMode override is %s" % game_mode_path)
+    # R16: the fixed-manual-exposure PostProcessVolume must have reloaded with the level, not just have
+    # existed transiently when build_level.py saved it.
+    exposure_spec = SPEC["exposure"]
+    exposure_actors = by_tag.get(exposure_spec["tag"], [])
+    check(len(exposure_actors) == 1, "PostProcessVolume (%s) found %d times" % (exposure_spec["tag"], len(exposure_actors)))
+    volume = exposure_actors[0]
+    check(volume.get_editor_property("unbound") is True, "PostProcessVolume is not unbound")
+    check(volume.get_editor_property("enabled") is True, "PostProcessVolume is not enabled")
+    settings = volume.get_editor_property("settings")
+    check(settings.get_editor_property("override_auto_exposure_method"), "override_auto_exposure_method not set on reload")
+    method = settings.get_editor_property("auto_exposure_method")
+    check(method == unreal.AutoExposureMethod.AEM_MANUAL, "auto_exposure_method on reload is %s" % method)
+    check(settings.get_editor_property("override_auto_exposure_bias"), "override_auto_exposure_bias not set on reload")
+    bias = settings.get_editor_property("auto_exposure_bias")
+    check(abs(bias - exposure_spec["bias_ev"]) < 1e-4, "auto_exposure_bias on reload %s != %s" % (bias, exposure_spec["bias_ev"]))
+    REPORT["exposure"] = {"tag": exposure_spec["tag"], "auto_exposure_method": str(method), "auto_exposure_bias": bias}
     REPORT.update({"obstacles": len(obstacle_tags), "worst_location_error_cm": worst, "game_mode": game_mode_path, "pass": True})
 
 
