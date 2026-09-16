@@ -656,6 +656,7 @@ def main(argv: list[str] | None = None) -> int:
     train_env: VecEnv | None = None
     eval_env: VecEnv | None = None
     model: SAC | None = None
+    num_timesteps_at_start = 0  # a resumed run's env_steps_per_s must reflect only steps taken THIS session
     resume_path: Path | None = None
     checkpoint_path: Path | None = None
     checkpoint_sha256: str | None = None
@@ -688,6 +689,7 @@ def main(argv: list[str] | None = None) -> int:
                 )
             model = SAC.load(resume_path, env=train_env, device=args.device, tensorboard_log=str(tb_dir))
             model.load_replay_buffer(buffer_path)
+            num_timesteps_at_start = int(model.num_timesteps)
             print(f"resumed from {resume_path} (num_timesteps={model.num_timesteps}) with replay buffer {buffer_path}")
         else:
             model = build_model(
@@ -750,6 +752,7 @@ def main(argv: list[str] | None = None) -> int:
 
     wall_s = time.monotonic() - t_wall_start
     num_timesteps = int(model.num_timesteps) if model is not None else 0
+    num_timesteps_this_session = num_timesteps - num_timesteps_at_start
 
     logs = [instance_dir(i) / "sim.log" for i in range(args.instances + 1) if (instance_dir(i) / "sim.log").is_file()]
     xid_after = xid_count(run_started)
@@ -788,8 +791,12 @@ def main(argv: list[str] | None = None) -> int:
             "seed": args.seed,
         },
         "num_timesteps": num_timesteps,
+        "num_timesteps_at_start": num_timesteps_at_start,
+        "num_timesteps_this_session": num_timesteps_this_session,
         "wall_clock_s": wall_s,
-        "env_steps_per_s": (num_timesteps / wall_s) if wall_s > 0 else None,
+        # Steps taken THIS session only -- a resumed run's num_timesteps includes steps from a previous
+        # session that took no wall-clock time in this one, which would otherwise inflate this figure.
+        "env_steps_per_s": (num_timesteps_this_session / wall_s) if wall_s > 0 else None,
         "eval": read_eval_results(run_root),
         "outcome_histogram": dict(outcome_cb.histogram),
         "backend_faults": combine_fault_summaries(fault_summaries),
