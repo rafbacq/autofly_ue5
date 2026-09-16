@@ -257,6 +257,18 @@ R5–R9.
 - **Runtime colour needs a base `UMaterial`.** `set_object_material` accepts `/Game/Geometry/Materials/M_Orange`
   (patch change 55–70) and rejects the `MaterialInstanceConstant` `M_Blue`, as the server filters on `UMaterial`.
   Scene-authored colour (M1 §6.4) uses material instances created in the editor instead.
+  **Binding rule for every runtime spawn (added M2, after this cost three blocked live runs):** a runtime
+  `spawn()` may pass **only a base `UMaterial` package path**, or `None`. Editor-time level building and runtime
+  spawning are different code paths with different class requirements — `build_level.py` applies a
+  `color_instance` happily, and the runtime server cannot, ever. `spawn(material=None)` skips the call and keeps
+  the mesh's own material, which is the correct choice whenever no proven base material applies. The two
+  identifiers `spawn()` takes are also *not* our registry keys: `asset` is the short Unreal asset name (the last
+  path segment, e.g. `Cylinder`, `1M_Cube`) and `material` is a full package path. Resolve both from the registry
+  before calling.
+  **The lesson is about enforcement, not documentation.** This failure was already written down twice — here and
+  in `sim/smoke_m0.py:44-45` — and still reached live hardware, because `FakeSimulator` accepted any string and
+  every offline test passed. A contract that only exists in prose is not a contract: the test double now rejects
+  what the real server rejects, and that is what keeps this fixed.
 - **Throughput and footprint:** 7.3–7.4 steps/s with `real-time-update-rate` 3 ms, 1,734 MiB of VRAM for one instance
   with cameras capturing. §8's SAC budget and §12's M2 gate use the M0 gate's measured numbers, not these single-run
   figures.

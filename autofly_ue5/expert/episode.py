@@ -277,14 +277,40 @@ def _spawn_asset_name(ue_path: str) -> str:
     return ue_path.rsplit("/", 1)[-1]
 
 
+RUNTIME_SPAWNABLE_MATERIAL_KINDS = ("engine",)
+
+
+def _runtime_material_path(registry, name: str | None) -> str | None:
+    """The UE package path to paint a RUNTIME-spawned object with, or None to leave the mesh's own material.
+
+    Project AirSim's `setMaterial` resolves the path with `StaticLoadObject(UMaterial::StaticClass(), ...)`
+    (WorldSimApi.cpp:1019-1033) -- an EXACT base-UMaterial class filter. A `UMaterialInstanceConstant` is a
+    different class, so the load returns null and `set_object_material` fails no matter how correct the path
+    is. M0 measured and documented this (`sim/smoke_m0.py:44-45`, on M_Blue) but the knowledge never reached
+    this module, and it cost three live blocked runs to rediscover.
+
+    So a `color_instance` material -- which is exactly what our registry builds for the scene palette, e.g.
+    "white" -> MI_White -- can never be used at runtime, even though `build_level.py` uses it happily at
+    EDITOR build time. Those are different code paths with different class requirements. Rather than fail
+    the spawn, return None: `Simulator.spawn()` then skips `set_object_material` entirely
+    (`airsim_backend.py:247`) and the object keeps its mesh's default material. For distractors that is the
+    right look anyway -- they are meant to read as more of the obstacle field, not as the target.
+    """
+    if name is None:
+        return None
+    entry = registry.materials[name]
+    return entry.ue_path if entry.kind in RUNTIME_SPAWNABLE_MATERIAL_KINDS else None
+
+
 def apply_setup(sim: Simulator, setup: EpisodeSetup) -> tuple[str, ...]:
     """Spawn the target then the distractors; return the actual (uniquified) names, target first.
 
     The target is painted "orange" if the registry has that material, else the first registered material
     that is not the one real obstacles use (`setup.obstacle_material`) -- a visually distinct colour so
-    the target can be told apart from the field even before M4's asset pool lands. Distractors are painted
-    with the obstacle material itself, so they read as more of the same obstacle field they are meant to
-    be confused with.
+    the target can be told apart from the field even before M4's asset pool lands. Distractors are left with
+    the mesh's own default material: the scene's obstacle material is a `color_instance` (MI_White), which
+    the runtime spawn path categorically cannot apply -- see `_runtime_material_path` for why -- and an
+    unpainted cylinder reads as more of the same obstacle field, which is what a distractor is for.
 
     `target_material`/`setup.obstacle_material` are registry KEY names (e.g. "white"), not the full UE
     package paths `Simulator.spawn()`'s `material` parameter requires (`protocol.py`: "a package path of a
@@ -310,8 +336,8 @@ def apply_setup(sim: Simulator, setup: EpisodeSetup) -> tuple[str, ...]:
         target_material_name: str | None = "orange"
     else:
         target_material_name = next((name for name in registry.materials if name != setup.obstacle_material), None)
-    target_material = registry.materials[target_material_name].ue_path if target_material_name is not None else None
-    obstacle_material = registry.materials[setup.obstacle_material].ue_path
+    target_material = _runtime_material_path(registry, target_material_name)
+    obstacle_material = _runtime_material_path(registry, setup.obstacle_material)
     asset_name = _spawn_asset_name(registry.assets["cylinder"].ue_path)
 
     names: list[str] = []

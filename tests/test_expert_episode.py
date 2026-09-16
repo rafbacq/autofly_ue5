@@ -275,13 +275,55 @@ def test_apply_setup_forwards_a_resolved_asset_and_material_not_bare_registry_ke
     target_material_name = "orange" if "orange" in registry.materials else next(
         n for n in registry.materials if n != setup.obstacle_material)
     expected_target_material = registry.materials[target_material_name].ue_path
-    expected_obstacle_material = registry.materials[setup.obstacle_material].ue_path
 
     target_asset, _pose, _scale, target_material = sim._objects[names[0]]
     assert target_asset == expected_asset and "/" not in target_asset
     assert target_material == expected_target_material and target_material.startswith("/")
 
+    # Distractors spawn UNPAINTED. The obstacle material is a color_instance, which the runtime spawn path
+    # categorically cannot apply (see test_a_color_instance_material_is_never_forwarded_to_a_runtime_spawn);
+    # an earlier revision of this test asserted they were painted with it, which is why that assertion has
+    # been replaced rather than relaxed -- it pinned a behaviour the real backend rejects 100% of the time.
     for name in names[1:]:
         asset, _pose, _scale, material = sim._objects[name]
         assert asset == expected_asset and "/" not in asset
-        assert material == expected_obstacle_material and material.startswith("/")
+        assert material is None
+
+
+def test_a_color_instance_material_is_never_forwarded_to_a_runtime_spawn():
+    """Project AirSim's setMaterial uses StaticLoadObject with an EXACT base-UMaterial class filter
+    (WorldSimApi.cpp:1019-1033), so a UMaterialInstanceConstant load returns null and set_object_material
+    fails however correct the path is. Our registry's scene palette is built from color_instances
+    ("white" -> MI_White), which build_level.py applies happily at EDITOR build time -- a different code
+    path with different class requirements. M0 measured this exact failure on M_Blue and wrote it down in
+    sim/smoke_m0.py:44-45; the knowledge never reached episode.py, and rediscovering it cost three blocked
+    live runs. This test is where that knowledge now lives for the runtime path.
+    """
+    from autofly_ue5.expert.episode import _runtime_material_path, apply_setup, sample_setup
+    from autofly_ue5.scenes.model import load_registry
+
+    registry = load_registry()
+    assert registry.materials["white"].kind == "color_instance"
+    assert _runtime_material_path(registry, "white") is None, "a color_instance can never be applied at runtime"
+    assert _runtime_material_path(registry, "orange") == "/Game/Geometry/Materials/M_Orange"
+    assert _runtime_material_path(registry, None) is None
+
+    # And nothing a color_instance resolves from may reach spawn(): record what apply_setup forwards.
+    scene, layout = scene_and_layout()
+    setup = sample_setup(scene, layout, np.random.default_rng(3))
+    forwarded: list[str | None] = []
+
+    class RecordingSim(FakeSimulator):
+        def spawn(self, name, asset, pose, scale, material=None):
+            forwarded.append(material)
+            return super().spawn(name, asset, pose, scale, material)
+
+    sim = RecordingSim()
+    sim.launch("/Game/AutoFly/Maps/S01", 0)
+    sim.reset(setup.start)
+    apply_setup(sim, setup)
+
+    instance_paths = {m.ue_path for m in registry.materials.values() if m.kind == "color_instance"}
+    assert forwarded[0] == "/Game/Geometry/Materials/M_Orange", "the target keeps the M1-proven base material"
+    assert all(m is None for m in forwarded[1:]), "distractors must spawn unpainted, not with a color_instance"
+    assert not (set(forwarded) & instance_paths)
