@@ -1338,6 +1338,8 @@ Monitor with `tensorboard --logdir runs/expert/s01/tensorboard`. The numbers to 
 3. `collision_rate` recorded (no threshold — AutoFly reports 21.9 % for its own VLA; the expert should be far below).
 4. `faults_ok` true — no GPU Xid faults, no reboot.
 5. The Task 7 projection is carried into the gate file so M5's cost is on the record.
+6. **Backend faults must be counted and reported separately from policy failures, and must never be scored as failed episodes.** Task 8 measured five recoverable hazards on this platform — `CameraPoseError`, `StepTimingError`, `StaleStateError`, `CommandTimeoutError`, and a raw `pynng.exceptions.Timeout` escaping the third-party client — at a rate that matters over hundreds of episodes. Reuse Task 8's `ResilientAutoFlyEnv` retry wrapper rather than writing another: an evaluation that silently counts a simulator hiccup as a policy failure would under-report success and could fail a genuinely good expert. Report `episodes_retried` and the per-hazard counts beside the success rate, and emit them as `0` rather than omitting them when nothing faults, so a clean run is distinguishable from broken counting.
+7. **Every wait is bounded and the process must exit.** Task 8 confirmed that a crashed run hangs forever — the `projectairsim` client leaves a non-daemon thread alive, in the main process as well as in workers — and that a second failure during cleanup can prevent the gate file being written at all. The gate run must write its JSON even when the evaluation itself fails, and terminate rather than hang.
 
 - [ ] **Step 1: Write the offline tests** (the report arithmetic, the seed disjointness, the threshold logic — using a scripted dummy policy against `FakeSimulator`, not a trained model).
 
