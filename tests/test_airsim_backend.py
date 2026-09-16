@@ -247,6 +247,29 @@ def test_collision_sets_flag_and_reset_clears_it():
     assert obs.pose.x == pytest.approx(-31.0) and obs.pose.yaw == pytest.approx(math.pi / 2)
 
 
+def test_camera_desync_during_reset_always_raises():
+    sim = make_sim()
+    sim._world.camera_lag_m = 0.5
+    # A fresh, real collision lands at every one of reset()'s four internal step targets (two
+    # waypoint steps, two settle steps -- see the step accounting in
+    # test_collision_sets_flag_and_reset_clears_it). Outside reset() (see
+    # test_camera_error_on_a_collision_step_is_recorded_not_raised), a collision on the same step as
+    # a camera desync swallows the error into Observation.camera_pose_error_m instead of raising. If
+    # that swallow applied inside reset() too, all four steps would swallow their desync in turn and
+    # reset() would hand back a normal-looking Observation despite the camera having been left behind
+    # for the whole recovery -- exactly the silently-unrepeatable-teleport failure mode the waypoint
+    # sequence exists to avoid. Publishing via the collision_info topic (not world.pending_events,
+    # which a single world.step() call drains all at once) is what lets one collision line up with
+    # each separate step instead of only the first.
+    collision_topic = sim._drone.robot_info["collision_info"]
+    for i, target_ns in enumerate((200_000_000, 400_000_000, 600_000_000, 800_000_000)):
+        sim._client.publish(collision_topic, {"time_stamp": target_ns, "object_name": f"reset_obstacle_{i}",
+                                              "impact_point": {"x": 0.0, "y": 0.0, "z": -20.0},
+                                              "normal": {"x": -1.0, "y": 0.0, "z": 0.0}})
+    with pytest.raises(CameraPoseError):
+        sim.reset(Pose(-31.0, -25.0, -2.0, math.pi / 2))
+
+
 def test_spawn_and_destroy():
     sim = make_sim()
     name = sim.spawn("AF_Target", "SM_Target", Pose(1.0, 2.0, -0.5, 0.0), (1.0, 1.0, 1.0), "/Game/AutoFly/Materials/M_Red")
