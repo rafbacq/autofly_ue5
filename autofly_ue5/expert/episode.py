@@ -267,6 +267,16 @@ def sample_setup(
     )
 
 
+def _spawn_asset_name(ue_path: str) -> str:
+    """The runtime spawn table (`Simulator.spawn()`'s `asset`, per `protocol.py`) keys every static mesh --
+    engine content included -- by its short Unreal asset name, not by its full package path: Project
+    AirSim's `WorldSimApi::asset_map_` is built from `FAssetData.AssetName`, the last path segment.
+    Confirmed live (Task 7) via `world.list_assets()` against the packaged s01 binary: both
+    "/Engine/BasicShapes/Cylinder" -> "Cylinder" and M1's own "/Game/Geometry/Meshes/1M_Cube" ->
+    "1M_Cube" are present verbatim in the runtime spawn table."""
+    return ue_path.rsplit("/", 1)[-1]
+
+
 def apply_setup(sim: Simulator, setup: EpisodeSetup) -> tuple[str, ...]:
     """Spawn the target then the distractors; return the actual (uniquified) names, target first.
 
@@ -275,6 +285,16 @@ def apply_setup(sim: Simulator, setup: EpisodeSetup) -> tuple[str, ...]:
     the target can be told apart from the field even before M4's asset pool lands. Distractors are painted
     with the obstacle material itself, so they read as more of the same obstacle field they are meant to
     be confused with.
+
+    `target_material`/`setup.obstacle_material` are registry KEY names (e.g. "white"), not the full UE
+    package paths `Simulator.spawn()`'s `material` parameter requires (`protocol.py`: "a package path of a
+    base UMaterial, e.g. '/Game/Geometry/Materials/M_Orange'") -- this resolves each through
+    `registry.materials[name].ue_path` before calling `spawn()`. Likewise the mesh: both the target and the
+    distractors use the registry's "cylinder" obstacle asset, resolved to the short runtime spawn name via
+    `_spawn_asset_name`, not the bare registry key. Both a bare material name and a bare/slashed asset name
+    fail identically against the real backend (measured live, Task 7: `set_object_material` rejects a
+    string that is not a real package path) but succeed silently against `FakeSimulator`, which is why
+    `FakeSimulator.spawn()` now enforces the same contract `spawn()`'s docstring always documented.
 
     If a `spawn` partway through the loop raises, whatever was already spawned is torn down before the
     error propagates. This matters because the real backend's `spawn()` can raise AFTER the actor already
@@ -287,17 +307,20 @@ def apply_setup(sim: Simulator, setup: EpisodeSetup) -> tuple[str, ...]:
     """
     registry = load_registry()
     if "orange" in registry.materials:
-        target_material: str | None = "orange"
+        target_material_name: str | None = "orange"
     else:
-        target_material = next((name for name in registry.materials if name != setup.obstacle_material), None)
+        target_material_name = next((name for name in registry.materials if name != setup.obstacle_material), None)
+    target_material = registry.materials[target_material_name].ue_path if target_material_name is not None else None
+    obstacle_material = registry.materials[setup.obstacle_material].ue_path
+    asset_name = _spawn_asset_name(registry.assets["cylinder"].ue_path)
 
     names: list[str] = []
     try:
         tx, ty, tz = setup.target_xy_z
-        names.append(sim.spawn("target", "cylinder", Pose(x=tx, y=ty, z=tz, yaw=0.0), setup.target_scale, target_material))
+        names.append(sim.spawn("target", asset_name, Pose(x=tx, y=ty, z=tz, yaw=0.0), setup.target_scale, target_material))
         for i, (dx, dy, dz) in enumerate(setup.distractors):
             names.append(
-                sim.spawn(f"distractor_{i}", "cylinder", Pose(x=dx, y=dy, z=dz, yaw=0.0), setup.target_scale, setup.obstacle_material)
+                sim.spawn(f"distractor_{i}", asset_name, Pose(x=dx, y=dy, z=dz, yaw=0.0), setup.target_scale, obstacle_material)
             )
     except Exception:
         clear_setup(sim, tuple(names))

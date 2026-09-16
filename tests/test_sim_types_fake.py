@@ -102,7 +102,7 @@ def test_rgb_depends_on_pose_only():
 def test_spawn_unique_names_and_destroy():
     sim = FakeSimulator()
     sim.launch("/Game/AutoFly/Maps/S01", 0)
-    first = sim.spawn("AF_Target", "cylinder", Pose(1.0, 2.0, -1.0, 0.0), (1.0, 1.0, 1.0), "white")
+    first = sim.spawn("AF_Target", "cylinder", Pose(1.0, 2.0, -1.0, 0.0), (1.0, 1.0, 1.0), "/Game/AutoFly/Materials/MI_White")
     second = sim.spawn("AF_Target", "cylinder", Pose(3.0, 2.0, -1.0, 0.0), (1.0, 1.0, 1.0))
     assert first == "AF_Target" and second == "AF_Target1"
     sim.destroy(first)

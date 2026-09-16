@@ -71,7 +71,27 @@ class FakeSimulator:
         return self.observe()
 
     def spawn(self, name: str, asset: str, pose: Pose, scale: tuple[float, float, float], material: str | None = None) -> str:
+        # Enforces the contract Simulator.spawn() has always documented (protocol.py): `asset` is a short
+        # AssetRegistry name with no slashes, `material` (when given) is a full UE package path. Measured
+        # live (Task 7): a caller that violates this -- e.g. passing a bare registry key like "cylinder" or
+        # "orange" instead of the resolved short spawn name / ue_path -- passes silently here (a bare
+        # string is a perfectly good dict key) but is rejected by the real backend's set_object_material()
+        # and spawn_object() on every single call, 100% reproducibly. A fake that accepts an invalid call
+        # is worse than no fake at all for exactly this reason, so it now raises instead.
         self._require_launched()
+        if "/" in asset:
+            raise ValueError(
+                f"asset={asset!r} looks like a package path, not a short AssetRegistry mesh name "
+                f'(Simulator.spawn()\'s contract, protocol.py: \'asset is the short AssetRegistry name of a '
+                f"cooked static mesh (e.g. \"1M_Cube\"), not an object path'); the real backend's runtime "
+                f"spawn table is keyed by short name only"
+            )
+        if material is not None and not material.startswith("/"):
+            raise ValueError(
+                f"material={material!r} is not a UE package path (Simulator.spawn()'s contract, protocol.py: "
+                f"'material is a package path of a base UMaterial (e.g. \"/Game/Geometry/Materials/M_Orange\")'); "
+                f"the real backend's set_object_material() rejects anything else"
+            )
         unique, k = name, 1
         while unique in self._objects:
             unique = f"{name}{k}"

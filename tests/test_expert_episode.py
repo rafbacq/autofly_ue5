@@ -236,3 +236,52 @@ def test_the_target_material_is_one_the_packaged_binary_actually_accepts():
     chosen = "orange" if "orange" in registry.materials else next(
         (n for n in registry.materials if n != setup.obstacle_material), None)
     assert chosen == "orange" and chosen != scene.ground
+
+
+def test_spawn_asset_name_is_the_last_path_segment():
+    from autofly_ue5.expert.episode import _spawn_asset_name
+
+    # Confirmed live (Task 7) via world.list_assets() against the packaged s01 binary: Project AirSim's
+    # runtime spawn table keys every static mesh -- engine content included -- by this short name, not by
+    # its full package path. "/Engine/BasicShapes/Cylinder" -> "Cylinder" and M1's own
+    # "/Game/Geometry/Meshes/1M_Cube" -> "1M_Cube" are both present verbatim in that live probe.
+    assert _spawn_asset_name("/Engine/BasicShapes/Cylinder") == "Cylinder"
+    assert _spawn_asset_name("/Game/Geometry/Meshes/1M_Cube") == "1M_Cube"
+
+
+def test_apply_setup_forwards_a_resolved_asset_and_material_not_bare_registry_keys():
+    """The bug this guards against, found live in Task 7: apply_setup used to pass FakeSimulator a bare
+    registry key ("cylinder", "orange"/"white"/"grid") for both `asset` and `material`. FakeSimulator's
+    old spawn() accepted that silently -- a bare string is a perfectly good dict key -- so 207 green tests
+    never caught it, but the real backend's spawn_object()/set_object_material() rejected it on 100% of
+    live calls, because Simulator.spawn()'s contract (protocol.py) requires a slash-free short spawn name
+    for `asset` and a full UE package path for `material`. FakeSimulator.spawn() now enforces exactly that
+    contract (autofly_ue5/sim/fake.py), so this test would fail loudly, not silently, if the bare-key bug
+    ever returned.
+    """
+    from autofly_ue5.expert.episode import _spawn_asset_name, apply_setup, sample_setup
+    from autofly_ue5.scenes.model import load_registry
+
+    registry = load_registry()
+    scene, layout = scene_and_layout()
+    setup = sample_setup(scene, layout, np.random.default_rng(3))
+    sim = FakeSimulator()
+    sim.launch("/Game/AutoFly/Maps/S01", 0)
+    sim.reset(setup.start)
+
+    names = apply_setup(sim, setup)
+
+    expected_asset = _spawn_asset_name(registry.assets["cylinder"].ue_path)
+    target_material_name = "orange" if "orange" in registry.materials else next(
+        n for n in registry.materials if n != setup.obstacle_material)
+    expected_target_material = registry.materials[target_material_name].ue_path
+    expected_obstacle_material = registry.materials[setup.obstacle_material].ue_path
+
+    target_asset, _pose, _scale, target_material = sim._objects[names[0]]
+    assert target_asset == expected_asset and "/" not in target_asset
+    assert target_material == expected_target_material and target_material.startswith("/")
+
+    for name in names[1:]:
+        asset, _pose, _scale, material = sim._objects[name]
+        assert asset == expected_asset and "/" not in asset
+        assert material == expected_obstacle_material and material.startswith("/")
