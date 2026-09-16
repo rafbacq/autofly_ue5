@@ -65,13 +65,48 @@ def test_flying_straight_at_a_target_succeeds():
 
 
 def test_reset_clears_the_previous_episode_objects():
+    # The real claim is "objects do not accumulate across episodes", not "two different episodes spawn
+    # the same number of objects": the distractor count is uniform in 3-5 per episode (see
+    # N_DISTRACTORS_DEFAULT), so two different seeds legitimately produce different object counts. It is
+    # also not "the two episodes' spawned names are disjoint" -- apply_setup always spawns under the same
+    # literal base names ("target", "distractor_0", ...), so a correctly-cleaned-up episode gets the SAME
+    # names back, not different ones. The actual signature of a leak is FakeSimulator.spawn()
+    # uniquifying a name on collision (appending a numeric suffix, e.g. "target1") because a same-named
+    # object from a previous episode is still alive when the next one spawns -- so assert the returned
+    # names stay clean across many resets, and that the live count never exceeds one episode's worth.
+    from autofly_ue5.expert.episode import N_DISTRACTORS_DEFAULT
+
+    def is_clean(spawned: tuple[str, ...]) -> bool:
+        expected = {"target", *(f"distractor_{i}" for i in range(len(spawned) - 1))}
+        return set(spawned) == expected
+
     env = make_env()
-    env.reset(seed=1)
-    first = set(env._sim._objects) if hasattr(env._sim, "_objects") else None
-    env.reset(seed=2)
-    second = set(env._sim._objects) if hasattr(env._sim, "_objects") else None
-    if first is not None:
-        assert len(second) == len(first), "objects accumulated across episodes"
+    for seed in range(10):
+        env.reset(seed=seed)
+        assert is_clean(env._spawned), (
+            f"a spawned name was uniquified -- a previous episode's object is still alive: {env._spawned}"
+        )
+        if hasattr(env._sim, "_objects"):
+            assert len(env._sim._objects) <= 1 + N_DISTRACTORS_DEFAULT[1], "objects accumulated across episodes"
+
+
+def test_reset_with_the_same_seed_twice_gives_the_identical_episode():
+    # The Gymnasium contract check_env enforces: reset(seed=K) is a deterministic function of K alone.
+    # This is also why folding seed into a call counter (the earlier, wrong design) was rejected -- that
+    # would make reset(seed=K) depend on how many resets came before it.
+    env = make_env()
+    obs_1, _ = env.reset(seed=42)
+    obs_2, _ = env.reset(seed=42)
+    assert np.array_equal(obs_1["vector"], obs_2["vector"]), "reset(seed=K) must be reproducible"
+
+
+def test_distinct_seeds_give_distinct_episodes():
+    # Task 9's M2 gate draws >= 200 evaluation episodes as reset(seed=EVAL_SEED_BASE + i) for i in
+    # range(200): if distinct seeds collapsed onto the same handful of episodes (or just one), the gate
+    # would silently re-run one episode over and over and report a meaningless 0% or 100% success rate.
+    env = make_env()
+    targets = {tuple(np.round(env.reset(seed=seed)[0]["vector"], 6)) for seed in range(12)}
+    assert len(targets) > 1, "distinct seeds must not all produce the same episode"
 
 
 def test_two_envs_with_different_seed_bases_diverge():

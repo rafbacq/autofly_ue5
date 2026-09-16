@@ -77,10 +77,10 @@ class AutoFlyEnv(gym.Env):
         self._setup: EpisodeSetup | None = None
         self._prev_dist = 0.0
         self._step_index = 0
-        # Advances by one on every reset() so a given env instance replays episodes 0, 1, 2, ... in a
-        # fixed, reproducible order (offset per-env by seed_base, so vectorised workers stay disjoint
-        # even when the caller resets every one of them with seed=None). See reset() for why an explicit
-        # seed rewinds this to 0 instead of folding into it.
+        # Advances by one on every seed=None reset() so a given env instance replays episodes 0, 1, 2,
+        # ... in a fixed, reproducible order (offset per-env by seed_base, so vectorised workers stay
+        # disjoint even when the caller resets every one of them with seed=None). An explicit seed does
+        # NOT touch this counter -- see reset() for why.
         self._episode_index = 0
 
     def _ensure_launched(self) -> Simulator:
@@ -90,23 +90,27 @@ class AutoFlyEnv(gym.Env):
         return self._sim
 
     def reset(self, seed: int | None = None, options: dict | None = None) -> tuple[dict[str, np.ndarray], dict]:
-        # Gymnasium's own contract (gymnasium.Env.reset) is that passing an explicit seed deterministically
-        # re-seeds `self.np_random` from that exact value every time, no matter how many resets came
-        # before, while seed=None leaves it running. gymnasium.utils.env_checker.check_env enforces the
-        # same contract on whatever randomness *we* use to build the episode (reset(seed=K) must always
-        # yield the same episode). Combining seed into the counter (e.g. seed_base + seed) would violate
-        # that, since it would make reset(seed=K)'s result depend on how many resets happened earlier --
-        # so an explicit seed instead rewinds our own episode counter back to 0.
+        # An explicit seed must pick out ONE deterministic, reproducible episode, distinct from every
+        # other seed: an evaluation harness (Task 9's M2 gate) draws >= 200 episodes as
+        # reset(seed=EVAL_SEED_BASE + i) for i in range(200) and needs 200 DIFFERENT episodes out of
+        # that, not the same one 200 times. So an explicit seed feeds `sample_setup` directly --
+        # `rng = np.random.default_rng(seed)` -- rather than being combined with the per-env counter:
+        # combining them (e.g. seed_base + seed, or rewinding the counter to 0 on every seed) would
+        # collapse many distinct seeds onto the same handful of episodes, or onto exactly one. When
+        # seed is None (the normal per-episode call during training), we fall back to the counter-driven
+        # stream so vectorised workers stay disjoint via seed_base without the caller having to stagger
+        # seeds itself.
         super().reset(seed=seed)
-        if seed is not None:
-            self._episode_index = 0
 
         sim = self._ensure_launched()
         clear_setup(sim, self._spawned)  # previous episode's objects, destroyed before the next is sampled
         self._spawned = ()
 
-        rng = np.random.default_rng(self._seed_base + self._episode_index)
-        self._episode_index += 1
+        if seed is not None:
+            rng = np.random.default_rng(seed)
+        else:
+            rng = np.random.default_rng(self._seed_base + self._episode_index)
+            self._episode_index += 1
         setup = sample_setup(self._scene, self._layout, rng)
 
         obs = sim.reset(setup.start)  # before any step() -- frame 0 of a session is corrupt (spec 7.1)
