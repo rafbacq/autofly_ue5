@@ -53,6 +53,17 @@ N_DISTRACTORS_DEFAULT = (3, 5)
 DISTRACTOR_SPACING_M = 4.0
 MAX_REJECTION_TRIES = 200
 
+# A distractor closer than this to the drone's start pose can spawn on top of it: `spawn_clearance_m()`
+# only keeps a point clear of the layout's own OBSTACLES, not of the start point itself, so nothing
+# previously stopped a distractor from landing inside collision range of the drone. That makes the
+# episode unwinnable from step 0 regardless of the policy, which silently eats into the M2 gate's
+# success-rate budget (measured: about 1 seed in 200 without this keepout, some under 0.1 m). 8 m sits
+# outside any spawn/collision risk and outside the 5 m success radius, while removing only about 6% of
+# the ~280 m perimeter ring, so episode variety is essentially unchanged. This is a different radius from
+# DISTRACTOR_SPACING_M -- the two must stay separate (see the distractor loop in sample_setup), not share
+# one spacing value.
+START_KEEPOUT_M = 8.0
+
 # Target/distractor reference height: the object's centre sits 1 m above the ground (NED z = -1.0), and a
 # scale of (1, 1, 2) stands a 2 m-tall cylinder on the ground given the registry's 1 m unit-scale cylinder.
 TARGET_Z_NED = -1.0
@@ -140,23 +151,33 @@ def _sample_band_point(bounds: Bounds, edge: str, band: tuple[float, float], rng
     return _edge_point(bounds, edge, distance, perpendicular)
 
 
+Exclusion = tuple[tuple[tuple[float, float], ...], float]  # (points, min_distance_from_each)
+
+
 def _place_with_clearance(
     candidate_fn, instances: tuple[Instance, ...], clearance: float,
-    existing_points: tuple[tuple[float, float], ...], spacing: float,
+    exclusions: tuple[Exclusion, ...],
     rng: np.random.Generator, *, what: str,
 ) -> tuple[float, float]:
     """Draw candidates from `candidate_fn(rng)` until one clears every obstacle by `clearance` and every
-    point in `existing_points` by `spacing`; raise EpisodeSetupError after MAX_REJECTION_TRIES tries."""
+    point in every `(points, min_distance)` pair in `exclusions` by that pair's own `min_distance`.
+
+    Each exclusion set carries its own radius rather than one shared spacing value, because the radii
+    genuinely differ: target/distractor spacing (DISTRACTOR_SPACING_M, spec §9.1) and the drone's start
+    keepout (START_KEEPOUT_M) are unrelated distances, and folding both into one shared value would
+    silently change one when the other is what's intended.
+    """
     for _ in range(MAX_REJECTION_TRIES):
         x, y = candidate_fn(rng)
         if _nearest_obstacle_gap(x, y, instances) < clearance:
             continue
-        if any(math.hypot(x - px, y - py) < spacing for px, py in existing_points):
+        if any(math.hypot(x - px, y - py) < min_distance for points, min_distance in exclusions for px, py in points):
             continue
         return x, y
+    n_points = sum(len(points) for points, _ in exclusions)
     raise EpisodeSetupError(
         f"could not place {what} with >= {clearance} m obstacle clearance"
-        + (f" and >= {spacing} m spacing from {len(existing_points)} existing point(s)" if existing_points else "")
+        + (f" and the required spacing from {n_points} existing point(s)" if n_points else "")
         + f" in {MAX_REJECTION_TRIES} tries"
     )
 
@@ -179,7 +200,7 @@ def sample_setup(
     # 2: start position, rejection-sampled for obstacle clearance only (no other placed point exists yet).
     start_x, start_y = _place_with_clearance(
         lambda r: _sample_band_point(bounds, start_edge, scene.start_band, r),
-        layout.instances, clearance, (), 0.0, rng, what="the start",
+        layout.instances, clearance, (), rng, what="the start",
     )
 
     # 3: start altitude, inset from the hard operating band (see START_ALTITUDE_MARGIN_M above).
@@ -196,7 +217,7 @@ def sample_setup(
     target_edge = OPPOSITE[start_edge]
     target_x, target_y = _place_with_clearance(
         lambda r: _sample_band_point(bounds, target_edge, scene.target_band, r),
-        layout.instances, clearance, (), 0.0, rng, what="the target",
+        layout.instances, clearance, (), rng, what="the target",
     )
     target_xy_z = (target_x, target_y, TARGET_Z_NED)
 
@@ -205,8 +226,11 @@ def sample_setup(
     n_distractors = int(rng.integers(lo_n, hi_n + 1))
 
     # 7: distractor positions -- anywhere on the target band (any edge), kept >= DISTRACTOR_SPACING_M from
-    # the target and from every other distractor already placed.
+    # the target and from every other distractor already placed, AND >= START_KEEPOUT_M from the drone's
+    # own start pose. These are two separate exclusion sets with two separate radii -- the start is never
+    # appended to `placed_xy`, so the 4 m target/distractor spacing is unaffected by the 8 m start keepout.
     placed_xy: list[tuple[float, float]] = [(target_x, target_y)]
+    start_xy = ((start_x, start_y),)
     distractors: list[tuple[float, float, float]] = []
 
     def _distractor_candidate(r: np.random.Generator) -> tuple[float, float]:
@@ -215,7 +239,9 @@ def sample_setup(
 
     for _ in range(n_distractors):
         dx, dy = _place_with_clearance(
-            _distractor_candidate, layout.instances, clearance, tuple(placed_xy), DISTRACTOR_SPACING_M, rng, what="a distractor",
+            _distractor_candidate, layout.instances, clearance,
+            ((tuple(placed_xy), DISTRACTOR_SPACING_M), (start_xy, START_KEEPOUT_M)),
+            rng, what="a distractor",
         )
         placed_xy.append((dx, dy))
         distractors.append((dx, dy, TARGET_Z_NED))

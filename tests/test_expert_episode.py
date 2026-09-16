@@ -112,6 +112,25 @@ def test_distractor_count_and_spacing():
                 assert math.hypot(pts[i][0] - pts[j][0], pts[i][1] - pts[j][1]) >= 4.0 - 1e-6
 
 
+def test_distractors_keep_clear_of_the_start_pose():
+    """A distractor spawning on top of the drone's start pose makes the episode unwinnable from step 0
+    (an immediate collision) regardless of the policy, which silently eats into the M2 gate's success-rate
+    budget. The bug this pins showed up in about 1 seed in 200 (closest observed: 0.07 m), so it is
+    checked across many seeds -- a single seed could pass by luck.
+    """
+    from autofly_ue5.expert.episode import START_KEEPOUT_M, sample_setup
+
+    scene, layout = scene_and_layout()
+    worst = math.inf
+    for seed in range(500):
+        s = sample_setup(scene, layout, np.random.default_rng(seed))
+        for dx, dy, _ in s.distractors:
+            d = math.hypot(dx - s.start.x, dy - s.start.y)
+            worst = min(worst, d)
+            assert d >= START_KEEPOUT_M - 1e-6, f"seed {seed}: distractor {dx:.2f},{dy:.2f} is {d:.2f} m from the start"
+    assert worst < math.inf  # sanity: the loop actually exercised at least one distractor
+
+
 def test_sampling_is_deterministic_for_a_seed():
     from autofly_ue5.expert.episode import sample_setup
 
