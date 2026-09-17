@@ -1,0 +1,363 @@
+"""M2 exit gate: evaluates the trained SAC expert(s) against spec Sec8/Sec9.5's acceptance bar (Task 9).
+
+Gates BOTH checkpoints Task 8 produced -- `runs/expert/<scene>/best/best_model.zip` (EvalCallback's
+best-REWARD save, spec Sec8) and `runs/expert/<scene>/final.zip` (the end-of-budget model) -- rather than
+silently picking whichever scores higher: the Task 9 brief is explicit that which one (if either) flies
+M3's data collection is the controller's decision, not this script's, and that reporting a flattering
+number instead of a truthful one "would poison every dataset and every student-model comparison built on
+top of it."
+
+For each checkpoint, runs `--episodes` (>= 200 for the acceptance number itself, spec Sec8) DETERMINISTIC
+episodes -- this is the number `gate_passes()` checks against 0.95, since a deterministic policy is what
+will actually fly M3's collection -- and the same count of STOCHASTIC episodes (spec Sec9.5's own
+collection protocol is stochastic; that number is reported for the record but is not gated). All four
+(checkpoint, condition) combinations share the exact same `EVAL_SEED_BASE`-derived seed stream, so every
+comparison is apples-to-apples. Priority order (brief's own, used when a run is stopped or fails partway):
+(a) best_model deterministic, (b) final deterministic, (c) best_model stochastic, (d) final stochastic --
+see `combo_order`.
+
+Reuses, rather than reinvents: `autofly_ue5.expert.train.ResilientAutoFlyEnv` for the five documented
+recoverable backend hazards (`CameraPoseError`, `StepTimingError`, `StaleStateError`,
+`CommandTimeoutError`, `pynng.exceptions.Timeout`); `autofly_ue5.expert.evaluate.evaluate_policy_episodes`
+for the actual episode loop and its fault-vs-policy-outcome separation; `scripts.measure_instances`'s
+`sweep_stale_instances`/`teardown` for GPU-safe startup/shutdown; `autofly_ue5.expert.train.sha256_of` for
+checkpoint provenance.
+
+Writes `docs/gates/m2_gate.json` incrementally -- after EVERY (checkpoint, condition) combination, not
+just at the end -- so a run that is stopped partway, or that fails outright, still leaves an honest,
+non-empty record: an un-attempted combination is marked `"status": "not_run"`, never silently dropped
+(gate item 7). `main()` force-exits via `os._exit()`, exactly like `train.py`, because the `projectairsim`
+client leaves a non-daemon thread alive that blocks normal interpreter shutdown forever.
+
+    env -u PYTHONPATH .venv/bin/python -m scripts.m2_gate --episodes 200 --out docs/gates/m2_gate.json
+    # (also runnable as `env -u PYTHONPATH .venv/bin/python scripts/m2_gate.py ...` -- see the sys.path
+    # bootstrap below, needed because this file itself lives inside the `scripts` package it imports from)
+"""
+
+from __future__ import annotations
+
+import sys
+from pathlib import Path
+
+# Bootstrap: this file lives inside `scripts/`, the very top-level package it needs to import
+# (`scripts.measure_instances`) -- a direct `python scripts/m2_gate.py` invocation puts `scripts/` itself
+# (not the project root) at sys.path[0], which makes `import scripts.measure_instances` fail with
+# ModuleNotFoundError (measured live while writing this module). `train.py` sidesteps this by living
+# inside the `autofly_ue5` package and always being invoked via `-m` (which adds the CURRENT directory,
+# not the module's own), but this script's own docstring above (and the Task 9 brief) documents both a
+# bare `scripts/m2_gate.py` invocation and a `-m scripts.m2_gate` one, so this must work either way.
+_ROOT = Path(__file__).resolve().parents[1]
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
+
+import argparse  # noqa: E402
+import json  # noqa: E402
+import os  # noqa: E402
+import time  # noqa: E402
+import traceback  # noqa: E402
+from typing import Any, Callable  # noqa: E402
+
+from autofly_ue5.expert.env import AutoFlyEnv  # noqa: E402
+from autofly_ue5.expert.evaluate import (  # noqa: E402
+    DEFAULT_MAX_FAULT_RETRIES_PER_EPISODE,
+    DEFAULT_MAX_STEPS_PER_EPISODE,
+    EvaluationInterrupted,
+    evaluate_policy_episodes,
+    fault_summary_delta,
+)
+from autofly_ue5.expert.train import (  # noqa: E402
+    EVAL_SEED_BASE,
+    KNOWN_FAULT_NAMES,
+    ResilientAutoFlyEnv,
+    sha256_of,
+    scene_and_layout as _scene_and_layout,
+)
+from autofly_ue5.paths import ROOT, RUNS_DIR  # noqa: E402
+from autofly_ue5.sim.airsim_backend import ProjectAirSimSimulator  # noqa: E402
+from autofly_ue5.sim.process import instance_dir, route_client_log  # noqa: E402
+from autofly_ue5.validate.engine_check import boot_id, count_device_lost, xid_count  # noqa: E402
+
+# Reused, not reinvented (module docstring): the exact bounded-wait/force-teardown machinery Task 7 wrote
+# and Task 8 already relies on.
+from scripts.measure_instances import sweep_stale_instances, teardown  # noqa: E402
+
+# --------------------------------------------------------------------------------------------------------
+# The gate itself: a pure function of the numbers, so it is trivially unit-testable without a live run.
+# --------------------------------------------------------------------------------------------------------
+GATE_MIN_SUCCESS_RATE = 0.95
+GATE_MIN_EPISODES = 200
+CONDITION_PRIORITY = ("deterministic", "stochastic")
+
+
+def gate_passes(*, success_rate: float, n_episodes: int, faults_ok: bool) -> bool:
+    """The M2 acceptance bar (spec Sec8/Sec9): >= 95% success over >= 200 episodes, with no engine-level
+    fault (GPU Xid, reboot) during the run. Not rounded -- 0.9499 is a fail, not "basically 0.95"."""
+    return success_rate >= GATE_MIN_SUCCESS_RATE and n_episodes >= GATE_MIN_EPISODES and bool(faults_ok)
+
+
+def parse_model_args(specs: list[str] | None, scene: str) -> dict[str, Path]:
+    """`--model NAME=PATH` entries (repeatable) into an ordered {name: path} dict; the CLI default (no
+    `--model` given) is BOTH of Task 8's checkpoints under `runs/expert/<scene>/`, best before final so
+    `combo_order` runs the higher-priority checkpoint's deterministic condition first."""
+    if not specs:
+        run_root = RUNS_DIR / "expert" / scene
+        return {"best_model": run_root / "best" / "best_model.zip", "final": run_root / "final.zip"}
+    out: dict[str, Path] = {}
+    for spec in specs:
+        if "=" not in spec:
+            raise ValueError(f"--model expects NAME=PATH, got {spec!r}")
+        name, path = spec.split("=", 1)
+        out[name] = Path(path)
+    return out
+
+
+def combo_order(models: dict[str, Path], conditions: list[str]) -> list[tuple[str, str]]:
+    """(checkpoint_name, condition) pairs in the Task 9 brief's own priority order: EVERY checkpoint's
+    deterministic condition before ANY checkpoint's stochastic one -- (a) best det, (b) final det,
+    (c) best stoch, (d) final stoch -- so a time-limited or interrupted run always has the
+    highest-value combinations already on disk, never a silently truncated one."""
+    ordered_conditions = [c for c in CONDITION_PRIORITY if c in conditions]
+    return [(name, condition) for condition in ordered_conditions for name in models]
+
+
+def _load_throughput_projection(instances_path: Path = ROOT / "docs" / "gates" / "m2_instances.json") -> dict | None:
+    """Task 7's own instance-scaling measurement, carried into the gate record so M5's cost (10 more
+    experts) is on the record alongside M2's pass/fail (gate item 5)."""
+    if not instances_path.is_file():
+        return None
+    data = json.loads(instances_path.read_text())
+    chosen_n = data.get("chosen_n")
+    per_n = data.get("per_n", {}) or {}
+    return {
+        "source": str(instances_path),
+        "chosen_n": chosen_n,
+        "measured_env_steps_per_s_total": per_n.get(str(chosen_n), {}).get("env_steps_per_s_total") if chosen_n is not None else None,
+        "projection": data.get("projection"),
+    }
+
+
+# --------------------------------------------------------------------------------------------------------
+# Live env construction -- reuses AutoFlyEnv + ResilientAutoFlyEnv exactly as train.py builds them for one
+# worker (no VecEnv needed: the gate steps a single environment sequentially, never in parallel).
+# --------------------------------------------------------------------------------------------------------
+def build_eval_env(scene: str, *, instance: int, sim_factory: Callable[[], Any]) -> ResilientAutoFlyEnv:
+    scene_file, layout = _scene_and_layout(scene)
+    map_path = f"/Game/AutoFly/Maps/{scene.upper()}"
+    route_client_log(instance_dir(instance) / "client.log")
+    base = AutoFlyEnv(scene_file, layout, sim_factory, map_path=map_path, instance=instance, seed_base=0)
+    return ResilientAutoFlyEnv(base, instance=instance)
+
+
+def default_sac_loader(path: Path, *, device: str = "auto"):
+    from stable_baselines3 import SAC
+
+    return SAC.load(path, device=device)
+
+
+# --------------------------------------------------------------------------------------------------------
+# The run itself.
+# --------------------------------------------------------------------------------------------------------
+def run(
+    *,
+    scene: str,
+    model_paths: dict[str, Path],
+    conditions: list[str],
+    n_episodes: int,
+    seed_base: int,
+    instance: int,
+    out_path: Path,
+    device: str = "auto",
+    sim_factory: Callable[[], Any] = ProjectAirSimSimulator,
+    load_model: Callable[[Path], Any] | None = None,
+    max_steps_per_episode: int = DEFAULT_MAX_STEPS_PER_EPISODE,
+    max_fault_retries_per_episode: int = DEFAULT_MAX_FAULT_RETRIES_PER_EPISODE,
+) -> dict[str, Any]:
+    load_model = load_model or (lambda p: default_sac_loader(p, device=device))
+    run_started = time.strftime("%Y-%m-%d %H:%M:%S")
+    xid_before = xid_count(run_started)
+    boot_before = boot_id()
+
+    swept = sweep_stale_instances()
+    if swept:
+        print(f"swept stale instances before starting: {swept}", file=sys.stderr)
+
+    throughput_projection = _load_throughput_projection()
+    combos = combo_order(model_paths, conditions)
+    checkpoints: dict[str, dict[str, Any]] = {}
+    for name, path in model_paths.items():
+        checkpoints[name] = {
+            "path": str(path),
+            "sha256": sha256_of(path) if path.is_file() else None,
+            **{cond: {"status": "not_run", "error": None} for cond in CONDITION_PRIORITY},
+        }
+
+    env: ResilientAutoFlyEnv | None = None
+    status = "ok"
+    error_message: str | None = None
+
+    def _write() -> dict[str, Any]:
+        logs = [p for p in (instance_dir(instance) / "sim.log",) if p.is_file()]
+        xid_after = xid_count(run_started)
+        boot_after = boot_id()
+        device_lost = count_device_lost(logs)
+        faults_ok = (xid_after == xid_before) and (boot_after == boot_before) and sum(device_lost.values()) == 0
+        cumulative = (
+            env.get_fault_summary()
+            if env is not None
+            else {"instance": instance, "fault_counts": {n: 0 for n in KNOWN_FAULT_NAMES},
+                  "recovered_counts": {n: 0 for n in KNOWN_FAULT_NAMES}, "relaunch_count": 0}
+        )
+        deterministic_gate_pass = {
+            name: bool(
+                checkpoints[name]["deterministic"].get("status") == "ok"
+                and gate_passes(
+                    success_rate=checkpoints[name]["deterministic"].get("success_rate", 0.0),
+                    n_episodes=checkpoints[name]["deterministic"].get("n_episodes", 0),
+                    faults_ok=faults_ok,
+                )
+            )
+            for name in checkpoints
+        }
+        gate = {
+            "description": "Task 9: M2 exit gate -- SAC expert acceptance evaluation (spec Sec8/Sec9.5).",
+            "scene": scene,
+            "eval_seed_base": seed_base,
+            "episodes_requested_per_condition": n_episodes,
+            "conditions_requested": list(conditions),
+            "priority_order": [f"{name}:{cond}" for name, cond in combos],
+            "checkpoints": checkpoints,
+            "deterministic_gate_pass_by_checkpoint": deterministic_gate_pass,
+            "pass": any(deterministic_gate_pass.values()),
+            "notes": [
+                "Both checkpoints are gated and reported without selection; which checkpoint (if either) "
+                "flies M3's data collection is the controller's decision, not this script's.",
+                "A 20-episode eval cannot distinguish 0.85 from 1.0 against a 0.95 threshold; this run "
+                "uses >= 200 episodes specifically so it can.",
+                "Deterministic episodes seed_base+0 .. seed_base+19 of this run are the SAME episodes "
+                "Task 8's own EvalCallback used throughout training for periodic model selection (both "
+                "use EVAL_SEED_BASE by design, spec Sec8) -- best_model.zip was saved BECAUSE of its "
+                "reward on (a subset of) those 20, so they are not fully held-out for that checkpoint "
+                "specifically. final.zip was not selected on any eval episode.",
+            ],
+            "cumulative_backend_faults": cumulative,
+            "engine_faults": {
+                "xid_delta": xid_after - xid_before,
+                "boot_changed": boot_after != boot_before,
+                "device_lost": device_lost,
+            },
+            "faults_ok": faults_ok,
+            "throughput_projection": throughput_projection,
+            "status": status,
+            "error": error_message,
+            "run_started": run_started,
+            "run_finished": time.strftime("%Y-%m-%d %H:%M:%S"),
+        }
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        out_path.write_text(json.dumps(gate, indent=2) + "\n")
+        return gate
+
+    try:
+        env = build_eval_env(scene, instance=instance, sim_factory=sim_factory)
+        _write()  # an honest "everything not_run yet" record exists on disk even if launch itself fails
+        for name, cond in combos:
+            path = model_paths[name]
+            if not path.is_file():
+                checkpoints[name][cond] = {"status": "failed", "error": f"checkpoint not found: {path}"}
+                status = "partial"
+                _write()
+                continue
+            print(f"=== evaluating {name} ({cond}), {n_episodes} episodes ===", file=sys.stderr)
+            model = load_model(path)
+            before = env.get_fault_summary()
+            try:
+                report = evaluate_policy_episodes(
+                    model, env, n_episodes, seed_base, deterministic=(cond == "deterministic"),
+                    max_steps_per_episode=max_steps_per_episode,
+                    max_fault_retries_per_episode=max_fault_retries_per_episode,
+                )
+                combo_status, combo_error = "ok", None
+            except EvaluationInterrupted as err:
+                report = err.partial_report
+                combo_status, combo_error = "failed", str(err)
+            after = env.get_fault_summary()
+            checkpoints[name][cond] = {
+                "status": combo_status,
+                "error": combo_error,
+                "episodes_requested": n_episodes,
+                **report.to_dict(),
+                "backend_faults": fault_summary_delta(before, after),
+            }
+            if combo_status != "ok":
+                status = "partial"
+            _write()
+    except Exception as err:
+        error_message = f"{type(err).__name__}: {err}"
+        status = "failed"
+        print(f"m2_gate failed: {error_message}", file=sys.stderr)
+        traceback.print_exc()
+    finally:
+        # Mirrors train.py's own finally block: every step wrapped, so a failure while cleaning up after a
+        # failure still reaches the gate-record write below rather than crashing before anything is saved.
+        if env is not None:
+            try:
+                teardown(env)  # bounded close + force-kill + sweep_stale_instances -- reused, not reinvented
+            except Exception as err:
+                print(f"WARNING: teardown() raised {type(err).__name__}: {err}", file=sys.stderr)
+                traceback.print_exc()
+        else:
+            try:
+                sweep_stale_instances()
+            except Exception as err:
+                print(f"WARNING: sweep_stale_instances() raised {type(err).__name__}: {err}", file=sys.stderr)
+
+    return _write()
+
+
+# --------------------------------------------------------------------------------------------------------
+# CLI
+# --------------------------------------------------------------------------------------------------------
+def build_arg_parser() -> argparse.ArgumentParser:
+    p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    p.add_argument("--scene", default="s01")
+    p.add_argument(
+        "--model", action="append", default=None, metavar="NAME=PATH",
+        help="a checkpoint to gate, as NAME=PATH; repeatable. Default: both of Task 8's checkpoints "
+             "(best_model=runs/expert/<scene>/best/best_model.zip, final=runs/expert/<scene>/final.zip).",
+    )
+    p.add_argument("--episodes", type=int, default=GATE_MIN_EPISODES)
+    p.add_argument("--conditions", nargs="+", choices=CONDITION_PRIORITY, default=list(CONDITION_PRIORITY))
+    p.add_argument("--out", type=Path, default=ROOT / "docs" / "gates" / "m2_gate.json")
+    p.add_argument("--instance", type=int, default=0)
+    p.add_argument("--seed-base", type=int, default=EVAL_SEED_BASE)
+    p.add_argument("--device", default="auto")
+    p.add_argument("--max-steps-per-episode", type=int, default=DEFAULT_MAX_STEPS_PER_EPISODE)
+    p.add_argument("--max-fault-retries-per-episode", type=int, default=DEFAULT_MAX_FAULT_RETRIES_PER_EPISODE)
+    return p
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = build_arg_parser().parse_args(argv)
+    model_paths = parse_model_args(args.model, args.scene)
+    gate = run(
+        scene=args.scene, model_paths=model_paths, conditions=list(args.conditions), n_episodes=args.episodes,
+        seed_base=args.seed_base, instance=args.instance, out_path=args.out, device=args.device,
+        max_steps_per_episode=args.max_steps_per_episode,
+        max_fault_retries_per_episode=args.max_fault_retries_per_episode,
+    )
+    print(json.dumps(
+        {"status": gate["status"], "pass": gate["pass"],
+         "deterministic_gate_pass_by_checkpoint": gate["deterministic_gate_pass_by_checkpoint"]},
+        indent=2,
+    ))
+    return 0 if gate["status"] == "ok" else 1
+
+
+if __name__ == "__main__":
+    _code = main()
+    # Not sys.exit(): see train.py's own docstring/__main__ guard -- the projectairsim client leaves a
+    # non-daemon thread alive that blocks CPython's interpreter-shutdown sequence forever. Everything
+    # durable (the gate JSON) is already written by run() above; os._exit() guarantees this process
+    # actually terminates instead of hanging "still running" forever.
+    sys.stdout.flush()
+    sys.stderr.flush()
+    os._exit(_code)
