@@ -55,11 +55,11 @@
         "created_by_probe": false,
         "removed_empty": false
       },
-      "log": "/home/jk_edge/research_uav/autofly_ue5/runs/m0/editor_open.log",
+      "log": "/home/nvidiasims/research_uav/autofly_ue5/runs/m0/editor_open.log",
       "pass": true
     },
     "zen_data_path_redirected": {
-      "matched_log_line": "[2026.09.16-01.43.22:820][  0]LogZenServiceInstance: Found command line override ZenDataPath=/home/jk_edge/research_uav/autofly_ue5/ue_project/DerivedDataCache/Zen",
+      "matched_log_line": "[2026.09.16-01.43.22:820][  0]LogZenServiceInstance: Found command line override ZenDataPath=/home/nvidiasims/research_uav/autofly_ue5/ue_project/DerivedDataCache/Zen",
       "zen_data_dir_exists_and_nonempty": true,
       "pass": true
     },

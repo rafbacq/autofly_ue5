@@ -2,7 +2,7 @@
 # init:    first creation of ue_project from platform/unreal/Blocks (Config, Source) plus the ignored parts.
 # restore: copy only the git-ignored parts (Blocks content, prebuilt plugin) into an existing ue_project.
 set -euo pipefail
-ROOT=/home/jk_edge/research_uav/autofly_ue5
+ROOT=/home/nvidiasims/research_uav/autofly_ue5
 BLOCKS=$ROOT/platform/unreal/Blocks
 PLUGINS=$ROOT/downloads/plugin_ue57_1.0.1/Plugins
 DST=$ROOT/ue_project

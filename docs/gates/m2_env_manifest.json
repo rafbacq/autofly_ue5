@@ -1,7 +1,7 @@
 {
   "description": "The Python environment M2's throughput and training numbers were measured on.",
   "python": "3.12.3",
-  "executable": "/home/jk_edge/research_uav/autofly_ue5/.venv/bin/python",
+  "executable": "/home/nvidiasims/research_uav/autofly_ue5/.venv/bin/python",
   "packages": {
     "numpy": "1.26.4",
     "torch": "2.14.0",

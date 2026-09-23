@@ -1,0 +1,6649 @@
+{
+  "description": "Task 9: M2 exit gate -- SAC expert acceptance evaluation (spec Sec8/Sec9.5).",
+  "scene": "s01",
+  "eval_seed_base": 100000000,
+  "episodes_requested_per_condition": 200,
+  "conditions_requested": [
+    "deterministic",
+    "stochastic"
+  ],
+  "priority_order": [
+    "best_model:deterministic",
+    "final:deterministic",
+    "best_model:stochastic",
+    "final:stochastic"
+  ],
+  "checkpoints": {
+    "best_model": {
+      "path": "/home/nvidiasims/research_uav/autofly_ue5/runs/expert/s01/best/best_model.zip",
+      "sha256": "42a8de56624750e362b28bc3130d7edd1bade4ed29ce9046237b8774acea18a4",
+      "deterministic": {
+        "status": "ok",
+        "error": null,
+        "episodes_requested": 200,
+        "n_episodes": 200,
+        "success_rate": 0.83,
+        "collision_rate": 0.14,
+        "timeout_rate": 0.01,
+        "out_of_bounds_rate": 0.02,
+        "mean_steps": 179.23,
+        "mean_final_distance_m": 9.771564146320626,
+        "episodes_retried": 0,
+        "fault_counts": {
+          "CameraPoseError": 0,
+          "StepTimingError": 0,
+          "StaleStateError": 0,
+          "CommandTimeoutError": 0,
+          "Timeout": 0,
+          "EpisodeSetupError": 0
+        },
+        "per_episode": [
+          {
+            "seed": 100000000,
+            "outcome": "success",
+            "steps": 218,
+            "final_distance_m": 4.999085281363565,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000001,
+            "outcome": "success",
+            "steps": 189,
+            "final_distance_m": 4.952996158144313,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000002,
+            "outcome": "timeout",
+            "steps": 300,
+            "final_distance_m": 4.235742687090683,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000003,
+            "outcome": "success",
+            "steps": 182,
+            "final_distance_m": 4.966508935897897,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000004,
+            "outcome": "success",
+            "steps": 215,
+            "final_distance_m": 4.895053435555839,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000005,
+            "outcome": "success",
+            "steps": 185,
+            "final_distance_m": 4.8458834617549105,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000006,
+            "outcome": "success",
+            "steps": 171,
+            "final_distance_m": 4.862420165712714,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000007,
+            "outcome": "collision",
+            "steps": 28,
+            "final_distance_m": 67.01582177137139,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000008,
+            "outcome": "success",
+            "steps": 190,
+            "final_distance_m": 4.987312895141303,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000009,
+            "outcome": "success",
+            "steps": 187,
+            "final_distance_m": 4.98452121539722,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000010,
+            "outcome": "success",
+            "steps": 194,
+            "final_distance_m": 4.9926807448386175,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000011,
+            "outcome": "success",
+            "steps": 191,
+            "final_distance_m": 4.871202938870855,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000012,
+            "outcome": "success",
+            "steps": 179,
+            "final_distance_m": 4.509829746774963,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000013,
+            "outcome": "success",
+            "steps": 249,
+            "final_distance_m": 4.98130758496922,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000014,
+            "outcome": "success",
+            "steps": 185,
+            "final_distance_m": 4.846904609986006,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000015,
+            "outcome": "success",
+            "steps": 185,
+            "final_distance_m": 4.756000072832706,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000016,
+            "outcome": "success",
+            "steps": 220,
+            "final_distance_m": 3.711375697212105,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000017,
+            "outcome": "timeout",
+            "steps": 300,
+            "final_distance_m": 5.793981795741281,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000018,
+            "outcome": "success",
+            "steps": 213,
+            "final_distance_m": 3.304494456808742,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000019,
+            "outcome": "success",
+            "steps": 183,
+            "final_distance_m": 4.957992180225037,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000020,
+            "outcome": "success",
+            "steps": 184,
+            "final_distance_m": 4.777547894926862,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000021,
+            "outcome": "success",
+            "steps": 197,
+            "final_distance_m": 4.955250703082802,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000022,
+            "outcome": "collision",
+            "steps": 99,
+            "final_distance_m": 37.63673925174948,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000023,
+            "outcome": "success",
+            "steps": 183,
+            "final_distance_m": 4.940269103244614,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000024,
+            "outcome": "success",
+            "steps": 192,
+            "final_distance_m": 4.906523800080566,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000025,
+            "outcome": "success",
+            "steps": 182,
+            "final_distance_m": 4.945374219590325,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000026,
+            "outcome": "success",
+            "steps": 195,
+            "final_distance_m": 4.982014563815068,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000027,
+            "outcome": "success",
+            "steps": 166,
+            "final_distance_m": 4.9520336698170935,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000028,
+            "outcome": "success",
+            "steps": 172,
+            "final_distance_m": 4.907195771355102,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000029,
+            "outcome": "collision",
+            "steps": 127,
+            "final_distance_m": 25.136805457503417,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000030,
+            "outcome": "success",
+            "steps": 176,
+            "final_distance_m": 4.966978665350823,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000031,
+            "outcome": "success",
+            "steps": 203,
+            "final_distance_m": 4.919230063735866,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000032,
+            "outcome": "success",
+            "steps": 187,
+            "final_distance_m": 4.904322811525803,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000033,
+            "outcome": "success",
+            "steps": 209,
+            "final_distance_m": 4.964264314803844,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000034,
+            "outcome": "success",
+            "steps": 177,
+            "final_distance_m": 4.7875689724769135,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000035,
+            "outcome": "success",
+            "steps": 196,
+            "final_distance_m": 4.96908021051766,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000036,
+            "outcome": "success",
+            "steps": 207,
+            "final_distance_m": 4.942108647858773,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000037,
+            "outcome": "success",
+            "steps": 172,
+            "final_distance_m": 4.8856203889579755,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000038,
+            "outcome": "success",
+            "steps": 201,
+            "final_distance_m": 4.9016349253853475,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000039,
+            "outcome": "success",
+            "steps": 193,
+            "final_distance_m": 4.938148057389184,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000040,
+            "outcome": "success",
+            "steps": 242,
+            "final_distance_m": 4.84363716340787,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000041,
+            "outcome": "success",
+            "steps": 197,
+            "final_distance_m": 4.8842999389417985,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000042,
+            "outcome": "success",
+            "steps": 197,
+            "final_distance_m": 4.810675264452659,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000043,
+            "outcome": "success",
+            "steps": 223,
+            "final_distance_m": 4.895367680886185,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000044,
+            "outcome": "success",
+            "steps": 171,
+            "final_distance_m": 4.987166494544098,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000045,
+            "outcome": "success",
+            "steps": 176,
+            "final_distance_m": 4.786736279604157,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000046,
+            "outcome": "success",
+            "steps": 182,
+            "final_distance_m": 3.7666624410196485,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000047,
+            "outcome": "collision",
+            "steps": 91,
+            "final_distance_m": 44.56424252353005,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000048,
+            "outcome": "success",
+            "steps": 202,
+            "final_distance_m": 4.974097985803791,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000049,
+            "outcome": "success",
+            "steps": 185,
+            "final_distance_m": 4.998586678015755,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000050,
+            "outcome": "success",
+            "steps": 182,
+            "final_distance_m": 4.230224935202968,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000051,
+            "outcome": "success",
+            "steps": 205,
+            "final_distance_m": 4.985505932934008,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000052,
+            "outcome": "collision",
+            "steps": 100,
+            "final_distance_m": 50.92265161029844,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000053,
+            "outcome": "collision",
+            "steps": 261,
+            "final_distance_m": 1.107987711376771,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000054,
+            "outcome": "collision",
+            "steps": 90,
+            "final_distance_m": 44.19870018569407,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000055,
+            "outcome": "collision",
+            "steps": 1,
+            "final_distance_m": 44.71451987498962,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000056,
+            "outcome": "success",
+            "steps": 191,
+            "final_distance_m": 4.787852197338881,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000057,
+            "outcome": "success",
+            "steps": 187,
+            "final_distance_m": 4.8686855718473465,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000058,
+            "outcome": "success",
+            "steps": 178,
+            "final_distance_m": 4.751333187434194,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000059,
+            "outcome": "collision",
+            "steps": 64,
+            "final_distance_m": 59.6804202011334,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000060,
+            "outcome": "out_of_bounds",
+            "steps": 122,
+            "final_distance_m": 26.833608660776104,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000061,
+            "outcome": "success",
+            "steps": 204,
+            "final_distance_m": 4.853775472906484,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000062,
+            "outcome": "success",
+            "steps": 207,
+            "final_distance_m": 4.749267932886737,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000063,
+            "outcome": "collision",
+            "steps": 178,
+            "final_distance_m": 21.20616038620529,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000064,
+            "outcome": "success",
+            "steps": 179,
+            "final_distance_m": 4.874223475536545,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000065,
+            "outcome": "success",
+            "steps": 174,
+            "final_distance_m": 4.8620574829826015,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000066,
+            "outcome": "success",
+            "steps": 197,
+            "final_distance_m": 4.7990902803381,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000067,
+            "outcome": "out_of_bounds",
+            "steps": 129,
+            "final_distance_m": 18.54602590118379,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000068,
+            "outcome": "success",
+            "steps": 169,
+            "final_distance_m": 4.986146914769922,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000069,
+            "outcome": "success",
+            "steps": 184,
+            "final_distance_m": 3.9920149776761935,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000070,
+            "outcome": "success",
+            "steps": 187,
+            "final_distance_m": 4.9903463807564155,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000071,
+            "outcome": "success",
+            "steps": 216,
+            "final_distance_m": 4.986426875850961,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000072,
+            "outcome": "success",
+            "steps": 169,
+            "final_distance_m": 4.923893814100165,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000073,
+            "outcome": "success",
+            "steps": 216,
+            "final_distance_m": 4.919949005456603,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000074,
+            "outcome": "success",
+            "steps": 203,
+            "final_distance_m": 4.898146804604898,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000075,
+            "outcome": "success",
+            "steps": 199,
+            "final_distance_m": 4.84204393984996,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000076,
+            "outcome": "success",
+            "steps": 186,
+            "final_distance_m": 4.795583060966939,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000077,
+            "outcome": "success",
+            "steps": 183,
+            "final_distance_m": 4.939627294007151,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000078,
+            "outcome": "out_of_bounds",
+            "steps": 229,
+            "final_distance_m": 4.920852231994518,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000079,
+            "outcome": "success",
+            "steps": 230,
+            "final_distance_m": 4.964769881947088,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000080,
+            "outcome": "success",
+            "steps": 172,
+            "final_distance_m": 4.893395718537345,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000081,
+            "outcome": "success",
+            "steps": 189,
+            "final_distance_m": 4.95294538540228,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000082,
+            "outcome": "collision",
+            "steps": 61,
+            "final_distance_m": 50.377769243614466,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000083,
+            "outcome": "success",
+            "steps": 165,
+            "final_distance_m": 4.889638117005229,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000084,
+            "outcome": "success",
+            "steps": 177,
+            "final_distance_m": 4.816391230627049,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000085,
+            "outcome": "success",
+            "steps": 192,
+            "final_distance_m": 3.710356202030884,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000086,
+            "outcome": "success",
+            "steps": 193,
+            "final_distance_m": 4.925596828295242,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000087,
+            "outcome": "success",
+            "steps": 183,
+            "final_distance_m": 4.9478053983822115,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000088,
+            "outcome": "success",
+            "steps": 198,
+            "final_distance_m": 4.77456480926109,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000089,
+            "outcome": "success",
+            "steps": 209,
+            "final_distance_m": 4.841898448363526,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000090,
+            "outcome": "success",
+            "steps": 206,
+            "final_distance_m": 4.933818673029255,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000091,
+            "outcome": "collision",
+            "steps": 165,
+            "final_distance_m": 16.95578698364098,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000092,
+            "outcome": "success",
+            "steps": 181,
+            "final_distance_m": 4.914817565592502,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000093,
+            "outcome": "success",
+            "steps": 216,
+            "final_distance_m": 4.864484809275436,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000094,
+            "outcome": "success",
+            "steps": 181,
+            "final_distance_m": 4.879552090632403,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000095,
+            "outcome": "success",
+            "steps": 185,
+            "final_distance_m": 4.888498998723318,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000096,
+            "outcome": "success",
+            "steps": 178,
+            "final_distance_m": 4.731760614898552,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000097,
+            "outcome": "success",
+            "steps": 204,
+            "final_distance_m": 4.980232161261111,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000098,
+            "outcome": "success",
+            "steps": 187,
+            "final_distance_m": 4.986404133681072,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000099,
+            "outcome": "success",
+            "steps": 205,
+            "final_distance_m": 4.934483408424959,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000100,
+            "outcome": "success",
+            "steps": 190,
+            "final_distance_m": 4.929634673693219,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000101,
+            "outcome": "success",
+            "steps": 172,
+            "final_distance_m": 4.759554941534544,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000102,
+            "outcome": "success",
+            "steps": 197,
+            "final_distance_m": 4.933883388248758,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000103,
+            "outcome": "success",
+            "steps": 185,
+            "final_distance_m": 4.85015658658592,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000104,
+            "outcome": "success",
+            "steps": 176,
+            "final_distance_m": 4.857629275105292,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000105,
+            "outcome": "success",
+            "steps": 193,
+            "final_distance_m": 4.755515732300175,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000106,
+            "outcome": "success",
+            "steps": 239,
+            "final_distance_m": 4.982302849248781,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000107,
+            "outcome": "success",
+            "steps": 196,
+            "final_distance_m": 4.912717427180487,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000108,
+            "outcome": "collision",
+            "steps": 251,
+            "final_distance_m": 1.0356436759481675,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000109,
+            "outcome": "collision",
+            "steps": 1,
+            "final_distance_m": 41.868001156723096,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000110,
+            "outcome": "success",
+            "steps": 186,
+            "final_distance_m": 4.783510669593131,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000111,
+            "outcome": "success",
+            "steps": 190,
+            "final_distance_m": 4.90758734698951,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000112,
+            "outcome": "success",
+            "steps": 190,
+            "final_distance_m": 4.999631612634952,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000113,
+            "outcome": "success",
+            "steps": 200,
+            "final_distance_m": 4.898721168425356,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000114,
+            "outcome": "success",
+            "steps": 209,
+            "final_distance_m": 4.806915752142323,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000115,
+            "outcome": "success",
+            "steps": 201,
+            "final_distance_m": 4.792097741834351,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000116,
+            "outcome": "collision",
+            "steps": 163,
+            "final_distance_m": 19.146636466926466,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000117,
+            "outcome": "success",
+            "steps": 185,
+            "final_distance_m": 4.890104999721893,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000118,
+            "outcome": "success",
+            "steps": 197,
+            "final_distance_m": 4.99605011785322,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000119,
+            "outcome": "success",
+            "steps": 184,
+            "final_distance_m": 4.9555106616169535,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000120,
+            "outcome": "collision",
+            "steps": 33,
+            "final_distance_m": 66.10755278028547,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000121,
+            "outcome": "success",
+            "steps": 184,
+            "final_distance_m": 4.845504665051472,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000122,
+            "outcome": "success",
+            "steps": 218,
+            "final_distance_m": 4.8660426439167646,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000123,
+            "outcome": "success",
+            "steps": 199,
+            "final_distance_m": 4.971737885680152,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000124,
+            "outcome": "success",
+            "steps": 239,
+            "final_distance_m": 4.872470591923659,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000125,
+            "outcome": "success",
+            "steps": 180,
+            "final_distance_m": 4.857625135735898,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000126,
+            "outcome": "success",
+            "steps": 179,
+            "final_distance_m": 4.917083402180869,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000127,
+            "outcome": "success",
+            "steps": 202,
+            "final_distance_m": 4.843238334963201,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000128,
+            "outcome": "success",
+            "steps": 188,
+            "final_distance_m": 4.9165566606557505,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000129,
+            "outcome": "success",
+            "steps": 168,
+            "final_distance_m": 4.851349129592343,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000130,
+            "outcome": "success",
+            "steps": 239,
+            "final_distance_m": 4.942381215390956,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000131,
+            "outcome": "success",
+            "steps": 182,
+            "final_distance_m": 4.15862115800958,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000132,
+            "outcome": "success",
+            "steps": 197,
+            "final_distance_m": 4.883231556366632,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000133,
+            "outcome": "success",
+            "steps": 192,
+            "final_distance_m": 4.953914169850029,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000134,
+            "outcome": "success",
+            "steps": 200,
+            "final_distance_m": 4.868258927656072,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000135,
+            "outcome": "collision",
+            "steps": 135,
+            "final_distance_m": 25.289106483245384,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000136,
+            "outcome": "success",
+            "steps": 226,
+            "final_distance_m": 4.928823378046273,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000137,
+            "outcome": "success",
+            "steps": 203,
+            "final_distance_m": 4.984424145595366,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000138,
+            "outcome": "success",
+            "steps": 200,
+            "final_distance_m": 4.9961030432845375,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000139,
+            "outcome": "success",
+            "steps": 189,
+            "final_distance_m": 4.851716844497932,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000140,
+            "outcome": "collision",
+            "steps": 63,
+            "final_distance_m": 58.444529356595396,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000141,
+            "outcome": "success",
+            "steps": 212,
+            "final_distance_m": 4.888437600324046,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000142,
+            "outcome": "success",
+            "steps": 183,
+            "final_distance_m": 4.961317454641474,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000143,
+            "outcome": "collision",
+            "steps": 19,
+            "final_distance_m": 58.3314848450503,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000144,
+            "outcome": "success",
+            "steps": 189,
+            "final_distance_m": 3.86068383699824,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000145,
+            "outcome": "success",
+            "steps": 182,
+            "final_distance_m": 4.92900597387567,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000146,
+            "outcome": "success",
+            "steps": 178,
+            "final_distance_m": 4.943264716111774,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000147,
+            "outcome": "success",
+            "steps": 190,
+            "final_distance_m": 3.8136509376540406,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000148,
+            "outcome": "success",
+            "steps": 207,
+            "final_distance_m": 4.975183312944411,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000149,
+            "outcome": "collision",
+            "steps": 188,
+            "final_distance_m": 8.413192970347522,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000150,
+            "outcome": "collision",
+            "steps": 1,
+            "final_distance_m": 60.0187727798778,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000151,
+            "outcome": "success",
+            "steps": 238,
+            "final_distance_m": 4.885101423115864,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000152,
+            "outcome": "success",
+            "steps": 199,
+            "final_distance_m": 4.87785601180009,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000153,
+            "outcome": "success",
+            "steps": 194,
+            "final_distance_m": 4.864911141981602,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000154,
+            "outcome": "success",
+            "steps": 185,
+            "final_distance_m": 4.999032310098265,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000155,
+            "outcome": "success",
+            "steps": 198,
+            "final_distance_m": 4.872368630673896,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000156,
+            "outcome": "success",
+            "steps": 170,
+            "final_distance_m": 4.947965062363344,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000157,
+            "outcome": "out_of_bounds",
+            "steps": 185,
+            "final_distance_m": 11.761089957544488,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000158,
+            "outcome": "success",
+            "steps": 181,
+            "final_distance_m": 4.889661498128019,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000159,
+            "outcome": "success",
+            "steps": 211,
+            "final_distance_m": 4.821918523766236,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000160,
+            "outcome": "success",
+            "steps": 187,
+            "final_distance_m": 4.959217987614499,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000161,
+            "outcome": "success",
+            "steps": 191,
+            "final_distance_m": 3.4000314475680877,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000162,
+            "outcome": "success",
+            "steps": 199,
+            "final_distance_m": 4.968626538690751,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000163,
+            "outcome": "success",
+            "steps": 199,
+            "final_distance_m": 4.868443223475031,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000164,
+            "outcome": "collision",
+            "steps": 220,
+            "final_distance_m": 1.1073181000508103,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000165,
+            "outcome": "success",
+            "steps": 184,
+            "final_distance_m": 4.876098305020681,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000166,
+            "outcome": "success",
+            "steps": 178,
+            "final_distance_m": 3.248403939876627,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000167,
+            "outcome": "success",
+            "steps": 183,
+            "final_distance_m": 4.88118476862826,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000168,
+            "outcome": "success",
+            "steps": 161,
+            "final_distance_m": 4.992387310523772,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000169,
+            "outcome": "success",
+            "steps": 176,
+            "final_distance_m": 4.874330262094086,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000170,
+            "outcome": "success",
+            "steps": 220,
+            "final_distance_m": 4.847867281140971,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000171,
+            "outcome": "success",
+            "steps": 174,
+            "final_distance_m": 4.755781722860313,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000172,
+            "outcome": "success",
+            "steps": 170,
+            "final_distance_m": 4.933071845584445,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000173,
+            "outcome": "collision",
+            "steps": 138,
+            "final_distance_m": 18.25641830652042,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000174,
+            "outcome": "collision",
+            "steps": 1,
+            "final_distance_m": 26.320625619678523,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000175,
+            "outcome": "collision",
+            "steps": 1,
+            "final_distance_m": 53.65854677926829,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000176,
+            "outcome": "success",
+            "steps": 182,
+            "final_distance_m": 4.850045474275665,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000177,
+            "outcome": "success",
+            "steps": 206,
+            "final_distance_m": 4.929261376002028,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000178,
+            "outcome": "success",
+            "steps": 216,
+            "final_distance_m": 4.939920583484813,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000179,
+            "outcome": "collision",
+            "steps": 26,
+            "final_distance_m": 66.20288744392349,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000180,
+            "outcome": "collision",
+            "steps": 1,
+            "final_distance_m": 58.93487290047785,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000181,
+            "outcome": "success",
+            "steps": 182,
+            "final_distance_m": 4.973901907351662,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000182,
+            "outcome": "success",
+            "steps": 177,
+            "final_distance_m": 4.758567666753276,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000183,
+            "outcome": "success",
+            "steps": 208,
+            "final_distance_m": 4.80062283889498,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000184,
+            "outcome": "success",
+            "steps": 190,
+            "final_distance_m": 4.979050756402645,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000185,
+            "outcome": "success",
+            "steps": 172,
+            "final_distance_m": 4.9753101789147625,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000186,
+            "outcome": "success",
+            "steps": 202,
+            "final_distance_m": 4.838031544967014,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000187,
+            "outcome": "success",
+            "steps": 189,
+            "final_distance_m": 4.886594547058877,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000188,
+            "outcome": "success",
+            "steps": 170,
+            "final_distance_m": 4.9310703012456365,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000189,
+            "outcome": "success",
+            "steps": 178,
+            "final_distance_m": 4.818342032206102,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000190,
+            "outcome": "success",
+            "steps": 215,
+            "final_distance_m": 4.927057957415893,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000191,
+            "outcome": "success",
+            "steps": 198,
+            "final_distance_m": 4.775479987666757,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000192,
+            "outcome": "success",
+            "steps": 201,
+            "final_distance_m": 4.963255576478579,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000193,
+            "outcome": "success",
+            "steps": 183,
+            "final_distance_m": 4.996965296093242,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000194,
+            "outcome": "success",
+            "steps": 196,
+            "final_distance_m": 4.992039126465184,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000195,
+            "outcome": "success",
+            "steps": 232,
+            "final_distance_m": 4.9179290408270235,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000196,
+            "outcome": "success",
+            "steps": 188,
+            "final_distance_m": 4.1031950227169025,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000197,
+            "outcome": "success",
+            "steps": 170,
+            "final_distance_m": 4.747022091160659,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000198,
+            "outcome": "success",
+            "steps": 193,
+            "final_distance_m": 4.786699589533179,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000199,
+            "outcome": "collision",
+            "steps": 43,
+            "final_distance_m": 56.235983062297976,
+            "is_success": false,
+            "retries": 0
+          }
+        ],
+        "backend_faults": {
+          "fault_counts": {
+            "CameraPoseError": 18,
+            "StepTimingError": 0,
+            "StaleStateError": 0,
+            "CommandTimeoutError": 0,
+            "Timeout": 0,
+            "EpisodeSetupError": 0
+          },
+          "recovered_counts": {
+            "CameraPoseError": 18,
+            "StepTimingError": 0,
+            "StaleStateError": 0,
+            "CommandTimeoutError": 0,
+            "Timeout": 0,
+            "EpisodeSetupError": 0
+          },
+          "relaunch_count": 1
+        }
+      },
+      "stochastic": {
+        "status": "ok",
+        "error": null,
+        "episodes_requested": 200,
+        "n_episodes": 200,
+        "success_rate": 0.845,
+        "collision_rate": 0.12,
+        "timeout_rate": 0.005,
+        "out_of_bounds_rate": 0.03,
+        "mean_steps": 185.215,
+        "mean_final_distance_m": 8.926668518654223,
+        "episodes_retried": 0,
+        "fault_counts": {
+          "CameraPoseError": 0,
+          "StepTimingError": 0,
+          "StaleStateError": 0,
+          "CommandTimeoutError": 0,
+          "Timeout": 0,
+          "EpisodeSetupError": 0
+        },
+        "per_episode": [
+          {
+            "seed": 100000000,
+            "outcome": "collision",
+            "steps": 151,
+            "final_distance_m": 28.189408274994005,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000001,
+            "outcome": "success",
+            "steps": 189,
+            "final_distance_m": 4.868452898528825,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000002,
+            "outcome": "success",
+            "steps": 179,
+            "final_distance_m": 4.785594209682967,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000003,
+            "outcome": "success",
+            "steps": 186,
+            "final_distance_m": 4.978893482940613,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000004,
+            "outcome": "success",
+            "steps": 220,
+            "final_distance_m": 4.853493507465811,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000005,
+            "outcome": "success",
+            "steps": 195,
+            "final_distance_m": 4.625984392066862,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000006,
+            "outcome": "success",
+            "steps": 171,
+            "final_distance_m": 4.889564678504449,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000007,
+            "outcome": "collision",
+            "steps": 46,
+            "final_distance_m": 61.550913874724145,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000008,
+            "outcome": "success",
+            "steps": 187,
+            "final_distance_m": 4.958526172192503,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000009,
+            "outcome": "success",
+            "steps": 189,
+            "final_distance_m": 4.796092223028959,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000010,
+            "outcome": "success",
+            "steps": 197,
+            "final_distance_m": 4.836639878056784,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000011,
+            "outcome": "success",
+            "steps": 195,
+            "final_distance_m": 4.826065113304766,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000012,
+            "outcome": "out_of_bounds",
+            "steps": 149,
+            "final_distance_m": 18.987419434619305,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000013,
+            "outcome": "success",
+            "steps": 253,
+            "final_distance_m": 4.944994040940855,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000014,
+            "outcome": "success",
+            "steps": 202,
+            "final_distance_m": 4.995514492764113,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000015,
+            "outcome": "collision",
+            "steps": 145,
+            "final_distance_m": 18.884004688306362,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000016,
+            "outcome": "success",
+            "steps": 204,
+            "final_distance_m": 4.971644492999252,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000017,
+            "outcome": "success",
+            "steps": 220,
+            "final_distance_m": 4.833296005656925,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000018,
+            "outcome": "success",
+            "steps": 211,
+            "final_distance_m": 4.660095421242557,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000019,
+            "outcome": "success",
+            "steps": 187,
+            "final_distance_m": 4.869022963473825,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000020,
+            "outcome": "collision",
+            "steps": 34,
+            "final_distance_m": 59.34964736055219,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000021,
+            "outcome": "collision",
+            "steps": 1,
+            "final_distance_m": 74.63951010655435,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000022,
+            "outcome": "success",
+            "steps": 223,
+            "final_distance_m": 4.101862921409385,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000023,
+            "outcome": "success",
+            "steps": 186,
+            "final_distance_m": 4.946385436596978,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000024,
+            "outcome": "success",
+            "steps": 198,
+            "final_distance_m": 4.897980613583049,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000025,
+            "outcome": "success",
+            "steps": 187,
+            "final_distance_m": 4.927839368572182,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000026,
+            "outcome": "collision",
+            "steps": 173,
+            "final_distance_m": 10.928947469216025,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000027,
+            "outcome": "success",
+            "steps": 166,
+            "final_distance_m": 4.960371719101018,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000028,
+            "outcome": "success",
+            "steps": 181,
+            "final_distance_m": 3.562965426727197,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000029,
+            "outcome": "success",
+            "steps": 191,
+            "final_distance_m": 4.9994801692498605,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000030,
+            "outcome": "success",
+            "steps": 180,
+            "final_distance_m": 4.843754555675415,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000031,
+            "outcome": "success",
+            "steps": 218,
+            "final_distance_m": 4.935000764975041,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000032,
+            "outcome": "success",
+            "steps": 186,
+            "final_distance_m": 4.848189985512792,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000033,
+            "outcome": "success",
+            "steps": 207,
+            "final_distance_m": 4.930690010935297,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000034,
+            "outcome": "success",
+            "steps": 184,
+            "final_distance_m": 4.947025761805306,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000035,
+            "outcome": "success",
+            "steps": 200,
+            "final_distance_m": 4.82399846815146,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000036,
+            "outcome": "success",
+            "steps": 209,
+            "final_distance_m": 3.4517147208477628,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000037,
+            "outcome": "collision",
+            "steps": 232,
+            "final_distance_m": 1.11130615654315,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000038,
+            "outcome": "collision",
+            "steps": 1,
+            "final_distance_m": 24.80546421648381,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000039,
+            "outcome": "success",
+            "steps": 194,
+            "final_distance_m": 4.981429831841494,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000040,
+            "outcome": "success",
+            "steps": 257,
+            "final_distance_m": 4.862309801289613,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000041,
+            "outcome": "success",
+            "steps": 215,
+            "final_distance_m": 4.942331369903593,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000042,
+            "outcome": "out_of_bounds",
+            "steps": 147,
+            "final_distance_m": 19.55325739472375,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000043,
+            "outcome": "success",
+            "steps": 222,
+            "final_distance_m": 4.9865526890879694,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000044,
+            "outcome": "success",
+            "steps": 176,
+            "final_distance_m": 4.891181479573216,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000045,
+            "outcome": "success",
+            "steps": 181,
+            "final_distance_m": 4.298568079145947,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000046,
+            "outcome": "success",
+            "steps": 184,
+            "final_distance_m": 4.802323333472308,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000047,
+            "outcome": "success",
+            "steps": 217,
+            "final_distance_m": 4.8956155750634185,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000048,
+            "outcome": "success",
+            "steps": 198,
+            "final_distance_m": 4.91755045961314,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000049,
+            "outcome": "success",
+            "steps": 199,
+            "final_distance_m": 4.201416423346728,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000050,
+            "outcome": "success",
+            "steps": 184,
+            "final_distance_m": 4.833367744618928,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000051,
+            "outcome": "success",
+            "steps": 212,
+            "final_distance_m": 4.948858639470744,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000052,
+            "outcome": "success",
+            "steps": 231,
+            "final_distance_m": 4.840451914905923,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000053,
+            "outcome": "success",
+            "steps": 204,
+            "final_distance_m": 4.967914942483606,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000054,
+            "outcome": "success",
+            "steps": 206,
+            "final_distance_m": 4.893749762976463,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000055,
+            "outcome": "success",
+            "steps": 207,
+            "final_distance_m": 4.993781248364835,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000056,
+            "outcome": "success",
+            "steps": 198,
+            "final_distance_m": 3.940931504068915,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000057,
+            "outcome": "success",
+            "steps": 193,
+            "final_distance_m": 4.941178149445702,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000058,
+            "outcome": "success",
+            "steps": 186,
+            "final_distance_m": 4.825986224257867,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000059,
+            "outcome": "out_of_bounds",
+            "steps": 160,
+            "final_distance_m": 24.605643154784687,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000060,
+            "outcome": "success",
+            "steps": 194,
+            "final_distance_m": 4.835731151225795,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000061,
+            "outcome": "success",
+            "steps": 208,
+            "final_distance_m": 4.907643591489615,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000062,
+            "outcome": "success",
+            "steps": 217,
+            "final_distance_m": 4.910132852017946,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000063,
+            "outcome": "collision",
+            "steps": 177,
+            "final_distance_m": 21.23463235103315,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000064,
+            "outcome": "collision",
+            "steps": 153,
+            "final_distance_m": 16.783398233481226,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000065,
+            "outcome": "success",
+            "steps": 176,
+            "final_distance_m": 4.937563087089533,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000066,
+            "outcome": "success",
+            "steps": 202,
+            "final_distance_m": 4.9744610361340955,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000067,
+            "outcome": "success",
+            "steps": 177,
+            "final_distance_m": 4.950560947032348,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000068,
+            "outcome": "success",
+            "steps": 182,
+            "final_distance_m": 4.984460971086499,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000069,
+            "outcome": "success",
+            "steps": 194,
+            "final_distance_m": 4.847976311093499,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000070,
+            "outcome": "success",
+            "steps": 192,
+            "final_distance_m": 4.037884874548956,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000071,
+            "outcome": "success",
+            "steps": 219,
+            "final_distance_m": 4.974253918857219,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000072,
+            "outcome": "success",
+            "steps": 169,
+            "final_distance_m": 4.941071130591743,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000073,
+            "outcome": "collision",
+            "steps": 18,
+            "final_distance_m": 77.34619600521803,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000074,
+            "outcome": "success",
+            "steps": 206,
+            "final_distance_m": 4.9553552166229675,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000075,
+            "outcome": "success",
+            "steps": 220,
+            "final_distance_m": 4.857253576620734,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000076,
+            "outcome": "collision",
+            "steps": 61,
+            "final_distance_m": 48.782596488697365,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000077,
+            "outcome": "success",
+            "steps": 197,
+            "final_distance_m": 4.853715769478779,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000078,
+            "outcome": "collision",
+            "steps": 234,
+            "final_distance_m": 11.056022146438801,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000079,
+            "outcome": "success",
+            "steps": 233,
+            "final_distance_m": 4.881567010033138,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000080,
+            "outcome": "success",
+            "steps": 176,
+            "final_distance_m": 4.877517303380268,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000081,
+            "outcome": "success",
+            "steps": 177,
+            "final_distance_m": 4.66169205346804,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000082,
+            "outcome": "collision",
+            "steps": 82,
+            "final_distance_m": 43.207201349381165,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000083,
+            "outcome": "success",
+            "steps": 170,
+            "final_distance_m": 4.836186646913126,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000084,
+            "outcome": "success",
+            "steps": 181,
+            "final_distance_m": 4.971635154814494,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000085,
+            "outcome": "success",
+            "steps": 206,
+            "final_distance_m": 4.0217267375252606,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000086,
+            "outcome": "success",
+            "steps": 199,
+            "final_distance_m": 4.906916305843228,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000087,
+            "outcome": "success",
+            "steps": 201,
+            "final_distance_m": 4.9720112285649165,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000088,
+            "outcome": "success",
+            "steps": 210,
+            "final_distance_m": 4.849946985898144,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000089,
+            "outcome": "success",
+            "steps": 212,
+            "final_distance_m": 4.933746228060983,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000090,
+            "outcome": "success",
+            "steps": 213,
+            "final_distance_m": 4.644802539369617,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000091,
+            "outcome": "success",
+            "steps": 216,
+            "final_distance_m": 4.134260105871328,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000092,
+            "outcome": "success",
+            "steps": 189,
+            "final_distance_m": 4.8236964547976156,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000093,
+            "outcome": "success",
+            "steps": 225,
+            "final_distance_m": 4.965925092445596,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000094,
+            "outcome": "success",
+            "steps": 188,
+            "final_distance_m": 4.905910078480405,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000095,
+            "outcome": "success",
+            "steps": 192,
+            "final_distance_m": 4.934985723721018,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000096,
+            "outcome": "success",
+            "steps": 179,
+            "final_distance_m": 4.966778841115795,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000097,
+            "outcome": "success",
+            "steps": 189,
+            "final_distance_m": 4.796424811654495,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000098,
+            "outcome": "collision",
+            "steps": 169,
+            "final_distance_m": 16.583693821664454,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000099,
+            "outcome": "collision",
+            "steps": 1,
+            "final_distance_m": 26.21464329925409,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000100,
+            "outcome": "success",
+            "steps": 204,
+            "final_distance_m": 3.599077371076215,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000101,
+            "outcome": "collision",
+            "steps": 176,
+            "final_distance_m": 10.913209133098006,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000102,
+            "outcome": "collision",
+            "steps": 1,
+            "final_distance_m": 27.284503535028524,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000103,
+            "outcome": "success",
+            "steps": 184,
+            "final_distance_m": 4.897979201815952,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000104,
+            "outcome": "success",
+            "steps": 181,
+            "final_distance_m": 4.994406210750022,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000105,
+            "outcome": "success",
+            "steps": 195,
+            "final_distance_m": 4.973097697756335,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000106,
+            "outcome": "collision",
+            "steps": 35,
+            "final_distance_m": 78.49626748910363,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000107,
+            "outcome": "success",
+            "steps": 198,
+            "final_distance_m": 4.891507483975127,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000108,
+            "outcome": "success",
+            "steps": 189,
+            "final_distance_m": 4.869763079988263,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000109,
+            "outcome": "success",
+            "steps": 205,
+            "final_distance_m": 4.963316910258581,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000110,
+            "outcome": "success",
+            "steps": 191,
+            "final_distance_m": 4.909223696657114,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000111,
+            "outcome": "success",
+            "steps": 186,
+            "final_distance_m": 4.897523641263003,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000112,
+            "outcome": "success",
+            "steps": 203,
+            "final_distance_m": 3.8201221028801147,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000113,
+            "outcome": "success",
+            "steps": 206,
+            "final_distance_m": 4.91412101110133,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000114,
+            "outcome": "success",
+            "steps": 202,
+            "final_distance_m": 4.932293159655004,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000115,
+            "outcome": "success",
+            "steps": 206,
+            "final_distance_m": 4.942444743197307,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000116,
+            "outcome": "success",
+            "steps": 206,
+            "final_distance_m": 4.787686358196727,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000117,
+            "outcome": "collision",
+            "steps": 246,
+            "final_distance_m": 1.0156226705797913,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000118,
+            "outcome": "success",
+            "steps": 213,
+            "final_distance_m": 4.945682700257873,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000119,
+            "outcome": "success",
+            "steps": 192,
+            "final_distance_m": 4.881148488183164,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000120,
+            "outcome": "success",
+            "steps": 213,
+            "final_distance_m": 4.844732151628366,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000121,
+            "outcome": "success",
+            "steps": 183,
+            "final_distance_m": 4.959047296512253,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000122,
+            "outcome": "success",
+            "steps": 222,
+            "final_distance_m": 4.917685838192226,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000123,
+            "outcome": "timeout",
+            "steps": 300,
+            "final_distance_m": 4.900778171879185,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000124,
+            "outcome": "success",
+            "steps": 246,
+            "final_distance_m": 4.988298925795242,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000125,
+            "outcome": "success",
+            "steps": 193,
+            "final_distance_m": 4.988143593836668,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000126,
+            "outcome": "success",
+            "steps": 186,
+            "final_distance_m": 4.962317357807192,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000127,
+            "outcome": "success",
+            "steps": 199,
+            "final_distance_m": 4.955816933162075,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000128,
+            "outcome": "success",
+            "steps": 188,
+            "final_distance_m": 4.913441037642444,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000129,
+            "outcome": "success",
+            "steps": 176,
+            "final_distance_m": 4.9144940763943845,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000130,
+            "outcome": "success",
+            "steps": 243,
+            "final_distance_m": 4.847050374748507,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000131,
+            "outcome": "success",
+            "steps": 187,
+            "final_distance_m": 4.947225576488982,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000132,
+            "outcome": "success",
+            "steps": 199,
+            "final_distance_m": 4.991595485415325,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000133,
+            "outcome": "success",
+            "steps": 190,
+            "final_distance_m": 4.737351647813145,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000134,
+            "outcome": "collision",
+            "steps": 81,
+            "final_distance_m": 46.37958004963869,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000135,
+            "outcome": "success",
+            "steps": 218,
+            "final_distance_m": 4.862225530684682,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000136,
+            "outcome": "collision",
+            "steps": 96,
+            "final_distance_m": 48.67121302605779,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000137,
+            "outcome": "success",
+            "steps": 203,
+            "final_distance_m": 4.890827770546742,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000138,
+            "outcome": "success",
+            "steps": 197,
+            "final_distance_m": 4.926662609378557,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000139,
+            "outcome": "success",
+            "steps": 196,
+            "final_distance_m": 4.961040606659872,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000140,
+            "outcome": "success",
+            "steps": 214,
+            "final_distance_m": 4.759860822837979,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000141,
+            "outcome": "success",
+            "steps": 220,
+            "final_distance_m": 4.950554425190871,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000142,
+            "outcome": "success",
+            "steps": 186,
+            "final_distance_m": 4.874767151194418,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000143,
+            "outcome": "success",
+            "steps": 172,
+            "final_distance_m": 4.908141928954748,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000144,
+            "outcome": "success",
+            "steps": 174,
+            "final_distance_m": 4.932200771686816,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000145,
+            "outcome": "success",
+            "steps": 185,
+            "final_distance_m": 4.839494013574698,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000146,
+            "outcome": "success",
+            "steps": 174,
+            "final_distance_m": 4.938588105127991,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000147,
+            "outcome": "success",
+            "steps": 190,
+            "final_distance_m": 4.881697203497177,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000148,
+            "outcome": "success",
+            "steps": 219,
+            "final_distance_m": 4.822375573803468,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000149,
+            "outcome": "success",
+            "steps": 185,
+            "final_distance_m": 4.9275872229743936,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000150,
+            "outcome": "success",
+            "steps": 174,
+            "final_distance_m": 4.63382396489453,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000151,
+            "outcome": "success",
+            "steps": 244,
+            "final_distance_m": 4.848975724133216,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000152,
+            "outcome": "success",
+            "steps": 193,
+            "final_distance_m": 4.941928487034856,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000153,
+            "outcome": "success",
+            "steps": 196,
+            "final_distance_m": 4.90782552513493,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000154,
+            "outcome": "success",
+            "steps": 196,
+            "final_distance_m": 4.808571497546958,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000155,
+            "outcome": "success",
+            "steps": 201,
+            "final_distance_m": 4.9687255673294946,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000156,
+            "outcome": "success",
+            "steps": 182,
+            "final_distance_m": 4.961423559920702,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000157,
+            "outcome": "success",
+            "steps": 201,
+            "final_distance_m": 4.945880262510691,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000158,
+            "outcome": "success",
+            "steps": 183,
+            "final_distance_m": 4.95119804645212,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000159,
+            "outcome": "success",
+            "steps": 219,
+            "final_distance_m": 4.988838104235181,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000160,
+            "outcome": "success",
+            "steps": 193,
+            "final_distance_m": 4.899975360334881,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000161,
+            "outcome": "success",
+            "steps": 194,
+            "final_distance_m": 4.009486381734857,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000162,
+            "outcome": "success",
+            "steps": 203,
+            "final_distance_m": 4.926168078205308,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000163,
+            "outcome": "success",
+            "steps": 201,
+            "final_distance_m": 4.8012612421731005,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000164,
+            "outcome": "out_of_bounds",
+            "steps": 145,
+            "final_distance_m": 17.727537839770758,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000165,
+            "outcome": "success",
+            "steps": 187,
+            "final_distance_m": 4.96825105657306,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000166,
+            "outcome": "success",
+            "steps": 184,
+            "final_distance_m": 4.846181340995653,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000167,
+            "outcome": "success",
+            "steps": 180,
+            "final_distance_m": 4.930919057793838,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000168,
+            "outcome": "success",
+            "steps": 164,
+            "final_distance_m": 4.8451475429392294,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000169,
+            "outcome": "success",
+            "steps": 184,
+            "final_distance_m": 4.948034886206331,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000170,
+            "outcome": "success",
+            "steps": 227,
+            "final_distance_m": 4.785143403545846,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000171,
+            "outcome": "success",
+            "steps": 181,
+            "final_distance_m": 4.865530212474164,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000172,
+            "outcome": "success",
+            "steps": 172,
+            "final_distance_m": 4.9961175599805046,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000173,
+            "outcome": "success",
+            "steps": 188,
+            "final_distance_m": 4.905760259464602,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000174,
+            "outcome": "success",
+            "steps": 187,
+            "final_distance_m": 4.109759714017928,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000175,
+            "outcome": "success",
+            "steps": 181,
+            "final_distance_m": 4.842095098587996,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000176,
+            "outcome": "success",
+            "steps": 194,
+            "final_distance_m": 4.845922915791758,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000177,
+            "outcome": "success",
+            "steps": 207,
+            "final_distance_m": 4.994270650440115,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000178,
+            "outcome": "success",
+            "steps": 224,
+            "final_distance_m": 4.87210648265584,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000179,
+            "outcome": "collision",
+            "steps": 28,
+            "final_distance_m": 65.74476445593623,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000180,
+            "outcome": "out_of_bounds",
+            "steps": 143,
+            "final_distance_m": 25.231859549270546,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000181,
+            "outcome": "success",
+            "steps": 189,
+            "final_distance_m": 4.966696664881333,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000182,
+            "outcome": "success",
+            "steps": 189,
+            "final_distance_m": 4.819192860296572,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000183,
+            "outcome": "success",
+            "steps": 203,
+            "final_distance_m": 4.966454795306378,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000184,
+            "outcome": "success",
+            "steps": 204,
+            "final_distance_m": 4.810572307701597,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000185,
+            "outcome": "success",
+            "steps": 175,
+            "final_distance_m": 4.839567645546406,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000186,
+            "outcome": "success",
+            "steps": 208,
+            "final_distance_m": 4.998606813273758,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000187,
+            "outcome": "success",
+            "steps": 191,
+            "final_distance_m": 4.805500697687861,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000188,
+            "outcome": "success",
+            "steps": 181,
+            "final_distance_m": 4.970760335854171,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000189,
+            "outcome": "success",
+            "steps": 178,
+            "final_distance_m": 4.7970588016381095,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000190,
+            "outcome": "success",
+            "steps": 220,
+            "final_distance_m": 4.883772288973937,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000191,
+            "outcome": "success",
+            "steps": 208,
+            "final_distance_m": 4.990309425581725,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000192,
+            "outcome": "success",
+            "steps": 203,
+            "final_distance_m": 4.962813285214747,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000193,
+            "outcome": "collision",
+            "steps": 121,
+            "final_distance_m": 28.281354229910736,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000194,
+            "outcome": "success",
+            "steps": 202,
+            "final_distance_m": 4.738339720149712,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000195,
+            "outcome": "out_of_bounds",
+            "steps": 197,
+            "final_distance_m": 11.889842901207517,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000196,
+            "outcome": "success",
+            "steps": 184,
+            "final_distance_m": 4.8827447766280425,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000197,
+            "outcome": "success",
+            "steps": 178,
+            "final_distance_m": 4.909770099263795,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000198,
+            "outcome": "success",
+            "steps": 201,
+            "final_distance_m": 4.777588281931973,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000199,
+            "outcome": "success",
+            "steps": 193,
+            "final_distance_m": 4.961149376323534,
+            "is_success": true,
+            "retries": 0
+          }
+        ],
+        "backend_faults": {
+          "fault_counts": {
+            "CameraPoseError": 16,
+            "StepTimingError": 0,
+            "StaleStateError": 0,
+            "CommandTimeoutError": 0,
+            "Timeout": 0,
+            "EpisodeSetupError": 0
+          },
+          "recovered_counts": {
+            "CameraPoseError": 16,
+            "StepTimingError": 0,
+            "StaleStateError": 0,
+            "CommandTimeoutError": 0,
+            "Timeout": 0,
+            "EpisodeSetupError": 0
+          },
+          "relaunch_count": 2
+        }
+      }
+    },
+    "final": {
+      "path": "/home/nvidiasims/research_uav/autofly_ue5/runs/expert/s01/final.zip",
+      "sha256": "b58efc8be95b1b5251f837031d0d6f57076eb14a6070c33b0d2ecd6836a99fef",
+      "deterministic": {
+        "status": "ok",
+        "error": null,
+        "episodes_requested": 200,
+        "n_episodes": 200,
+        "success_rate": 0.9,
+        "collision_rate": 0.065,
+        "timeout_rate": 0.0,
+        "out_of_bounds_rate": 0.035,
+        "mean_steps": 187.05,
+        "mean_final_distance_m": 4.640294870364829,
+        "episodes_retried": 0,
+        "fault_counts": {
+          "CameraPoseError": 0,
+          "StepTimingError": 0,
+          "StaleStateError": 0,
+          "CommandTimeoutError": 0,
+          "Timeout": 0,
+          "EpisodeSetupError": 0
+        },
+        "per_episode": [
+          {
+            "seed": 100000000,
+            "outcome": "success",
+            "steps": 219,
+            "final_distance_m": 2.73452223142122,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000001,
+            "outcome": "success",
+            "steps": 193,
+            "final_distance_m": 2.218472045710025,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000002,
+            "outcome": "success",
+            "steps": 185,
+            "final_distance_m": 2.2238344190303465,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000003,
+            "outcome": "success",
+            "steps": 187,
+            "final_distance_m": 2.194096189887313,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000004,
+            "outcome": "success",
+            "steps": 218,
+            "final_distance_m": 2.3237644383975096,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000005,
+            "outcome": "success",
+            "steps": 185,
+            "final_distance_m": 2.1552270642613607,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000006,
+            "outcome": "collision",
+            "steps": 128,
+            "final_distance_m": 17.263515630745058,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000007,
+            "outcome": "success",
+            "steps": 250,
+            "final_distance_m": 2.3197004090642532,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000008,
+            "outcome": "success",
+            "steps": 191,
+            "final_distance_m": 2.361787875902448,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000009,
+            "outcome": "success",
+            "steps": 192,
+            "final_distance_m": 2.376280144625989,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000010,
+            "outcome": "success",
+            "steps": 197,
+            "final_distance_m": 2.6362443076172792,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000011,
+            "outcome": "success",
+            "steps": 189,
+            "final_distance_m": 2.460194042684588,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000012,
+            "outcome": "success",
+            "steps": 182,
+            "final_distance_m": 2.1844990223201646,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000013,
+            "outcome": "success",
+            "steps": 247,
+            "final_distance_m": 2.424379619033966,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000014,
+            "outcome": "success",
+            "steps": 192,
+            "final_distance_m": 2.140296095043129,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000015,
+            "outcome": "success",
+            "steps": 194,
+            "final_distance_m": 2.303036319092466,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000016,
+            "outcome": "success",
+            "steps": 198,
+            "final_distance_m": 2.215451378790791,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000017,
+            "outcome": "success",
+            "steps": 200,
+            "final_distance_m": 2.555632946861512,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000018,
+            "outcome": "success",
+            "steps": 210,
+            "final_distance_m": 2.3387141338685202,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000019,
+            "outcome": "success",
+            "steps": 188,
+            "final_distance_m": 2.155806487882741,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000020,
+            "outcome": "success",
+            "steps": 186,
+            "final_distance_m": 2.618058621929751,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000021,
+            "outcome": "success",
+            "steps": 202,
+            "final_distance_m": 2.42481755008739,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000022,
+            "outcome": "success",
+            "steps": 195,
+            "final_distance_m": 2.6185321055717714,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000023,
+            "outcome": "success",
+            "steps": 183,
+            "final_distance_m": 2.5692857356327234,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000024,
+            "outcome": "collision",
+            "steps": 166,
+            "final_distance_m": 10.082628896115597,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000025,
+            "outcome": "collision",
+            "steps": 1,
+            "final_distance_m": 33.92294515144034,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000026,
+            "outcome": "success",
+            "steps": 182,
+            "final_distance_m": 2.219964730260604,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000027,
+            "outcome": "success",
+            "steps": 170,
+            "final_distance_m": 2.4210324697024235,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000028,
+            "outcome": "success",
+            "steps": 172,
+            "final_distance_m": 2.070083490564963,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000029,
+            "outcome": "success",
+            "steps": 187,
+            "final_distance_m": 2.2992585169965962,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000030,
+            "outcome": "success",
+            "steps": 186,
+            "final_distance_m": 2.195020841674945,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000031,
+            "outcome": "success",
+            "steps": 204,
+            "final_distance_m": 2.2700111872403927,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000032,
+            "outcome": "success",
+            "steps": 192,
+            "final_distance_m": 2.027155768281039,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000033,
+            "outcome": "success",
+            "steps": 198,
+            "final_distance_m": 2.5141604558777453,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000034,
+            "outcome": "success",
+            "steps": 188,
+            "final_distance_m": 2.1462598764543785,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000035,
+            "outcome": "success",
+            "steps": 200,
+            "final_distance_m": 2.3166084038461245,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000036,
+            "outcome": "success",
+            "steps": 195,
+            "final_distance_m": 2.480491993753203,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000037,
+            "outcome": "success",
+            "steps": 181,
+            "final_distance_m": 2.1770029906830692,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000038,
+            "outcome": "success",
+            "steps": 184,
+            "final_distance_m": 2.683140835715506,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000039,
+            "outcome": "success",
+            "steps": 198,
+            "final_distance_m": 2.4188174178972472,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000040,
+            "outcome": "success",
+            "steps": 248,
+            "final_distance_m": 2.393057129307257,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000041,
+            "outcome": "collision",
+            "steps": 133,
+            "final_distance_m": 24.599296491270504,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000042,
+            "outcome": "success",
+            "steps": 189,
+            "final_distance_m": 2.5457706278964647,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000043,
+            "outcome": "success",
+            "steps": 253,
+            "final_distance_m": 2.492771817603102,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000044,
+            "outcome": "success",
+            "steps": 176,
+            "final_distance_m": 1.9970953877571762,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000045,
+            "outcome": "success",
+            "steps": 178,
+            "final_distance_m": 2.6698384096534573,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000046,
+            "outcome": "success",
+            "steps": 183,
+            "final_distance_m": 2.395762910391642,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000047,
+            "outcome": "success",
+            "steps": 203,
+            "final_distance_m": 2.779880358489101,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000048,
+            "outcome": "success",
+            "steps": 199,
+            "final_distance_m": 2.0928348608755023,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000049,
+            "outcome": "success",
+            "steps": 193,
+            "final_distance_m": 2.1603979381780616,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000050,
+            "outcome": "success",
+            "steps": 182,
+            "final_distance_m": 2.4576762506391683,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000051,
+            "outcome": "success",
+            "steps": 207,
+            "final_distance_m": 2.443904092321541,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000052,
+            "outcome": "success",
+            "steps": 226,
+            "final_distance_m": 2.1512459305584875,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000053,
+            "outcome": "out_of_bounds",
+            "steps": 191,
+            "final_distance_m": 3.18986869608841,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000054,
+            "outcome": "success",
+            "steps": 204,
+            "final_distance_m": 2.4811471826788174,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000055,
+            "outcome": "success",
+            "steps": 197,
+            "final_distance_m": 2.226664647319207,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000056,
+            "outcome": "out_of_bounds",
+            "steps": 193,
+            "final_distance_m": 4.679367805761665,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000057,
+            "outcome": "success",
+            "steps": 188,
+            "final_distance_m": 2.240472014221325,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000058,
+            "outcome": "success",
+            "steps": 188,
+            "final_distance_m": 2.1957724684584288,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000059,
+            "outcome": "success",
+            "steps": 218,
+            "final_distance_m": 2.295091612616169,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000060,
+            "outcome": "success",
+            "steps": 190,
+            "final_distance_m": 2.3504902468126083,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000061,
+            "outcome": "success",
+            "steps": 203,
+            "final_distance_m": 2.077227068065331,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000062,
+            "outcome": "success",
+            "steps": 218,
+            "final_distance_m": 1.9987314365333348,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000063,
+            "outcome": "success",
+            "steps": 220,
+            "final_distance_m": 2.4610168270913566,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000064,
+            "outcome": "success",
+            "steps": 183,
+            "final_distance_m": 2.0447543978429894,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000065,
+            "outcome": "success",
+            "steps": 186,
+            "final_distance_m": 4.155781859026931,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000066,
+            "outcome": "success",
+            "steps": 193,
+            "final_distance_m": 2.4424655433614486,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000067,
+            "outcome": "success",
+            "steps": 183,
+            "final_distance_m": 2.454400892694498,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000068,
+            "outcome": "success",
+            "steps": 178,
+            "final_distance_m": 2.175999678926547,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000069,
+            "outcome": "success",
+            "steps": 182,
+            "final_distance_m": 2.2294497937971793,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000070,
+            "outcome": "success",
+            "steps": 179,
+            "final_distance_m": 2.2634447601148877,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000071,
+            "outcome": "success",
+            "steps": 219,
+            "final_distance_m": 2.3085333593122184,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000072,
+            "outcome": "success",
+            "steps": 170,
+            "final_distance_m": 2.4850135827113236,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000073,
+            "outcome": "success",
+            "steps": 218,
+            "final_distance_m": 2.456147556819569,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000074,
+            "outcome": "success",
+            "steps": 208,
+            "final_distance_m": 2.5500177245449547,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000075,
+            "outcome": "success",
+            "steps": 201,
+            "final_distance_m": 2.3003966116235532,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000076,
+            "outcome": "success",
+            "steps": 184,
+            "final_distance_m": 2.328927012169594,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000077,
+            "outcome": "success",
+            "steps": 187,
+            "final_distance_m": 2.1387246615091797,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000078,
+            "outcome": "success",
+            "steps": 243,
+            "final_distance_m": 2.0914472722221347,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000079,
+            "outcome": "success",
+            "steps": 230,
+            "final_distance_m": 2.2770586987859476,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000080,
+            "outcome": "success",
+            "steps": 179,
+            "final_distance_m": 2.580198644348878,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000081,
+            "outcome": "success",
+            "steps": 174,
+            "final_distance_m": 2.6261854739357458,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000082,
+            "outcome": "collision",
+            "steps": 110,
+            "final_distance_m": 30.968704737481982,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000083,
+            "outcome": "success",
+            "steps": 179,
+            "final_distance_m": 2.2681845630859288,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000084,
+            "outcome": "collision",
+            "steps": 153,
+            "final_distance_m": 11.23296672382298,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000085,
+            "outcome": "collision",
+            "steps": 1,
+            "final_distance_m": 61.14416258722609,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000086,
+            "outcome": "success",
+            "steps": 199,
+            "final_distance_m": 2.224104567981495,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000087,
+            "outcome": "success",
+            "steps": 184,
+            "final_distance_m": 2.708805768205566,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000088,
+            "outcome": "success",
+            "steps": 198,
+            "final_distance_m": 2.5531368954053706,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000089,
+            "outcome": "success",
+            "steps": 203,
+            "final_distance_m": 2.895780141441981,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000090,
+            "outcome": "success",
+            "steps": 207,
+            "final_distance_m": 2.3583559223870196,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000091,
+            "outcome": "out_of_bounds",
+            "steps": 194,
+            "final_distance_m": 4.228461085845464,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000092,
+            "outcome": "success",
+            "steps": 187,
+            "final_distance_m": 2.499106310778209,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000093,
+            "outcome": "success",
+            "steps": 223,
+            "final_distance_m": 2.293248637713771,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000094,
+            "outcome": "success",
+            "steps": 189,
+            "final_distance_m": 2.3870000579483546,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000095,
+            "outcome": "success",
+            "steps": 180,
+            "final_distance_m": 2.4915295433330282,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000096,
+            "outcome": "success",
+            "steps": 180,
+            "final_distance_m": 2.5550345181365364,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000097,
+            "outcome": "success",
+            "steps": 193,
+            "final_distance_m": 2.3189258538239605,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000098,
+            "outcome": "success",
+            "steps": 195,
+            "final_distance_m": 2.0518205643355016,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000099,
+            "outcome": "success",
+            "steps": 207,
+            "final_distance_m": 2.177965663705336,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000100,
+            "outcome": "success",
+            "steps": 199,
+            "final_distance_m": 2.3811303905466428,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000101,
+            "outcome": "success",
+            "steps": 177,
+            "final_distance_m": 2.582557780544733,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000102,
+            "outcome": "success",
+            "steps": 191,
+            "final_distance_m": 2.0503090348767627,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000103,
+            "outcome": "success",
+            "steps": 182,
+            "final_distance_m": 2.1798063655370266,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000104,
+            "outcome": "success",
+            "steps": 181,
+            "final_distance_m": 2.214738392740734,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000105,
+            "outcome": "success",
+            "steps": 191,
+            "final_distance_m": 2.6175803786061373,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000106,
+            "outcome": "success",
+            "steps": 236,
+            "final_distance_m": 2.372811346614054,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000107,
+            "outcome": "success",
+            "steps": 197,
+            "final_distance_m": 2.308503540108492,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000108,
+            "outcome": "success",
+            "steps": 192,
+            "final_distance_m": 2.2634704386959363,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000109,
+            "outcome": "success",
+            "steps": 200,
+            "final_distance_m": 2.3803865251286886,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000110,
+            "outcome": "success",
+            "steps": 191,
+            "final_distance_m": 2.1056878042545746,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000111,
+            "outcome": "success",
+            "steps": 189,
+            "final_distance_m": 2.3828987459263,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000112,
+            "outcome": "success",
+            "steps": 190,
+            "final_distance_m": 2.4431299931316346,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000113,
+            "outcome": "success",
+            "steps": 181,
+            "final_distance_m": 2.303342249647314,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000114,
+            "outcome": "success",
+            "steps": 195,
+            "final_distance_m": 2.0347621389516357,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000115,
+            "outcome": "collision",
+            "steps": 132,
+            "final_distance_m": 24.25379268635264,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000116,
+            "outcome": "success",
+            "steps": 198,
+            "final_distance_m": 2.692930579242384,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000117,
+            "outcome": "success",
+            "steps": 189,
+            "final_distance_m": 2.394393031104714,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000118,
+            "outcome": "success",
+            "steps": 196,
+            "final_distance_m": 2.5891186303219453,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000119,
+            "outcome": "collision",
+            "steps": 140,
+            "final_distance_m": 18.250517899810607,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000120,
+            "outcome": "success",
+            "steps": 204,
+            "final_distance_m": 2.8694823364295097,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000121,
+            "outcome": "success",
+            "steps": 168,
+            "final_distance_m": 4.925996104892701,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000122,
+            "outcome": "out_of_bounds",
+            "steps": 215,
+            "final_distance_m": 2.973118434729879,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000123,
+            "outcome": "success",
+            "steps": 199,
+            "final_distance_m": 2.1517151217583046,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000124,
+            "outcome": "success",
+            "steps": 237,
+            "final_distance_m": 2.4429010929766632,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000125,
+            "outcome": "success",
+            "steps": 178,
+            "final_distance_m": 2.4558705873213387,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000126,
+            "outcome": "success",
+            "steps": 180,
+            "final_distance_m": 2.6769796360985714,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000127,
+            "outcome": "success",
+            "steps": 200,
+            "final_distance_m": 2.7418693451281935,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000128,
+            "outcome": "success",
+            "steps": 183,
+            "final_distance_m": 2.7335459674236744,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000129,
+            "outcome": "success",
+            "steps": 176,
+            "final_distance_m": 2.378296721425365,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000130,
+            "outcome": "success",
+            "steps": 230,
+            "final_distance_m": 2.2339669286340262,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000131,
+            "outcome": "success",
+            "steps": 186,
+            "final_distance_m": 2.17607409473901,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000132,
+            "outcome": "success",
+            "steps": 199,
+            "final_distance_m": 2.3095845186385615,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000133,
+            "outcome": "out_of_bounds",
+            "steps": 194,
+            "final_distance_m": 2.077726066698682,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000134,
+            "outcome": "success",
+            "steps": 197,
+            "final_distance_m": 2.5703533476015115,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000135,
+            "outcome": "success",
+            "steps": 204,
+            "final_distance_m": 2.2123452451021843,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000136,
+            "outcome": "success",
+            "steps": 217,
+            "final_distance_m": 2.432255160366037,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000137,
+            "outcome": "success",
+            "steps": 203,
+            "final_distance_m": 2.788970435657863,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000138,
+            "outcome": "success",
+            "steps": 202,
+            "final_distance_m": 2.3054463652081583,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000139,
+            "outcome": "success",
+            "steps": 186,
+            "final_distance_m": 2.238786219925275,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000140,
+            "outcome": "success",
+            "steps": 217,
+            "final_distance_m": 2.162160999232078,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000141,
+            "outcome": "success",
+            "steps": 217,
+            "final_distance_m": 2.4210642748466515,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000142,
+            "outcome": "success",
+            "steps": 173,
+            "final_distance_m": 2.179822246552114,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000143,
+            "outcome": "success",
+            "steps": 172,
+            "final_distance_m": 2.23198825158732,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000144,
+            "outcome": "success",
+            "steps": 173,
+            "final_distance_m": 2.581116466817409,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000145,
+            "outcome": "success",
+            "steps": 188,
+            "final_distance_m": 2.3608860618871277,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000146,
+            "outcome": "success",
+            "steps": 172,
+            "final_distance_m": 2.6866447684145425,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000147,
+            "outcome": "success",
+            "steps": 192,
+            "final_distance_m": 2.0748099004304574,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000148,
+            "outcome": "success",
+            "steps": 210,
+            "final_distance_m": 2.0929244210416034,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000149,
+            "outcome": "success",
+            "steps": 178,
+            "final_distance_m": 2.701984786046871,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000150,
+            "outcome": "success",
+            "steps": 175,
+            "final_distance_m": 2.113813790979503,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000151,
+            "outcome": "success",
+            "steps": 239,
+            "final_distance_m": 2.5753743245456957,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000152,
+            "outcome": "success",
+            "steps": 195,
+            "final_distance_m": 2.4090469226475717,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000153,
+            "outcome": "success",
+            "steps": 189,
+            "final_distance_m": 2.187323718566625,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000154,
+            "outcome": "success",
+            "steps": 196,
+            "final_distance_m": 2.459062954950468,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000155,
+            "outcome": "success",
+            "steps": 200,
+            "final_distance_m": 2.2408692492949696,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000156,
+            "outcome": "success",
+            "steps": 174,
+            "final_distance_m": 2.429751414811012,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000157,
+            "outcome": "success",
+            "steps": 187,
+            "final_distance_m": 2.303724850716355,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000158,
+            "outcome": "success",
+            "steps": 177,
+            "final_distance_m": 2.2141721819548517,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000159,
+            "outcome": "success",
+            "steps": 212,
+            "final_distance_m": 2.355121194827459,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000160,
+            "outcome": "success",
+            "steps": 192,
+            "final_distance_m": 2.379274747656474,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000161,
+            "outcome": "success",
+            "steps": 184,
+            "final_distance_m": 2.083978582427778,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000162,
+            "outcome": "success",
+            "steps": 196,
+            "final_distance_m": 2.3827539860011817,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000163,
+            "outcome": "success",
+            "steps": 200,
+            "final_distance_m": 2.334121980202167,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000164,
+            "outcome": "success",
+            "steps": 186,
+            "final_distance_m": 2.066201383364761,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000165,
+            "outcome": "success",
+            "steps": 188,
+            "final_distance_m": 2.0925505727869784,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000166,
+            "outcome": "success",
+            "steps": 176,
+            "final_distance_m": 2.150070604518886,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000167,
+            "outcome": "success",
+            "steps": 177,
+            "final_distance_m": 2.804132397520916,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000168,
+            "outcome": "success",
+            "steps": 169,
+            "final_distance_m": 2.3862882172643296,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000169,
+            "outcome": "success",
+            "steps": 179,
+            "final_distance_m": 2.5166949749665957,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000170,
+            "outcome": "success",
+            "steps": 227,
+            "final_distance_m": 2.056222481274394,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000171,
+            "outcome": "success",
+            "steps": 180,
+            "final_distance_m": 2.160309701218846,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000172,
+            "outcome": "success",
+            "steps": 174,
+            "final_distance_m": 2.3632529885435094,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000173,
+            "outcome": "success",
+            "steps": 184,
+            "final_distance_m": 2.4031404935351617,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000174,
+            "outcome": "success",
+            "steps": 188,
+            "final_distance_m": 2.2849623110797195,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000175,
+            "outcome": "collision",
+            "steps": 27,
+            "final_distance_m": 58.00588685472591,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000176,
+            "outcome": "success",
+            "steps": 179,
+            "final_distance_m": 2.128267128559901,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000177,
+            "outcome": "success",
+            "steps": 203,
+            "final_distance_m": 2.482236486163887,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000178,
+            "outcome": "success",
+            "steps": 209,
+            "final_distance_m": 2.3875074249308943,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000179,
+            "outcome": "collision",
+            "steps": 31,
+            "final_distance_m": 66.09421556304883,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000180,
+            "outcome": "collision",
+            "steps": 1,
+            "final_distance_m": 59.392097605230845,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000181,
+            "outcome": "collision",
+            "steps": 1,
+            "final_distance_m": 59.61457510353571,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000182,
+            "outcome": "success",
+            "steps": 179,
+            "final_distance_m": 2.2640278174776833,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000183,
+            "outcome": "success",
+            "steps": 205,
+            "final_distance_m": 2.391123919455361,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000184,
+            "outcome": "out_of_bounds",
+            "steps": 176,
+            "final_distance_m": 3.501248299168555,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000185,
+            "outcome": "success",
+            "steps": 178,
+            "final_distance_m": 2.176779620644953,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000186,
+            "outcome": "success",
+            "steps": 206,
+            "final_distance_m": 2.06636739976769,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000187,
+            "outcome": "success",
+            "steps": 187,
+            "final_distance_m": 2.582584234367779,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000188,
+            "outcome": "out_of_bounds",
+            "steps": 163,
+            "final_distance_m": 4.14653401445449,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000189,
+            "outcome": "success",
+            "steps": 179,
+            "final_distance_m": 2.4179070108843805,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000190,
+            "outcome": "success",
+            "steps": 217,
+            "final_distance_m": 2.4169299749430664,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000191,
+            "outcome": "success",
+            "steps": 203,
+            "final_distance_m": 2.5999969814700945,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000192,
+            "outcome": "success",
+            "steps": 208,
+            "final_distance_m": 2.21509713862158,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000193,
+            "outcome": "success",
+            "steps": 188,
+            "final_distance_m": 2.527799136501426,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000194,
+            "outcome": "success",
+            "steps": 200,
+            "final_distance_m": 2.2696125984353737,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000195,
+            "outcome": "success",
+            "steps": 208,
+            "final_distance_m": 2.2600732734566398,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000196,
+            "outcome": "success",
+            "steps": 181,
+            "final_distance_m": 2.726631356957475,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000197,
+            "outcome": "success",
+            "steps": 176,
+            "final_distance_m": 2.1983010031916703,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000198,
+            "outcome": "success",
+            "steps": 200,
+            "final_distance_m": 2.198570043650207,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000199,
+            "outcome": "success",
+            "steps": 190,
+            "final_distance_m": 2.5494784789497484,
+            "is_success": true,
+            "retries": 0
+          }
+        ],
+        "backend_faults": {
+          "fault_counts": {
+            "CameraPoseError": 10,
+            "StepTimingError": 0,
+            "StaleStateError": 0,
+            "CommandTimeoutError": 0,
+            "Timeout": 0,
+            "EpisodeSetupError": 0
+          },
+          "recovered_counts": {
+            "CameraPoseError": 10,
+            "StepTimingError": 0,
+            "StaleStateError": 0,
+            "CommandTimeoutError": 0,
+            "Timeout": 0,
+            "EpisodeSetupError": 0
+          },
+          "relaunch_count": 0
+        }
+      },
+      "stochastic": {
+        "status": "ok",
+        "error": null,
+        "episodes_requested": 200,
+        "n_episodes": 200,
+        "success_rate": 0.91,
+        "collision_rate": 0.045,
+        "timeout_rate": 0.0,
+        "out_of_bounds_rate": 0.045,
+        "mean_steps": 189.69,
+        "mean_final_distance_m": 5.061030991212209,
+        "episodes_retried": 0,
+        "fault_counts": {
+          "CameraPoseError": 0,
+          "StepTimingError": 0,
+          "StaleStateError": 0,
+          "CommandTimeoutError": 0,
+          "Timeout": 0,
+          "EpisodeSetupError": 0
+        },
+        "per_episode": [
+          {
+            "seed": 100000000,
+            "outcome": "success",
+            "steps": 223,
+            "final_distance_m": 2.108197936433774,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000001,
+            "outcome": "success",
+            "steps": 200,
+            "final_distance_m": 2.013351881547845,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000002,
+            "outcome": "success",
+            "steps": 185,
+            "final_distance_m": 2.529271649511968,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000003,
+            "outcome": "success",
+            "steps": 188,
+            "final_distance_m": 2.197326399094484,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000004,
+            "outcome": "success",
+            "steps": 221,
+            "final_distance_m": 2.3993806452034803,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000005,
+            "outcome": "success",
+            "steps": 187,
+            "final_distance_m": 2.2555258072184983,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000006,
+            "outcome": "success",
+            "steps": 175,
+            "final_distance_m": 2.6149757306738675,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000007,
+            "outcome": "success",
+            "steps": 210,
+            "final_distance_m": 1.9392280836445062,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000008,
+            "outcome": "success",
+            "steps": 188,
+            "final_distance_m": 2.2692607596330214,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000009,
+            "outcome": "success",
+            "steps": 205,
+            "final_distance_m": 1.9567454083432168,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000010,
+            "outcome": "success",
+            "steps": 198,
+            "final_distance_m": 2.7257508612927768,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000011,
+            "outcome": "success",
+            "steps": 193,
+            "final_distance_m": 2.195898157239888,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000012,
+            "outcome": "success",
+            "steps": 187,
+            "final_distance_m": 1.9475292150851642,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000013,
+            "outcome": "success",
+            "steps": 251,
+            "final_distance_m": 2.5148617023934503,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000014,
+            "outcome": "collision",
+            "steps": 29,
+            "final_distance_m": 61.968217153701495,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000015,
+            "outcome": "success",
+            "steps": 192,
+            "final_distance_m": 2.461727591276195,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000016,
+            "outcome": "success",
+            "steps": 215,
+            "final_distance_m": 2.3535743253542094,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000017,
+            "outcome": "success",
+            "steps": 210,
+            "final_distance_m": 2.0290209609300773,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000018,
+            "outcome": "success",
+            "steps": 216,
+            "final_distance_m": 2.682665494618371,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000019,
+            "outcome": "success",
+            "steps": 192,
+            "final_distance_m": 2.2091939087045187,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000020,
+            "outcome": "success",
+            "steps": 189,
+            "final_distance_m": 2.7793235367305047,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000021,
+            "outcome": "success",
+            "steps": 205,
+            "final_distance_m": 1.9358781668288914,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000022,
+            "outcome": "success",
+            "steps": 197,
+            "final_distance_m": 2.24973586234513,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000023,
+            "outcome": "success",
+            "steps": 189,
+            "final_distance_m": 2.3215973378067125,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000024,
+            "outcome": "success",
+            "steps": 196,
+            "final_distance_m": 2.199357916286888,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000025,
+            "outcome": "success",
+            "steps": 181,
+            "final_distance_m": 2.3498105078939395,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000026,
+            "outcome": "success",
+            "steps": 185,
+            "final_distance_m": 2.590744569269963,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000027,
+            "outcome": "success",
+            "steps": 174,
+            "final_distance_m": 2.3083209055176828,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000028,
+            "outcome": "success",
+            "steps": 174,
+            "final_distance_m": 2.619877676127992,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000029,
+            "outcome": "success",
+            "steps": 198,
+            "final_distance_m": 1.9804261282924576,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000030,
+            "outcome": "success",
+            "steps": 184,
+            "final_distance_m": 2.057080388182056,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000031,
+            "outcome": "success",
+            "steps": 206,
+            "final_distance_m": 2.881519256861095,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000032,
+            "outcome": "success",
+            "steps": 189,
+            "final_distance_m": 2.1011924662309958,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000033,
+            "outcome": "success",
+            "steps": 198,
+            "final_distance_m": 2.80379387466097,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000034,
+            "outcome": "success",
+            "steps": 186,
+            "final_distance_m": 2.442208294921793,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000035,
+            "outcome": "success",
+            "steps": 203,
+            "final_distance_m": 2.3213138967676863,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000036,
+            "outcome": "success",
+            "steps": 201,
+            "final_distance_m": 2.234395066922548,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000037,
+            "outcome": "success",
+            "steps": 187,
+            "final_distance_m": 2.4396340746419485,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000038,
+            "outcome": "success",
+            "steps": 191,
+            "final_distance_m": 2.2181383924979396,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000039,
+            "outcome": "success",
+            "steps": 202,
+            "final_distance_m": 2.4200878161447505,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000040,
+            "outcome": "success",
+            "steps": 253,
+            "final_distance_m": 2.5810901555326704,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000041,
+            "outcome": "success",
+            "steps": 199,
+            "final_distance_m": 2.4167009559273924,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000042,
+            "outcome": "success",
+            "steps": 194,
+            "final_distance_m": 2.2356427953787423,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000043,
+            "outcome": "success",
+            "steps": 230,
+            "final_distance_m": 2.0466856270229297,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000044,
+            "outcome": "success",
+            "steps": 181,
+            "final_distance_m": 2.1024187629274294,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000045,
+            "outcome": "success",
+            "steps": 186,
+            "final_distance_m": 2.5085759193501285,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000046,
+            "outcome": "success",
+            "steps": 185,
+            "final_distance_m": 2.193567574657615,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000047,
+            "outcome": "success",
+            "steps": 202,
+            "final_distance_m": 3.01129909209939,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000048,
+            "outcome": "success",
+            "steps": 202,
+            "final_distance_m": 2.431673363792109,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000049,
+            "outcome": "success",
+            "steps": 192,
+            "final_distance_m": 2.3810316423285,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000050,
+            "outcome": "success",
+            "steps": 190,
+            "final_distance_m": 2.308667124587931,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000051,
+            "outcome": "success",
+            "steps": 213,
+            "final_distance_m": 2.2066242453846643,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000052,
+            "outcome": "success",
+            "steps": 228,
+            "final_distance_m": 2.6057551775216576,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000053,
+            "outcome": "success",
+            "steps": 206,
+            "final_distance_m": 2.3111491777879087,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000054,
+            "outcome": "success",
+            "steps": 212,
+            "final_distance_m": 1.9465809578286632,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000055,
+            "outcome": "success",
+            "steps": 198,
+            "final_distance_m": 2.8770976814440052,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000056,
+            "outcome": "success",
+            "steps": 212,
+            "final_distance_m": 2.1332422781435865,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000057,
+            "outcome": "success",
+            "steps": 193,
+            "final_distance_m": 2.294422488494363,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000058,
+            "outcome": "success",
+            "steps": 185,
+            "final_distance_m": 2.910548538456017,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000059,
+            "outcome": "success",
+            "steps": 221,
+            "final_distance_m": 2.3009377813244893,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000060,
+            "outcome": "success",
+            "steps": 186,
+            "final_distance_m": 3.243698965139484,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000061,
+            "outcome": "success",
+            "steps": 211,
+            "final_distance_m": 2.155664665006162,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000062,
+            "outcome": "success",
+            "steps": 215,
+            "final_distance_m": 2.497622203485184,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000063,
+            "outcome": "success",
+            "steps": 222,
+            "final_distance_m": 2.4149677755648606,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000064,
+            "outcome": "collision",
+            "steps": 41,
+            "final_distance_m": 53.26021146156839,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000065,
+            "outcome": "out_of_bounds",
+            "steps": 167,
+            "final_distance_m": 5.4006176272902415,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000066,
+            "outcome": "success",
+            "steps": 194,
+            "final_distance_m": 2.580191947604763,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000067,
+            "outcome": "success",
+            "steps": 184,
+            "final_distance_m": 2.3572009925698674,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000068,
+            "outcome": "success",
+            "steps": 182,
+            "final_distance_m": 2.126951905036734,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000069,
+            "outcome": "success",
+            "steps": 177,
+            "final_distance_m": 3.0134814675257133,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000070,
+            "outcome": "success",
+            "steps": 183,
+            "final_distance_m": 2.1894545459182093,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000071,
+            "outcome": "success",
+            "steps": 220,
+            "final_distance_m": 2.4029554897923964,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000072,
+            "outcome": "success",
+            "steps": 170,
+            "final_distance_m": 2.7197897352804037,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000073,
+            "outcome": "success",
+            "steps": 219,
+            "final_distance_m": 2.3633082769546068,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000074,
+            "outcome": "success",
+            "steps": 211,
+            "final_distance_m": 2.2760301471350015,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000075,
+            "outcome": "success",
+            "steps": 205,
+            "final_distance_m": 2.527266642050057,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000076,
+            "outcome": "success",
+            "steps": 190,
+            "final_distance_m": 1.8898266735444085,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000077,
+            "outcome": "success",
+            "steps": 185,
+            "final_distance_m": 2.9341785001580196,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000078,
+            "outcome": "success",
+            "steps": 233,
+            "final_distance_m": 2.266319749670758,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000079,
+            "outcome": "collision",
+            "steps": 178,
+            "final_distance_m": 19.37993265186564,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000080,
+            "outcome": "success",
+            "steps": 186,
+            "final_distance_m": 2.3237562053973027,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000081,
+            "outcome": "success",
+            "steps": 178,
+            "final_distance_m": 2.29094373003602,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000082,
+            "outcome": "success",
+            "steps": 196,
+            "final_distance_m": 2.2480164085779903,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000083,
+            "outcome": "out_of_bounds",
+            "steps": 70,
+            "final_distance_m": 39.566659353950314,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000084,
+            "outcome": "success",
+            "steps": 178,
+            "final_distance_m": 3.6481719260006047,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000085,
+            "outcome": "success",
+            "steps": 190,
+            "final_distance_m": 2.226536530673368,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000086,
+            "outcome": "success",
+            "steps": 201,
+            "final_distance_m": 2.3229566837211704,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000087,
+            "outcome": "success",
+            "steps": 190,
+            "final_distance_m": 2.1585265804590312,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000088,
+            "outcome": "success",
+            "steps": 204,
+            "final_distance_m": 2.335417686880554,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000089,
+            "outcome": "success",
+            "steps": 211,
+            "final_distance_m": 2.0908391564542463,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000090,
+            "outcome": "success",
+            "steps": 228,
+            "final_distance_m": 1.979309539751821,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000091,
+            "outcome": "success",
+            "steps": 205,
+            "final_distance_m": 2.4592603039880894,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000092,
+            "outcome": "success",
+            "steps": 192,
+            "final_distance_m": 2.2112415276812665,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000093,
+            "outcome": "out_of_bounds",
+            "steps": 7,
+            "final_distance_m": 79.15051755666414,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000094,
+            "outcome": "success",
+            "steps": 191,
+            "final_distance_m": 2.274710945671306,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000095,
+            "outcome": "success",
+            "steps": 190,
+            "final_distance_m": 2.285806822837794,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000096,
+            "outcome": "out_of_bounds",
+            "steps": 191,
+            "final_distance_m": 2.1962463189772077,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000097,
+            "outcome": "success",
+            "steps": 192,
+            "final_distance_m": 2.2632978505115804,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000098,
+            "outcome": "success",
+            "steps": 194,
+            "final_distance_m": 2.86136561898361,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000099,
+            "outcome": "success",
+            "steps": 212,
+            "final_distance_m": 2.4579395143825997,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000100,
+            "outcome": "success",
+            "steps": 202,
+            "final_distance_m": 2.234238562179911,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000101,
+            "outcome": "success",
+            "steps": 181,
+            "final_distance_m": 2.1000313039061345,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000102,
+            "outcome": "success",
+            "steps": 193,
+            "final_distance_m": 2.436118992772874,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000103,
+            "outcome": "success",
+            "steps": 181,
+            "final_distance_m": 2.477536491098072,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000104,
+            "outcome": "success",
+            "steps": 183,
+            "final_distance_m": 2.6220230546440235,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000105,
+            "outcome": "success",
+            "steps": 196,
+            "final_distance_m": 2.350354376558466,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000106,
+            "outcome": "out_of_bounds",
+            "steps": 235,
+            "final_distance_m": 2.972800384495748,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000107,
+            "outcome": "success",
+            "steps": 198,
+            "final_distance_m": 2.2246745806695643,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000108,
+            "outcome": "success",
+            "steps": 197,
+            "final_distance_m": 2.475964383253431,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000109,
+            "outcome": "success",
+            "steps": 203,
+            "final_distance_m": 2.4504191007666756,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000110,
+            "outcome": "success",
+            "steps": 190,
+            "final_distance_m": 2.3577540571428015,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000111,
+            "outcome": "success",
+            "steps": 192,
+            "final_distance_m": 2.144940904636537,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000112,
+            "outcome": "success",
+            "steps": 191,
+            "final_distance_m": 2.3846766274948483,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000113,
+            "outcome": "success",
+            "steps": 186,
+            "final_distance_m": 2.2629469039087597,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000114,
+            "outcome": "success",
+            "steps": 201,
+            "final_distance_m": 2.113690047055014,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000115,
+            "outcome": "success",
+            "steps": 196,
+            "final_distance_m": 2.4084887360855807,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000116,
+            "outcome": "success",
+            "steps": 201,
+            "final_distance_m": 2.612735726363732,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000117,
+            "outcome": "success",
+            "steps": 202,
+            "final_distance_m": 2.017321801572281,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000118,
+            "outcome": "success",
+            "steps": 201,
+            "final_distance_m": 2.0886317199171125,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000119,
+            "outcome": "out_of_bounds",
+            "steps": 6,
+            "final_distance_m": 65.53388074658767,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000120,
+            "outcome": "success",
+            "steps": 208,
+            "final_distance_m": 2.22326857413645,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000121,
+            "outcome": "success",
+            "steps": 187,
+            "final_distance_m": 2.464697843999934,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000122,
+            "outcome": "success",
+            "steps": 226,
+            "final_distance_m": 2.5629207339188005,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000123,
+            "outcome": "success",
+            "steps": 199,
+            "final_distance_m": 2.3915440534581904,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000124,
+            "outcome": "success",
+            "steps": 237,
+            "final_distance_m": 2.3648035460932637,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000125,
+            "outcome": "success",
+            "steps": 180,
+            "final_distance_m": 2.270089140524014,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000126,
+            "outcome": "success",
+            "steps": 187,
+            "final_distance_m": 2.3394076897272926,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000127,
+            "outcome": "success",
+            "steps": 206,
+            "final_distance_m": 2.7464525931336223,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000128,
+            "outcome": "success",
+            "steps": 192,
+            "final_distance_m": 2.1310535729933093,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000129,
+            "outcome": "success",
+            "steps": 176,
+            "final_distance_m": 2.4125395315444567,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000130,
+            "outcome": "success",
+            "steps": 234,
+            "final_distance_m": 2.329504914326281,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000131,
+            "outcome": "success",
+            "steps": 188,
+            "final_distance_m": 2.0278445537394987,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000132,
+            "outcome": "success",
+            "steps": 203,
+            "final_distance_m": 2.3976882120895167,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000133,
+            "outcome": "collision",
+            "steps": 271,
+            "final_distance_m": 0.8054424190381642,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000134,
+            "outcome": "success",
+            "steps": 198,
+            "final_distance_m": 2.5924849367425744,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000135,
+            "outcome": "success",
+            "steps": 203,
+            "final_distance_m": 2.6183123712459433,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000136,
+            "outcome": "success",
+            "steps": 207,
+            "final_distance_m": 4.892766137680794,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000137,
+            "outcome": "success",
+            "steps": 211,
+            "final_distance_m": 2.371560165539941,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000138,
+            "outcome": "success",
+            "steps": 205,
+            "final_distance_m": 2.329087106622325,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000139,
+            "outcome": "success",
+            "steps": 192,
+            "final_distance_m": 2.2235121862205913,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000140,
+            "outcome": "success",
+            "steps": 218,
+            "final_distance_m": 2.701610900577653,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000141,
+            "outcome": "success",
+            "steps": 219,
+            "final_distance_m": 2.1463972671457148,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000142,
+            "outcome": "success",
+            "steps": 177,
+            "final_distance_m": 2.5634296380059682,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000143,
+            "outcome": "collision",
+            "steps": 18,
+            "final_distance_m": 58.918267397659555,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000144,
+            "outcome": "success",
+            "steps": 175,
+            "final_distance_m": 2.758861473857792,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000145,
+            "outcome": "success",
+            "steps": 192,
+            "final_distance_m": 2.201263770662275,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000146,
+            "outcome": "success",
+            "steps": 171,
+            "final_distance_m": 3.0282995233612664,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000147,
+            "outcome": "success",
+            "steps": 192,
+            "final_distance_m": 2.73203004801237,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000148,
+            "outcome": "success",
+            "steps": 209,
+            "final_distance_m": 2.550584320841128,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000149,
+            "outcome": "success",
+            "steps": 185,
+            "final_distance_m": 2.5440887323325594,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000150,
+            "outcome": "success",
+            "steps": 181,
+            "final_distance_m": 2.2047705262401633,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000151,
+            "outcome": "success",
+            "steps": 250,
+            "final_distance_m": 1.9449970727964119,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000152,
+            "outcome": "success",
+            "steps": 203,
+            "final_distance_m": 2.2977889352301712,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000153,
+            "outcome": "success",
+            "steps": 189,
+            "final_distance_m": 2.604256391891608,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000154,
+            "outcome": "success",
+            "steps": 196,
+            "final_distance_m": 2.4581513398049,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000155,
+            "outcome": "success",
+            "steps": 202,
+            "final_distance_m": 2.446962358572129,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000156,
+            "outcome": "success",
+            "steps": 174,
+            "final_distance_m": 2.541570449985479,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000157,
+            "outcome": "success",
+            "steps": 190,
+            "final_distance_m": 2.476030205123185,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000158,
+            "outcome": "success",
+            "steps": 181,
+            "final_distance_m": 2.9058110596865965,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000159,
+            "outcome": "success",
+            "steps": 216,
+            "final_distance_m": 2.2966986572396024,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000160,
+            "outcome": "out_of_bounds",
+            "steps": 193,
+            "final_distance_m": 1.9930126507525696,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000161,
+            "outcome": "success",
+            "steps": 183,
+            "final_distance_m": 2.465668370313925,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000162,
+            "outcome": "success",
+            "steps": 198,
+            "final_distance_m": 2.376401325915882,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000163,
+            "outcome": "success",
+            "steps": 204,
+            "final_distance_m": 2.224589940261329,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000164,
+            "outcome": "success",
+            "steps": 189,
+            "final_distance_m": 2.4524949961015965,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000165,
+            "outcome": "success",
+            "steps": 193,
+            "final_distance_m": 2.316589697700798,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000166,
+            "outcome": "success",
+            "steps": 176,
+            "final_distance_m": 2.6384319476078915,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000167,
+            "outcome": "success",
+            "steps": 185,
+            "final_distance_m": 2.609293027708583,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000168,
+            "outcome": "success",
+            "steps": 168,
+            "final_distance_m": 2.6169326260037518,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000169,
+            "outcome": "success",
+            "steps": 184,
+            "final_distance_m": 2.3769309223680306,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000170,
+            "outcome": "success",
+            "steps": 225,
+            "final_distance_m": 2.5829844957948365,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000171,
+            "outcome": "success",
+            "steps": 183,
+            "final_distance_m": 2.5358319584901037,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000172,
+            "outcome": "success",
+            "steps": 179,
+            "final_distance_m": 2.2808701825172117,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000173,
+            "outcome": "success",
+            "steps": 181,
+            "final_distance_m": 2.317214290840502,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000174,
+            "outcome": "success",
+            "steps": 193,
+            "final_distance_m": 2.2874844617602057,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000175,
+            "outcome": "success",
+            "steps": 175,
+            "final_distance_m": 2.5155649778941633,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000176,
+            "outcome": "success",
+            "steps": 179,
+            "final_distance_m": 2.3494516230212765,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000177,
+            "outcome": "success",
+            "steps": 206,
+            "final_distance_m": 2.492585950571296,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000178,
+            "outcome": "success",
+            "steps": 213,
+            "final_distance_m": 2.5995050031559446,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000179,
+            "outcome": "collision",
+            "steps": 27,
+            "final_distance_m": 66.31344884189616,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000180,
+            "outcome": "collision",
+            "steps": 1,
+            "final_distance_m": 59.15177554730493,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000181,
+            "outcome": "collision",
+            "steps": 165,
+            "final_distance_m": 10.388544541178309,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000182,
+            "outcome": "success",
+            "steps": 181,
+            "final_distance_m": 2.2884689396416764,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000183,
+            "outcome": "success",
+            "steps": 207,
+            "final_distance_m": 2.08163337101907,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000184,
+            "outcome": "out_of_bounds",
+            "steps": 177,
+            "final_distance_m": 3.915090133732819,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000185,
+            "outcome": "out_of_bounds",
+            "steps": 135,
+            "final_distance_m": 16.451553043338524,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000186,
+            "outcome": "collision",
+            "steps": 136,
+            "final_distance_m": 27.324957255422238,
+            "is_success": false,
+            "retries": 0
+          },
+          {
+            "seed": 100000187,
+            "outcome": "success",
+            "steps": 190,
+            "final_distance_m": 2.219023815487476,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000188,
+            "outcome": "success",
+            "steps": 177,
+            "final_distance_m": 2.8437663550275016,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000189,
+            "outcome": "success",
+            "steps": 180,
+            "final_distance_m": 2.419614076168895,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000190,
+            "outcome": "success",
+            "steps": 217,
+            "final_distance_m": 2.3301771033284098,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000191,
+            "outcome": "success",
+            "steps": 206,
+            "final_distance_m": 2.549458307319561,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000192,
+            "outcome": "success",
+            "steps": 210,
+            "final_distance_m": 2.093256203627308,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000193,
+            "outcome": "success",
+            "steps": 192,
+            "final_distance_m": 1.998733105753866,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000194,
+            "outcome": "success",
+            "steps": 210,
+            "final_distance_m": 2.488972743485794,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000195,
+            "outcome": "success",
+            "steps": 211,
+            "final_distance_m": 2.5512586553570165,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000196,
+            "outcome": "success",
+            "steps": 196,
+            "final_distance_m": 2.1413086006630424,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000197,
+            "outcome": "success",
+            "steps": 181,
+            "final_distance_m": 2.3957475745483485,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000198,
+            "outcome": "success",
+            "steps": 198,
+            "final_distance_m": 2.7918491982107847,
+            "is_success": true,
+            "retries": 0
+          },
+          {
+            "seed": 100000199,
+            "outcome": "success",
+            "steps": 190,
+            "final_distance_m": 2.5686006966554573,
+            "is_success": true,
+            "retries": 0
+          }
+        ],
+        "backend_faults": {
+          "fault_counts": {
+            "CameraPoseError": 8,
+            "StepTimingError": 0,
+            "StaleStateError": 0,
+            "CommandTimeoutError": 0,
+            "Timeout": 0,
+            "EpisodeSetupError": 0
+          },
+          "recovered_counts": {
+            "CameraPoseError": 8,
+            "StepTimingError": 0,
+            "StaleStateError": 0,
+            "CommandTimeoutError": 0,
+            "Timeout": 0,
+            "EpisodeSetupError": 0
+          },
+          "relaunch_count": 1
+        }
+      }
+    }
+  },
+  "deterministic_gate_pass_by_checkpoint": {
+    "best_model": false,
+    "final": false
+  },
+  "pass": false,
+  "notes": [
+    "Both checkpoints are gated and reported without selection; which checkpoint (if either) flies M3's data collection is the controller's decision, not this script's.",
+    "A 20-episode eval cannot distinguish 0.85 from 1.0 against a 0.95 threshold; this run uses >= 200 episodes specifically so it can.",
+    "Deterministic episodes seed_base+0 .. seed_base+19 of this run are the SAME episodes Task 8's own EvalCallback used throughout training for periodic model selection (both use EVAL_SEED_BASE by design, spec Sec8) -- best_model.zip was saved BECAUSE of its reward on (a subset of) those 20, so they are not fully held-out for that checkpoint specifically. final.zip was not selected on any eval episode."
+  ],
+  "cumulative_backend_faults": {
+    "instance": 0,
+    "fault_counts": {
+      "CameraPoseError": 52,
+      "StepTimingError": 0,
+      "StaleStateError": 0,
+      "CommandTimeoutError": 0,
+      "Timeout": 0,
+      "EpisodeSetupError": 0
+    },
+    "recovered_counts": {
+      "CameraPoseError": 52,
+      "StepTimingError": 0,
+      "StaleStateError": 0,
+      "CommandTimeoutError": 0,
+      "Timeout": 0,
+      "EpisodeSetupError": 0
+    },
+    "relaunch_count": 4
+  },
+  "engine_faults": {
+    "xid_delta": 0,
+    "boot_changed": false,
+    "device_lost": {
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst0/sim.log": 0
+    }
+  },
+  "faults_ok": true,
+  "throughput_projection": {
+    "source": "/home/nvidiasims/research_uav/autofly_ue5/docs/gates/m2_instances.json",
+    "chosen_n": 1,
+    "measured_env_steps_per_s_total": 5.380521619563202,
+    "projection": {
+      "hours_per_scene": 51.62655173948137,
+      "hours_all_scenes": 516.2655173948137,
+      "days_all_scenes": 21.511063224783907,
+      "assumed_steps_needed_per_scene": 1000000,
+      "assumed_n_scenes": 10,
+      "note": "D7 (plan2 decisions): training runs on a wall-clock budget, not a fixed step count, so the steps-needed figure below is an assumption for costing purposes, not a measured requirement. 1,000,000 env steps/scene is used as a round, order-of-magnitude planning figure for a SAC agent converging on a single ~70x70 m crossing task; n_scenes=10 is the train split (s01-s10, spec \u00a76)."
+    }
+  },
+  "status": "ok",
+  "error": null,
+  "run_started": "2026-09-17 03:07:58",
+  "run_finished": "2026-09-17 09:47:48"
+}

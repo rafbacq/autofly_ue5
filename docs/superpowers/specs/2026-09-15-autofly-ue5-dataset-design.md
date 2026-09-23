@@ -1,7 +1,7 @@
 # AutoFly-style dataset collection on UE5 + Project AirSim: design
 
 Date: 2026-09-15. Status: **approved by the user on 2026-09-15** ("the goal design is correct"); §8.1 added on the user's request as an optional source.
-Project root: `/home/jk_edge/research_uav/autofly_ue5/` (ROOT). Everything in this project lives under ROOT.
+Project root: `/home/nvidiasims/research_uav/autofly_ue5/` (ROOT). Everything in this project lives under ROOT.
 
 ## 1. Goal and scope
 
@@ -57,7 +57,7 @@ extra scene files.
 
 ### 3.2 From two real released AutoFly episodes
 
-`/home/jk_edge/research_uav/results/qwen_autofly/data_smoke_v1/{train,val}.jsonl` (+ `images/`) hold one training and
+`/home/nvidiasims/research_uav/results/qwen_autofly/data_smoke_v1/{train,val}.jsonl` (+ `images/`) hold one training and
 one validation episode exported from the release before it was deleted (sources `UAV_VLA_Scene_1_zip/Blue_Hatchback`,
 96 steps, and `UAV_VLA_Scene_7_zip/Blue_Cone`, 78 steps). The exported rows are **not in time order**; sorting by state
 0 recovers an approximately smooth trajectory (median step 0.37–0.41 m, a few jumps up to 2.5 m). Measured on those two episodes:

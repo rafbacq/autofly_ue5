@@ -51,13 +51,13 @@
     "boot_id_now": "0cda57b5-cffd-40c9-9b5a-482961aa864b",
     "boot_changed": false,
     "device_lost": {
-      "/home/jk_edge/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-02.26.55.log": 0,
-      "/home/jk_edge/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-02.51.10.log": 0,
-      "/home/jk_edge/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-03.05.28.log": 0,
-      "/home/jk_edge/research_uav/autofly_ue5/runs/sim/inst0/sim.log": 0,
-      "/home/jk_edge/research_uav/autofly_ue5/runs/sim/inst1/sim.log": 0,
-      "/home/jk_edge/research_uav/autofly_ue5/runs/m0/editor_open-backup-2026.09.16-01.32.21.log": 0,
-      "/home/jk_edge/research_uav/autofly_ue5/runs/m0/editor_open.log": 0
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-02.26.55.log": 0,
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-02.51.10.log": 0,
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-03.05.28.log": 0,
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst0/sim.log": 0,
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst1/sim.log": 0,
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/m0/editor_open-backup-2026.09.16-01.32.21.log": 0,
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/m0/editor_open.log": 0
     },
     "epic_config_before": {
       "kib": 361840,

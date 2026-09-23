@@ -4,7 +4,7 @@ from autofly_ue5 import paths
 
 
 def test_root_is_project_root():
-    assert paths.ROOT == Path("/home/jk_edge/research_uav/autofly_ue5")
+    assert paths.ROOT == Path("/home/nvidiasims/research_uav/autofly_ue5")
 
 
 def test_engine_binaries_exist():
@@ -22,6 +22,6 @@ def test_derived_paths():
 
 def test_ue_cache_env_stays_inside_root():
     assert paths.UE_CACHE_ENV == {
-        "UE_ZenDataPath": "/home/jk_edge/research_uav/autofly_ue5/ue_project/DerivedDataCache/Zen",
-        "UE_LocalDataCachePath": "/home/jk_edge/research_uav/autofly_ue5/ue_project/DerivedDataCache",
+        "UE_ZenDataPath": "/home/nvidiasims/research_uav/autofly_ue5/ue_project/DerivedDataCache/Zen",
+        "UE_LocalDataCachePath": "/home/nvidiasims/research_uav/autofly_ue5/ue_project/DerivedDataCache",
     }

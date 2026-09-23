@@ -1,6 +1,6 @@
 {
   "map": "/Game/AutoFly/Maps/S01",
-  "layout": "/home/jk_edge/research_uav/autofly_ue5/runs/levels/s01.layout.json",
+  "layout": "/home/nvidiasims/research_uav/autofly_ue5/runs/levels/s01.layout.json",
   "scene_sha256": "a6b461b38cf65867d6f97a749a2a0a0b9d1aa1eec3f71b2b2028017c22ef7acc",
   "checks": {
     "rgb_changes_with_pose": {
@@ -418,20 +418,20 @@
     "xid_after": 0,
     "boot_id": "0cda57b5-cffd-40c9-9b5a-482961aa864b",
     "device_lost": {
-      "/home/jk_edge/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-02.26.55.log": 0,
-      "/home/jk_edge/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-02.51.10.log": 0,
-      "/home/jk_edge/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-03.05.28.log": 0,
-      "/home/jk_edge/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-03.33.26.log": 0,
-      "/home/jk_edge/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-06.10.23.log": 0,
-      "/home/jk_edge/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-06.28.41.log": 0,
-      "/home/jk_edge/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-06.34.43.log": 0,
-      "/home/jk_edge/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-06.55.35.log": 0,
-      "/home/jk_edge/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-06.57.47.log": 0,
-      "/home/jk_edge/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-06.59.21.log": 0,
-      "/home/jk_edge/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-07.01.22.log": 0,
-      "/home/jk_edge/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-07.01.55.log": 0,
-      "/home/jk_edge/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-07.23.32.log": 0,
-      "/home/jk_edge/research_uav/autofly_ue5/runs/sim/inst0/sim.log": 0
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-02.26.55.log": 0,
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-02.51.10.log": 0,
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-03.05.28.log": 0,
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-03.33.26.log": 0,
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-06.10.23.log": 0,
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-06.28.41.log": 0,
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-06.34.43.log": 0,
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-06.55.35.log": 0,
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-06.57.47.log": 0,
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-06.59.21.log": 0,
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-07.01.22.log": 0,
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-07.01.55.log": 0,
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.09.16-07.23.32.log": 0,
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst0/sim.log": 0
     }
   },
   "faults_ok": true,

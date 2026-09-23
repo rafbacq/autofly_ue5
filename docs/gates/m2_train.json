@@ -80,13 +80,13 @@
     "xid_delta": 0,
     "boot_changed": false,
     "device_lost": {
-      "/home/jk_edge/research_uav/autofly_ue5/runs/sim/inst0/sim.log": 0,
-      "/home/jk_edge/research_uav/autofly_ue5/runs/sim/inst1/sim.log": 0
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst0/sim.log": 0,
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst1/sim.log": 0
     }
   },
   "faults_ok": true,
   "checkpoint": {
-    "path": "/home/jk_edge/research_uav/autofly_ue5/runs/expert/s01/final.zip",
+    "path": "/home/nvidiasims/research_uav/autofly_ue5/runs/expert/s01/final.zip",
     "sha256": "b58efc8be95b1b5251f837031d0d6f57076eb14a6070c33b0d2ecd6836a99fef"
   },
   "run_started": "2026-09-16 14:47:45",

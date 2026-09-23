@@ -13,7 +13,7 @@
 # (no API change) and only needs the script to call unreal.SystemLibrary.quit_editor() when done,
 # since -ExecCmds doesn't exit the editor on its own.
 set -euo pipefail
-ROOT=/home/jk_edge/research_uav/autofly_ue5
+ROOT=/home/nvidiasims/research_uav/autofly_ue5
 ID="${1:?usage: build_level.sh <scene_id>}"
 LEVELS=$ROOT/runs/levels
 SPEC=$LEVELS/$ID.level.json

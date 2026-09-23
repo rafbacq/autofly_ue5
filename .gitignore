@@ -25,3 +25,49 @@ __pycache__/
 *.egg-info/
 .pytest_cache/
 /autofly.pdf
+
+# local agent / editor state (machine-specific, never shared)
+.claude/settings.local.json
+.claude/settings.local.json.tmp.*
+/.vscode/
+/.idea/
+/*.code-workspace
+*.swp
+*~
+.DS_Store
+
+# python build + tool caches
+/build/
+/dist/
+*.pyo
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+
+# secrets
+.env
+.env.*
+!.env.example
+*.pem
+
+# logs anywhere (all real logs live under the ignored runs/ and Saved/ trees)
+*.log
+
+# ML artifacts that could land outside runs/ or checkpoints/
+wandb/
+tensorboard/
+*.pt
+*.pth
+*.ckpt
+*.onnx
+
+# UE editor/IDE scaffolding
+ue_project/.vs/
+ue_project/Script/
+ue_project/*.sln
+ue_project/*.VC.db
+ue_project/*.xcodeproj/

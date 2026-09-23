@@ -57,12 +57,12 @@ def test_count_device_lost_per_file(tmp_path):
     assert counts == {str(good): 0, str(bad): 2}
 
 
-ZEN_DIR = "/home/jk_edge/research_uav/autofly_ue5/ue_project/DerivedDataCache/Zen"
+ZEN_DIR = "/home/nvidiasims/research_uav/autofly_ue5/ue_project/DerivedDataCache/Zen"
 
 
 def test_find_zen_redirect_line_matches_env_var_line():
     log = (
-        "LogZenServiceInstance: Found Zen config default=/home/jk_edge/.config/Epic/UnrealEngine/Common/Zen/Data\n"
+        "LogZenServiceInstance: Found Zen config default=/home/nvidiasims/.config/Epic/UnrealEngine/Common/Zen/Data\n"
         f"LogZenServiceInstance: Log: Found environment variable UE_ZenDataPath={ZEN_DIR}\n"
     )
     assert find_zen_redirect_line(log, ZEN_DIR) == f"LogZenServiceInstance: Log: Found environment variable UE_ZenDataPath={ZEN_DIR}"
@@ -74,5 +74,5 @@ def test_find_zen_redirect_line_matches_command_line_override():
 
 
 def test_find_zen_redirect_line_returns_none_for_default_config():
-    log = "LogZenServiceInstance: Found Zen config default=/home/jk_edge/.config/Epic/UnrealEngine/Common/Zen/Data\n"
+    log = "LogZenServiceInstance: Found Zen config default=/home/nvidiasims/.config/Epic/UnrealEngine/Common/Zen/Data\n"
     assert find_zen_redirect_line(log, ZEN_DIR) is None

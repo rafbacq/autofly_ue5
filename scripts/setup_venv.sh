@@ -2,7 +2,7 @@
 # Create ROOT/.venv from system python3.12 with the host PYTHONPATH removed,
 # install the pinned requirements and the package (editable), and record the lock.
 set -euo pipefail
-ROOT=/home/jk_edge/research_uav/autofly_ue5
+ROOT=/home/nvidiasims/research_uav/autofly_ue5
 cd "$ROOT"
 if [ ! -x .venv/bin/python ]; then
   env -u PYTHONPATH /usr/bin/python3.12 -m venv .venv

@@ -16,7 +16,7 @@
 
 Copied from the spec and from M0/M1's measured contract. Every task's requirements implicitly include this section.
 
-- **Python is always run as `env -u PYTHONPATH .venv/bin/python`** from ROOT (`/home/jk_edge/research_uav/autofly_ue5`). A stray `PYTHONPATH` breaks imports. Tests: `env -u PYTHONPATH .venv/bin/python -m pytest -q`.
+- **Python is always run as `env -u PYTHONPATH .venv/bin/python`** from ROOT (`/home/nvidiasims/research_uav/autofly_ue5`). A stray `PYTHONPATH` breaks imports. Tests: `env -u PYTHONPATH .venv/bin/python -m pytest -q`.
 - **Packages are installed only with `uv pip install --python .venv/bin/python`.** Never `pip install` into system Python, never create a second virtualenv. `numpy` must stay at **1.26.4** — `projectairsim` 1.0.2 is built against it.
 - **Action space is exactly `[v_forward ∈ [0, 2] m/s, yaw_rate ∈ [−1, 1] rad/s, v_z ∈ [−1, 1] m/s]`** (spec §8), one command per **0.2 s** step, `v_z` positive **up**.
 - **Observation is depth-only plus a privileged target vector** (spec §8). RGB is never an expert input. The target's *appearance* is never an expert input.
@@ -88,7 +88,7 @@ The packages were installed during planning with
 - [ ] **Step 1: Verify the install and that numpy did not move**
 
 ```bash
-cd /home/jk_edge/research_uav/autofly_ue5
+cd /home/nvidiasims/research_uav/autofly_ue5
 env -u PYTHONPATH .venv/bin/python -c "
 import numpy, torch, gymnasium, stable_baselines3 as sb3
 print('numpy', numpy.__version__); print('torch', torch.__version__, 'cuda', torch.cuda.is_available())

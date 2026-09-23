@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Package the Development Linux game with /Game/AutoFly/Maps/S01 and /Game/BlocksMap into ue_project/Packaged/Development.
 set -euo pipefail
-ROOT=/home/jk_edge/research_uav/autofly_ue5
+ROOT=/home/nvidiasims/research_uav/autofly_ue5
 OUT=$ROOT/ue_project/Packaged/Development
 LOG=$ROOT/runs/package/package_dev.log
 # Dedicated folder: UAT clears its log folder at startup and would otherwise use ~/Documents/Unreal Engine/LocalBuildLogs

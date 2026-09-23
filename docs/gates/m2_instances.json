@@ -47,7 +47,7 @@
         "xid_delta": 0,
         "boot_changed": false,
         "device_lost": {
-          "/home/jk_edge/research_uav/autofly_ue5/runs/sim/inst0/sim.log": 0
+          "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst0/sim.log": 0
         }
       },
       "faults_ok": true

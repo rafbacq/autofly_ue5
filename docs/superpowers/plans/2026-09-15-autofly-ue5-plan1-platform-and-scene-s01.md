@@ -8,15 +8,15 @@
 
 **Tech Stack:** Unreal Engine 5.7.4 (Epic prebuilt Linux, bundled clang 20.1.8), Project AirSim plugin 1.0.1 (prebuilt SimLibs) + `projectairsim==1.0.2` client, UE PythonScriptPlugin (embedded Python 3.11.8), system Python 3.12 venv, numpy 1.26.4, pillow 11.2.1, jsonschema 4.23.0, pytest 8.3.5, bash, `ss`, `nvidia-smi`, `journalctl`.
 
-**Spec:** /home/jk_edge/research_uav/autofly_ue5/docs/superpowers/specs/2026-09-15-autofly-ue5-dataset-design.md
+**Spec:** /home/nvidiasims/research_uav/autofly_ue5/docs/superpowers/specs/2026-09-15-autofly-ue5-dataset-design.md
 
 ## Global Constraints
 
-- ROOT is `/home/jk_edge/research_uav/autofly_ue5`; everything this plan creates lives under ROOT (spec §5). Known exception, not redirectable in the installed engine: UE itself writes under `~/.config/Epic/` (`UnrealEngine/5.7/` user config and saved data, `UnrealEngine/Common/Zen/Install/` zenserver binary copy, `UnrealBuildTool/` logs and config; `Paths.cpp:204-221`, `UnixPlatformProcess.cpp:340-355`, `ZenServerInterface.cpp:155-158`). `~/.config/Epic/AirVLN` and `UnrealEngine/4.27` belong to another project and are never touched. `engine_check` (Task 2) and `m0_gate faults` (Task 8) record `du -sk ~/.config/Epic` before and after M0. Other out-of-ROOT locations and how this plan keeps them unused: every non-Shipping UE process forks `engine/Engine/Binaries/Linux/UnrealTraceServer` (a daemon outside the recorded process group that writes `~/UnrealEngine/UnrealTrace/` and `/tmp/UnrealTraceServer.pid` and listens on TCP 1981/1989; `TraceAuxiliary.cpp:1980-1986,2553-2590`) unless `-notraceserver` is passed, so every editor, commandlet and game command line carries `-notraceserver` and the RunUAT cook gets `-AdditionalCookerOptions=-notraceserver`; RunUAT on an installed engine writes and clears its logs in `~/Documents/Unreal Engine/LocalBuildLogs/` (`CommandEnvironment.cs:104-122`, `LinuxHostPlatform.cs:64-67`) unless `uebp_LogFolder` is set, so `scripts/package_sim.sh` sets `uebp_LogFolder=ROOT/runs/package/uat_logs`; the Task 2 editor probe (no project) can create an empty `~/Documents/Unreal Projects` (`SProjectDialog.cpp:1748-1752`), which `engine_check` removes only when the probe created it and it is empty. `engine_check` records these paths before M0 and `m0_gate faults` fails when any of them was created during M0.
+- ROOT is `/home/nvidiasims/research_uav/autofly_ue5`; everything this plan creates lives under ROOT (spec §5). Known exception, not redirectable in the installed engine: UE itself writes under `~/.config/Epic/` (`UnrealEngine/5.7/` user config and saved data, `UnrealEngine/Common/Zen/Install/` zenserver binary copy, `UnrealBuildTool/` logs and config; `Paths.cpp:204-221`, `UnixPlatformProcess.cpp:340-355`, `ZenServerInterface.cpp:155-158`). `~/.config/Epic/AirVLN` and `UnrealEngine/4.27` belong to another project and are never touched. `engine_check` (Task 2) and `m0_gate faults` (Task 8) record `du -sk ~/.config/Epic` before and after M0. Other out-of-ROOT locations and how this plan keeps them unused: every non-Shipping UE process forks `engine/Engine/Binaries/Linux/UnrealTraceServer` (a daemon outside the recorded process group that writes `~/UnrealEngine/UnrealTrace/` and `/tmp/UnrealTraceServer.pid` and listens on TCP 1981/1989; `TraceAuxiliary.cpp:1980-1986,2553-2590`) unless `-notraceserver` is passed, so every editor, commandlet and game command line carries `-notraceserver` and the RunUAT cook gets `-AdditionalCookerOptions=-notraceserver`; RunUAT on an installed engine writes and clears its logs in `~/Documents/Unreal Engine/LocalBuildLogs/` (`CommandEnvironment.cs:104-122`, `LinuxHostPlatform.cs:64-67`) unless `uebp_LogFolder` is set, so `scripts/package_sim.sh` sets `uebp_LogFolder=ROOT/runs/package/uat_logs`; the Task 2 editor probe (no project) can create an empty `~/Documents/Unreal Projects` (`SProjectDialog.cpp:1748-1752`), which `engine_check` removes only when the probe created it and it is empty. `engine_check` records these paths before M0 and `m0_gate faults` fails when any of them was created during M0.
 - While a simulator runs, its topics and services ports (8989/8990, 9001/9002) listen on all interfaces without authentication (`simserver.cpp:42-44`), so any host on the LAN can reach them. The executor never changes firewall rules (that needs sudo); the M0 milestone report asks the user whether a host firewall rule is wanted.
 - Tool-call timeouts: the Bash tool defaults to 120 s. Every Bash tool call that runs `run_job.sh wait … 540`, `scripts/setup_venv.sh`, or `scripts/stop_sim.py` followed by `sleep` sets the tool's `timeout` parameter to 600000 ms, and a single call never contains more than one `run_job.sh wait … 540`.
-- Every Unreal process (editor, commandlet, packaged game, RunUAT cook) runs with `UE-ZenDataPath=/home/jk_edge/research_uav/autofly_ue5/ue_project/DerivedDataCache/Zen` and `UE-LocalDataCachePath=/home/jk_edge/research_uav/autofly_ue5/ue_project/DerivedDataCache` (`autofly_ue5.paths.UE_CACHE_ENV`; read at `ZenServerInterface.cpp:861` and `BaseEngine.ini:2760`), so the derived-data cache stays inside ROOT instead of `~/.config/Epic/UnrealEngine/Common/Zen/Data`; the M0 gate fails if that default Zen data folder is created during M0.
-- Never modify other projects under `/home/jk_edge/research_uav` (phi_aerovla, AirVLN, TravelUAV, …) or `~/Documents/AirSim`.
+- Every Unreal process (editor, commandlet, packaged game, RunUAT cook) runs with `UE-ZenDataPath=/home/nvidiasims/research_uav/autofly_ue5/ue_project/DerivedDataCache/Zen` and `UE-LocalDataCachePath=/home/nvidiasims/research_uav/autofly_ue5/ue_project/DerivedDataCache` (`autofly_ue5.paths.UE_CACHE_ENV`; read at `ZenServerInterface.cpp:861` and `BaseEngine.ini:2760`), so the derived-data cache stays inside ROOT instead of `~/.config/Epic/UnrealEngine/Common/Zen/Data`; the M0 gate fails if that default Zen data folder is created during M0.
+- Never modify other projects under `/home/nvidiasims/research_uav` (phi_aerovla, AirVLN, TravelUAV, …) or `~/Documents/AirSim`.
 - Engine: `ROOT/engine`, Epic prebuilt `Linux_Unreal_Engine_5.7.4.zip`, `Build.version` 5.7.4 CL 51494982, bundled toolchain `v26_clang-20.1.8-rockylinux8` (spec §4).
 - Platform checkout: `ROOT/platform` at `4d878bf`; tag `v1.0.1` = `0975545`; C++ dirs must show no diff between them (spec §4).
 - Plugin: `ProjectAirSim-Plugin-Linux-UE5_7-1.0.1.zip`, 669,317,542 bytes, sha256 `11f016ac7aa292a1a353dfde9ff7c4a1b5cebd660cf9e8f400f2ed4c030dcb49`; SimLibs are Release-only, so build and package **Development** only (never DebugGame).
@@ -30,13 +30,13 @@
 - `autofly_ue5/sim/` is the only package code that imports `projectairsim` (spec §5, §7).
 - Units: Project AirSim world is NED metres (+z down), yaw in radians; UE is X forward, Y right, Z up, centimetres; `(X, Y, Z)_cm = (100·x, 100·y, −100·z)` with no origin offset; UE yaw (deg) = NED yaw (deg); AutoFly `z_up = −z_ned` (spec §3.2).
 - Clock: `"type": "steppable"`, `"step-ns": 5000000`, `"real-time-update-rate": 3000000`, `"pause-on-start": true`; one record = one `world.step(200000000)` (5 Hz); velocity command `duration = dt − 2·step-ns = 0.19` s sent before the step, a 2 ms client pause, the step, then the command reply awaited with a timeout (`CommandTimeoutError`). The server starts the duration at the sim time its request job reads (`core_sim/src/service_manager.cpp:440`, `vehicle_apis/include/common/function_caller.hpp` `IsTimeout`), which can be one 5 ms tick after the Step job has started the clock; with `dt − 1e-3` the reply would then never arrive inside the step. The 10 ms without a new goal stays far below simple flight's 60 ms hover fallback (`OffboardApi.hpp:56-66`, `Params.hpp:479`).
-- Long-running commands (anything that can exceed 5 minutes: the engine check, downloads, builds, commandlets, packaging, simulator launches, smoke and gate runs) never run as a foreground tool call. Start them with `bash /home/jk_edge/research_uav/autofly_ue5/scripts/run_job.sh start <name> -- <cmd…>` (new session; PID, PGID and command recorded in `runs/jobs/<name>.pid.json`; output in `runs/jobs/<name>.log`) and poll with `bash /home/jk_edge/research_uav/autofly_ue5/scripts/run_job.sh wait <name> 540` (returns within 9 minutes: 0 = finished with exit 0, 1 = finished with another exit code, 124 = still running so call `wait` again, 3 = stopped or died). Each step states a total wait budget; when it is used up, run `bash scripts/run_job.sh stop <name>`, then `scripts/stop_sim.py --instance N` for any simulator the job launched, and report. Never re-launch after a timeout.
+- Long-running commands (anything that can exceed 5 minutes: the engine check, downloads, builds, commandlets, packaging, simulator launches, smoke and gate runs) never run as a foreground tool call. Start them with `bash /home/nvidiasims/research_uav/autofly_ue5/scripts/run_job.sh start <name> -- <cmd…>` (new session; PID, PGID and command recorded in `runs/jobs/<name>.pid.json`; output in `runs/jobs/<name>.log`) and poll with `bash /home/nvidiasims/research_uav/autofly_ue5/scripts/run_job.sh wait <name> 540` (returns within 9 minutes: 0 = finished with exit 0, 1 = finished with another exit code, 124 = still running so call `wait` again, 3 = stopped or died). Each step states a total wait budget; when it is used up, run `bash scripts/run_job.sh stop <name>`, then `scripts/stop_sim.py --instance N` for any simulator the job launched, and report. Never re-launch after a timeout.
 - UE commandlets (`UnrealEditor-Cmd … -run=pythonscript`) return exit code 1 whenever any error was logged, even when the script succeeded (`LaunchEngineLoop.cpp:4160-4166`; PythonScriptPlugin never sets `UseCommandletResultAsExitCode`). Gate only on the log line `Python script executed successfully` plus the script's JSON report; record the exit code and `grep -c "Error:"` of the log as information.
 - Camera: `FrontCamera`, 256×256, `fov-degrees` 90, image type 0 (RGB, encoding `BGR`) and 1 (DepthPlanar, encoding `16FC1`, metres, `+inf` = no hit), `compress: false`, `capture-interval: 0.001`, origin `0.40 0.0 0.0`.
 - Scenes: bounds 70 × 70 m centred on the origin; start band 2–6 m inside the boundary; target band 0–3 m inside; altitude band 1.0–3.0 m; reachability clearance 1.0 m (spec §6).
 - Failure rule: when a live step fails or an UNCONFIRMED fact is contradicted, stop and report (command, exit code, log/report path, last 50 log lines); never switch approach silently. Before reporting, stop every simulator instance the current task launched (`env -u PYTHONPATH .venv/bin/python scripts/stop_sim.py --instance N`) and every job of the task still running (`bash scripts/run_job.sh stop <name>`), unless the step explicitly says to keep one, and include their outputs (`terminated`/`killed`/`not_running`) plus `nvidia-smi --query-gpu=memory.used --format=csv,noheader` in the report. The Cosys-AirSim `5.8-v3.4.1` fallback is decided only with the user (spec §4).
 - Milestone rule: after Task 8 (M0 gate) stop for the user's go-ahead before Task 9 (spec §12).
-- Git: no pushes, no remote. Commit with `git -C /home/jk_edge/research_uav/autofly_ue5 add <paths> && git -C /home/jk_edge/research_uav/autofly_ue5 commit -m "<message>" -m "Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"`.
+- Git: no pushes, no remote. Commit with `git -C /home/nvidiasims/research_uav/autofly_ue5 add <paths> && git -C /home/nvidiasims/research_uav/autofly_ue5 commit -m "<message>" -m "Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"`.
 - Evidence-backed deviations from the spec text adopted here: images come from topic subscriptions filtered by `time_stamp == T`, not from `get_images` (it is only probed at M0); runtime `set_object_material` is exercised with the opaque base `UMaterial` `/Game/Geometry/Materials/M_Orange` because the server loads with a `UMaterial` class filter (`WorldSimApi.cpp:1030-1032`), and the spec's material-instance route is attempted once with the `MaterialInstanceConstant` `/Game/Geometry/Materials/M_Blue` and recorded (`material_instance_ok`, predicted `false`), while s01 pillar colour is baked into the level with a material instance by the editor script; the reachability check (Task 13) keeps the spec §6.2 rule and adds a crossing rule on top of it (every free start cell must also reach the target band of the opposite edge through the obstacle field, not around its perimeter), because the spec rule alone accepts every layout whose outer 6 m ring is free, which makes it vacuous for s01. The crossing rule only rejects more layouts; it is put to the user for confirmation in the M0 milestone report (before any M1 work) and listed again in the M1 milestone report.
 
 ---
@@ -149,13 +149,13 @@ Dependency choice: `jsonschema` validates scene files declaratively (it is alrea
 
 Run:
 ```bash
-git -C /home/jk_edge/research_uav/autofly_ue5 status --short && git -C /home/jk_edge/research_uav/autofly_ue5 log --oneline | head -3 && /usr/bin/python3.12 --version && ls /home/jk_edge/research_uav/autofly_ue5
+git -C /home/nvidiasims/research_uav/autofly_ue5 status --short && git -C /home/nvidiasims/research_uav/autofly_ue5 log --oneline | head -3 && /usr/bin/python3.12 --version && ls /home/nvidiasims/research_uav/autofly_ue5
 ```
 Expected: status prints exactly one line, `?? docs/superpowers/plans/` (this plan, committed in Step 12); top commit `a9e4098 Pin UE 5.7.4, …`; `Python 3.12.3`; listing shows `docs engine platform`. If status shows anything else, stop and report. Also run `pgrep -a zenserver || echo none` and `du -sk ~/.config/Epic` and note both outputs (expected `none`; if a zenserver is already running, stop and report it, because UE may attach to a running instance on port 8558 whose data path is not ours).
 
 - [ ] **Step 2: Replace `.gitignore`**
 
-Write `/home/jk_edge/research_uav/autofly_ue5/.gitignore`:
+Write `/home/nvidiasims/research_uav/autofly_ue5/.gitignore`:
 ```gitignore
 # large or generated content: never commit
 /engine/
@@ -186,7 +186,7 @@ __pycache__/
 
 - [ ] **Step 3: Write `pyproject.toml`, `requirements.txt`, the package marker and `README.md`**
 
-`/home/jk_edge/research_uav/autofly_ue5/pyproject.toml`:
+`/home/nvidiasims/research_uav/autofly_ue5/pyproject.toml`:
 ```toml
 [build-system]
 requires = ["setuptools>=69"]
@@ -209,7 +209,7 @@ testpaths = ["tests"]
 addopts = "--import-mode=importlib -q"
 ```
 
-`/home/jk_edge/research_uav/autofly_ue5/requirements.txt`:
+`/home/nvidiasims/research_uav/autofly_ue5/requirements.txt`:
 ```text
 projectairsim==1.0.2
 numpy==1.26.4
@@ -221,14 +221,14 @@ matplotlib==3.10.3
 msgpack==1.1.0
 ```
 
-`/home/jk_edge/research_uav/autofly_ue5/autofly_ue5/__init__.py`:
+`/home/nvidiasims/research_uav/autofly_ue5/autofly_ue5/__init__.py`:
 ```python
 """AutoFly-format dataset generation on Unreal Engine 5.7.4 + Project AirSim."""
 
 __version__ = "0.1.0"
 ```
 
-`/home/jk_edge/research_uav/autofly_ue5/README.md`:
+`/home/nvidiasims/research_uav/autofly_ue5/README.md`:
 ````markdown
 # autofly_ue5
 
@@ -262,13 +262,13 @@ bash scripts/build_editor.sh                 # BlocksEditor Linux Development
 
 - [ ] **Step 4: Write `scripts/setup_venv.sh`**
 
-`/home/jk_edge/research_uav/autofly_ue5/scripts/setup_venv.sh`:
+`/home/nvidiasims/research_uav/autofly_ue5/scripts/setup_venv.sh`:
 ```bash
 #!/usr/bin/env bash
 # Create ROOT/.venv from system python3.12 with the host PYTHONPATH removed,
 # install the pinned requirements and the package (editable), and record the lock.
 set -euo pipefail
-ROOT=/home/jk_edge/research_uav/autofly_ue5
+ROOT=/home/nvidiasims/research_uav/autofly_ue5
 cd "$ROOT"
 if [ ! -x .venv/bin/python ]; then
   env -u PYTHONPATH /usr/bin/python3.12 -m venv .venv
@@ -284,7 +284,7 @@ env -u PYTHONPATH .venv/bin/python -c "import projectairsim, numpy, PIL, jsonsch
 
 Run (Bash tool `timeout` 600000 ms: pip downloads opencv/matplotlib and builds two source packages):
 ```bash
-bash /home/jk_edge/research_uav/autofly_ue5/scripts/setup_venv.sh 2>&1 | tail -5
+bash /home/nvidiasims/research_uav/autofly_ue5/scripts/setup_venv.sh 2>&1 | tail -5
 ```
 Expected last line: `projectairsim 1.0.2 numpy 1.26.4`. This also builds the source-only `commentjson` and `lark-parser` on Python 3.12 (UNCONFIRMED until now). If pip fails on them or on any pin, stop and report the pip error; do not change pins without the user.
 
@@ -292,13 +292,13 @@ Expected last line: `projectairsim 1.0.2 numpy 1.26.4`. This also builds the sou
 
 Run:
 ```bash
-cd /home/jk_edge/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -c "import sys; assert not any('ros' in p for p in sys.path), sys.path; import commentjson, lark; print('ok')" && env -u PYTHONPATH .venv/bin/python -m pip show commentjson lark-parser | grep -E '^(Name|Version)'
+cd /home/nvidiasims/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -c "import sys; assert not any('ros' in p for p in sys.path), sys.path; import commentjson, lark; print('ok')" && env -u PYTHONPATH .venv/bin/python -m pip show commentjson lark-parser | grep -E '^(Name|Version)'
 ```
 Expected: `ok`, then `Name: commentjson` / `Version: 0.9.0` and `Name: lark-parser` / `Version: 0.7.8`.
 
 - [ ] **Step 7: Write the failing tests**
 
-`/home/jk_edge/research_uav/autofly_ue5/tests/test_paths.py`:
+`/home/nvidiasims/research_uav/autofly_ue5/tests/test_paths.py`:
 ```python
 from pathlib import Path
 
@@ -306,7 +306,7 @@ from autofly_ue5 import paths
 
 
 def test_root_is_project_root():
-    assert paths.ROOT == Path("/home/jk_edge/research_uav/autofly_ue5")
+    assert paths.ROOT == Path("/home/nvidiasims/research_uav/autofly_ue5")
 
 
 def test_engine_binaries_exist():
@@ -324,12 +324,12 @@ def test_derived_paths():
 
 def test_ue_cache_env_stays_inside_root():
     assert paths.UE_CACHE_ENV == {
-        "UE-ZenDataPath": "/home/jk_edge/research_uav/autofly_ue5/ue_project/DerivedDataCache/Zen",
-        "UE-LocalDataCachePath": "/home/jk_edge/research_uav/autofly_ue5/ue_project/DerivedDataCache",
+        "UE-ZenDataPath": "/home/nvidiasims/research_uav/autofly_ue5/ue_project/DerivedDataCache/Zen",
+        "UE-LocalDataCachePath": "/home/nvidiasims/research_uav/autofly_ue5/ue_project/DerivedDataCache",
     }
 ```
 
-`/home/jk_edge/research_uav/autofly_ue5/tests/test_run_job.py`:
+`/home/nvidiasims/research_uav/autofly_ue5/tests/test_run_job.py`:
 ```python
 import json
 import os
@@ -377,7 +377,7 @@ def test_wait_times_out_duplicate_start_is_refused_and_stop_ends_the_group(tmp_p
 
 - [ ] **Step 8: Run them to verify they fail**
 
-Run: `cd /home/jk_edge/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_paths.py tests/test_run_job.py`
+Run: `cd /home/nvidiasims/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_paths.py tests/test_run_job.py`
 Expected: FAIL: `ModuleNotFoundError: No module named 'autofly_ue5.paths'` for `test_paths.py`, and the three `test_run_job.py` tests fail on `returncode` (bash reports `scripts/run_job.sh: No such file or directory`).
 
 - [ ] **Step 9: Write `autofly_ue5/paths.py`**
@@ -411,7 +411,7 @@ UE_CACHE_ENV = {"UE-ZenDataPath": str(ZEN_DATA_DIR), "UE-LocalDataCachePath": st
 
 - [ ] **Step 10: Write `scripts/run_job.sh`**
 
-`/home/jk_edge/research_uav/autofly_ue5/scripts/run_job.sh`:
+`/home/nvidiasims/research_uav/autofly_ue5/scripts/run_job.sh`:
 ```bash
 #!/usr/bin/env bash
 # Long-running commands owned by this project, detached from the caller's shell and tool timeout.
@@ -421,7 +421,7 @@ UE_CACHE_ENV = {"UE-ZenDataPath": str(ZEN_DATA_DIR), "UE-LocalDataCachePath": st
 #   run_job.sh stop <name>                      SIGTERM, then SIGKILL after 30 s, to the recorded process group, only if it is ours
 # Files live in $AUTOFLY_JOBS_DIR (default ROOT/runs/jobs).
 set -euo pipefail
-ROOT=/home/jk_edge/research_uav/autofly_ue5
+ROOT=/home/nvidiasims/research_uav/autofly_ue5
 JOBS=${AUTOFLY_JOBS_DIR:-$ROOT/runs/jobs}
 USAGE="usage: run_job.sh start <name> -- <cmd...> | wait <name> [timeout_s] | stop <name>"
 MODE="${1:?$USAGE}"
@@ -515,14 +515,14 @@ esac
 
 - [ ] **Step 11: Run the tests to verify they pass**
 
-Run: `chmod +x /home/jk_edge/research_uav/autofly_ue5/scripts/run_job.sh && cd /home/jk_edge/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_paths.py tests/test_run_job.py`
+Run: `chmod +x /home/nvidiasims/research_uav/autofly_ue5/scripts/run_job.sh && cd /home/nvidiasims/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_paths.py tests/test_run_job.py`
 Expected: `7 passed`.
 
 - [ ] **Step 12: Commit (including this plan)**
 
 ```bash
-chmod +x /home/jk_edge/research_uav/autofly_ue5/scripts/setup_venv.sh
-git -C /home/jk_edge/research_uav/autofly_ue5 add .gitignore README.md pyproject.toml requirements.txt requirements.lock scripts/setup_venv.sh scripts/run_job.sh autofly_ue5/__init__.py autofly_ue5/paths.py tests/test_paths.py tests/test_run_job.py docs/superpowers/plans/2026-09-15-autofly-ue5-plan1-platform-and-scene-s01.md && git -C /home/jk_edge/research_uav/autofly_ue5 commit -m "Add the autofly_ue5 package skeleton, a pinned Python 3.12 venv with projectairsim 1.0.2, the job runner and Plan 1" -m "Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
+chmod +x /home/nvidiasims/research_uav/autofly_ue5/scripts/setup_venv.sh
+git -C /home/nvidiasims/research_uav/autofly_ue5 add .gitignore README.md pyproject.toml requirements.txt requirements.lock scripts/setup_venv.sh scripts/run_job.sh autofly_ue5/__init__.py autofly_ue5/paths.py tests/test_paths.py tests/test_run_job.py docs/superpowers/plans/2026-09-15-autofly-ue5-plan1-platform-and-scene-s01.md && git -C /home/nvidiasims/research_uav/autofly_ue5 commit -m "Add the autofly_ue5 package skeleton, a pinned Python 3.12 venv with projectairsim 1.0.2, the job runner and Plan 1" -m "Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
 ```
 
 ---
@@ -545,7 +545,7 @@ git -C /home/jk_edge/research_uav/autofly_ue5 add .gitignore README.md pyproject
 
 - [ ] **Step 1: Write the failing tests**
 
-`/home/jk_edge/research_uav/autofly_ue5/tests/test_gpu.py`:
+`/home/nvidiasims/research_uav/autofly_ue5/tests/test_gpu.py`:
 ```python
 import pytest
 
@@ -571,7 +571,7 @@ def test_second_instance_needs_headroom_only():
         check_gpu_for_launch(20000, 24564, own_running=1)
 ```
 
-`/home/jk_edge/research_uav/autofly_ue5/tests/test_engine_check.py`:
+`/home/nvidiasims/research_uav/autofly_ue5/tests/test_engine_check.py`:
 ```python
 from autofly_ue5.validate.engine_check import (
     clang_version,
@@ -633,7 +633,7 @@ def test_count_device_lost_per_file(tmp_path):
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `cd /home/jk_edge/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_gpu.py tests/test_engine_check.py`
+Run: `cd /home/nvidiasims/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_gpu.py tests/test_engine_check.py`
 Expected: FAIL with `ModuleNotFoundError: No module named 'autofly_ue5.gpu'` (and `autofly_ue5.validate`).
 
 - [ ] **Step 3: Write `autofly_ue5/gpu.py`**
@@ -897,26 +897,26 @@ if __name__ == "__main__":
 
 - [ ] **Step 5: Run the tests to verify they pass**
 
-Run: `cd /home/jk_edge/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_gpu.py tests/test_engine_check.py`
+Run: `cd /home/nvidiasims/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_gpu.py tests/test_engine_check.py`
 Expected: `10 passed`.
 
 - [ ] **Step 6: Run the live engine check as a job (opens the editor on display :1 for 120 s, then stops it; total wait budget 10 minutes)**
 
 This puts a visible Unreal Project Browser window on the user's X display :1 for about two minutes: say so in the progress message before starting the job. Run (Bash tool `timeout` 600000 ms):
 ```bash
-cd /home/jk_edge/research_uav/autofly_ue5 && nvidia-smi --query-gpu=memory.used --format=csv,noheader && bash scripts/run_job.sh start engine_check -- env -u PYTHONPATH .venv/bin/python -m autofly_ue5.validate.engine_check --out runs/m0/engine_check.json && bash scripts/run_job.sh wait engine_check 540; echo "wait=$?"
+cd /home/nvidiasims/research_uav/autofly_ue5 && nvidia-smi --query-gpu=memory.used --format=csv,noheader && bash scripts/run_job.sh start engine_check -- env -u PYTHONPATH .venv/bin/python -m autofly_ue5.validate.engine_check --out runs/m0/engine_check.json && bash scripts/run_job.sh wait engine_check 540; echo "wait=$?"
 ```
 Expected: the log tail shows every key `true`, then `job engine_check finished: exit=0` and `wait=0` (`wait=124`: run `bash scripts/run_job.sh wait engine_check 60` once more; after that, apply the timeout rule of the Global Constraints, which here means `bash scripts/run_job.sh stop engine_check`, which also stops the editor because it shares the job's process group). The editor started without a project shows the Project Browser; "opens" is judged as alive after 120 s with no fatal log line and no Xid added during the probe (the exact UE log wording is UNCONFIRMED, so `gpu_named_in_log` is informational only). If any check is `false`: stop and report `runs/m0/engine_check.json` plus `tail -50 runs/m0/editor_open.log`. Afterwards confirm nothing is left running and the cache went into ROOT:
 ```bash
-cd /home/jk_edge/research_uav/autofly_ue5 && sleep 30; pgrep -a -f "$(pwd)/engine/Engine/Binaries/Linux/" || echo none; pgrep -a zenserver || echo no-zenserver; ls runs/m0/editor_probe.pid.json 2>/dev/null || echo no-pid-file; jq '{started_at, boot_id, epic_config_before, out_of_root_before, probe_projects_dir: .checks.editor_opens_x11.documents_unreal_projects}' runs/m0/engine_check.json; ls -d ~/.config/Epic/UnrealEngine/Common/Zen/Data 2>/dev/null || echo zen-default-absent; ls -d ~/UnrealEngine /tmp/UnrealTraceServer.pid ~/"Documents/Unreal Projects" 2>/dev/null || echo out-of-root-absent; ls ue_project/DerivedDataCache 2>/dev/null || echo ddc-not-created-yet
+cd /home/nvidiasims/research_uav/autofly_ue5 && sleep 30; pgrep -a -f "$(pwd)/engine/Engine/Binaries/Linux/" || echo none; pgrep -a zenserver || echo no-zenserver; ls runs/m0/editor_probe.pid.json 2>/dev/null || echo no-pid-file; jq '{started_at, boot_id, epic_config_before, out_of_root_before, probe_projects_dir: .checks.editor_opens_x11.documents_unreal_projects}' runs/m0/engine_check.json; ls -d ~/.config/Epic/UnrealEngine/Common/Zen/Data 2>/dev/null || echo zen-default-absent; ls -d ~/UnrealEngine /tmp/UnrealTraceServer.pid ~/"Documents/Unreal Projects" 2>/dev/null || echo out-of-root-absent; ls ue_project/DerivedDataCache 2>/dev/null || echo ddc-not-created-yet
 ```
 Expected: `none`; `no-zenserver` (a zenserver still listed after 30 s is reported, not killed: it was started by UE with `--owner-pid` and exits on its own); `no-pid-file`; the recorded JSON (`started_at`, `boot_id`, usage, `out_of_root_before`, and the probe's `documents_unreal_projects` record); `zen-default-absent` (if the folder is listed while `epic_config_before.zen_default_data_exists` was `false`, the cache override did not work: stop and report); `out-of-root-absent` (any of those paths listed while `out_of_root_before` had it `false` means `-notraceserver` or the empty-folder cleanup did not work: stop and report). `ddc-not-created-yet` is acceptable: the editor may not have touched the cache without a project, and later tasks check again.
 
 - [ ] **Step 7: Commit (with the captured report)**
 
 ```bash
-mkdir -p /home/jk_edge/research_uav/autofly_ue5/docs/gates && cp /home/jk_edge/research_uav/autofly_ue5/runs/m0/engine_check.json /home/jk_edge/research_uav/autofly_ue5/docs/gates/m0_engine_check.json
-git -C /home/jk_edge/research_uav/autofly_ue5 add autofly_ue5/gpu.py autofly_ue5/validate/__init__.py autofly_ue5/validate/engine_check.py tests/test_gpu.py tests/test_engine_check.py docs/gates/m0_engine_check.json && git -C /home/jk_edge/research_uav/autofly_ue5 commit -m "Add the M0 engine readiness check (toolchain, plugins, checkout, GPU, Xid, editor on X11) and its report" -m "Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
+mkdir -p /home/nvidiasims/research_uav/autofly_ue5/docs/gates && cp /home/nvidiasims/research_uav/autofly_ue5/runs/m0/engine_check.json /home/nvidiasims/research_uav/autofly_ue5/docs/gates/m0_engine_check.json
+git -C /home/nvidiasims/research_uav/autofly_ue5 add autofly_ue5/gpu.py autofly_ue5/validate/__init__.py autofly_ue5/validate/engine_check.py tests/test_gpu.py tests/test_engine_check.py docs/gates/m0_engine_check.json && git -C /home/nvidiasims/research_uav/autofly_ue5 commit -m "Add the M0 engine readiness check (toolchain, plugins, checkout, GPU, Xid, editor on X11) and its report" -m "Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
 ```
 
 ---
@@ -935,7 +935,7 @@ git -C /home/jk_edge/research_uav/autofly_ue5 add autofly_ue5/gpu.py autofly_ue5
 
 - [ ] **Step 1: Write the failing test**
 
-`/home/jk_edge/research_uav/autofly_ue5/tests/test_plugin_manifest.py`:
+`/home/nvidiasims/research_uav/autofly_ue5/tests/test_plugin_manifest.py`:
 ```python
 import hashlib
 import json
@@ -987,7 +987,7 @@ def test_wrong_engine_version_fails(tmp_path):
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `cd /home/jk_edge/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_plugin_manifest.py`
+Run: `cd /home/nvidiasims/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_plugin_manifest.py`
 Expected: FAIL with `ModuleNotFoundError: No module named 'autofly_ue5.validate.plugin_manifest'`.
 
 - [ ] **Step 3: Write `autofly_ue5/validate/plugin_manifest.py`**
@@ -1065,7 +1065,7 @@ if __name__ == "__main__":
 
 - [ ] **Step 4: Run the test to verify it passes**
 
-Run: `cd /home/jk_edge/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_plugin_manifest.py`
+Run: `cd /home/nvidiasims/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_plugin_manifest.py`
 Expected: `3 passed`.
 
 - [ ] **Step 5: Write `scripts/fetch_plugin.sh`**
@@ -1074,7 +1074,7 @@ Expected: `3 passed`.
 #!/usr/bin/env bash
 # Download the Project AirSim 1.0.1 Linux UE5.7 plugin, check size and sha256, unzip, verify the manifest.
 set -euo pipefail
-ROOT=/home/jk_edge/research_uav/autofly_ue5
+ROOT=/home/nvidiasims/research_uav/autofly_ue5
 NAME=ProjectAirSim-Plugin-Linux-UE5_7-1.0.1.zip
 URL=https://github.com/iamaisim/ProjectAirSim/releases/download/v1.0.1/$NAME
 SHA=11f016ac7aa292a1a353dfde9ff7c4a1b5cebd660cf9e8f400f2ed4c030dcb49
@@ -1105,18 +1105,18 @@ Expected: `669317542 sha256:11f016ac7aa292a1a353dfde9ff7c4a1b5cebd660cf9e8f400f2
 
 - [ ] **Step 7: Download and verify as a job (about 670 MB; total wait budget 60 minutes)**
 
-Run: `chmod +x /home/jk_edge/research_uav/autofly_ue5/scripts/fetch_plugin.sh && cd /home/jk_edge/research_uav/autofly_ue5 && bash scripts/run_job.sh start fetch_plugin -- bash scripts/fetch_plugin.sh && bash scripts/run_job.sh wait fetch_plugin 540; echo "wait=$?"` (repeat `bash scripts/run_job.sh wait fetch_plugin 540` while it returns 124, within the budget; `curl -C -` resumes a partial file if the job must be restarted after a network failure).
+Run: `chmod +x /home/nvidiasims/research_uav/autofly_ue5/scripts/fetch_plugin.sh && cd /home/nvidiasims/research_uav/autofly_ue5 && bash scripts/run_job.sh start fetch_plugin -- bash scripts/fetch_plugin.sh && bash scripts/run_job.sh wait fetch_plugin 540; echo "wait=$?"` (repeat `bash scripts/run_job.sh wait fetch_plugin 540` while it returns 124, within the budget; `curl -C -` resumes a partial file if the job must be restarted after a network failure).
 Expected: `wait=0` and the job log (`runs/jobs/fetch_plugin.log`) shows `ProjectAirSim-Plugin-Linux-UE5_7-1.0.1.zip: OK`, then a JSON report with `"files": 2395`, `"missing": []`, `"mismatched": []`, `"missing_dirs": []`, `"source_sha"` starting `0975545`, `"unreal_version": "5.7"`, `"pass": true`, and `job fetch_plugin finished: exit=0`. The manifest key names (`files[].path`, `files[].sha256`, `source_sha`, `unreal_version`) are UNCONFIRMED until this run: if the script fails with a `KeyError`, stop and report the first 40 lines of `downloads/plugin_ue57_1.0.1/build-manifest.json`.
 
 - [ ] **Step 8: Confirm the SimLibs are Release-only**
 
-Run: `find /home/jk_edge/research_uav/autofly_ue5/downloads/plugin_ue57_1.0.1/Plugins/ProjectAirSim/SimLibs -mindepth 2 -maxdepth 2 -type d -printf '%f\n' | sort | uniq -c`
+Run: `find /home/nvidiasims/research_uav/autofly_ue5/downloads/plugin_ue57_1.0.1/Plugins/ProjectAirSim/SimLibs -mindepth 2 -maxdepth 2 -type d -printf '%f\n' | sort | uniq -c`
 Expected: a `Release` entry (header folders such as `include` may also appear) and no `Debug` entry. A `Debug` entry does not block anything; note it in the task report.
 
 - [ ] **Step 9: Commit**
 
 ```bash
-git -C /home/jk_edge/research_uav/autofly_ue5 add autofly_ue5/validate/plugin_manifest.py scripts/fetch_plugin.sh tests/test_plugin_manifest.py && git -C /home/jk_edge/research_uav/autofly_ue5 commit -m "Fetch the Project AirSim 1.0.1 Linux UE5.7 plugin and verify size, sha256 and build manifest" -m "Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
+git -C /home/nvidiasims/research_uav/autofly_ue5 add autofly_ue5/validate/plugin_manifest.py scripts/fetch_plugin.sh tests/test_plugin_manifest.py && git -C /home/nvidiasims/research_uav/autofly_ue5 commit -m "Fetch the Project AirSim 1.0.1 Linux UE5.7 plugin and verify size, sha256 and build manifest" -m "Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
 ```
 
 ---
@@ -1139,7 +1139,7 @@ git -C /home/jk_edge/research_uav/autofly_ue5 add autofly_ue5/validate/plugin_ma
 # init:    first creation of ue_project from platform/unreal/Blocks (Config, Source) plus the ignored parts.
 # restore: copy only the git-ignored parts (Blocks content, prebuilt plugin) into an existing ue_project.
 set -euo pipefail
-ROOT=/home/jk_edge/research_uav/autofly_ue5
+ROOT=/home/nvidiasims/research_uav/autofly_ue5
 BLOCKS=$ROOT/platform/unreal/Blocks
 PLUGINS=$ROOT/downloads/plugin_ue57_1.0.1/Plugins
 DST=$ROOT/ue_project
@@ -1176,7 +1176,7 @@ echo "ue_project $MODE done"
 
 - [ ] **Step 2: Run `init`**
 
-Run: `chmod +x /home/jk_edge/research_uav/autofly_ue5/scripts/create_ue_project.sh && bash /home/jk_edge/research_uav/autofly_ue5/scripts/create_ue_project.sh init && ls /home/jk_edge/research_uav/autofly_ue5/ue_project /home/jk_edge/research_uav/autofly_ue5/ue_project/Plugins /home/jk_edge/research_uav/autofly_ue5/ue_project/Content`
+Run: `chmod +x /home/nvidiasims/research_uav/autofly_ue5/scripts/create_ue_project.sh && bash /home/nvidiasims/research_uav/autofly_ue5/scripts/create_ue_project.sh init && ls /home/nvidiasims/research_uav/autofly_ue5/ue_project /home/nvidiasims/research_uav/autofly_ue5/ue_project/Plugins /home/nvidiasims/research_uav/autofly_ue5/ue_project/Content`
 Expected: `ue_project init done`; `Blocks.uproject Config Content Plugins Source` (plus `DerivedDataCache` if Task 2's editor probe already created `DerivedDataCache/Zen` through `UE-ZenDataPath`); `Drone ProjectAirSim Rover`; `BlocksMap.umap Geometry`.
 
 - [ ] **Step 3: Overwrite the descriptor `ue_project/Blocks.uproject`**
@@ -1272,7 +1272,7 @@ bNativizeOnlySelectedBlueprints=False
 #!/usr/bin/env bash
 # Build BlocksEditor (Linux, Development) with the engine's bundled toolchain and check the outputs.
 set -euo pipefail
-ROOT=/home/jk_edge/research_uav/autofly_ue5
+ROOT=/home/nvidiasims/research_uav/autofly_ue5
 LOG=$ROOT/runs/build/build_BlocksEditor_Development.log
 RESULT=$ROOT/runs/build/build_result.json
 mkdir -p "$(dirname "$LOG")"
@@ -1299,7 +1299,7 @@ echo "BlocksEditor build OK"
 
 - [ ] **Step 6: Build as a job (3–15 minutes; total wait budget 45 minutes)**
 
-Run: `chmod +x /home/jk_edge/research_uav/autofly_ue5/scripts/build_editor.sh && cd /home/jk_edge/research_uav/autofly_ue5 && bash scripts/run_job.sh start build_editor -- bash scripts/build_editor.sh && bash scripts/run_job.sh wait build_editor 540; echo "wait=$?"` (repeat `bash scripts/run_job.sh wait build_editor 540` while it returns 124, within the budget).
+Run: `chmod +x /home/nvidiasims/research_uav/autofly_ue5/scripts/build_editor.sh && cd /home/nvidiasims/research_uav/autofly_ue5 && bash scripts/run_job.sh start build_editor -- bash scripts/build_editor.sh && bash scripts/run_job.sh wait build_editor 540; echo "wait=$?"` (repeat `bash scripts/run_job.sh wait build_editor 540` while it returns 124, within the budget).
 Expected: the job log tail shows `Build.sh exit code: 0`, a tail containing `Result: Succeeded` (wording UNCONFIRMED; the exit code is authoritative), `BlocksEditor build OK`, then `job build_editor finished: exit=0` and `wait=0`; `runs/build/build_result.json` exists with `"pass": true`. Expected harmless warning: obsolete `bEnableUndefinedIdentifierWarnings`. If the build fails: stop and report the first `error:` lines of `runs/build/build_BlocksEditor_Development.log` and `~/.config/Epic/UnrealBuildTool/Log.txt` tail. Do not run `setup_linux_dev_tools.sh`, do not build SimLibs from source, do not try a 22.04 container without the user (spec §4 fallback trigger).
 
 - [ ] **Step 7: Write the commandlet probe `autofly_ue5/scenes/ue/probe_python.py`**
@@ -1367,18 +1367,18 @@ with open(os.environ["AUTOFLY_PROBE_OUT"], "w") as handle:
 
 Run:
 ```bash
-cd /home/jk_edge/research_uav/autofly_ue5 && mkdir -p runs/build && rm -f runs/build/python_probe.json && bash scripts/run_job.sh start python_probe -- env -u PYTHONPATH DISPLAY=:1 SDL_VIDEODRIVER=x11 "UE-ZenDataPath=$PWD/ue_project/DerivedDataCache/Zen" "UE-LocalDataCachePath=$PWD/ue_project/DerivedDataCache" AUTOFLY_PROBE_OUT=$PWD/runs/build/python_probe.json engine/Engine/Binaries/Linux/UnrealEditor-Cmd $PWD/ue_project/Blocks.uproject -run=pythonscript -script=$PWD/autofly_ue5/scenes/ue/probe_python.py -unattended -nop4 -nosplash -nullrhi -notraceserver -stdout -FullStdOutLogOutput -abslog=$PWD/runs/build/python_probe.log && bash scripts/run_job.sh wait python_probe 540; echo "wait=$?"
+cd /home/nvidiasims/research_uav/autofly_ue5 && mkdir -p runs/build && rm -f runs/build/python_probe.json && bash scripts/run_job.sh start python_probe -- env -u PYTHONPATH DISPLAY=:1 SDL_VIDEODRIVER=x11 "UE-ZenDataPath=$PWD/ue_project/DerivedDataCache/Zen" "UE-LocalDataCachePath=$PWD/ue_project/DerivedDataCache" AUTOFLY_PROBE_OUT=$PWD/runs/build/python_probe.json engine/Engine/Binaries/Linux/UnrealEditor-Cmd $PWD/ue_project/Blocks.uproject -run=pythonscript -script=$PWD/autofly_ue5/scenes/ue/probe_python.py -unattended -nop4 -nosplash -nullrhi -notraceserver -stdout -FullStdOutLogOutput -abslog=$PWD/runs/build/python_probe.log && bash scripts/run_job.sh wait python_probe 540; echo "wait=$?"
 ```
 Repeat `bash scripts/run_job.sh wait python_probe 540` while it returns 124, within the budget. Then:
 ```bash
-cd /home/jk_edge/research_uav/autofly_ue5 && cat runs/jobs/python_probe.exit; grep -c "Error:" runs/build/python_probe.log; grep -E "Python script executed (successfully|with errors)" runs/build/python_probe.log; cat runs/build/python_probe.json; ls -d ue_project/DerivedDataCache/Zen ~/.config/Epic/UnrealEngine/Common/Zen/Data 2>&1; ls -d ue_project/Content/AutoFly/Probe 2>/dev/null || echo probe-asset-not-saved; ls -d ~/UnrealEngine /tmp/UnrealTraceServer.pid 2>/dev/null || echo no-trace-server-files
+cd /home/nvidiasims/research_uav/autofly_ue5 && cat runs/jobs/python_probe.exit; grep -c "Error:" runs/build/python_probe.log; grep -E "Python script executed (successfully|with errors)" runs/build/python_probe.log; cat runs/build/python_probe.json; ls -d ue_project/DerivedDataCache/Zen ~/.config/Epic/UnrealEngine/Common/Zen/Data 2>&1; ls -d ue_project/Content/AutoFly/Probe 2>/dev/null || echo probe-asset-not-saved; ls -d ~/UnrealEngine /tmp/UnrealTraceServer.pid 2>/dev/null || echo no-trace-server-files
 ```
 Expected: `Python script executed successfully` and JSON with `"engine_version"` starting `5.7.4`, all three subsystems `true`, `"game_mode_class": "/Script/ProjectAirSim.ProjectAirSimGameMode"`, `"sunsky_class": "/SunPosition/SunSky.SunSky_C"`, `cylinder_mesh`/`cube_mesh`/`world_grid_material` `true`, `"Color"` in `basic_shape_material_vector_params`, `"mic_parent": "/Engine/BasicShapes/BasicShapeMaterial.BasicShapeMaterial"`, `"mic_color_readback_ok": true` (`mic_set_vector_return_value` is information only; the engine source predicts `false`); `probe-asset-not-saved`; `no-trace-server-files`; `~/.config/Epic/UnrealEngine/Common/Zen/Data` reported as missing (if it exists and did not exist in Task 2, the cache override failed: stop and report); `ue_project/DerivedDataCache/Zen` is listed once UE has started its cache, which a commandlet may not do. The exit code (`0` or `1`) and the `Error:` count are information only: exit code 1 with the success line and a correct JSON is not a failure (Global Constraints); report the first 10 `Error:` lines in that case. These facts are UNCONFIRMED in the research notes (commandlet editor subsystems, SunSky path, `Color` parameter, setting a material-instance colour from Python). If the success line is missing or any JSON value differs, stop and report the JSON and `grep -iE "error|warning: .*python" runs/build/python_probe.log | head -40`; do not switch the builder to other APIs without the user.
 
 - [ ] **Step 9: Commit**
 
 ```bash
-git -C /home/jk_edge/research_uav/autofly_ue5 add scripts/create_ue_project.sh scripts/build_editor.sh ue_project/Blocks.uproject ue_project/Config ue_project/Source autofly_ue5/scenes/ue/probe_python.py && git -C /home/jk_edge/research_uav/autofly_ue5 commit -m "Create ue_project from Blocks with the prebuilt plugin, build BlocksEditor and prove the editor Python commandlet" -m "Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
+git -C /home/nvidiasims/research_uav/autofly_ue5 add scripts/create_ue_project.sh scripts/build_editor.sh ue_project/Blocks.uproject ue_project/Config ue_project/Source autofly_ue5/scenes/ue/probe_python.py && git -C /home/nvidiasims/research_uav/autofly_ue5 commit -m "Create ue_project from Blocks with the prebuilt plugin, build BlocksEditor and prove the editor Python commandlet" -m "Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
 ```
 
 ---
@@ -1410,7 +1410,7 @@ git -C /home/jk_edge/research_uav/autofly_ue5 add scripts/create_ue_project.sh s
 
 - [ ] **Step 1: Write the failing tests**
 
-`/home/jk_edge/research_uav/autofly_ue5/tests/test_process.py`:
+`/home/nvidiasims/research_uav/autofly_ue5/tests/test_process.py`:
 ```python
 import json
 import logging
@@ -1489,10 +1489,10 @@ def test_sim_environment(monkeypatch):
     assert "PYTHONPATH" not in editor_env
     assert editor_env["DISPLAY"] == ":1" and editor_env["SDL_VIDEODRIVER"] == "x11"
     assert editor_env["PROJECTAIRSIM_CI"] == "1"
-    assert editor_env["UE-ZenDataPath"] == "/home/jk_edge/research_uav/autofly_ue5/ue_project/DerivedDataCache/Zen"
+    assert editor_env["UE-ZenDataPath"] == "/home/nvidiasims/research_uav/autofly_ue5/ue_project/DerivedDataCache/Zen"
     packaged_env = sim_environment(editor_mode=False)
     assert "PROJECTAIRSIM_CI" not in packaged_env
-    assert packaged_env["UE-LocalDataCachePath"] == "/home/jk_edge/research_uav/autofly_ue5/ue_project/DerivedDataCache"
+    assert packaged_env["UE-LocalDataCachePath"] == "/home/nvidiasims/research_uav/autofly_ue5/ue_project/DerivedDataCache"
 
 
 def test_route_client_log_replaces_the_working_directory_log(tmp_path, monkeypatch):
@@ -1576,7 +1576,7 @@ def test_launch_refuses_a_busy_port(tmp_path):
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `cd /home/jk_edge/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_process.py`
+Run: `cd /home/nvidiasims/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_process.py`
 Expected: FAIL with `ModuleNotFoundError: No module named 'autofly_ue5.sim'`.
 
 - [ ] **Step 3: Write `autofly_ue5/sim/__init__.py` and `autofly_ue5/sim/process.py`**
@@ -1856,12 +1856,12 @@ def handshake(ports: SimPorts, timeout_s: float = 120.0) -> float:
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
-Run: `cd /home/jk_edge/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_process.py`
+Run: `cd /home/nvidiasims/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_process.py`
 Expected: `10 passed`.
 
 - [ ] **Step 5: Write the CLIs**
 
-`/home/jk_edge/research_uav/autofly_ue5/scripts/launch_sim.py`:
+`/home/nvidiasims/research_uav/autofly_ue5/scripts/launch_sim.py`:
 ```python
 """Launch one owned simulator instance, wait for its ports and a client handshake, print a JSON line.
 
@@ -1926,7 +1926,7 @@ if __name__ == "__main__":
     sys.exit(main())
 ```
 
-`/home/jk_edge/research_uav/autofly_ue5/scripts/stop_sim.py`:
+`/home/nvidiasims/research_uav/autofly_ue5/scripts/stop_sim.py`:
 ```python
 """Stop one simulator instance launched by this project (refuses processes it did not launch).
 
@@ -1956,7 +1956,7 @@ if __name__ == "__main__":
 
 Run:
 ```bash
-cd /home/jk_edge/research_uav/autofly_ue5 && nvidia-smi --query-gpu=memory.used --format=csv,noheader && ss -ltnH '( sport = :8989 or sport = :8990 )' && bash scripts/run_job.sh start launch_inst0 -- env -u PYTHONPATH .venv/bin/python scripts/launch_sim.py --mode editor --map /Game/BlocksMap --instance 0 --timeout 900 && bash scripts/run_job.sh wait launch_inst0 540; echo "wait=$?"
+cd /home/nvidiasims/research_uav/autofly_ue5 && nvidia-smi --query-gpu=memory.used --format=csv,noheader && ss -ltnH '( sport = :8989 or sport = :8990 )' && bash scripts/run_job.sh start launch_inst0 -- env -u PYTHONPATH .venv/bin/python scripts/launch_sim.py --mode editor --map /Game/BlocksMap --instance 0 --timeout 900 && bash scripts/run_job.sh wait launch_inst0 540; echo "wait=$?"
 ```
 Repeat `bash scripts/run_job.sh wait launch_inst0 540` while it returns 124, within the budget. If the budget is used up: `bash scripts/run_job.sh stop launch_inst0`, then `env -u PYTHONPATH .venv/bin/python scripts/stop_sim.py --instance 0` (the simulator runs in its own recorded session), and report; do not re-launch.
 Expected: GPU memory below 2000 MiB, no listener on 8989/8990, then in the job log a JSON line such as `{"pid": 123456, "instance": 0, "ports": [8989, 8990], "ports_ready_s": …, "handshake_s": …}`, `job launch_inst0 finished: exit=0` and `wait=0`. Whether the positional map argument `/Game/BlocksMap` is honoured by `UnrealEditor <uproject> <map> -game` is UNCONFIRMED: confirm with `grep -m3 -E "LoadMap|Browse" runs/sim/inst0/sim.log` (expected: a line naming `/Game/BlocksMap`). If launch fails, the CLI stops the process; stop and report `tail -80 runs/sim/inst0/sim.log` and `grep -iE "Xid|VK_ERROR|Fatal" runs/sim/inst0/sim.log`.
@@ -1965,19 +1965,19 @@ Expected: GPU memory below 2000 MiB, no listener on 8989/8990, then in the job l
 
 Run:
 ```bash
-cd /home/jk_edge/research_uav/autofly_ue5 && PID=$(jq .pid runs/sim/inst0/pid.json) && ps -o pid,pgid,etimes,cmd -p "$PID" | cut -c1-160 && ss -ltnpH '( sport = :8989 or sport = :8990 )' && grep -m2 "active at" ue_project/projectairsim_server.log; nvidia-smi --query-gpu=memory.used --format=csv,noheader; echo "xid now $(journalctl _TRANSPORT=kernel --since "$(jq -r .started_at runs/m0/engine_check.json)" --no-pager | grep -c 'NVRM: Xid'), baseline $(jq .checks.nvidia_xid.after runs/m0/engine_check.json)"; echo "boot $(cat /proc/sys/kernel/random/boot_id), m0 start $(jq -r .boot_id runs/m0/engine_check.json)"; du -sh ue_project/DerivedDataCache; ls -d ~/.config/Epic/UnrealEngine/Common/Zen/Data 2>/dev/null || echo zen-default-absent; ls -d ~/UnrealEngine /tmp/UnrealTraceServer.pid 2>/dev/null || echo no-trace-server-files
+cd /home/nvidiasims/research_uav/autofly_ue5 && PID=$(jq .pid runs/sim/inst0/pid.json) && ps -o pid,pgid,etimes,cmd -p "$PID" | cut -c1-160 && ss -ltnpH '( sport = :8989 or sport = :8990 )' && grep -m2 "active at" ue_project/projectairsim_server.log; nvidia-smi --query-gpu=memory.used --format=csv,noheader; echo "xid now $(journalctl _TRANSPORT=kernel --since "$(jq -r .started_at runs/m0/engine_check.json)" --no-pager | grep -c 'NVRM: Xid'), baseline $(jq .checks.nvidia_xid.after runs/m0/engine_check.json)"; echo "boot $(cat /proc/sys/kernel/random/boot_id), m0 start $(jq -r .boot_id runs/m0/engine_check.json)"; du -sh ue_project/DerivedDataCache; ls -d ~/.config/Epic/UnrealEngine/Common/Zen/Data 2>/dev/null || echo zen-default-absent; ls -d ~/UnrealEngine /tmp/UnrealTraceServer.pid 2>/dev/null || echo no-trace-server-files
 ```
 Expected: PID equals PGID; both ports listed with `pid=<PID>`; `Topics active at: 'tcp://*:8989'` and `Services active at: 'tcp://*:8990'` (log wording UNCONFIRMED; missing lines alone are not a failure when the handshake succeeded); GPU memory printed (note it); Xid `now` equal to `baseline` (counted from the M0 start across reboots); the two boot ids equal; the size of `ue_project/DerivedDataCache` (information: expected to grow as shaders are compiled); `zen-default-absent`; `no-trace-server-files`. A higher Xid count, a different boot id, the default Zen folder or a trace-server file appearing: stop and report (after stopping instance 0, per the failure rule).
 
 - [ ] **Step 8: Stop it and confirm cleanup**
 
-Run (Bash tool `timeout` 600000 ms): `cd /home/jk_edge/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python scripts/stop_sim.py --instance 0 && sleep 30; ss -ltnH '( sport = :8989 or sport = :8990 )' | wc -l; ls runs/sim/inst0/; pgrep -a -f "$(pwd)/engine/Engine/Binaries/Linux/" || echo none; pgrep -a zenserver || echo no-zenserver`
+Run (Bash tool `timeout` 600000 ms): `cd /home/nvidiasims/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python scripts/stop_sim.py --instance 0 && sleep 30; ss -ltnH '( sport = :8989 or sport = :8990 )' | wc -l; ls runs/sim/inst0/; pgrep -a -f "$(pwd)/engine/Engine/Binaries/Linux/" || echo none; pgrep -a zenserver || echo no-zenserver`
 Expected: `terminated` (or `killed` after 30 s, which is acceptable but note it), `0` listeners, no `pid.json` in the listing, `none`, `no-zenserver`. Unreal helpers run in their own process groups (`UnixPlatformProcess.cpp:1048-1049`), so `stop_sim.py` cannot signal them: if any `ShaderCompileWorker`, `CrashReportClient` or `zenserver` is still listed, wait 60 s and check again, then report the survivors without killing them.
 
 - [ ] **Step 9: Commit**
 
 ```bash
-git -C /home/jk_edge/research_uav/autofly_ue5 add autofly_ue5/sim/__init__.py autofly_ue5/sim/process.py scripts/launch_sim.py scripts/stop_sim.py tests/test_process.py && git -C /home/jk_edge/research_uav/autofly_ue5 commit -m "Launch and stop simulator processes with recorded PIDs, port readiness and a client handshake" -m "Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
+git -C /home/nvidiasims/research_uav/autofly_ue5 add autofly_ue5/sim/__init__.py autofly_ue5/sim/process.py scripts/launch_sim.py scripts/stop_sim.py tests/test_process.py && git -C /home/nvidiasims/research_uav/autofly_ue5 commit -m "Launch and stop simulator processes with recorded PIDs, port readiness and a client handshake" -m "Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
 ```
 
 ---
@@ -1996,7 +1996,7 @@ git -C /home/jk_edge/research_uav/autofly_ue5 add autofly_ue5/sim/__init__.py au
 
 - [ ] **Step 1: Write the failing tests**
 
-`/home/jk_edge/research_uav/autofly_ue5/tests/test_frames.py`:
+`/home/nvidiasims/research_uav/autofly_ue5/tests/test_frames.py`:
 ```python
 import math
 
@@ -2059,7 +2059,7 @@ def test_body_to_ned_yaw_and_nose_up_pitch():
     assert forward == pytest.approx((0.4 * math.cos(math.radians(30.0)), 0.0, -0.4 * math.sin(math.radians(30.0))))
 ```
 
-`/home/jk_edge/research_uav/autofly_ue5/tests/test_decode.py`:
+`/home/nvidiasims/research_uav/autofly_ue5/tests/test_decode.py`:
 ```python
 import numpy as np
 import pytest
@@ -2107,7 +2107,7 @@ def test_size_mismatch_is_rejected():
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `cd /home/jk_edge/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_frames.py tests/test_decode.py`
+Run: `cd /home/nvidiasims/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_frames.py tests/test_decode.py`
 Expected: FAIL with `ModuleNotFoundError: No module named 'autofly_ue5.frames'` and `No module named 'autofly_ue5.sim.decode'`.
 
 - [ ] **Step 3: Write `autofly_ue5/frames.py`**
@@ -2211,13 +2211,13 @@ def decode_depth(msg: dict) -> np.ndarray:
 
 - [ ] **Step 5: Run the tests to verify they pass**
 
-Run: `cd /home/jk_edge/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_frames.py tests/test_decode.py`
+Run: `cd /home/nvidiasims/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_frames.py tests/test_decode.py`
 Expected: `14 passed`.
 
 - [ ] **Step 6: Commit**
 
 ```bash
-git -C /home/jk_edge/research_uav/autofly_ue5 add autofly_ue5/frames.py autofly_ue5/sim/decode.py tests/test_frames.py tests/test_decode.py && git -C /home/jk_edge/research_uav/autofly_ue5 commit -m "Add NED/UE-centimetre frame conversions and BGR/16FC1 image decoding" -m "Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
+git -C /home/nvidiasims/research_uav/autofly_ue5 add autofly_ue5/frames.py autofly_ue5/sim/decode.py tests/test_frames.py tests/test_decode.py && git -C /home/nvidiasims/research_uav/autofly_ue5 commit -m "Add NED/UE-centimetre frame conversions and BGR/16FC1 image decoding" -m "Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
 ```
 
 ---
@@ -2239,7 +2239,7 @@ git -C /home/jk_edge/research_uav/autofly_ue5 add autofly_ue5/frames.py autofly_
 
 - [ ] **Step 1: Write the failing config test**
 
-`/home/jk_edge/research_uav/autofly_ue5/tests/test_pas_configs.py`:
+`/home/nvidiasims/research_uav/autofly_ue5/tests/test_pas_configs.py`:
 ```python
 import pytest
 from projectairsim.utils import load_scene_config_as_dict
@@ -2267,8 +2267,8 @@ def test_scene_validates_against_project_airsim_schema(scene):
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `cd /home/jk_edge/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_pas_configs.py`
-Expected: FAIL (2 failed) with `FileNotFoundError: [Errno 2] No such file or directory: '/home/jk_edge/research_uav/autofly_ue5/configs/scene_autofly_m0.jsonc'` (and the same for `scene_autofly_m0_fast.jsonc`).
+Run: `cd /home/nvidiasims/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_pas_configs.py`
+Expected: FAIL (2 failed) with `FileNotFoundError: [Errno 2] No such file or directory: '/home/nvidiasims/research_uav/autofly_ue5/configs/scene_autofly_m0.jsonc'` (and the same for `scene_autofly_m0_fast.jsonc`).
 
 - [ ] **Step 3: Write `configs/robot_autofly_quadrotor.jsonc`**
 
@@ -2434,7 +2434,7 @@ Expected: FAIL (2 failed) with `FileNotFoundError: [Errno 2] No such file or dir
 
 - [ ] **Step 5: Run the config test to verify it passes**
 
-Run: `cd /home/jk_edge/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_pas_configs.py`
+Run: `cd /home/nvidiasims/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_pas_configs.py`
 Expected: `2 passed`. A `jsonschema.exceptions.ValidationError` means a config typo: fix the config text to match Steps 3–4 exactly.
 
 - [ ] **Step 6: Write `autofly_ue5/sim/smoke_m0.py` (part 1: lock-step driver)**
@@ -2954,17 +2954,17 @@ if __name__ == "__main__":
 
 - [ ] **Step 8: Check the module imports and the offline suite still passes**
 
-Run: `cd /home/jk_edge/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -c "import autofly_ue5.sim.smoke_m0 as s; print(s.PHASE_ORDER, s.COMMAND_DURATION_S)" && env -u PYTHONPATH .venv/bin/python -m pytest`
+Run: `cd /home/nvidiasims/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -c "import autofly_ue5.sim.smoke_m0 as s; print(s.PHASE_ORDER, s.COMMAND_DURATION_S)" && env -u PYTHONPATH .venv/bin/python -m pytest`
 Expected: `['lockstep', 'velocity', 'reset', 'spawn', 'collision', 'teleport'] 0.19` and all tests passed (`46 passed`).
 
 - [ ] **Step 9: Launch instance 0 on BlocksMap as a job (total wait budget 25 minutes)**
 
-Run: `cd /home/jk_edge/research_uav/autofly_ue5 && bash scripts/run_job.sh start launch_inst0 -- env -u PYTHONPATH .venv/bin/python scripts/launch_sim.py --mode editor --map /Game/BlocksMap --instance 0 --timeout 900 && bash scripts/run_job.sh wait launch_inst0 540; echo "wait=$?"` (repeat `wait` while it returns 124, within the budget).
+Run: `cd /home/nvidiasims/research_uav/autofly_ue5 && bash scripts/run_job.sh start launch_inst0 -- env -u PYTHONPATH .venv/bin/python scripts/launch_sim.py --mode editor --map /Game/BlocksMap --instance 0 --timeout 900 && bash scripts/run_job.sh wait launch_inst0 540; echo "wait=$?"` (repeat `wait` while it returns 124, within the budget).
 Expected: the launch JSON line in the job log, `job launch_inst0 finished: exit=0`, `wait=0` (as in Task 5 Step 6). On failure or an exhausted budget: `bash scripts/run_job.sh stop launch_inst0`, `env -u PYTHONPATH .venv/bin/python scripts/stop_sim.py --instance 0`, then stop and report.
 
 - [ ] **Step 10: Run the full smoke test as a job (total wait budget 20 minutes)**
 
-Run: `cd /home/jk_edge/research_uav/autofly_ue5 && bash scripts/run_job.sh start smoke_inst0 -- env -u PYTHONPATH .venv/bin/python -m autofly_ue5.sim.smoke_m0 --instance 0 --scene scene_autofly_m0.jsonc --warmup-steps 5 --out runs/m0/smoke_inst0.json --fixtures-dir runs/m0/fixtures && bash scripts/run_job.sh wait smoke_inst0 540; echo "wait=$?"` (repeat `wait` while it returns 124, within the budget).
+Run: `cd /home/nvidiasims/research_uav/autofly_ue5 && bash scripts/run_job.sh start smoke_inst0 -- env -u PYTHONPATH .venv/bin/python -m autofly_ue5.sim.smoke_m0 --instance 0 --scene scene_autofly_m0.jsonc --warmup-steps 5 --out runs/m0/smoke_inst0.json --fixtures-dir runs/m0/fixtures && bash scripts/run_job.sh wait smoke_inst0 540; echo "wait=$?"` (repeat `wait` while it returns 124, within the budget).
 Expected: last log line `{"pass": true, "error": null, "phases": {"lockstep": true, "velocity": true, "reset": true, "spawn": true, "collision": true, "teleport": true}}`, `job smoke_inst0 finished: exit=0`, `wait=0`; the client log is `runs/m0/smoke_inst0.client.log`. This run verifies live the UNCONFIRMED items: every step (warm-up included) lands exactly on `T` and delivers RGB and depth with `time_stamp == T` (subscription pattern), kinematics timestamps equal `T`, every velocity command reply arrives after its step (no `CommandTimeoutError`), the camera position stamped in each image (`pos_x/pos_y/pos_z`) equals kinematics plus the rotated 0.40 m mount offset within 0.1 m, velocity commands move the drone from an armed in-air start without takeoff, `set_pose` resets pose, velocity and the camera, `1M_Cube` is centred and 1 m (bounding box), `set_object_pose` and `set_object_scale` move and scale a spawned object, planar depth of the spawned face matches geometry within 0.3 m (measured on the cube's own opaque material), the face's width in depth row 128 matches a 90° horizontal field of view within 3 px (`hfov_consistent`; spec §4.1 camera row), `set_object_material` with the opaque base `UMaterial` `M_Orange` returns true and changes the centre patch by more than 10 grey levels, a flight into a spawned object yields a `collision` event naming it, the up-across-down teleport path resynchronises the camera after that collision, and no drone part is closer than 0.5 m in depth. Also read `jq '.phases.velocity.yaw_rate_ratio, .phases.lockstep.get_images_probe, .phases.teleport, (.phases.spawn | {center_face_width_px, expected_face_width_px, material_center_rgb, material_instance_ok})' runs/m0/smoke_inst0.json`: `material_instance_ok` records whether the spec's material-instance route (`M_Blue`) works (predicted `false`; report either way); a ratio near 1.0 confirms rad/s, a ratio near 0.017 means deg/s (report either way); `teleport.through_camera_error_m` shows whether a teleport straight through an obstacle leaves the camera behind (report the number; the backend never teleports horizontally at flight altitude). If any phase is `false` or `error` is set: stop and report the whole `runs/m0/smoke_inst0.json`, `tail -80 runs/sim/inst0/sim.log` and `tail -40 runs/m0/smoke_inst0.client.log` (after stopping instance 0, per the failure rule). This is exactly the spec §4 M0 fallback evidence; do not change the backend design in response.
 
 - [ ] **Step 11: Look at the captured frame**
@@ -2973,14 +2973,14 @@ Open `runs/m0/fixtures/rgb_after_spawn.png` and `runs/m0/fixtures/rgb_after_mate
 
 - [ ] **Step 12: Stop instance 0**
 
-Run (Bash tool `timeout` 600000 ms): `cd /home/jk_edge/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python scripts/stop_sim.py --instance 0 && sleep 30; pgrep -a -f "$(pwd)/engine/Engine/Binaries/Linux/" || echo none`
+Run (Bash tool `timeout` 600000 ms): `cd /home/nvidiasims/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python scripts/stop_sim.py --instance 0 && sleep 30; pgrep -a -f "$(pwd)/engine/Engine/Binaries/Linux/" || echo none`
 Expected: `terminated`, then `none` (survivors after another 60 s are reported, not killed).
 
 - [ ] **Step 13: Commit configs, smoke module, fixtures and report**
 
 ```bash
-mkdir -p /home/jk_edge/research_uav/autofly_ue5/tests/fixtures/pas && cp /home/jk_edge/research_uav/autofly_ue5/runs/m0/fixtures/{rgb_msg.json,rgb_msg.bin,depth_msg.json,depth_msg.bin} /home/jk_edge/research_uav/autofly_ue5/tests/fixtures/pas/ && cp /home/jk_edge/research_uav/autofly_ue5/runs/m0/smoke_inst0.json /home/jk_edge/research_uav/autofly_ue5/docs/gates/m0_smoke_inst0.json
-git -C /home/jk_edge/research_uav/autofly_ue5 add configs/robot_autofly_quadrotor.jsonc configs/scene_autofly_m0.jsonc configs/scene_autofly_m0_fast.jsonc autofly_ue5/sim/smoke_m0.py tests/test_pas_configs.py tests/fixtures/pas docs/gates/m0_smoke_inst0.json && git -C /home/jk_edge/research_uav/autofly_ue5 commit -m "Add FrontCamera robot and steppable scene configs and the M0 smoke test; capture real RGB/depth fixtures" -m "Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
+mkdir -p /home/nvidiasims/research_uav/autofly_ue5/tests/fixtures/pas && cp /home/nvidiasims/research_uav/autofly_ue5/runs/m0/fixtures/{rgb_msg.json,rgb_msg.bin,depth_msg.json,depth_msg.bin} /home/nvidiasims/research_uav/autofly_ue5/tests/fixtures/pas/ && cp /home/nvidiasims/research_uav/autofly_ue5/runs/m0/smoke_inst0.json /home/nvidiasims/research_uav/autofly_ue5/docs/gates/m0_smoke_inst0.json
+git -C /home/nvidiasims/research_uav/autofly_ue5 add configs/robot_autofly_quadrotor.jsonc configs/scene_autofly_m0.jsonc configs/scene_autofly_m0_fast.jsonc autofly_ue5/sim/smoke_m0.py tests/test_pas_configs.py tests/fixtures/pas docs/gates/m0_smoke_inst0.json && git -C /home/nvidiasims/research_uav/autofly_ue5 commit -m "Add FrontCamera robot and steppable scene configs and the M0 smoke test; capture real RGB/depth fixtures" -m "Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
 ```
 
 ---
@@ -3005,7 +3005,7 @@ git -C /home/jk_edge/research_uav/autofly_ue5 add configs/robot_autofly_quadroto
 
 - [ ] **Step 1: Write the failing test**
 
-`/home/jk_edge/research_uav/autofly_ue5/tests/test_m0_gate.py`:
+`/home/nvidiasims/research_uav/autofly_ue5/tests/test_m0_gate.py`:
 ```python
 import json
 
@@ -3123,7 +3123,7 @@ def test_gate_fails_on_new_xid_reboot_device_lost_default_zen_cache_or_out_of_ro
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `cd /home/jk_edge/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_m0_gate.py`
+Run: `cd /home/nvidiasims/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_m0_gate.py`
 Expected: FAIL with `ModuleNotFoundError: No module named 'autofly_ue5.validate.m0_gate'`.
 
 - [ ] **Step 3: Write `autofly_ue5/validate/m0_gate.py`**
@@ -3304,61 +3304,61 @@ if __name__ == "__main__":
 
 - [ ] **Step 4: Run the test to verify it passes**
 
-Run: `cd /home/jk_edge/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_m0_gate.py`
+Run: `cd /home/nvidiasims/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_m0_gate.py`
 Expected: `6 passed`.
 
 - [ ] **Step 5: Baseline VRAM and instance 0 (launch as a job; total wait budget 25 minutes)**
 
 Run:
 ```bash
-cd /home/jk_edge/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m autofly_ue5.validate.m0_gate vram baseline && bash scripts/run_job.sh start launch_inst0 -- env -u PYTHONPATH .venv/bin/python scripts/launch_sim.py --mode editor --map /Game/BlocksMap --instance 0 --timeout 900 && bash scripts/run_job.sh wait launch_inst0 540; echo "wait=$?"
+cd /home/nvidiasims/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m autofly_ue5.validate.m0_gate vram baseline && bash scripts/run_job.sh start launch_inst0 -- env -u PYTHONPATH .venv/bin/python scripts/launch_sim.py --mode editor --map /Game/BlocksMap --instance 0 --timeout 900 && bash scripts/run_job.sh wait launch_inst0 540; echo "wait=$?"
 ```
-Repeat `bash scripts/run_job.sh wait launch_inst0 540` while it returns 124, within the budget; then run `cd /home/jk_edge/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m autofly_ue5.validate.m0_gate vram idle_instance`.
+Repeat `bash scripts/run_job.sh wait launch_inst0 540` while it returns 124, within the budget; then run `cd /home/nvidiasims/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m autofly_ue5.validate.m0_gate vram idle_instance`.
 Expected: `{"baseline": <≤2000>}`, the launch JSON line with `job launch_inst0 finished: exit=0` and `wait=0`, then `{"baseline": …, "idle_instance": …}` (an idle instance with no scene loaded; information only, the gate uses capturing samples). On failure: stop and report.
 
 - [ ] **Step 6: Throughput with a 1 ms real-time update rate and one-instance VRAM while capturing (job; total wait budget 15 minutes)**
 
-Run: `cd /home/jk_edge/research_uav/autofly_ue5 && bash scripts/run_job.sh start smoke_fast -- env -u PYTHONPATH .venv/bin/python -m autofly_ue5.sim.smoke_m0 --instance 0 --scene scene_autofly_m0_fast.jsonc --phases lockstep --warmup-steps 5 --steps 50 --out runs/m0/smoke_fast.json && bash scripts/run_job.sh wait smoke_fast 540; echo "wait=$?"; jq '.error, (.phases.lockstep | {pass, steps_per_s, frames_eq_target, sim_time_exact, vram_used_mib, max_camera_pose_error_m})' runs/m0/smoke_fast.json`
+Run: `cd /home/nvidiasims/research_uav/autofly_ue5 && bash scripts/run_job.sh start smoke_fast -- env -u PYTHONPATH .venv/bin/python -m autofly_ue5.sim.smoke_m0 --instance 0 --scene scene_autofly_m0_fast.jsonc --phases lockstep --warmup-steps 5 --steps 50 --out runs/m0/smoke_fast.json && bash scripts/run_job.sh wait smoke_fast 540; echo "wait=$?"; jq '.error, (.phases.lockstep | {pass, steps_per_s, frames_eq_target, sim_time_exact, vram_used_mib, max_camera_pose_error_m})' runs/m0/smoke_fast.json`
 Expected: `null` and a JSON summary with a numeric `vram_used_mib`. `pass` (and a job exit code of 1) may be `false` here without stopping the plan (the M1 scene keeps the verified 3 ms rate); if `error` is set (for example the scene reload failed) or `vram_used_mib` is missing, stop and report.
 
 - [ ] **Step 7: Launch instance 1 on ports 9001/9002 while instance 0 runs (job; total wait budget 25 minutes)**
 
-Run: `cd /home/jk_edge/research_uav/autofly_ue5 && bash scripts/run_job.sh start launch_inst1 -- env -u PYTHONPATH .venv/bin/python scripts/launch_sim.py --mode editor --map /Game/BlocksMap --instance 1 --timeout 900 && bash scripts/run_job.sh wait launch_inst1 540; echo "wait=$?"` (repeat `wait` while it returns 124, within the budget).
+Run: `cd /home/nvidiasims/research_uav/autofly_ue5 && bash scripts/run_job.sh start launch_inst1 -- env -u PYTHONPATH .venv/bin/python scripts/launch_sim.py --mode editor --map /Game/BlocksMap --instance 1 --timeout 900 && bash scripts/run_job.sh wait launch_inst1 540; echo "wait=$?"` (repeat `wait` while it returns 124, within the budget).
 Expected: JSON line with `"ports": [9001, 9002]`, `job launch_inst1 finished: exit=0`, `wait=0`. `GpuBusyError` (less than 6000 MiB free) or any failure: `bash scripts/run_job.sh stop launch_inst1`, stop instance 1 if it started (`scripts/stop_sim.py --instance 1`), then stop instance 0 too (failure rule) and report. Both instances share `ue_project/projectairsim_server.log` (known; `-saveddirsuffix=inst1` separates `Saved_inst1/`).
 
 - [ ] **Step 8: Step both instances concurrently (two jobs with a common timed window; total wait budget 15 minutes)**
 
 Start both jobs in one tool call. Both scenes load and run 5 untimed warm-up records (instance 1's first frame can take up to 120 s while it loads shaders from the shared DDC), then each sleeps until the shared start time 240 s from now and times 100 records, sampling VRAM after record 50:
 ```bash
-cd /home/jk_edge/research_uav/autofly_ue5 && START_AT=$(( $(date +%s) + 240 )) && echo "start_at=$START_AT" && bash scripts/run_job.sh start smoke_inst0_concurrent -- env -u PYTHONPATH .venv/bin/python -m autofly_ue5.sim.smoke_m0 --instance 0 --scene scene_autofly_m0.jsonc --phases lockstep --warmup-steps 5 --start-at "$START_AT" --steps 100 --out runs/m0/smoke_inst0_concurrent.json && bash scripts/run_job.sh start smoke_inst1 -- env -u PYTHONPATH .venv/bin/python -m autofly_ue5.sim.smoke_m0 --instance 1 --scene scene_autofly_m0.jsonc --phases lockstep --warmup-steps 5 --start-at "$START_AT" --steps 100 --out runs/m0/smoke_inst1.json
+cd /home/nvidiasims/research_uav/autofly_ue5 && START_AT=$(( $(date +%s) + 240 )) && echo "start_at=$START_AT" && bash scripts/run_job.sh start smoke_inst0_concurrent -- env -u PYTHONPATH .venv/bin/python -m autofly_ue5.sim.smoke_m0 --instance 0 --scene scene_autofly_m0.jsonc --phases lockstep --warmup-steps 5 --start-at "$START_AT" --steps 100 --out runs/m0/smoke_inst0_concurrent.json && bash scripts/run_job.sh start smoke_inst1 -- env -u PYTHONPATH .venv/bin/python -m autofly_ue5.sim.smoke_m0 --instance 1 --scene scene_autofly_m0.jsonc --phases lockstep --warmup-steps 5 --start-at "$START_AT" --steps 100 --out runs/m0/smoke_inst1.json
 ```
 Then poll each job in its own tool call (Bash tool `timeout` 600000 ms), repeating while it returns 124 within the budget:
 ```bash
-cd /home/jk_edge/research_uav/autofly_ue5 && bash scripts/run_job.sh wait smoke_inst1 540; echo "inst1 wait=$?"
+cd /home/nvidiasims/research_uav/autofly_ue5 && bash scripts/run_job.sh wait smoke_inst1 540; echo "inst1 wait=$?"
 ```
 ```bash
-cd /home/jk_edge/research_uav/autofly_ue5 && bash scripts/run_job.sh wait smoke_inst0_concurrent 540; echo "inst0 wait=$?"; jq '.phases.lockstep | {pass, steps_per_s, start_late_s, timed_start_unix, timed_end_unix, vram_sample_unix, vram_used_mib}' runs/m0/smoke_inst0_concurrent.json runs/m0/smoke_inst1.json
+cd /home/nvidiasims/research_uav/autofly_ue5 && bash scripts/run_job.sh wait smoke_inst0_concurrent 540; echo "inst0 wait=$?"; jq '.phases.lockstep | {pass, steps_per_s, start_late_s, timed_start_unix, timed_end_unix, vram_sample_unix, vram_used_mib}' runs/m0/smoke_inst0_concurrent.json runs/m0/smoke_inst1.json
 ```
 Expected: last log line `{"pass": true, …}` for both jobs, `inst1 wait=0`, `inst0 wait=0`; both `start_late_s` ≤ 0 (a positive value means that instance finished its warm-up after the shared start time); the two timed windows overlap and each `vram_sample_unix` lies inside both windows (the gate checks this in Step 10); separate client logs `runs/m0/smoke_inst1.client.log` and `runs/m0/smoke_inst0_concurrent.client.log`. Any `false`, or a positive `start_late_s`: stop both instances and report both JSON files and both client logs.
 
 - [ ] **Step 9: Stop both instances, record GPU faults, `~/.config/Epic` usage and out-of-ROOT paths**
 
-Run (Bash tool `timeout` 600000 ms): `cd /home/jk_edge/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python scripts/stop_sim.py --instance 1 && env -u PYTHONPATH .venv/bin/python scripts/stop_sim.py --instance 0 && sleep 30; pgrep -a -f "$(pwd)/engine/Engine/Binaries/Linux/" || echo none; pgrep -a zenserver || echo no-zenserver`
+Run (Bash tool `timeout` 600000 ms): `cd /home/nvidiasims/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python scripts/stop_sim.py --instance 1 && env -u PYTHONPATH .venv/bin/python scripts/stop_sim.py --instance 0 && sleep 30; pgrep -a -f "$(pwd)/engine/Engine/Binaries/Linux/" || echo none; pgrep -a zenserver || echo no-zenserver`
 Expected: `terminated` twice, `none`, `no-zenserver` (survivors after another 60 s are reported, not killed).
 
-Then, in a separate tool call: `cd /home/jk_edge/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m autofly_ue5.validate.m0_gate faults; echo "faults=$?"; nvidia-smi --query-gpu=memory.used --format=csv,noheader`
+Then, in a separate tool call: `cd /home/nvidiasims/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m autofly_ue5.validate.m0_gate faults; echo "faults=$?"; nvidia-smi --query-gpu=memory.used --format=csv,noheader`
 Expected: a faults JSON with `"xid_delta": 0` (Xid lines counted from the Task 2 `started_at` across reboots), `"boot_changed": false`, all `device_lost` counts `0` over the `runs/sim/inst0`, `runs/sim/inst1` and editor-probe logs, `"zen_default_data_created": false`, `"out_of_root_created": []`, `epic_config_before`/`epic_config_after` sizes, `faults=0`, and GPU memory back near the baseline. `faults=1`: stop and report `runs/m0/faults.json` (spec §4 fallback trigger evidence for Xid or `VK_ERROR_DEVICE_LOST`; `boot_changed: true` means the machine rebooted during M0, which the user must explain before the gate can pass; a created default Zen folder means the cache override failed; an `out_of_root_created` entry names a location UE wrote despite `-notraceserver`, `uebp_LogFolder` or the probe cleanup).
 
 - [ ] **Step 10: Assemble the gate**
 
-Run: `cd /home/jk_edge/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m autofly_ue5.validate.m0_gate assemble; echo "exit=$?"`
+Run: `cd /home/nvidiasims/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m autofly_ue5.validate.m0_gate assemble; echo "exit=$?"`
 Expected: gate JSON with `"engine_check"`, `"plugin_manifest"`, `"blocks_editor_build"`, `"editor_python_probe"`, `"smoke_single_instance"`, `"second_instance"` and `"gpu_faults"` all `true`, `two_instance_concurrency.vram_samples_inside_overlap` `true` with `overlap_s` > 0, numeric `steps_per_s_*`, `vram_one_instance_capturing_mib`, `vram_two_instances_capturing_mib` and `vram_per_instance_mib`, `"pass": true`, `exit=0`. Any `false`: stop and report the gate JSON and the input file of that key.
 
 - [ ] **Step 11: Commit**
 
 ```bash
-cp /home/jk_edge/research_uav/autofly_ue5/runs/m0/m0_gate.json /home/jk_edge/research_uav/autofly_ue5/docs/gates/m0_gate.json
-git -C /home/jk_edge/research_uav/autofly_ue5 add autofly_ue5/validate/m0_gate.py tests/test_m0_gate.py docs/gates/m0_gate.json && git -C /home/jk_edge/research_uav/autofly_ue5 commit -m "Pass the M0 gate: build and probe evidence, lock-step smoke, throughput, capturing VRAM, GPU faults and a concurrent second instance" -m "Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
+cp /home/nvidiasims/research_uav/autofly_ue5/runs/m0/m0_gate.json /home/nvidiasims/research_uav/autofly_ue5/docs/gates/m0_gate.json
+git -C /home/nvidiasims/research_uav/autofly_ue5 add autofly_ue5/validate/m0_gate.py tests/test_m0_gate.py docs/gates/m0_gate.json && git -C /home/nvidiasims/research_uav/autofly_ue5 commit -m "Pass the M0 gate: build and probe evidence, lock-step smoke, throughput, capturing VRAM, GPU faults and a concurrent second instance" -m "Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
 ```
 
 - [ ] **Step 12: Milestone stop (spec §12)**
@@ -3386,7 +3386,7 @@ Start only after the user's go-ahead on the M0 gate.
 
 - [ ] **Step 1: Write the failing test**
 
-`/home/jk_edge/research_uav/autofly_ue5/tests/test_sim_types_fake.py`:
+`/home/nvidiasims/research_uav/autofly_ue5/tests/test_sim_types_fake.py`:
 ```python
 import math
 
@@ -3487,7 +3487,7 @@ def test_spawn_unique_names_and_destroy():
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `cd /home/jk_edge/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_sim_types_fake.py`
+Run: `cd /home/nvidiasims/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_sim_types_fake.py`
 Expected: FAIL with `ModuleNotFoundError: No module named 'autofly_ue5.sim.fake'`.
 
 - [ ] **Step 3: Write `autofly_ue5/sim/types.py`**
@@ -3722,13 +3722,13 @@ class FakeSimulator:
 
 - [ ] **Step 6: Run the test to verify it passes**
 
-Run: `cd /home/jk_edge/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_sim_types_fake.py`
+Run: `cd /home/nvidiasims/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_sim_types_fake.py`
 Expected: `8 passed`.
 
 - [ ] **Step 7: Commit**
 
 ```bash
-git -C /home/jk_edge/research_uav/autofly_ue5 add autofly_ue5/sim/types.py autofly_ue5/sim/protocol.py autofly_ue5/sim/fake.py tests/test_sim_types_fake.py && git -C /home/jk_edge/research_uav/autofly_ue5 commit -m "Add the Simulator protocol, its value types and a deterministic fake simulator" -m "Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
+git -C /home/nvidiasims/research_uav/autofly_ue5 add autofly_ue5/sim/types.py autofly_ue5/sim/protocol.py autofly_ue5/sim/fake.py tests/test_sim_types_fake.py && git -C /home/nvidiasims/research_uav/autofly_ue5 commit -m "Add the Simulator protocol, its value types and a deterministic fake simulator" -m "Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
 ```
 
 ---
@@ -3747,7 +3747,7 @@ git -C /home/jk_edge/research_uav/autofly_ue5 add autofly_ue5/sim/types.py autof
 
 - [ ] **Step 1: Write the failing tests**
 
-`/home/jk_edge/research_uav/autofly_ue5/tests/test_sync_events.py`:
+`/home/nvidiasims/research_uav/autofly_ue5/tests/test_sync_events.py`:
 ```python
 import threading
 import time
@@ -3849,7 +3849,7 @@ def test_collisions_after():
     assert [e.sim_time_ns for e in collisions_after(events, 400)] == [600]
 ```
 
-`/home/jk_edge/research_uav/autofly_ue5/tests/test_decode_fixtures.py`:
+`/home/nvidiasims/research_uav/autofly_ue5/tests/test_decode_fixtures.py`:
 ```python
 import json
 
@@ -3895,7 +3895,7 @@ def test_real_depth_message_is_metres_with_inf_sky():
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `cd /home/jk_edge/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_sync_events.py; env -u PYTHONPATH .venv/bin/python -m pytest tests/test_decode_fixtures.py`
+Run: `cd /home/nvidiasims/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_sync_events.py; env -u PYTHONPATH .venv/bin/python -m pytest tests/test_decode_fixtures.py`
 Expected: the first run FAILS with `ModuleNotFoundError: No module named 'autofly_ue5.sim.events'`; the second run already PASSES (`3 passed`) because decoding exists since Task 6 — this confirms the synthetic decoder matches real server bytes. If a fixture test fails, stop and report: the Task 6 decoder contradicts the real message format.
 
 - [ ] **Step 3: Write `autofly_ue5/sim/sync.py`**
@@ -4023,13 +4023,13 @@ class CollisionLog:
 
 - [ ] **Step 5: Run the tests to verify they pass**
 
-Run: `cd /home/jk_edge/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_sync_events.py tests/test_decode_fixtures.py`
+Run: `cd /home/nvidiasims/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_sync_events.py tests/test_decode_fixtures.py`
 Expected: `12 passed`.
 
 - [ ] **Step 6: Commit**
 
 ```bash
-git -C /home/jk_edge/research_uav/autofly_ue5 add autofly_ue5/sim/sync.py autofly_ue5/sim/events.py tests/test_sync_events.py tests/test_decode_fixtures.py && git -C /home/jk_edge/research_uav/autofly_ue5 commit -m "Add timestamp-exact frame collection, collision event merging and tests on the real M0 image messages" -m "Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
+git -C /home/nvidiasims/research_uav/autofly_ue5 add autofly_ue5/sim/sync.py autofly_ue5/sim/events.py tests/test_sync_events.py tests/test_decode_fixtures.py && git -C /home/nvidiasims/research_uav/autofly_ue5 commit -m "Add timestamp-exact frame collection, collision event merging and tests on the real M0 image messages" -m "Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
 ```
 
 ---
@@ -4052,7 +4052,7 @@ Behaviour fixed by M0 evidence: one `world.step(dt_ns)` per `step()`; the move c
 
 - [ ] **Step 1: Write the failing test**
 
-`/home/jk_edge/research_uav/autofly_ue5/tests/test_airsim_backend.py`:
+`/home/nvidiasims/research_uav/autofly_ue5/tests/test_airsim_backend.py`:
 ```python
 import asyncio
 import math
@@ -4323,7 +4323,7 @@ def test_invalid_dt_is_rejected():
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `cd /home/jk_edge/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_airsim_backend.py`
+Run: `cd /home/nvidiasims/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_airsim_backend.py`
 Expected: FAIL with `ModuleNotFoundError: No module named 'autofly_ue5.sim.airsim_backend'`.
 
 - [ ] **Step 3: Write `autofly_ue5/sim/airsim_backend.py`**
@@ -4635,18 +4635,18 @@ class ProjectAirSimSimulator:
 
 - [ ] **Step 4: Run the test to verify it passes**
 
-Run: `cd /home/jk_edge/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_airsim_backend.py`
+Run: `cd /home/nvidiasims/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_airsim_backend.py`
 Expected: `11 passed`.
 
 - [ ] **Step 5: Confirm the import boundary and the whole suite**
 
-Run: `cd /home/jk_edge/research_uav/autofly_ue5 && grep -rln "projectairsim" autofly_ue5 | grep -v "^autofly_ue5/sim/" ; env -u PYTHONPATH .venv/bin/python -m pytest`
+Run: `cd /home/nvidiasims/research_uav/autofly_ue5 && grep -rln "projectairsim" autofly_ue5 | grep -v "^autofly_ue5/sim/" ; env -u PYTHONPATH .venv/bin/python -m pytest`
 Expected: grep prints nothing (only `autofly_ue5/sim/` mentions `projectairsim`); all tests pass (`83 passed`).
 
 - [ ] **Step 6: Commit**
 
 ```bash
-git -C /home/jk_edge/research_uav/autofly_ue5 add autofly_ue5/sim/airsim_backend.py tests/test_airsim_backend.py && git -C /home/jk_edge/research_uav/autofly_ue5 commit -m "Add the lock-step Project AirSim backend of the Simulator interface" -m "Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
+git -C /home/nvidiasims/research_uav/autofly_ue5 add autofly_ue5/sim/airsim_backend.py tests/test_airsim_backend.py && git -C /home/nvidiasims/research_uav/autofly_ue5 commit -m "Add the lock-step Project AirSim backend of the Simulator interface" -m "Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
 ```
 
 ---
@@ -4666,7 +4666,7 @@ git -C /home/jk_edge/research_uav/autofly_ue5 add autofly_ue5/sim/airsim_backend
 
 - [ ] **Step 1: Write the data files**
 
-`/home/jk_edge/research_uav/autofly_ue5/assets/registry.json`:
+`/home/nvidiasims/research_uav/autofly_ue5/assets/registry.json`:
 ```json
 {
   "version": 1,
@@ -4711,7 +4711,7 @@ git -C /home/jk_edge/research_uav/autofly_ue5 add autofly_ue5/sim/airsim_backend
 }
 ```
 
-`/home/jk_edge/research_uav/autofly_ue5/scenes/s01_white_pillars.json`:
+`/home/nvidiasims/research_uav/autofly_ue5/scenes/s01_white_pillars.json`:
 ```json
 {
   "id": "s01",
@@ -4816,7 +4816,7 @@ git -C /home/jk_edge/research_uav/autofly_ue5 add autofly_ue5/sim/airsim_backend
 
 - [ ] **Step 3: Write the failing tests**
 
-`/home/jk_edge/research_uav/autofly_ue5/tests/test_scene_model.py`:
+`/home/nvidiasims/research_uav/autofly_ue5/tests/test_scene_model.py`:
 ```python
 import json
 
@@ -4889,7 +4889,7 @@ def test_load_registry():
     assert registry.materials["grid"].parent is None
 ```
 
-`/home/jk_edge/research_uav/autofly_ue5/tests/test_generate.py`:
+`/home/nvidiasims/research_uav/autofly_ue5/tests/test_generate.py`:
 ```python
 import itertools
 import json
@@ -4952,7 +4952,7 @@ def test_unimplemented_placement_is_explicit(tmp_path):
 
 - [ ] **Step 4: Run them to verify they fail**
 
-Run: `cd /home/jk_edge/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_scene_model.py tests/test_generate.py`
+Run: `cd /home/nvidiasims/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_scene_model.py tests/test_generate.py`
 Expected: FAIL with `ModuleNotFoundError: No module named 'autofly_ue5.scenes.model'`.
 
 - [ ] **Step 5: Write `autofly_ue5/scenes/__init__.py` and `autofly_ue5/scenes/model.py`**
@@ -5210,13 +5210,13 @@ def generate_layout(scene: SceneFile, registry: AssetRegistry, seed: int | None 
 
 - [ ] **Step 7: Run the tests to verify they pass**
 
-Run: `cd /home/jk_edge/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_scene_model.py tests/test_generate.py`
+Run: `cd /home/nvidiasims/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_scene_model.py tests/test_generate.py`
 Expected: `12 passed`.
 
 - [ ] **Step 8: Commit**
 
 ```bash
-git -C /home/jk_edge/research_uav/autofly_ue5 add autofly_ue5/scenes/__init__.py autofly_ue5/scenes/scene.schema.json autofly_ue5/scenes/model.py autofly_ue5/scenes/generate.py assets/registry.json scenes/s01_white_pillars.json tests/test_scene_model.py tests/test_generate.py && git -C /home/jk_edge/research_uav/autofly_ue5 commit -m "Add the scene file schema, the s01 white-pillar scene, the primitive asset registry and the jittered_grid generator" -m "Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
+git -C /home/nvidiasims/research_uav/autofly_ue5 add autofly_ue5/scenes/__init__.py autofly_ue5/scenes/scene.schema.json autofly_ue5/scenes/model.py autofly_ue5/scenes/generate.py assets/registry.json scenes/s01_white_pillars.json tests/test_scene_model.py tests/test_generate.py && git -C /home/nvidiasims/research_uav/autofly_ue5 commit -m "Add the scene file schema, the s01 white-pillar scene, the primitive asset registry and the jittered_grid generator" -m "Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
 ```
 
 ---
@@ -5238,7 +5238,7 @@ git -C /home/jk_edge/research_uav/autofly_ue5 add autofly_ue5/scenes/__init__.py
 
 - [ ] **Step 1: Write the failing test**
 
-`/home/jk_edge/research_uav/autofly_ue5/tests/test_reachability.py`:
+`/home/nvidiasims/research_uav/autofly_ue5/tests/test_reachability.py`:
 ```python
 import numpy as np
 
@@ -5329,7 +5329,7 @@ def test_s01_layout_is_reachable():
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `cd /home/jk_edge/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_reachability.py`
+Run: `cd /home/nvidiasims/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_reachability.py`
 Expected: FAIL with `ModuleNotFoundError: No module named 'autofly_ue5.scenes.reachability'`.
 
 - [ ] **Step 3: Write `autofly_ue5/scenes/reachability.py`**
@@ -5467,7 +5467,7 @@ def check_reachability(
 
 - [ ] **Step 4: Run the test to verify it passes**
 
-Run: `cd /home/jk_edge/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_reachability.py`
+Run: `cd /home/nvidiasims/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_reachability.py`
 Expected: `7 passed`.
 
 - [ ] **Step 5: Write `scripts/build_scenes.py`**
@@ -5511,13 +5511,13 @@ if __name__ == "__main__":
 
 - [ ] **Step 6: Run the CLI on s01**
 
-Run: `cd /home/jk_edge/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python scripts/build_scenes.py scenes/s01_white_pillars.json; echo "exit=$?"`
+Run: `cd /home/nvidiasims/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python scripts/build_scenes.py scenes/s01_white_pillars.json; echo "exit=$?"`
 Expected: a JSON line with `"scene": "s01"`, `"instances": 80`, `"ok": true`, `"unreachable_start_cells": 0`, `"crossing_unreachable_cells": {"x_min": 0, "x_max": 0, "y_min": 0, "y_max": 0}`, and `exit=0`; file `runs/levels/s01.layout.json` exists.
 
 - [ ] **Step 7: Commit**
 
 ```bash
-git -C /home/jk_edge/research_uav/autofly_ue5 add autofly_ue5/scenes/reachability.py scripts/build_scenes.py tests/test_reachability.py && git -C /home/jk_edge/research_uav/autofly_ue5 commit -m "Add the 2D occupancy reachability check with 1.0 m clearance, the crossing rule and the scene build CLI" -m "Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
+git -C /home/nvidiasims/research_uav/autofly_ue5 add autofly_ue5/scenes/reachability.py scripts/build_scenes.py tests/test_reachability.py && git -C /home/nvidiasims/research_uav/autofly_ue5 commit -m "Add the 2D occupancy reachability check with 1.0 m clearance, the crossing rule and the scene build CLI" -m "Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
 ```
 
 ---
@@ -5540,7 +5540,7 @@ git -C /home/jk_edge/research_uav/autofly_ue5 add autofly_ue5/scenes/reachabilit
 
 - [ ] **Step 1: Write the failing test**
 
-`/home/jk_edge/research_uav/autofly_ue5/tests/test_level_spec.py`:
+`/home/nvidiasims/research_uav/autofly_ue5/tests/test_level_spec.py`:
 ```python
 import pytest
 
@@ -5594,7 +5594,7 @@ def test_full_s01_spec():
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `cd /home/jk_edge/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_level_spec.py`
+Run: `cd /home/nvidiasims/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_level_spec.py`
 Expected: FAIL with `ModuleNotFoundError: No module named 'autofly_ue5.scenes.level_spec'`.
 
 - [ ] **Step 3: Write `autofly_ue5/scenes/level_spec.py`**
@@ -5670,7 +5670,7 @@ def layout_to_level_spec(layout: Layout, scene: SceneFile, registry: AssetRegist
 
 - [ ] **Step 4: Run the test to verify it passes**
 
-Run: `cd /home/jk_edge/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_level_spec.py`
+Run: `cd /home/nvidiasims/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_level_spec.py`
 Expected: `4 passed`.
 
 - [ ] **Step 5: Replace `scripts/build_scenes.py` so it also writes the level spec**
@@ -5899,7 +5899,7 @@ finally:
 #!/usr/bin/env bash
 # Build ue_project/Content/AutoFly/Maps/<ID>.umap from runs/levels/<id>.level.json, then verify it in a fresh process.
 set -euo pipefail
-ROOT=/home/jk_edge/research_uav/autofly_ue5
+ROOT=/home/nvidiasims/research_uav/autofly_ue5
 ID="${1:?usage: build_level.sh <scene_id>}"
 LEVELS=$ROOT/runs/levels
 SPEC=$LEVELS/$ID.level.json
@@ -5936,19 +5936,19 @@ echo "level $MAP built and verified: $(jq -c '{obstacles, worst_location_error_c
 
 - [ ] **Step 9: Generate the s01 level spec**
 
-Run: `cd /home/jk_edge/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python scripts/build_scenes.py scenes/s01_white_pillars.json && jq '{map_path, actors: (.actors|length), ground: .ground.location_cm, materials: [.materials[].name]}' runs/levels/s01.level.json`
+Run: `cd /home/nvidiasims/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python scripts/build_scenes.py scenes/s01_white_pillars.json && jq '{map_path, actors: (.actors|length), ground: .ground.location_cm, materials: [.materials[].name]}' runs/levels/s01.level.json`
 Expected: summary JSON with `"level_spec": ".../runs/levels/s01.level.json"`, then `{"map_path": "/Game/AutoFly/Maps/S01", "actors": 80, "ground": [0, 0, -10], "materials": ["grid", "white"]}`.
 
 - [ ] **Step 10: Build and verify the map headless as a job (no GPU; a few minutes; total wait budget 40 minutes)**
 
-Run: `chmod +x /home/jk_edge/research_uav/autofly_ue5/scripts/build_level.sh && cd /home/jk_edge/research_uav/autofly_ue5 && bash scripts/run_job.sh start build_level_s01 -- bash scripts/build_level.sh s01 && bash scripts/run_job.sh wait build_level_s01 540; echo "wait=$?"` (repeat `wait` while it returns 124, within the budget).
+Run: `chmod +x /home/nvidiasims/research_uav/autofly_ue5/scripts/build_level.sh && cd /home/nvidiasims/research_uav/autofly_ue5 && bash scripts/run_job.sh start build_level_s01 -- bash scripts/build_level.sh s01 && bash scripts/run_job.sh wait build_level_s01 540; echo "wait=$?"` (repeat `wait` while it returns 124, within the budget).
 Expected: in the job log `s01.build.log exit code: … (information)` and `s01.verify.log exit code: … (information)` (0 or 1, both acceptable), `Python script executed successfully` twice, final line `level /Game/AutoFly/Maps/S01 built and verified: {"obstacles":80,"worst_location_error_cm":<≤1>,"game_mode":"/Script/ProjectAirSim.ProjectAirSimGameMode"}`, `job build_level_s01 finished: exit=0`, `wait=0`. This verifies live the UNCONFIRMED items: `new_level`/`spawn_actor_from_object`/`save_current_level` in a commandlet, engine `Cylinder` and `Cube` are 100 cm with centred pivots (bounds assertion), `MaterialInstanceConstant` creation with its parent and `Color` read back after setting (the setter's return value is not used), `Rotator(roll, pitch, yaw)` keywords, and the GameMode override surviving a reload. On any failure: stop and report `runs/levels/s01.build.json` (or `.verify.json`), the `AUTOFLY CHECK FAILED` line and `grep -iE "error" runs/levels/s01.build.log | head -40`; do not switch APIs without the user.
 
 - [ ] **Step 11: Write the measured bounds into `assets/registry.json`**
 
 Run:
 ```bash
-cd /home/jk_edge/research_uav/autofly_ue5 && jq '{materials, ground: .actors[0], first_pillar: .actors[1], max_extent_err_cm: ([.actors[].extent_err_cm] | max)}' runs/levels/s01.build.json && ls -la ue_project/Content/AutoFly/Maps ue_project/Content/AutoFly/Materials && env -u PYTHONPATH .venv/bin/python - <<'EOF'
+cd /home/nvidiasims/research_uav/autofly_ue5 && jq '{materials, ground: .actors[0], first_pillar: .actors[1], max_extent_err_cm: ([.actors[].extent_err_cm] | max)}' runs/levels/s01.build.json && ls -la ue_project/Content/AutoFly/Maps ue_project/Content/AutoFly/Materials && env -u PYTHONPATH .venv/bin/python - <<'EOF'
 import json
 import statistics
 from pathlib import Path
@@ -5975,7 +5975,7 @@ Expected: `materials.white.parent_vector_params` contains `"Color"` and `materia
 - [ ] **Step 12: Commit**
 
 ```bash
-git -C /home/jk_edge/research_uav/autofly_ue5 add autofly_ue5/scenes/level_spec.py autofly_ue5/scenes/ue/build_level.py autofly_ue5/scenes/ue/verify_level.py scripts/build_level.sh scripts/build_scenes.py tests/test_level_spec.py assets/registry.json && git -C /home/jk_edge/research_uav/autofly_ue5 commit -m "Build the s01 UE map headless from its level spec (ground, white pillars, SunSky, GameMode), verify it on reload and record measured asset bounds" -m "Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
+git -C /home/nvidiasims/research_uav/autofly_ue5 add autofly_ue5/scenes/level_spec.py autofly_ue5/scenes/ue/build_level.py autofly_ue5/scenes/ue/verify_level.py scripts/build_level.sh scripts/build_scenes.py tests/test_level_spec.py assets/registry.json && git -C /home/nvidiasims/research_uav/autofly_ue5 commit -m "Build the s01 UE map headless from its level spec (ground, white pillars, SunSky, GameMode), verify it on reload and record measured asset bounds" -m "Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
 ```
 
 ---
@@ -6018,7 +6018,7 @@ git -C /home/jk_edge/research_uav/autofly_ue5 add autofly_ue5/scenes/level_spec.
 
 - [ ] **Step 2: Replace `tests/test_pas_configs.py` to cover the s01 scene and write `tests/test_check_map.py`**
 
-`/home/jk_edge/research_uav/autofly_ue5/tests/test_pas_configs.py`:
+`/home/nvidiasims/research_uav/autofly_ue5/tests/test_pas_configs.py`:
 ```python
 import pytest
 from projectairsim.utils import load_scene_config_as_dict
@@ -6049,7 +6049,7 @@ def test_s01_start_is_in_the_south_start_band_at_2m():
     assert 2.0 <= x - (-35.0) <= 6.0 and z == -2.0
 ```
 
-`/home/jk_edge/research_uav/autofly_ue5/tests/test_check_map.py`:
+`/home/nvidiasims/research_uav/autofly_ue5/tests/test_check_map.py`:
 ```python
 import pytest
 
@@ -6077,7 +6077,7 @@ def test_missing_actor():
 
 - [ ] **Step 3: Run them to verify the new test fails**
 
-Run: `cd /home/jk_edge/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_check_map.py; env -u PYTHONPATH .venv/bin/python -m pytest tests/test_pas_configs.py`
+Run: `cd /home/nvidiasims/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_check_map.py; env -u PYTHONPATH .venv/bin/python -m pytest tests/test_pas_configs.py`
 Expected: the first run FAILS with `ModuleNotFoundError: No module named 'autofly_ue5.sim.check_map'`; the second run passes (`4 passed`, the s01 config from Step 1 validates).
 
 - [ ] **Step 4: Write `autofly_ue5/sim/check_map.py`**
@@ -6158,7 +6158,7 @@ if __name__ == "__main__":
 
 - [ ] **Step 5: Run the tests to verify they pass**
 
-Run: `cd /home/jk_edge/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_pas_configs.py tests/test_check_map.py`
+Run: `cd /home/nvidiasims/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_pas_configs.py tests/test_check_map.py`
 Expected: `7 passed`.
 
 - [ ] **Step 6: Write `scripts/package_sim.sh`**
@@ -6167,7 +6167,7 @@ Expected: `7 passed`.
 #!/usr/bin/env bash
 # Package the Development Linux game with /Game/AutoFly/Maps/S01 and /Game/BlocksMap into ue_project/Packaged/Development.
 set -euo pipefail
-ROOT=/home/jk_edge/research_uav/autofly_ue5
+ROOT=/home/nvidiasims/research_uav/autofly_ue5
 OUT=$ROOT/ue_project/Packaged/Development
 LOG=$ROOT/runs/package/package_dev.log
 # Dedicated folder: UAT clears its log folder at startup and would otherwise use ~/Documents/Unreal Engine/LocalBuildLogs
@@ -6202,17 +6202,17 @@ echo "packaged binary: $BIN"
 
 - [ ] **Step 7: Package as a job (20–60 minutes on first cook; total wait budget 120 minutes)**
 
-Run: `chmod +x /home/jk_edge/research_uav/autofly_ue5/scripts/package_sim.sh && cd /home/jk_edge/research_uav/autofly_ue5 && bash scripts/run_job.sh start package_sim -- bash scripts/package_sim.sh && bash scripts/run_job.sh wait package_sim 540; echo "wait=$?"` (repeat `bash scripts/run_job.sh wait package_sim 540` while it returns 124, within the budget; if the budget is used up, `bash scripts/run_job.sh stop package_sim` and report `tail -50 runs/package/package_dev.log`).
-Expected: in the job log `RunUAT exit code: 0`, a line `AutomationTool exiting with ExitCode=0 (Success)` (wording UNCONFIRMED; the RunUAT exit code is authoritative), `packaged binary: /home/jk_edge/research_uav/autofly_ue5/ue_project/Packaged/Development/Linux/Blocks/Binaries/Linux/Blocks`, `job package_sim finished: exit=0`, `wait=0`. Afterwards `ls -d ~/.config/Epic/UnrealEngine/Common/Zen/Data 2>/dev/null || echo zen-default-absent; ls -d ~/"Documents/Unreal Engine" ~/UnrealEngine /tmp/UnrealTraceServer.pid 2>/dev/null || echo out-of-root-absent; ls runs/package/uat_logs | head` prints `zen-default-absent` (the cook used the ROOT cache), `out-of-root-absent` (UAT honoured `uebp_LogFolder` and the cooker `-notraceserver`; a listed path is reported, not deleted) and the UAT log files. The archive layout `Linux/Blocks/Binaries/Linux/Blocks` and the effect of `-nocompileeditor -skipbuildeditor` are UNCONFIRMED: if the binary is elsewhere, the script prints the executables found; stop and report them (do not edit `PACKAGED_BINARY` without the user). On a cook error, stop and report `grep -nE "Error:|error:" runs/package/package_dev.log | head -40` together with `ls runs/package/uat_logs` (the cooker's own log is there).
+Run: `chmod +x /home/nvidiasims/research_uav/autofly_ue5/scripts/package_sim.sh && cd /home/nvidiasims/research_uav/autofly_ue5 && bash scripts/run_job.sh start package_sim -- bash scripts/package_sim.sh && bash scripts/run_job.sh wait package_sim 540; echo "wait=$?"` (repeat `bash scripts/run_job.sh wait package_sim 540` while it returns 124, within the budget; if the budget is used up, `bash scripts/run_job.sh stop package_sim` and report `tail -50 runs/package/package_dev.log`).
+Expected: in the job log `RunUAT exit code: 0`, a line `AutomationTool exiting with ExitCode=0 (Success)` (wording UNCONFIRMED; the RunUAT exit code is authoritative), `packaged binary: /home/nvidiasims/research_uav/autofly_ue5/ue_project/Packaged/Development/Linux/Blocks/Binaries/Linux/Blocks`, `job package_sim finished: exit=0`, `wait=0`. Afterwards `ls -d ~/.config/Epic/UnrealEngine/Common/Zen/Data 2>/dev/null || echo zen-default-absent; ls -d ~/"Documents/Unreal Engine" ~/UnrealEngine /tmp/UnrealTraceServer.pid 2>/dev/null || echo out-of-root-absent; ls runs/package/uat_logs | head` prints `zen-default-absent` (the cook used the ROOT cache), `out-of-root-absent` (UAT honoured `uebp_LogFolder` and the cooker `-notraceserver`; a listed path is reported, not deleted) and the UAT log files. The archive layout `Linux/Blocks/Binaries/Linux/Blocks` and the effect of `-nocompileeditor -skipbuildeditor` are UNCONFIRMED: if the binary is elsewhere, the script prints the executables found; stop and report them (do not edit `PACKAGED_BINARY` without the user). On a cook error, stop and report `grep -nE "Error:|error:" runs/package/package_dev.log | head -40` together with `ls runs/package/uat_logs` (the cooker's own log is there).
 
 - [ ] **Step 8: Confirm the maps were cooked and fingerprint the package**
 
-Run: `cd /home/jk_edge/research_uav/autofly_ue5 && grep -cE "S01" runs/package/package_dev.log && ls ue_project/Packaged/Development/Linux/Blocks/Content/Paks/`
+Run: `cd /home/nvidiasims/research_uav/autofly_ue5 && grep -cE "S01" runs/package/package_dev.log && ls ue_project/Packaged/Development/Linux/Blocks/Content/Paks/`
 Expected: a non-zero count and at least one `.pak` (`Blocks-Linux.pak` or similar, name UNCONFIRMED) listed.
 
 Then write the package manifest that ties the M1 gate to this build:
 ```bash
-cd /home/jk_edge/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python - <<'EOF'
+cd /home/nvidiasims/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python - <<'EOF'
 import hashlib
 import json
 import subprocess
@@ -6248,25 +6248,25 @@ Expected: one JSON line with a 12-character binary hash prefix, `"paks"` ≥ 1 a
 
 Run:
 ```bash
-cd /home/jk_edge/research_uav/autofly_ue5 && nvidia-smi --query-gpu=memory.used --format=csv,noheader && bash scripts/run_job.sh start launch_s01 -- env -u PYTHONPATH .venv/bin/python scripts/launch_sim.py --mode packaged --map /Game/AutoFly/Maps/S01 --instance 0 --timeout 600 && bash scripts/run_job.sh wait launch_s01 540; echo "wait=$?"
+cd /home/nvidiasims/research_uav/autofly_ue5 && nvidia-smi --query-gpu=memory.used --format=csv,noheader && bash scripts/run_job.sh start launch_s01 -- env -u PYTHONPATH .venv/bin/python scripts/launch_sim.py --mode packaged --map /Game/AutoFly/Maps/S01 --instance 0 --timeout 600 && bash scripts/run_job.sh wait launch_s01 540; echo "wait=$?"
 ```
 Repeat `wait` while it returns 124, within the budget. When `wait=0`, run the map check as a job (it loads the scene config once and can wait up to 60 s for topic info; total wait budget 10 minutes):
 ```bash
-cd /home/jk_edge/research_uav/autofly_ue5 && bash scripts/run_job.sh start check_map_s01 -- env -u PYTHONPATH .venv/bin/python -m autofly_ue5.sim.check_map --instance 0 --layout runs/levels/s01.layout.json --out runs/m1/check_map.json && bash scripts/run_job.sh wait check_map_s01 540; echo "wait=$?"; nvidia-smi --query-gpu=memory.used --format=csv,noheader
+cd /home/nvidiasims/research_uav/autofly_ue5 && bash scripts/run_job.sh start check_map_s01 -- env -u PYTHONPATH .venv/bin/python -m autofly_ue5.sim.check_map --instance 0 --layout runs/levels/s01.layout.json --out runs/m1/check_map.json && bash scripts/run_job.sh wait check_map_s01 540; echo "wait=$?"; nvidia-smi --query-gpu=memory.used --format=csv,noheader
 ```
 If it returns 124, call `bash scripts/run_job.sh wait check_map_s01 60` once more; if the budget is used up, run `bash scripts/run_job.sh stop check_map_s01`, then `env -u PYTHONPATH .venv/bin/python scripts/stop_sim.py --instance 0`, and report.
 Expected: launch JSON line with `job launch_s01 finished: exit=0`; in the `check_map_s01` job log a check-map JSON with three obstacles `"found": true`, center and size errors < 0.05 m, `"ground_top_z_ned"` ≈ 0, `"pass": true`, then `job check_map_s01 finished: exit=0` and `wait=0`. This verifies live that the packaged binary takes the map as its second argument (after the project name), that actor tags survive cooking and are matched by Project AirSim's `FindActor`, and that the UE↔NED conversion has no origin offset. If `found` is false for all obstacles, or `wait` is 1 or 3, check `grep -m3 LoadMap runs/sim/inst0/sim.log` for the loaded map, stop instance 0 (`scripts/stop_sim.py --instance 0`) and report (include `runs/m1/check_map.json` and `tail -40 runs/m1/check_map.client.log`).
 
 - [ ] **Step 10: Stop the packaged instance**
 
-Run (Bash tool `timeout` 600000 ms): `cd /home/jk_edge/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python scripts/stop_sim.py --instance 0 && sleep 30; pgrep -a -f "$(pwd)/ue_project/Packaged/" || echo none`
+Run (Bash tool `timeout` 600000 ms): `cd /home/nvidiasims/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python scripts/stop_sim.py --instance 0 && sleep 30; pgrep -a -f "$(pwd)/ue_project/Packaged/" || echo none`
 Expected: `terminated`, then `none` (survivors after another 60 s are reported, not killed).
 
 - [ ] **Step 11: Commit**
 
 ```bash
-mkdir -p /home/jk_edge/research_uav/autofly_ue5/docs/gates && cp /home/jk_edge/research_uav/autofly_ue5/runs/m1/check_map.json /home/jk_edge/research_uav/autofly_ue5/docs/gates/m1_check_map.json && cp /home/jk_edge/research_uav/autofly_ue5/runs/package/package_manifest.json /home/jk_edge/research_uav/autofly_ue5/docs/gates/m1_package_manifest.json
-git -C /home/jk_edge/research_uav/autofly_ue5 add scripts/package_sim.sh configs/scene_autofly_s01.jsonc autofly_ue5/sim/check_map.py tests/test_pas_configs.py tests/test_check_map.py docs/gates/m1_check_map.json docs/gates/m1_package_manifest.json && git -C /home/jk_edge/research_uav/autofly_ue5 commit -m "Package the Development Linux simulator with the S01 map, fingerprint the package and confirm the cooked map from the client" -m "Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
+mkdir -p /home/nvidiasims/research_uav/autofly_ue5/docs/gates && cp /home/nvidiasims/research_uav/autofly_ue5/runs/m1/check_map.json /home/nvidiasims/research_uav/autofly_ue5/docs/gates/m1_check_map.json && cp /home/nvidiasims/research_uav/autofly_ue5/runs/package/package_manifest.json /home/nvidiasims/research_uav/autofly_ue5/docs/gates/m1_package_manifest.json
+git -C /home/nvidiasims/research_uav/autofly_ue5 add scripts/package_sim.sh configs/scene_autofly_s01.jsonc autofly_ue5/sim/check_map.py tests/test_pas_configs.py tests/test_check_map.py docs/gates/m1_check_map.json docs/gates/m1_package_manifest.json && git -C /home/nvidiasims/research_uav/autofly_ue5 commit -m "Package the Development Linux simulator with the S01 map, fingerprint the package and confirm the cooked map from the client" -m "Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
 ```
 
 ---
@@ -6288,7 +6288,7 @@ git -C /home/jk_edge/research_uav/autofly_ue5 add scripts/package_sim.sh configs
 
 - [ ] **Step 1: Write the failing test**
 
-`/home/jk_edge/research_uav/autofly_ue5/tests/test_geometry.py`:
+`/home/nvidiasims/research_uav/autofly_ue5/tests/test_geometry.py`:
 ```python
 import math
 
@@ -6394,7 +6394,7 @@ def test_pillars_from_layout_json():
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `cd /home/jk_edge/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_geometry.py`
+Run: `cd /home/nvidiasims/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_geometry.py`
 Expected: FAIL with `ModuleNotFoundError: No module named 'autofly_ue5.validate.geometry'`.
 
 - [ ] **Step 3: Write `autofly_ue5/validate/geometry.py`**
@@ -6562,12 +6562,12 @@ def contiguous_width(mask_row: np.ndarray, center: int = 128) -> int:
 
 - [ ] **Step 4: Run the test to verify it passes**
 
-Run: `cd /home/jk_edge/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_geometry.py`
+Run: `cd /home/nvidiasims/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_geometry.py`
 Expected: `11 passed`.
 
 - [ ] **Step 5: Write the failing offline test of the gate checks**
 
-`/home/jk_edge/research_uav/autofly_ue5/tests/test_live_m1_fake.py`:
+`/home/nvidiasims/research_uav/autofly_ue5/tests/test_live_m1_fake.py`:
 ```python
 from autofly_ue5.paths import SCENES_DIR
 from autofly_ue5.scenes.generate import generate_layout
@@ -6605,7 +6605,7 @@ def test_gate_checks_pass_on_the_fake_simulator():
 
 - [ ] **Step 6: Run it to verify it fails**
 
-Run: `cd /home/jk_edge/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_live_m1_fake.py`
+Run: `cd /home/nvidiasims/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_live_m1_fake.py`
 Expected: FAIL with `ModuleNotFoundError: No module named 'autofly_ue5.validate.live_m1'`.
 
 - [ ] **Step 7: Write `autofly_ue5/validate/live_m1.py`**
@@ -6875,24 +6875,24 @@ if __name__ == "__main__":
 
 - [ ] **Step 8: Run the offline gate-check test to verify it passes**
 
-Run: `cd /home/jk_edge/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_live_m1_fake.py`
+Run: `cd /home/nvidiasims/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest tests/test_live_m1_fake.py`
 Expected: `2 passed`. If `choose_depth_probes` raises `ValueError: no unobstructed depth probe`, stop and report: the s01 layout leaves no unobstructed approach, which contradicts the scene design.
 
 - [ ] **Step 9: Run the full offline suite**
 
-Run: `cd /home/jk_edge/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest && grep -rln "projectairsim" autofly_ue5 --include=*.py | grep -v "^autofly_ue5/sim/"`
+Run: `cd /home/nvidiasims/research_uav/autofly_ue5 && env -u PYTHONPATH .venv/bin/python -m pytest && grep -rln "projectairsim" autofly_ue5 --include=*.py | grep -v "^autofly_ue5/sim/"`
 Expected: `124 passed`; grep prints nothing.
 
 - [ ] **Step 10: Run the M1 gate live as a job (launches and stops the packaged simulator itself; total wait budget 40 minutes)**
 
-Run (Bash tool `timeout` 600000 ms): `cd /home/jk_edge/research_uav/autofly_ue5 && nvidia-smi --query-gpu=memory.used --format=csv,noheader && jq .pass runs/m1/check_map.json && jq -r .binary.sha256 runs/package/package_manifest.json && bash scripts/run_job.sh start live_m1 -- env -u PYTHONPATH .venv/bin/python -m autofly_ue5.validate.live_m1 --out runs/m1/m1_gate.json && bash scripts/run_job.sh wait live_m1 540; echo "wait=$?"` (repeat `bash scripts/run_job.sh wait live_m1 540` while it returns 124, within the budget; if the budget is used up: `bash scripts/run_job.sh stop live_m1`, then `env -u PYTHONPATH .venv/bin/python scripts/stop_sim.py --instance 0`, and report).
-Expected: GPU below 2000 MiB, `true` and a 64-character hash before the run; last log line `{"pass": true, "error": null, "check_map": true, "package_matches_manifest": true, "faults_ok": true, "checks": {"rgb_changes_with_pose": true, "depth_matches_geometry": true, "crash_raises_collision": true, "velocity_tracking": true, "one_step_per_record": true, "spawn_destroy_packaged": true}}`; `job live_m1 finished: exit=0`; `wait=0`. Then run `cd /home/jk_edge/research_uav/autofly_ue5 && ls runs/sim/inst0/ && jq '.faults, .checks.crash_raises_collision.reset_after_crash, .checks.spawn_destroy_packaged' runs/m1/m1_gate.json && jq '.checks.velocity_tracking.axes | map_values({relative_error, mean_measured})' runs/m1/m1_gate.json && jq '.checks.depth_matches_geometry.probes[] | {distance_m, error_m, width_px, expected_width_px}' runs/m1/m1_gate.json`: no `pid.json` in `runs/sim/inst0/` (the backend stopped its own process); `xid_after` equal to `xid_before` and every `device_lost` count `0`; `spawn_destroy_packaged.center_rgb_with_cube` orange-dominant; per-probe silhouette widths near 37, 20 and 10 px for 3, 6 and 12 m (radius 0.5 m; exact values depend on each pillar's radius); yaw-rate sign and rad/s units are confirmed when `yaw_rate.mean_measured` ≈ +0.5. Any `false` or `error` (including `CameraPoseError` or `CommandTimeoutError`): stop and report the full `runs/m1/m1_gate.json`, `tail -80 runs/sim/inst0/sim.log` and `tail -40 runs/m1/m1_gate.client.log`; if `runs/sim/inst0/pid.json` still exists, stop it with `scripts/stop_sim.py --instance 0` first. Do not loosen thresholds without the user.
+Run (Bash tool `timeout` 600000 ms): `cd /home/nvidiasims/research_uav/autofly_ue5 && nvidia-smi --query-gpu=memory.used --format=csv,noheader && jq .pass runs/m1/check_map.json && jq -r .binary.sha256 runs/package/package_manifest.json && bash scripts/run_job.sh start live_m1 -- env -u PYTHONPATH .venv/bin/python -m autofly_ue5.validate.live_m1 --out runs/m1/m1_gate.json && bash scripts/run_job.sh wait live_m1 540; echo "wait=$?"` (repeat `bash scripts/run_job.sh wait live_m1 540` while it returns 124, within the budget; if the budget is used up: `bash scripts/run_job.sh stop live_m1`, then `env -u PYTHONPATH .venv/bin/python scripts/stop_sim.py --instance 0`, and report).
+Expected: GPU below 2000 MiB, `true` and a 64-character hash before the run; last log line `{"pass": true, "error": null, "check_map": true, "package_matches_manifest": true, "faults_ok": true, "checks": {"rgb_changes_with_pose": true, "depth_matches_geometry": true, "crash_raises_collision": true, "velocity_tracking": true, "one_step_per_record": true, "spawn_destroy_packaged": true}}`; `job live_m1 finished: exit=0`; `wait=0`. Then run `cd /home/nvidiasims/research_uav/autofly_ue5 && ls runs/sim/inst0/ && jq '.faults, .checks.crash_raises_collision.reset_after_crash, .checks.spawn_destroy_packaged' runs/m1/m1_gate.json && jq '.checks.velocity_tracking.axes | map_values({relative_error, mean_measured})' runs/m1/m1_gate.json && jq '.checks.depth_matches_geometry.probes[] | {distance_m, error_m, width_px, expected_width_px}' runs/m1/m1_gate.json`: no `pid.json` in `runs/sim/inst0/` (the backend stopped its own process); `xid_after` equal to `xid_before` and every `device_lost` count `0`; `spawn_destroy_packaged.center_rgb_with_cube` orange-dominant; per-probe silhouette widths near 37, 20 and 10 px for 3, 6 and 12 m (radius 0.5 m; exact values depend on each pillar's radius); yaw-rate sign and rad/s units are confirmed when `yaw_rate.mean_measured` ≈ +0.5. Any `false` or `error` (including `CameraPoseError` or `CommandTimeoutError`): stop and report the full `runs/m1/m1_gate.json`, `tail -80 runs/sim/inst0/sim.log` and `tail -40 runs/m1/m1_gate.client.log`; if `runs/sim/inst0/pid.json` still exists, stop it with `scripts/stop_sim.py --instance 0` first. Do not loosen thresholds without the user.
 
 - [ ] **Step 11: Commit**
 
 ```bash
-cp /home/jk_edge/research_uav/autofly_ue5/runs/m1/m1_gate.json /home/jk_edge/research_uav/autofly_ue5/docs/gates/m1_gate.json
-git -C /home/jk_edge/research_uav/autofly_ue5 add autofly_ue5/validate/geometry.py autofly_ue5/validate/live_m1.py tests/test_geometry.py tests/test_live_m1_fake.py docs/gates/m1_gate.json && git -C /home/jk_edge/research_uav/autofly_ue5 commit -m "Pass the M1 gate on packaged s01: RGB vs pose, depth vs geometry, crash collision and reset, velocity tracking, one step per record, runtime spawn, map check and GPU faults" -m "Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
+cp /home/nvidiasims/research_uav/autofly_ue5/runs/m1/m1_gate.json /home/nvidiasims/research_uav/autofly_ue5/docs/gates/m1_gate.json
+git -C /home/nvidiasims/research_uav/autofly_ue5 add autofly_ue5/validate/geometry.py autofly_ue5/validate/live_m1.py tests/test_geometry.py tests/test_live_m1_fake.py docs/gates/m1_gate.json && git -C /home/nvidiasims/research_uav/autofly_ue5 commit -m "Pass the M1 gate on packaged s01: RGB vs pose, depth vs geometry, crash collision and reset, velocity tracking, one step per record, runtime spawn, map check and GPU faults" -m "Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
 ```
 
 - [ ] **Step 12: Milestone stop (spec §12)**

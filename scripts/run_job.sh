@@ -6,7 +6,7 @@
 #   run_job.sh stop <name>                      SIGTERM, then SIGKILL after 30 s, to the recorded process group, only if it is ours
 # Files live in $AUTOFLY_JOBS_DIR (default ROOT/runs/jobs).
 set -euo pipefail
-ROOT=/home/jk_edge/research_uav/autofly_ue5
+ROOT=/home/nvidiasims/research_uav/autofly_ue5
 JOBS=${AUTOFLY_JOBS_DIR:-$ROOT/runs/jobs}
 USAGE="usage: run_job.sh start <name> -- <cmd...> | wait <name> [timeout_s] | stop <name>"
 MODE="${1:?$USAGE}"
