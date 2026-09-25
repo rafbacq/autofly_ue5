@@ -276,14 +276,24 @@ def test_combo_order_respects_a_restricted_condition_list():
     assert combo_order(models, ["stochastic"]) == [("best_model", "stochastic")]
 
 
-def test_load_throughput_projection_reads_task_7s_own_gate_file():
+def test_load_throughput_projection_reads_a_throughput_record(tmp_path):
     from scripts.m2_gate import _load_throughput_projection
 
-    projection = _load_throughput_projection()
-    assert projection is not None
-    assert projection["chosen_n"] == 1
-    assert projection["measured_env_steps_per_s_total"] is not None
+    record = {"chosen_n": 2, "per_n": {"1": {"env_steps_per_s_total": 7.0}, "2": {"env_steps_per_s_total": 11.0}},
+              "projection": {"assumed_n_scenes": 10, "hours_per_scene": 25.0}}
+    (tmp_path / "m2_instances.json").write_text(__import__("json").dumps(record))
+    projection = _load_throughput_projection(tmp_path / "m2_instances.json")
+    assert projection["chosen_n"] == 2
+    assert projection["measured_env_steps_per_s_total"] == 11.0
     assert projection["projection"]["assumed_n_scenes"] == 10
+
+
+def test_the_archived_task_7_record_still_loads():
+    from autofly_ue5.paths import ROOT
+    from scripts.m2_gate import _load_throughput_projection
+
+    projection = _load_throughput_projection(ROOT / "docs" / "gates" / "archive" / "2026-09-17-m2-run1" / "m2_instances.json")
+    assert projection["chosen_n"] == 1 and projection["measured_env_steps_per_s_total"] is not None
 
 
 def test_load_throughput_projection_with_a_missing_file_is_none(tmp_path):
@@ -312,7 +322,10 @@ def test_the_gate_runs_end_to_end_against_the_fake_and_records_what_it_measured(
     checkpoint.write_bytes(b"not a real model; the fake loader ignores it")
     gate = run(scene="s01", model_paths={"model": checkpoint}, conditions=["deterministic"], n_episodes=2,
                seed_base=EVAL_SEED_BASE, instance=5, out_path=tmp_path / "gate.json", sim_factory=FakeSimulator,
-               load_model=lambda path: _StraightAtTargetModel(), sim_root=tmp_path / "sim")
+               load_model=lambda path: _StraightAtTargetModel(), sim_root=tmp_path / "sim",
+               instances_path=tmp_path / "no_measurement.json")
+    assert gate["throughput_projection"] is None
+    assert "measure_instances" in gate["throughput_projection_missing"], "a missing measurement must say so"
 
     assert gate["status"] == "ok"
     assert gate["reward_version"] == REWARD_VERSION

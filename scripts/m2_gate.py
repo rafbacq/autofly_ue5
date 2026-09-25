@@ -119,7 +119,10 @@ def combo_order(models: dict[str, Path], conditions: list[str]) -> list[tuple[st
     return [(name, condition) for condition in ordered_conditions for name in models]
 
 
-def _load_throughput_projection(instances_path: Path = ROOT / "docs" / "gates" / "m2_instances.json") -> dict | None:
+INSTANCES_PATH = ROOT / "docs" / "gates" / "m2_instances.json"
+
+
+def _load_throughput_projection(instances_path: Path = INSTANCES_PATH) -> dict | None:
     """Task 7's own instance-scaling measurement, carried into the gate record so M5's cost (10 more
     experts) is on the record alongside M2's pass/fail (gate item 5)."""
     if not instances_path.is_file():
@@ -175,6 +178,7 @@ def run(
     max_fault_retries_per_episode: int = DEFAULT_MAX_FAULT_RETRIES_PER_EPISODE,
     sim_root: Path = SIM_RUN_DIR,
     scene_config: str | None = None,
+    instances_path: Path = INSTANCES_PATH,
 ) -> dict[str, Any]:
     load_model = load_model or (lambda p: default_sac_loader(p, device=device))
     run_started = time.strftime("%Y-%m-%d %H:%M:%S")
@@ -186,7 +190,10 @@ def run(
     if swept:
         print(f"swept orphaned instances before starting: {swept}", file=sys.stderr)
 
-    throughput_projection = _load_throughput_projection()
+    throughput_projection = _load_throughput_projection(instances_path)
+    projection_missing = (None if throughput_projection is not None else
+                          f"{instances_path} does not exist: run scripts/measure_instances.py for this run before the gate "
+                          f"(PLAN2 wants the throughput projection on the M2 record)")
     combos = combo_order(model_paths, conditions)
     checkpoints: dict[str, dict[str, Any]] = {}
     for name, path in model_paths.items():
@@ -249,6 +256,7 @@ def run(
             "engine_faults": engine_faults,
             "faults_ok": faults_ok,
             "throughput_projection": throughput_projection,
+            "throughput_projection_missing": projection_missing,
             "status": status,
             "error": error_message,
             "run_started": run_started,

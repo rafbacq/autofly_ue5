@@ -1,0 +1,238 @@
+{
+  "description": "C9 audit: gate episodes that could not have been flown from their start (see the rule).",
+  "source": "docs/gates/m2_gate.json (as of commit 68f221a; now docs/gates/archive/2026-09-17-m2-run1/m2_gate.json)",
+  "source_sha256": "94b47ca44605e3f6f5d5b9ccdd1fbb20feb640d4f10dec3ead733d628b2842ec",
+  "source_last_commit": "68f221a5ac709cd30c8a2726fb127c725fb0e7bc",
+  "rule": "|final_distance - start_distance| > 0.4 m x steps + 0.5 m",
+  "flagged": [
+    {
+      "checkpoint": "best_model",
+      "condition": "deterministic",
+      "seed": 100000055,
+      "outcome": "collision",
+      "steps": 1,
+      "start_distance_m": 73.584,
+      "final_distance_m": 44.715,
+      "distance_change_m": 28.869,
+      "preceding_outcome": "collision"
+    },
+    {
+      "checkpoint": "best_model",
+      "condition": "deterministic",
+      "seed": 100000109,
+      "outcome": "collision",
+      "steps": 1,
+      "start_distance_m": 73.145,
+      "final_distance_m": 41.868,
+      "distance_change_m": 31.277,
+      "preceding_outcome": "collision"
+    },
+    {
+      "checkpoint": "best_model",
+      "condition": "deterministic",
+      "seed": 100000150,
+      "outcome": "collision",
+      "steps": 1,
+      "start_distance_m": 64.751,
+      "final_distance_m": 60.019,
+      "distance_change_m": 4.733,
+      "preceding_outcome": "collision"
+    },
+    {
+      "checkpoint": "best_model",
+      "condition": "deterministic",
+      "seed": 100000174,
+      "outcome": "collision",
+      "steps": 1,
+      "start_distance_m": 64.439,
+      "final_distance_m": 26.321,
+      "distance_change_m": 38.119,
+      "preceding_outcome": "collision"
+    },
+    {
+      "checkpoint": "best_model",
+      "condition": "deterministic",
+      "seed": 100000175,
+      "outcome": "collision",
+      "steps": 1,
+      "start_distance_m": 63.352,
+      "final_distance_m": 53.659,
+      "distance_change_m": 9.693,
+      "preceding_outcome": "collision"
+    },
+    {
+      "checkpoint": "best_model",
+      "condition": "deterministic",
+      "seed": 100000180,
+      "outcome": "collision",
+      "steps": 1,
+      "start_distance_m": 72.767,
+      "final_distance_m": 58.935,
+      "distance_change_m": 13.833,
+      "preceding_outcome": "collision"
+    },
+    {
+      "checkpoint": "best_model",
+      "condition": "stochastic",
+      "seed": 100000021,
+      "outcome": "collision",
+      "steps": 1,
+      "start_distance_m": 70.506,
+      "final_distance_m": 74.64,
+      "distance_change_m": 4.134,
+      "preceding_outcome": "collision"
+    },
+    {
+      "checkpoint": "best_model",
+      "condition": "stochastic",
+      "seed": 100000038,
+      "outcome": "collision",
+      "steps": 1,
+      "start_distance_m": 65.717,
+      "final_distance_m": 24.805,
+      "distance_change_m": 40.912,
+      "preceding_outcome": "collision"
+    },
+    {
+      "checkpoint": "best_model",
+      "condition": "stochastic",
+      "seed": 100000099,
+      "outcome": "collision",
+      "steps": 1,
+      "start_distance_m": 71.66,
+      "final_distance_m": 26.215,
+      "distance_change_m": 45.445,
+      "preceding_outcome": "collision"
+    },
+    {
+      "checkpoint": "best_model",
+      "condition": "stochastic",
+      "seed": 100000102,
+      "outcome": "collision",
+      "steps": 1,
+      "start_distance_m": 66.618,
+      "final_distance_m": 27.285,
+      "distance_change_m": 39.334,
+      "preceding_outcome": "collision"
+    },
+    {
+      "checkpoint": "final",
+      "condition": "deterministic",
+      "seed": 100000025,
+      "outcome": "collision",
+      "steps": 1,
+      "start_distance_m": 66.796,
+      "final_distance_m": 33.923,
+      "distance_change_m": 32.873,
+      "preceding_outcome": "collision"
+    },
+    {
+      "checkpoint": "final",
+      "condition": "deterministic",
+      "seed": 100000085,
+      "outcome": "collision",
+      "steps": 1,
+      "start_distance_m": 70.454,
+      "final_distance_m": 61.144,
+      "distance_change_m": 9.31,
+      "preceding_outcome": "collision"
+    },
+    {
+      "checkpoint": "final",
+      "condition": "deterministic",
+      "seed": 100000180,
+      "outcome": "collision",
+      "steps": 1,
+      "start_distance_m": 72.767,
+      "final_distance_m": 59.392,
+      "distance_change_m": 13.375,
+      "preceding_outcome": "collision"
+    },
+    {
+      "checkpoint": "final",
+      "condition": "deterministic",
+      "seed": 100000181,
+      "outcome": "collision",
+      "steps": 1,
+      "start_distance_m": 65.204,
+      "final_distance_m": 59.615,
+      "distance_change_m": 5.59,
+      "preceding_outcome": "collision"
+    },
+    {
+      "checkpoint": "final",
+      "condition": "stochastic",
+      "seed": 100000180,
+      "outcome": "collision",
+      "steps": 1,
+      "start_distance_m": 72.767,
+      "final_distance_m": 59.152,
+      "distance_change_m": 13.616,
+      "preceding_outcome": "collision"
+    }
+  ],
+  "n_flagged": 15,
+  "worst_legitimate_ratio": 0.9331,
+  "success_rate_excluding_flagged": {
+    "best_model": {
+      "deterministic": {
+        "successes": 166,
+        "episodes": 194,
+        "rate": 0.8556701030927835
+      },
+      "stochastic": {
+        "successes": 169,
+        "episodes": 196,
+        "rate": 0.8622448979591837
+      }
+    },
+    "final": {
+      "deterministic": {
+        "successes": 180,
+        "episodes": 196,
+        "rate": 0.9183673469387755
+      },
+      "stochastic": {
+        "successes": 182,
+        "episodes": 199,
+        "rate": 0.914572864321608
+      }
+    }
+  },
+  "after_a_collision": {
+    "best_model:deterministic": {
+      "flagged": 6,
+      "resets": 27
+    },
+    "best_model:stochastic": {
+      "flagged": 4,
+      "resets": 24
+    },
+    "final:deterministic": {
+      "flagged": 4,
+      "resets": 13
+    },
+    "final:stochastic": {
+      "flagged": 1,
+      "resets": 9
+    }
+  },
+  "after_other_outcomes": {
+    "best_model:deterministic": {
+      "flagged": 0,
+      "resets": 172
+    },
+    "best_model:stochastic": {
+      "flagged": 0,
+      "resets": 175
+    },
+    "final:deterministic": {
+      "flagged": 0,
+      "resets": 186
+    },
+    "final:stochastic": {
+      "flagged": 0,
+      "resets": 190
+    }
+  }
+}

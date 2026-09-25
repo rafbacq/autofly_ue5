@@ -48,7 +48,8 @@ process -- but Task 7 measured, live, that this does not cleanly kill the worker
 client leaves a non-daemon background thread running, so CPython's interpreter-shutdown sequence
 (`threading._shutdown()`) blocks forever joining it, the worker's pipe never reaches EOF, and any caller
 doing a blind `remote.recv()` (SB3's own `step_wait()`/`env_method()`) hangs right along with it -- forever,
-with no exception ever raised. `docs/gates/m2_instances.json` records this happening live, twice.
+with no exception ever raised. Task 7's record (`docs/gates/archive/2026-09-17-m2-run1/m2_instances.json`)
+shows this happening live, twice.
 
 Two lines of defence, matching the two places that hazard can bite:
 
