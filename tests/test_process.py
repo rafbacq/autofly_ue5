@@ -164,3 +164,42 @@ def test_launch_refuses_a_busy_port(tmp_path):
         busy = s.getsockname()[1]
         with pytest.raises(RuntimeError, match="already in use"):
             launch_process([sys.executable, "-c", "pass"], 6, SimPorts(busy, free_port()), dict(os.environ), run_root=tmp_path)
+
+
+def test_sweep_stale_instances_tolerates_a_concurrent_stop_race(monkeypatch):
+    # Live finding (Task 8 shakedown, 2026-09-16): stop() checks the pid file exists, then unconditionally unlinks it later -- a second, independent
+    # caller stopping the SAME instance concurrently (e.g. two vec envs each closing their own simulator
+    # while this function ALSO sweeps both) can delete it in between, raising FileNotFoundError and, before
+    # this fix, crashing the whole caller uncaught. The pid file being gone already IS the instance being
+    # stopped, so this must be tolerated, not propagated.
+    import autofly_ue5.sim.process as mi
+    from autofly_ue5.sim.process import SimProcess
+
+    fake = SimProcess(
+        pid=1, pgid=1, instance=0, topics_port=8989, services_port=8990,
+        cmd=["fake"], log_path="/dev/null", started_unix=0.0,
+    )
+    monkeypatch.setattr(mi, "own_running_instances", lambda: [fake])
+
+    def _raise_file_not_found(instance):
+        raise FileNotFoundError(f"[Errno 2] No such file or directory: 'runs/sim/inst{instance}/pid.json'")
+
+    monkeypatch.setattr(mi, "stop", _raise_file_not_found)
+
+    swept = mi.sweep_stale_instances()
+
+    assert swept == [{"instance": 0, "pid": 1, "result": "already_stopped_concurrently"}]
+
+
+def test_sweep_stale_instances_still_reports_a_normal_stop_result(monkeypatch):
+    import autofly_ue5.sim.process as mi
+    from autofly_ue5.sim.process import SimProcess
+
+    fake = SimProcess(
+        pid=2, pgid=2, instance=1, topics_port=9001, services_port=9002,
+        cmd=["fake"], log_path="/dev/null", started_unix=0.0,
+    )
+    monkeypatch.setattr(mi, "own_running_instances", lambda: [fake])
+    monkeypatch.setattr(mi, "stop", lambda instance: "terminated")
+
+    assert mi.sweep_stale_instances() == [{"instance": 1, "pid": 2, "result": "terminated"}]

@@ -23,7 +23,6 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-import threading
 import time
 from pathlib import Path
 from typing import Callable
@@ -32,11 +31,18 @@ import numpy as np
 from stable_baselines3.common.vec_env import SubprocVecEnv
 
 from autofly_ue5.expert.env import AutoFlyEnv
+from autofly_ue5.expert.seeds import WORKER_SEED_STRIDE
+from autofly_ue5.expert.vec import (  # noqa: F401  (moved from this script; names kept for its callers)
+    LAUNCH_REPLY_TIMEOUT_S,
+    VEC_ENV_CLOSE_TIMEOUT_S,
+    call_reset_with_timeout,
+    teardown,
+)
 from autofly_ue5.gpu import gpu_memory_mib
 from autofly_ue5.paths import ROOT, RUNS_DIR
 from autofly_ue5.scenes.model import Bounds, Instance, Layout, SceneFile, load_scene_file
 from autofly_ue5.sim.airsim_backend import ProjectAirSimSimulator
-from autofly_ue5.sim.process import instance_dir, own_running_instances, route_client_log, stop
+from autofly_ue5.sim.process import instance_dir, route_client_log, sweep_stale_instances
 from autofly_ue5.validate.engine_check import boot_id, count_device_lost, xid_count
 
 MAP_PATH = "/Game/AutoFly/Maps/S01"
@@ -48,23 +54,9 @@ VRAM_BUDGET_MIB = 20_000
 # guard between stagger steps, not as the recorded measurement (that comes from live nvidia-smi samples).
 EST_PER_INSTANCE_MIB = 1_882
 VRAM_SAMPLE_INTERVAL_S = 15.0
-WORKER_SEED_STRIDE = 1_000_000
 MAX_ATTEMPTS_PER_N = 2
 VRAM_DRAIN_TIMEOUT_S = 30.0
 VRAM_DRAIN_MARGIN_MIB = 400
-# SB3's SubprocVecEnv.close() joins each worker process; if a worker died on an uncaught exception (e.g.
-# an AutoFlyEnv.reset() failure -- measured live: a spawn() material error) that join can hang far longer
-# than any teardown has a right to. A bounded background thread protects the one thing that actually
-# matters here -- getting the real Unreal process stopped -- from an indefinitely stuck Python teardown.
-VEC_ENV_CLOSE_TIMEOUT_S = 20.0
-# How long to wait for one worker's staggered reset() to reply before treating it as hung. Measured live:
-# an uncaught exception inside a worker's reset() does NOT make the worker process exit -- the
-# projectairsim client leaves a non-daemon background thread running, so the crashed worker blocks
-# forever in interpreter shutdown, its pipe never reaches EOF, and a plain env_method() call (which does
-# an unbounded remote.recv()) hangs forever right along with it, never reaching this script's own
-# try/finally. Polling with a timeout is the only way this orchestrator can guarantee it reaches
-# teardown. 300s is generous next to every launch measured so far (single digits to tens of seconds).
-LAUNCH_REPLY_TIMEOUT_S = 300.0
 # How long to wait for one worker's reply to a single step() before treating it as hung. Measured live:
 # the same non-daemon-thread hang that afflicted the staggered launch also happens mid-measurement, not
 # just at launch -- a worker's step() auto-reset-on-done can hit a real, documented-but-rare simulator
@@ -143,29 +135,6 @@ def make_env_fn(scene: SceneFile, layout: Layout, instance: int, seed_base: int)
     return _make
 
 
-def sweep_stale_instances() -> list[dict]:
-    """Stop any simulator this project owns that is still recorded as running. A crashed earlier run can
-    leave Unreal children holding VRAM, and launch_process() then refuses with "already running" or "port
-    already in use".
-
-    Tolerates a live-measured TOCTOU race (Task 8 shakedown, 2026-09-16): `stop()` (autofly_ue5/sim/process.py,
-    closed for editing) checks the pid file exists, then later unconditionally unlinks it -- if a second,
-    concurrent path stops the SAME instance in between (e.g. this function called once per vec env while
-    each vec env's own close() also stops its own instance independently -- exactly Task 8's train.py,
-    which tears down a training and an eval simulator separately), that unlink() can raise
-    FileNotFoundError. The pid file being gone is proof the instance is already stopped, not a real
-    failure, so this is caught and recorded rather than left to crash the caller.
-    """
-    swept = []
-    for sp in own_running_instances():
-        try:
-            result = stop(sp.instance)
-        except FileNotFoundError:
-            result = "already_stopped_concurrently"
-        swept.append({"instance": sp.instance, "pid": sp.pid, "result": result})
-    return swept
-
-
 def wait_for_vram_drop(baseline_mib: int, margin_mib: int = VRAM_DRAIN_MARGIN_MIB, timeout_s: float = VRAM_DRAIN_TIMEOUT_S) -> int:
     """Poll until VRAM has drained back near `baseline_mib` (a torn-down UE process can take a moment to
     release its allocation) or `timeout_s` elapses; returns the last-seen used_mib either way."""
@@ -177,63 +146,7 @@ def wait_for_vram_drop(baseline_mib: int, margin_mib: int = VRAM_DRAIN_MARGIN_MI
     return used
 
 
-def teardown(vec_env: SubprocVecEnv | None) -> list[dict]:
-    """Close every worker (which closes its Simulator, which stops its process), then sweep stale
-    instances as a belt-and-braces check -- so a failed measurement never leaves processes holding VRAM.
-
-    vec_env.close() runs in a background thread with a hard timeout: measured live, it can hang
-    indefinitely joining a worker that already died on an uncaught exception. Whether or not that thread
-    finishes, sweep_stale_instances() below stops the actual Unreal process directly via our own pidfile
-    bookkeeping (autofly_ue5.sim.process), independent of SB3's cooperative shutdown.
-    """
-    if vec_env is not None:
-        close_error: list[BaseException] = []
-
-        def _do_close() -> None:
-            try:
-                vec_env.close()
-            except Exception as err:  # a dead worker's pipe can raise on close(); still sweep below
-                close_error.append(err)
-
-        closer = threading.Thread(target=_do_close, daemon=True)
-        closer.start()
-        closer.join(VEC_ENV_CLOSE_TIMEOUT_S)
-        if closer.is_alive():
-            print(f"WARNING: vec_env.close() did not return within {VEC_ENV_CLOSE_TIMEOUT_S}s; "
-                  f"abandoning it and force-killing worker processes directly", file=sys.stderr)
-        elif close_error:
-            err = close_error[0]
-            print(f"WARNING: vec_env.close() raised {type(err).__name__}: {err}", file=sys.stderr)
-        # Belt-and-braces regardless of the above: a worker that crashed without exiting (measured live --
-        # see LAUNCH_REPLY_TIMEOUT_S) will never respond to close() and must be killed directly, or it
-        # leaks a process every attempt. SIGKILL is unconditional, unlike anything cooperative.
-        for i, proc in enumerate(getattr(vec_env, "processes", [])):
-            try:
-                if proc.is_alive():
-                    print(f"WARNING: worker {i} (pid {proc.pid}) still alive after close(); killing it", file=sys.stderr)
-                    proc.kill()
-                    proc.join(5.0)
-            except Exception as err:
-                print(f"WARNING: could not kill worker {i}: {type(err).__name__}: {err}", file=sys.stderr)
-    return sweep_stale_instances()
-
-
-def _call_reset_with_timeout(vec_env: SubprocVecEnv, index: int, timeout_s: float = LAUNCH_REPLY_TIMEOUT_S) -> None:
-    """Like `vec_env.env_method("reset", indices=[index])`, but bounded.
-
-    SB3's env_method() does an unbounded `remote.recv()`. That is safe only if a crashed worker always
-    exits promptly; measured live, it does not (see LAUNCH_REPLY_TIMEOUT_S's comment), so this script
-    polls with a timeout instead, specifically so a hung worker cannot prevent this orchestrator from
-    reaching its own teardown path.
-    """
-    remote = vec_env.remotes[index]
-    remote.send(("env_method", ("reset", (), {})))
-    if not remote.poll(timeout_s):
-        raise TimeoutError(
-            f"worker {index} did not reply to reset() within {timeout_s}s -- it likely crashed without "
-            f"exiting (check the job log for a worker traceback) and must be torn down forcibly"
-        )
-    remote.recv()
+_call_reset_with_timeout = call_reset_with_timeout  # the name this script used before the move
 
 
 def _random_actions(vec_env: SubprocVecEnv, n: int) -> np.ndarray:

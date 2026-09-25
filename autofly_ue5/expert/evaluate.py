@@ -27,7 +27,7 @@ from typing import Any
 # Reused so a clean eval run's fault_counts still show an explicit 0 for every known hazard (not just the
 # ones actually seen) -- exactly the same reasoning as train.py's own KNOWN_FAULT_NAMES-seeded counters, so
 # "no faults happened" is distinguishable from "counting was silently broken" here too.
-from autofly_ue5.expert.train import KNOWN_FAULT_NAMES
+from autofly_ue5.expert.faults import KNOWN_FAULT_NAMES
 
 OUTCOME_KEYS = ("success", "collision", "timeout", "out_of_bounds")
 

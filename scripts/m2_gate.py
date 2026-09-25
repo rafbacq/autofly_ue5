@@ -16,11 +16,11 @@ comparison is apples-to-apples. Priority order (brief's own, used when a run is 
 (a) best_model deterministic, (b) final deterministic, (c) best_model stochastic, (d) final stochastic --
 see `combo_order`.
 
-Reuses, rather than reinvents: `autofly_ue5.expert.train.ResilientAutoFlyEnv` for the five documented
+Reuses, rather than reinvents: `autofly_ue5.expert.resilient.ResilientAutoFlyEnv` for the documented
 recoverable backend hazards (`CameraPoseError`, `StepTimingError`, `StaleStateError`,
 `CommandTimeoutError`, `pynng.exceptions.Timeout`); `autofly_ue5.expert.evaluate.evaluate_policy_episodes`
-for the actual episode loop and its fault-vs-policy-outcome separation; `scripts.measure_instances`'s
-`sweep_stale_instances`/`teardown` for GPU-safe startup/shutdown; `autofly_ue5.expert.train.sha256_of` for
+for the actual episode loop and its fault-vs-policy-outcome separation; `autofly_ue5.sim.process.sweep_stale_instances`
+and `autofly_ue5.expert.vec.teardown` for GPU-safe startup/shutdown; `autofly_ue5.expert.train.sha256_of` for
 checkpoint provenance.
 
 Writes `docs/gates/m2_gate.json` incrementally -- after EVERY (checkpoint, condition) combination, not
@@ -30,8 +30,7 @@ non-empty record: an un-attempted combination is marked `"status": "not_run"`, n
 client leaves a non-daemon thread alive that blocks normal interpreter shutdown forever.
 
     env -u PYTHONPATH .venv/bin/python -m scripts.m2_gate --episodes 200 --out docs/gates/m2_gate.json
-    # (also runnable as `env -u PYTHONPATH .venv/bin/python scripts/m2_gate.py ...` -- see the sys.path
-    # bootstrap below, needed because this file itself lives inside the `scripts` package it imports from)
+    # (also runnable as `env -u PYTHONPATH .venv/bin/python scripts/m2_gate.py ...`)
 """
 
 from __future__ import annotations
@@ -39,13 +38,8 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-# Bootstrap: this file lives inside `scripts/`, the very top-level package it needs to import
-# (`scripts.measure_instances`) -- a direct `python scripts/m2_gate.py` invocation puts `scripts/` itself
-# (not the project root) at sys.path[0], which makes `import scripts.measure_instances` fail with
-# ModuleNotFoundError (measured live while writing this module). `train.py` sidesteps this by living
-# inside the `autofly_ue5` package and always being invoked via `-m` (which adds the CURRENT directory,
-# not the module's own), but this script's own docstring above (and the Task 9 brief) documents both a
-# bare `scripts/m2_gate.py` invocation and a `-m scripts.m2_gate` one, so this must work either way.
+# Bootstrap: a direct `python scripts/m2_gate.py` invocation puts `scripts/` (not the project root) at sys.path[0];
+# putting the root first makes this checkout's `autofly_ue5` win even where the package is not installed editable.
 _ROOT = Path(__file__).resolve().parents[1]
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
@@ -65,21 +59,15 @@ from autofly_ue5.expert.evaluate import (  # noqa: E402
     evaluate_policy_episodes,
     fault_summary_delta,
 )
-from autofly_ue5.expert.train import (  # noqa: E402
-    EVAL_SEED_BASE,
-    KNOWN_FAULT_NAMES,
-    ResilientAutoFlyEnv,
-    sha256_of,
-    scene_and_layout as _scene_and_layout,
-)
+from autofly_ue5.expert.faults import KNOWN_FAULT_NAMES  # noqa: E402
+from autofly_ue5.expert.resilient import ResilientAutoFlyEnv  # noqa: E402
+from autofly_ue5.expert.seeds import EVAL_SEED_BASE  # noqa: E402
+from autofly_ue5.expert.train import sha256_of, scene_and_layout as _scene_and_layout  # noqa: E402
+from autofly_ue5.expert.vec import teardown  # noqa: E402
 from autofly_ue5.paths import ROOT, RUNS_DIR  # noqa: E402
 from autofly_ue5.sim.airsim_backend import ProjectAirSimSimulator  # noqa: E402
-from autofly_ue5.sim.process import instance_dir, route_client_log  # noqa: E402
+from autofly_ue5.sim.process import instance_dir, route_client_log, sweep_stale_instances  # noqa: E402
 from autofly_ue5.validate.engine_check import boot_id, count_device_lost, xid_count  # noqa: E402
-
-# Reused, not reinvented (module docstring): the exact bounded-wait/force-teardown machinery Task 7 wrote
-# and Task 8 already relies on.
-from scripts.measure_instances import sweep_stale_instances, teardown  # noqa: E402
 
 # --------------------------------------------------------------------------------------------------------
 # The gate itself: a pure function of the numbers, so it is trivially unit-testable without a live run.

@@ -39,4 +39,4 @@ bash scripts/build_editor.sh                                 # BlocksEditor Linu
 ```
 
 `bash scripts/setup_venv.sh --relock` rebuilds the lock from `requirements.txt`; `--recreate` rebuilds `.venv` from
-scratch.
+scratch. The test suite builds the s01 layout itself (`tests/conftest.py`) if `runs/levels/` is empty.

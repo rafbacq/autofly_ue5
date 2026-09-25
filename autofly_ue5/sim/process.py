@@ -250,6 +250,27 @@ def own_running_instances(run_root: Path = SIM_RUN_DIR) -> list[SimProcess]:
     return running
 
 
+def sweep_stale_instances() -> list[dict]:
+    """Stop any simulator this project owns that is still recorded as running. A crashed earlier run can
+    leave Unreal children holding VRAM, and launch_process() then refuses with "already running" or "port
+    already in use".
+
+    Tolerates a live-measured TOCTOU race (Task 8 shakedown, 2026-09-16): `stop()` checks the pid file exists,
+    then later unconditionally unlinks it -- if a second, concurrent path stops the SAME instance in between
+    (e.g. this function called once per vec env while each vec env's own close() also stops its own instance
+    independently), that unlink() can raise FileNotFoundError. The pid file being gone is proof the instance is
+    already stopped, not a real failure, so this is caught and recorded rather than left to crash the caller.
+    """
+    swept = []
+    for sp in own_running_instances():
+        try:
+            result = stop(sp.instance)
+        except FileNotFoundError:
+            result = "already_stopped_concurrently"
+        swept.append({"instance": sp.instance, "pid": sp.pid, "result": result})
+    return swept
+
+
 def handshake(ports: SimPorts, timeout_s: float = 120.0) -> float:
     """Connect a Project AirSim client, fetch the topic list and disconnect; retried until timeout."""
     from projectairsim import ProjectAirSimClient
