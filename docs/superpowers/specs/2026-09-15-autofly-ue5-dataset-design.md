@@ -163,14 +163,17 @@ One JSON file per scene in `scenes/`, validated by a schema in `autofly_ue5/scen
 The generator expands a scene file into concrete obstacle instances with the file's seed. A 2D occupancy check then
 rejects layouts where any start cell cannot reach any target cell with at least 1.0 m clearance to inflated obstacle
 footprints. The check additionally runs inside a corridor around the start-target line, not the whole scene, so a
-route must be able to cross the obstacle field itself rather than merely detour around it near the perimeter. The
+route must stay near the obstacle field rather than detour through open space far outside it. The
 corridor's half-width is `p_extent + 2 * inflate_m`, clipped to the scene bounds, where `p_extent` is the line's
 perpendicular extent -- the farthest any obstacle's surface reaches from the centreline -- and `inflate_m` is the
 same `drone_radius_m + clearance_m` margin the occupancy grid already inflates obstacles by. The extra
 `2 * inflate_m` exists because a corridor sized to the line alone can be severed by a single obstacle sitting at its
 edge that a real flight would simply fly around, which made the original rule reject layouts that are trivially
 flyable (see `autofly_ue5/scenes/reachability.py`). The check only guarantees solvable layouts; it never produces
-actions. `test_seen` scenes reuse a train scene's file with a different seed.
+actions. What it proves is opposite-edge *solvability*, not a route through the field (2026-09-24 review): every
+obstacle's inflated footprint ends by `p_extent + inflate_m`, so the corridor always keeps a free lane `inflate_m`
+wide beside the whole field, and even a fully sealed field (one solid block) passes when that lane is free. See
+§13 for the M4 item. `test_seen` scenes reuse a train scene's file with a different seed.
 
 ### 6.3 The 12 scenes (from Fig. 8)
 
@@ -437,4 +440,9 @@ Each milestone stops for the user's go-ahead before the next one starts.
 - **Success distance:** real episodes end ≈ 7.2 m from the state-0 reference while the paper says 5 m; M3 checks
   whether distance is measured to the object's surface or centre.
 - **d_col** for the collision metric is not given in the paper; M6 picks a value and records it.
+- **Through-field routes (M4):** the reachability rule (§6.2) proves a crossing is solvable but not that it passes
+  through the obstacle field; a sealed field passes if the free lane beside it is open. Enforcing through-field
+  routes needs a difficulty/detour metric (e.g. shortest-path length through vs. around the field), designed when
+  M4 replaces the circle-only occupancy grid for the richer asset library. s01's jittered pillar grid is not
+  affected: its gaps are what episodes cross.
 - **AutoFly checkpoint:** not public as of 2026-09-15. If released, its ~48 % SR, out-of-distribution scenes, forward-speed floor and unknown licence limit it to a separately tagged optional source (§8.1).

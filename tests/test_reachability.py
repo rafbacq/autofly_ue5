@@ -122,11 +122,10 @@ def test_wall_confined_to_the_middle_is_accepted_under_r14():
     # by 2*inflate_m -- one inflated obstacle's width of room on each side -- which is exactly enough to round
     # the two ends of this short wall: a route can go from the x_min band, out to |y| just past the wall's
     # inflated end, across x = 0, and back to the x_max band, all inside the (now wider) corridor. That route
-    # genuinely threads the corridor rather than detouring around the whole obstacle field near the scene's
-    # perimeter, so accepting it is honest -- unlike the OLD start_band-derived corridor (fixed at |y| < 29),
-    # whose acceptance of this same layout rested on a detour through open space far outside any obstacle's
-    # reach. (That contrast no longer applies to this specific case; the crossing rule's bite is still
-    # demonstrated by the full-width wall and count=1 tests above.)
+    # rounds the wall -- here the whole obstacle field -- within inflate_m of it, rather than through open space
+    # far away as the OLD start_band-derived corridor (fixed at |y| < 29) allowed. It does not pass THROUGH the
+    # field: R14's corridor always leaves such a lane beside it (see the solid-block test below), so the rule
+    # proves solvability only.
     wall = tuple(_post(f"w{k}", 0.0, -10.0 + 0.25 * k) for k in range(81))  # x = 0, from y = -10 to y = 10
     layout = Layout("t", 0, BOUNDS, wall)
     result = check_reachability(layout, (2.0, 6.0), (0.0, 3.0))
@@ -146,3 +145,14 @@ def test_corridor_half_width_is_p_extent_plus_twice_inflate_clipped_to_bounds():
     assert result.p_extent_m == {"x": pytest.approx(5.5), "y": pytest.approx(33.5)}
     assert result.corridor_half_width_m["x"] == pytest.approx(5.5 + 2 * inflate)  # well inside the 35 m bound
     assert result.corridor_half_width_m["y"] == pytest.approx(35.0)  # 33.5 + 2*1.4 = 36.3 clipped to the bound
+
+
+def test_a_solid_obstacle_block_passes_the_crossing_rule_which_proves_solvability_only():
+    # C5 (2026-09-24 review), a documented limitation, pinned so it cannot silently change: the crossing corridor is
+    # p_extent + 2*inflate wide, and every obstacle's inflated footprint ends by p_extent + inflate, so a free lane
+    # `inflate` wide always runs beside the field from edge to edge. The rule therefore proves the crossing is
+    # solvable; it does not force a route THROUGH the field -- even a solid 54 x 54 m block is accepted.
+    block = tuple(_post(f"b{i}_{j}", float(i), float(j), radius=1.0) for i in range(-26, 27) for j in range(-26, 27))
+    result = check_reachability(Layout("t", 0, BOUNDS, block), (2.0, 6.0), (0.0, 3.0))
+    assert result.ok, result.reason
+    assert result.corridor_half_width_m["y"] - (result.p_extent_m["y"] + result.inflate_m) == pytest.approx(result.inflate_m)

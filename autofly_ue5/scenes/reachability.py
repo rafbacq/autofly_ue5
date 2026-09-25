@@ -5,12 +5,19 @@ distance to the NEAREST of the four edges (spec §6.2). This alone accepts any l
 free, including a full-width wall down the centre of the scene, because a route can always detour around the
 obstacle field near the perimeter instead of crossing it.
 
-Crossing rule (R13, amended by R14): a route must additionally be able to cross the scene through the
-obstacle field itself. For each pair of opposite edges, the corridor is derived from the layout's OWN
-obstacle extent along the perpendicular axis -- p_extent is the farthest any obstacle's surface reaches from
-the centreline -- rather than from start_band. Tying the corridor to the obstacles' own footprint means a
-route cannot evade the field by detouring through open space that the obstacles never reached, regardless of
-the scene's margin, jitter or object sizes.
+Crossing rule (R13, amended by R14): for each pair of opposite edges, every free start-band cell inside a crossing
+corridor must reach the opposite target band without leaving that corridor. The corridor is derived from the
+layout's OWN obstacle extent along the perpendicular axis -- p_extent is the farthest any obstacle's surface reaches
+from the centreline -- rather than from start_band, so it keeps a route near the obstacles instead of letting it
+detour through open space far outside their reach, regardless of the scene's margin, jitter or object sizes.
+
+What the rule proves, and what it does not (2026-09-24 review, C5): it proves opposite-edge *solvability*. Every
+obstacle's inflated footprint ends by p_extent + inflate_m, and the corridor extends to p_extent + 2 * inflate_m, so
+the corridor always contains a free lane at least inflate_m wide beside the whole field, edge to edge (unless
+clipped by the scene bounds). A route may therefore go around the field inside the corridor rather than through
+it: a fully sealed field -- even one solid block (tests/test_reachability.py) -- passes when that lane is free. The
+check only catches start cells trapped in pockets. Forcing routes through the field needs a difficulty/detour
+metric, an M4 design item (spec §13).
 
 R14: the corridor's half-width is `p_extent + 2 * inflate_m` (clipped to the scene bounds), not p_extent alone.
 `inflate_m` is the same `drone_radius_m + clearance_m` that `occupancy` already blocks by, so this is exactly
@@ -130,8 +137,10 @@ def corridor_half_widths(bounds: Bounds, instances: tuple[Instance, ...], inflat
 
     The half-width is `p_extent + 2 * inflate_m`, clipped to the scene bounds: one inflated obstacle's width of
     room on each side of the obstacles' own extent, so an isolated obstacle cannot occupy -- and sever -- its
-    own corridor. `axis` 'x' bounds the y_min/y_max corridor (uses |x|); 'y' bounds the x_min/x_max corridor
-    (uses |y|).
+    own corridor. The same room means the corridor always holds a free lane at least `inflate_m` wide beside the
+    field (unclipped case), so the corridor bounds how far a route may stray, not whether it enters the field (see
+    the module docstring). `axis` 'x' bounds the y_min/y_max corridor (uses |x|); 'y' bounds the x_min/x_max
+    corridor (uses |y|).
     """
     p_extent = {axis: _obstacle_extent(instances, axis) for axis in ("x", "y")}
     half_width = {axis: min(p_extent[axis] + 2 * inflate_m, _bound_limit(bounds, axis)) for axis in ("x", "y")}
