@@ -21,6 +21,23 @@ class SessionNotResetError(RuntimeError):
     """
 
 
+class SetPoseError(RuntimeError):
+    """The simulator refused a set_pose() (teleport) request."""
+
+
+class ResetPoseError(RuntimeError):
+    """reset() settled somewhere other than the requested start pose (C9, 2026-09-24 review: the recorded M2 gate had
+    15 episodes whose drone was >= 4 m from its start, all right after a collision episode)."""
+
+
+class KinematicsJumpError(RuntimeError):
+    """Between two consecutive steps the drone moved farther than it physically can -- a teleport, not flight."""
+
+
+class StartCollisionError(RuntimeError):
+    """An episode's first observation (right after reset and spawning) already reports a collision."""
+
+
 @dataclass(frozen=True)
 class Pose:
     x: float

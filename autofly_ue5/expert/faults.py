@@ -21,12 +21,17 @@ from pynng.exceptions import ConnectionReset as NngConnectionReset
 from autofly_ue5.expert.episode import EpisodeSetupError
 from autofly_ue5.sim.airsim_backend import CameraPoseError, CommandTimeoutError, StaleStateError, StepTimingError
 from autofly_ue5.sim.process import SimExitedError, SimReadyTimeout
+from autofly_ue5.sim.types import KinematicsJumpError, ResetPoseError, SetPoseError, StartCollisionError
 
-FAULT_ERRORS_STEP = (CameraPoseError, StepTimingError, StaleStateError, CommandTimeoutError, NngTimeout, NngConnectionReset)
+FAULT_ERRORS_STEP = (CameraPoseError, StepTimingError, StaleStateError, CommandTimeoutError, NngTimeout, NngConnectionReset,
+                     KinematicsJumpError)
+# An episode that did not start where it should (C9): retried like any reset fault, so the gate replays the seed and
+# training never sees it. Raised only during reset(), so not step faults.
+FAULT_ERRORS_START = (ResetPoseError, StartCollisionError, SetPoseError)
 # A launch that failed: retrying reset() on the same slot cannot help, so the wrapper goes straight to its next
 # relaunch round instead of spending max_reset_attempts launch timeouts on it.
 FAULT_ERRORS_LAUNCH = (SimExitedError, SimReadyTimeout)
-FAULT_ERRORS_RESET = FAULT_ERRORS_STEP + (EpisodeSetupError,) + FAULT_ERRORS_LAUNCH
+FAULT_ERRORS_RESET = FAULT_ERRORS_STEP + FAULT_ERRORS_START + (EpisodeSetupError,) + FAULT_ERRORS_LAUNCH
 # Every fault name the resilient wrapper knows how to recover from. Seeded into every fault/recovery counter dict
 # (see ResilientAutoFlyEnv.__init__, combine_fault_summaries) so the run record always shows an explicit 0 for a
 # hazard that never fired, rather than omitting the key -- a 12-hour run that never faults must be distinguishable

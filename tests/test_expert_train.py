@@ -22,7 +22,12 @@ from tests.test_expert_episode import scene_and_layout
 # All five step-time hazards ResilientAutoFlyEnv must recover from -- the spec's four documented siblings
 # plus the raw NNG transport timeout found live during this task's own shakedown (train.py's docstring has
 # the full story). Shared here so both parametrized tests below stay in sync with train.py's own set.
-ALL_STEP_FAULTS = [CameraPoseError, StepTimingError, StaleStateError, CommandTimeoutError, NngTimeout, NngConnectionReset]
+from autofly_ue5.sim.types import KinematicsJumpError, ResetPoseError, SetPoseError, StartCollisionError
+
+ALL_STEP_FAULTS = [CameraPoseError, StepTimingError, StaleStateError, CommandTimeoutError, NngTimeout, NngConnectionReset,
+                   KinematicsJumpError]
+# Raised only while an episode is being set up (C9): a wrong start pose, a start in contact, a refused teleport.
+RESET_ONLY_FAULTS = [ResetPoseError, StartCollisionError, SetPoseError]
 # pynng's own errno for each exception it raises (pynng.exceptions.EXCEPTION_MAP).
 _NNG_ERRNO = {NngTimeout: 5, NngConnectionReset: 19}
 
@@ -843,4 +848,13 @@ def test_an_interrupted_evaluation_is_logged_and_training_continues(tmp_path):
     assert model.num_timesteps == 6, "a failed evaluation must not end training"
     assert cb.interrupted_evaluations == 2
     assert not (tmp_path / "eval_logs" / "evaluations.npz").exists()
+
+
+@pytest.mark.parametrize("error", RESET_ONLY_FAULTS)
+def test_the_wrapper_retries_an_episode_that_did_not_start_where_it_should(error):
+    factory = _sequenced_factory([{"fail_on_reset_calls": (1,), "error": error}])
+    env = _make_resilient(factory, max_reset_attempts=3, max_relaunch_attempts=1)
+    obs, _ = env.reset(seed=1)
+    assert env.observation_space.contains(obs)
+    assert env.fault_counts[error.__name__] == 1 and env.recovered_counts[error.__name__] == 1
 

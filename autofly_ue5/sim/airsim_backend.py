@@ -9,7 +9,7 @@ import time
 from dataclasses import dataclass
 from pathlib import Path
 
-from autofly_ue5.frames import body_to_ned, quat_to_yaw, yaw_to_quat
+from autofly_ue5.frames import body_to_ned, quat_to_yaw, wrap_pi, yaw_to_quat
 from autofly_ue5.gpu import check_gpu_for_launch, gpu_memory_mib
 from autofly_ue5.paths import CONFIGS_DIR, PACKAGED_BINARY
 from autofly_ue5.sim.decode import decode_depth, decode_rgb
@@ -31,10 +31,13 @@ from autofly_ue5.sim.sync import FrameCollector
 from autofly_ue5.sim.types import (
     CONTROL_DT_S,
     STEP_NS,
+    KinematicsJumpError,
     ObjectNotFoundError,
     Observation,
     Pose,
+    ResetPoseError,
     SessionNotResetError,
+    SetPoseError,
     dt_to_ns,
 )
 
@@ -96,6 +99,9 @@ class ProjectAirSimSimulator:
         command_timeout_s: float = 10.0,
         camera_offset_m: float = 0.40,
         camera_pose_tolerance_m: float = 0.10,
+        reset_position_tolerance_m: float = 0.3,  # M1 measured millimetres after a reset; the phantoms were >= 4 m off
+        reset_yaw_tolerance_rad: float = 0.1,
+        max_speed_m_s: float = 10.0,  # 5x the 2 m/s command limit: legitimate gate steps stayed under 0.4 m
     ) -> None:
         self._scene_config = scene_config
         self._config_dir = Path(config_dir)
@@ -112,6 +118,9 @@ class ProjectAirSimSimulator:
         self._command_timeout_s = command_timeout_s
         self._camera_offset_m = camera_offset_m
         self._camera_pose_tolerance_m = camera_pose_tolerance_m
+        self._reset_position_tolerance_m = reset_position_tolerance_m
+        self._reset_yaw_tolerance_rad = reset_yaw_tolerance_rad
+        self._max_speed_m_s = max_speed_m_s
         self._frames = FrameCollector(FRAME_KEYS)
         self._collisions = CollisionLog()
         self._loop: asyncio.AbstractEventLoop | None = None
@@ -222,7 +231,7 @@ class ProjectAirSimSimulator:
 
     def _teleport(self, pose: Pose) -> None:
         if not self._drone.set_pose(self._pas_pose(pose), reset_kinematics=True):
-            raise RuntimeError(f"set_pose({pose}) failed")
+            raise SetPoseError(f"set_pose({pose}) failed")
 
     def reset(self, pose: Pose) -> Observation:
         self._require_connected()
@@ -237,6 +246,15 @@ class ProjectAirSimSimulator:
         for _ in range(self._settle_steps):
             self.command_velocity(0.0, 0.0, 0.0)
             self._step_impl()
+        # Verify the drone is where it was asked to be (C9): a set_pose that is accepted but not applied would
+        # otherwise start the episode wherever the drone was left -- the recorded gate's one-step "collisions".
+        got = self._last_obs.pose
+        position_error = math.dist((got.x, got.y, got.z), (pose.x, pose.y, pose.z))
+        yaw_error = abs(wrap_pi(got.yaw - pose.yaw))  # wrapped: +pi and -pi are the same heading
+        if position_error > self._reset_position_tolerance_m or yaw_error > self._reset_yaw_tolerance_rad:
+            raise ResetPoseError(
+                f"reset to {pose} settled at {got}: {position_error:.3f} m and {yaw_error:.3f} rad off "
+                f"(tolerances {self._reset_position_tolerance_m} m, {self._reset_yaw_tolerance_rad} rad)")
         self._episode_start_ns = self._t_ns
         self._collided = False
         self._last_obs = dataclasses.replace(self._last_obs, collided=False, step_collisions=())
@@ -276,7 +294,20 @@ class ProjectAirSimSimulator:
                 "step() called before reset() on this connection: frame 0 of a session is corrupt "
                 "(spec §7.1) and only reset()'s own steps may consume it"
             )
-        return self._step_impl(dt)
+        before = self._last_obs.pose if self._last_obs is not None else None
+        target = self._step_impl(dt)
+        # A teleport is not flight (C9). Checked on collision steps too: the camera check above them is skipped when
+        # a collision arrived, and the recorded phantoms were all reported as collisions. reset()'s own teleports
+        # go through _step_impl and never reach this.
+        if before is not None:
+            after = self._last_obs.pose
+            moved = math.hypot(after.x - before.x, after.y - before.y)
+            limit = self._max_speed_m_s * dt
+            if moved > limit:
+                raise KinematicsJumpError(
+                    f"the drone moved {moved:.2f} m horizontally in one {dt} s step (limit {limit:.2f} m at "
+                    f"{self._max_speed_m_s} m/s): from ({before.x:.2f}, {before.y:.2f}) to ({after.x:.2f}, {after.y:.2f})")
+        return target
 
     def _step_impl(self, dt: float = CONTROL_DT_S) -> int:
         dt_ns = dt_to_ns(dt, STEP_NS)

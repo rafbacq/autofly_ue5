@@ -446,3 +446,61 @@ def test_both_simulators_raise_the_same_reset_precondition_error():
     real.command_velocity(0.0, 0.0, 0.0)
     with pytest.raises(TypesSessionNotResetError):
         real.step()
+
+
+# ------------------------------------------------------------------------------------------------------
+# C9 (2026-09-24 review): an episode must start where it was asked to, and the drone must not teleport.
+# The recorded M2 gate had 15 one-step "collisions" whose drone was >= 4 m from its start -- all right after a
+# collision episode (15 of 73 such resets, 0 of 723 others). They slipped through because the camera check is
+# skipped on collision steps, so these checks deliberately are not.
+# ------------------------------------------------------------------------------------------------------
+def _collision_event(t_ns):
+    return {"type": "collision", "sim_time_ns": t_ns, "object_name": "obs_0003",
+            "impact_point": {"x": 0.4, "y": 0.0, "z": -2.0}, "normal": {"x": -1.0, "y": 0.0, "z": 0.0}}
+
+
+def test_reset_raises_when_the_drone_does_not_arrive_at_the_requested_pose():
+    from autofly_ue5.sim.types import ResetPoseError
+
+    sim = make_sim(mark_reset=False)
+    sim._drone.set_pose = lambda pose, reset_kinematics=True: True  # accepted, never applied
+    with pytest.raises(ResetPoseError):
+        sim.reset(Pose(-31.0, -25.0, -2.0, 0.0))
+
+
+def test_reset_to_a_yaw_of_pi_is_not_a_pose_error():
+    # +pi and -pi are the same heading; a raw difference would call this a 6.28 rad error.
+    sim = make_sim(mark_reset=False)
+    obs = sim.reset(Pose(-31.0, -25.0, -2.0, math.pi))
+    assert abs(abs(obs.pose.yaw) - math.pi) < 1e-6
+
+
+def test_a_position_jump_between_steps_raises_even_on_a_collision_step():
+    from autofly_ue5.sim.types import KinematicsJumpError
+
+    sim = make_sim(mark_reset=False)
+    sim.reset(Pose(0.0, 0.0, -2.0, 0.0))
+    drone, integrate = sim._drone, sim._drone.integrate
+    drone.integrate = lambda dt: (integrate(dt), setattr(drone, "x", drone.x + 5.0))
+    sim._world.pending_events = [_collision_event(sim._t_ns + 200_000_000)]
+    sim.command_velocity(0.0, 0.0, 0.0)
+    with pytest.raises(KinematicsJumpError):
+        sim.step()
+
+
+def test_flying_at_the_commanded_speed_limit_is_not_a_jump():
+    sim = make_sim(mark_reset=False)
+    sim.reset(Pose(0.0, 0.0, -2.0, 0.0))
+    for _ in range(10):
+        sim.command_velocity(2.0, 0.5, 0.0)
+        sim.step()
+    assert sim.observe().pose.x > 3.0
+
+
+def test_a_refused_set_pose_is_a_typed_error():
+    from autofly_ue5.sim.types import SetPoseError
+
+    sim = make_sim(mark_reset=False)
+    sim._drone.set_pose = lambda pose, reset_kinematics=True: False
+    with pytest.raises(SetPoseError):
+        sim.reset(Pose(-31.0, -25.0, -2.0, 0.0))

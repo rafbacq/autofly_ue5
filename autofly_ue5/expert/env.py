@@ -21,7 +21,7 @@ from autofly_ue5.expert.obs import DEPTH_SIZE, VECTOR_DIM, encode, target_geomet
 from autofly_ue5.expert.reward import Outcome, RewardConfig, evaluate
 from autofly_ue5.scenes.model import Layout, SceneFile
 from autofly_ue5.sim.protocol import Simulator
-from autofly_ue5.sim.types import CONTROL_DT_S
+from autofly_ue5.sim.types import CONTROL_DT_S, StartCollisionError
 
 
 class AutoFlyEnv(gym.Env):
@@ -132,6 +132,9 @@ class AutoFlyEnv(gym.Env):
         sim.command_velocity(0.0, 0.0, 0.0)
         sim.step(CONTROL_DT_S)
         obs = sim.observe()
+        if obs.collided:
+            # An episode that starts in contact is lost before its first action (C9): not a policy outcome.
+            raise StartCollisionError(f"the episode's first observation already reports a collision at {obs.pose}")
 
         self._prev_dist, _, _ = target_geometry(obs.pose, setup.target_xy_z)
         self._step_index = 0

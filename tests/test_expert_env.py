@@ -258,3 +258,21 @@ def test_a_failed_launch_is_not_kept():
     assert env._sim is None, "a simulator that never launched must not be reused by the next reset()"
     obs, _ = env.reset(seed=1)
     assert env.observation_space.contains(obs)
+
+
+def test_reset_raises_when_the_episode_starts_in_a_collision():
+    # C9: a render step that already reports a collision would hand the policy an episode it has lost before its
+    # first action -- the recorded gate's one-step "collisions".
+    from autofly_ue5.expert.env import AutoFlyEnv
+    from autofly_ue5.sim.types import StartCollisionError
+
+    class CollidesRightAfterReset(FakeSimulator):
+        def step(self, dt=0.2):
+            t = super().step(dt)
+            self._collided = True
+            return t
+
+    scene, layout = scene_and_layout()
+    env = AutoFlyEnv(scene, layout, CollidesRightAfterReset, map_path="/Game/AutoFly/Maps/S01", instance=0)
+    with pytest.raises(StartCollisionError):
+        env.reset(seed=1)

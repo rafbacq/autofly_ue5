@@ -233,6 +233,17 @@ R5–R9.
   through a solid object does fire a collision event, and its camera-versus-state agreement is not reproducible
   (0.000127 m in one run, 6.019 m in another). The up–across–down recovery sequence is reproducible to 1e-7–1e-6 m in
   every run and is the supported episode reset.
+- **Backend hazards are typed, counted and recovered, never scored (M2).** A live run hits simulator-side faults that
+  a fresh reset (or, after repeated failure, a relaunch of that one instance) recovers from: `CameraPoseError` (the
+  camera left behind by a `set_pose` sweep -- mostly during reset), `StepTimingError`, `StaleStateError`,
+  `CommandTimeoutError`, and raw pynng transport timeouts from the client. Added after the 2026-09-24 review: an
+  episode must also start where it was asked -- `reset()` verifies the settled pose (`ResetPoseError`, 0.3 m / 0.1 rad),
+  the env refuses a first observation that already reports a collision (`StartCollisionError`), and `step()` refuses a
+  horizontal move beyond 10 m/s × dt (`KinematicsJumpError`), on collision steps too. The recorded M2 gate had 15
+  one-step "collisions" whose drone was ≥ 4 m from its start, all on a reset right after a collision episode (15 of 73
+  such resets, 0 of 723 others); the camera check could not see them because it is skipped on collision steps. A
+  faulted step ends its episode on the last real observation; training drops that transition and evaluation replays
+  the episode (`autofly_ue5/expert/resilient.py`, `evaluate.py`).
 - **Lock-step holds exactly at 5 Hz.** 55/55 records had simulator time, image timestamps and kinematics timestamps
   equal to the step target; camera-to-state pose error stayed at 2.4e-7 m. The velocity command's duration is
   `dt − 2·step-ns = 0.19 s`, sent before the step, with the reply awaited after it.

@@ -19,7 +19,10 @@ class Simulator(Protocol):
 
     def reset(self, pose: Pose) -> Observation:
         """Teleport the vehicle to `pose` with zero velocity, advancing the clock by whole control steps (counted in
-        steps_taken); returns the settled observation with collided=False."""
+        steps_taken); returns the settled observation with collided=False.
+
+        Raises ResetPoseError if the vehicle settled somewhere other than `pose`, and SetPoseError if the simulator
+        refused the teleport (autofly_ue5.sim.types). Both are recoverable: reset again, or relaunch."""
 
     def spawn(self, name: str, asset: str, pose: Pose, scale: tuple[float, float, float], material: str | None = None) -> str:
         """Spawn a static object; returns the actual (possibly uniquified) name.
@@ -39,7 +42,10 @@ class Simulator(Protocol):
         """Advance the simulator clock by exactly dt; returns the simulator time in ns after the step.
 
         Requires reset() to have already run at least once on this connection: frame 0 of a session is
-        corrupt (spec §7.1) and reset()'s own steps are the only thing allowed to consume it."""
+        corrupt (spec §7.1) and reset()'s own steps are the only thing allowed to consume it.
+
+        Raises KinematicsJumpError if the vehicle moved farther than it can fly in dt since the previous observation
+        (a teleport, not flight) -- checked on collision steps too. The episode cannot continue; reset."""
 
     def observe(self) -> Observation:
         """Observation at the end of the last step or reset. Also requires reset() to have already run
