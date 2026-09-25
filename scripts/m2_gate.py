@@ -66,7 +66,11 @@ from autofly_ue5.expert.seeds import EVAL_SEED_BASE  # noqa: E402
 from autofly_ue5.expert.train import sha256_of, scene_and_layout as _scene_and_layout  # noqa: E402
 from autofly_ue5.expert.vec import teardown  # noqa: E402
 from autofly_ue5.paths import ROOT, RUNS_DIR  # noqa: E402
-from autofly_ue5.sim.airsim_backend import ProjectAirSimSimulator  # noqa: E402
+from autofly_ue5.sim.airsim_backend import (  # noqa: E402
+    ProjectAirSimSimulator,
+    scene_config_factory,
+    scene_config_record,
+)
 from autofly_ue5.sim.process import (  # noqa: E402
     SIM_RUN_DIR,
     instance_dir,
@@ -170,6 +174,7 @@ def run(
     max_steps_per_episode: int = DEFAULT_MAX_STEPS_PER_EPISODE,
     max_fault_retries_per_episode: int = DEFAULT_MAX_FAULT_RETRIES_PER_EPISODE,
     sim_root: Path = SIM_RUN_DIR,
+    scene_config: str | None = None,
 ) -> dict[str, Any]:
     load_model = load_model or (lambda p: default_sac_loader(p, device=device))
     run_started = time.strftime("%Y-%m-%d %H:%M:%S")
@@ -221,6 +226,7 @@ def run(
             "description": "Task 9: M2 exit gate -- SAC expert acceptance evaluation (spec Sec8/Sec9.5).",
             "scene": scene,
             "reward_version": REWARD_VERSION,
+            "scene_config": scene_config_record(scene_config) if scene_config else None,
             "eval_seed_base": seed_base,
             "episodes_requested_per_condition": n_episodes,
             "conditions_requested": list(conditions),
@@ -323,6 +329,9 @@ def build_arg_parser() -> argparse.ArgumentParser:
     p.add_argument("--episodes", type=int, default=GATE_MIN_EPISODES)
     p.add_argument("--conditions", nargs="+", choices=CONDITION_PRIORITY, default=list(CONDITION_PRIORITY))
     p.add_argument("--out", type=Path, default=ROOT / "docs" / "gates" / "m2_gate.json")
+    p.add_argument("--scene-config", default=None,
+                   help="Project AirSim scene config in configs/ (default scene_autofly_<scene>.jsonc): gate on the clock the "
+                        "expert was trained on")
     p.add_argument("--run-root", type=Path, default=None,
                    help="the training run whose best/best_model.zip and final.zip to gate (default runs/expert/<scene>)")
     p.add_argument("--instance", type=int, default=0)
@@ -336,11 +345,13 @@ def build_arg_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     args = build_arg_parser().parse_args(argv)
     model_paths = parse_model_args(args.model, args.scene, run_root=args.run_root)
+    scene_config = args.scene_config or f"scene_autofly_{args.scene}.jsonc"
     gate = run(
         scene=args.scene, model_paths=model_paths, conditions=list(args.conditions), n_episodes=args.episodes,
         seed_base=args.seed_base, instance=args.instance, out_path=args.out, device=args.device,
         max_steps_per_episode=args.max_steps_per_episode,
         max_fault_retries_per_episode=args.max_fault_retries_per_episode,
+        sim_factory=scene_config_factory(scene_config), scene_config=scene_config,
     )
     print(json.dumps(
         {"status": gate["status"], "pass": gate["pass"],

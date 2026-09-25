@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import asyncio
 import dataclasses
+import functools
+import hashlib
 import math
 import time
 from dataclasses import dataclass
@@ -378,3 +380,15 @@ class ProjectAirSimSimulator:
         if not self._reset_done:
             raise SessionNotResetError("observe() called before reset() on this connection")
         return self._last_obs
+
+
+def scene_config_factory(scene_config: str):
+    """A zero-argument simulator factory (what AutoFlyEnv and make_vec_env take) for one scene config, e.g.
+    "scene_autofly_s01_fast.jsonc". A functools.partial, so it pickles into SubprocVecEnv workers."""
+    return functools.partial(ProjectAirSimSimulator, scene_config=scene_config)
+
+
+def scene_config_record(scene_config: str, config_dir: Path = CONFIGS_DIR) -> dict:
+    """Which scene config a run used, pinned by content: the clock rate lives in it and changes throughput."""
+    return {"file": scene_config, "sha256": hashlib.sha256((Path(config_dir) / scene_config).read_bytes()).hexdigest()}
+

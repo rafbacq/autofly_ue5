@@ -1,21 +1,23 @@
 """Instance-scaling throughput measurement (spec §8's throughput gate, Task 7).
 
 Measures environment steps/s (one `command_velocity` + one `sim.step(0.2)` + one `observe()` + the
-observation encoding, i.e. one `AutoFlyEnv.step()`) for N concurrent `AutoFlyEnv` workers, N in
-(1, 2, 4, 6), on the packaged s01 simulator. Random actions only -- this measures the simulator, not a
-policy. Stops climbing N the moment VRAM would exceed the budget or total throughput falls versus the
-previous N (see `should_stop`).
+observation encoding, i.e. one `AutoFlyEnv.step()`) for N concurrent workers, N in (1, 2, 4, 6), on the
+packaged s01 simulator. The workers are training's own (`make_vec_env`: resilient wrappers, DummyVecEnv at
+N=1, SubprocVecEnv above), with the scene config given by --scene-config (the clock rate lives there). Random
+actions only -- this measures the simulator, not a policy. Stops climbing N the moment VRAM would exceed the
+budget or total throughput falls versus the previous N (see `should_stop`).
 
 Safety, in order:
-  1. Sweep stale instances (a crashed earlier run can leave Unreal children holding VRAM).
+  1. Stop orphaned instances (a crashed earlier run can leave Unreal children holding VRAM) -- never a live run's.
   2. Stagger the workers' first reset(): each `AutoFlyEnv` launches its simulator lazily inside its first
      reset(), so N workers resetting at once would all read the same pre-launch VRAM figure and could
-     collectively exhaust the GPU. This script launches instances one at a time via `env_method("reset",
-     indices=[i])` against a single index of a `SubprocVecEnv`, checking VRAM headroom before each.
-  3. Tear down every instance of the current N on any failure path (try/finally).
+     collectively exhaust the GPU. This script launches instances one at a time, bounded, checking VRAM
+     headroom before each.
+  3. Tear down every instance of the current N on any failure path (try/finally), and only those.
   4. Sample VRAM only inside the window where all N instances are actively stepping.
 
-env -u PYTHONPATH .venv/bin/python scripts/measure_instances.py --out docs/gates/m2_instances.json
+env -u PYTHONPATH .venv/bin/python scripts/measure_instances.py --scene-config scene_autofly_s01_fast.jsonc \
+    --out docs/gates/m2_instances.json
 """
 
 from __future__ import annotations
@@ -28,21 +30,23 @@ from pathlib import Path
 from typing import Callable
 
 import numpy as np
-from stable_baselines3.common.vec_env import SubprocVecEnv
+from stable_baselines3.common.vec_env import SubprocVecEnv, VecEnv
 
-from autofly_ue5.expert.env import AutoFlyEnv
-from autofly_ue5.expert.seeds import WORKER_SEED_STRIDE
+from autofly_ue5.expert.faults import combine_fault_summaries
+from autofly_ue5.expert.seeds import WORKER_SEED_STRIDE  # noqa: F401  (kept for callers of this script)
 from autofly_ue5.expert.vec import (  # noqa: F401  (moved from this script; names kept for its callers)
     LAUNCH_REPLY_TIMEOUT_S,
     VEC_ENV_CLOSE_TIMEOUT_S,
+    call_method_with_timeout,
     call_reset_with_timeout,
+    make_vec_env,
     teardown,
 )
 from autofly_ue5.gpu import gpu_memory_mib
 from autofly_ue5.paths import ROOT, RUNS_DIR
 from autofly_ue5.scenes.model import Bounds, Instance, Layout, SceneFile, load_scene_file
-from autofly_ue5.sim.airsim_backend import ProjectAirSimSimulator
-from autofly_ue5.sim.process import instance_dir, route_client_log, sweep_orphaned_instances
+from autofly_ue5.sim.airsim_backend import ProjectAirSimSimulator, scene_config_factory, scene_config_record
+from autofly_ue5.sim.process import SIM_RUN_DIR, instance_dir, sweep_orphaned_instances
 from autofly_ue5.validate.engine_check import audit_engine_faults, boot_id, xid_count
 
 MAP_PATH = "/Game/AutoFly/Maps/S01"
@@ -117,24 +121,6 @@ def scene_and_layout() -> tuple[SceneFile, Layout]:
     return scene, Layout(scene_id=raw["scene_id"], seed=raw["seed"], bounds=b, instances=inst)
 
 
-def make_env_fn(scene: SceneFile, layout: Layout, instance: int, seed_base: int) -> Callable[[], AutoFlyEnv]:
-    """Returns a picklable, zero-arg factory for one AutoFlyEnv, to run inside a SubprocVecEnv worker.
-
-    Constructing the env here does NOT launch the simulator -- AutoFlyEnv launches lazily inside its first
-    reset() (see module docstring point 2). Each instance gets its own client log path and a distinct
-    seed_base (sharing one across workers would fly byte-identical episode streams -- test_expert_env.py's
-    test_two_envs_with_the_same_seed_base_fly_identical_streams documents this hazard).
-    """
-
-    def _make() -> AutoFlyEnv:
-        route_client_log(instance_dir(instance) / "client.log")
-        return AutoFlyEnv(
-            scene, layout, ProjectAirSimSimulator, map_path=MAP_PATH, instance=instance, seed_base=seed_base
-        )
-
-    return _make
-
-
 def wait_for_vram_drop(baseline_mib: int, margin_mib: int = VRAM_DRAIN_MARGIN_MIB, timeout_s: float = VRAM_DRAIN_TIMEOUT_S) -> int:
     """Poll until VRAM has drained back near `baseline_mib` (a torn-down UE process can take a moment to
     release its allocation) or `timeout_s` elapses; returns the last-seen used_mib either way."""
@@ -149,12 +135,28 @@ def wait_for_vram_drop(baseline_mib: int, margin_mib: int = VRAM_DRAIN_MARGIN_MI
 _call_reset_with_timeout = call_reset_with_timeout  # the name this script used before the move
 
 
-def _random_actions(vec_env: SubprocVecEnv, n: int) -> np.ndarray:
+def _random_actions(vec_env: VecEnv, n: int) -> np.ndarray:
     return np.stack([vec_env.action_space.sample() for _ in range(n)])
 
 
-def _step_all(vec_env: SubprocVecEnv, actions: np.ndarray, timeout_s: float = STEP_REPLY_TIMEOUT_S) -> list[bool]:
-    """Advance every worker by one step, bounded; returns each worker's `done` flag.
+def _launch(vec_env: VecEnv, index: int, timeout_s: float) -> None:
+    """Launch one worker's simulator (inside its first reset). In-process for n=1 -- the same DummyVecEnv training
+    uses -- and bounded across the pipe for SubprocVecEnv workers."""
+    if isinstance(vec_env, SubprocVecEnv):
+        call_reset_with_timeout(vec_env, index, timeout_s)
+    else:
+        vec_env.env_method("reset", indices=[index])
+
+
+def _fault_summaries(vec_env: VecEnv, n: int, timeout_s: float) -> list[dict]:
+    if isinstance(vec_env, SubprocVecEnv):
+        return [call_method_with_timeout(vec_env, i, "get_fault_summary", timeout_s) for i in range(n)]
+    return vec_env.env_method("get_fault_summary")
+
+
+def _step_all(vec_env: VecEnv, actions: np.ndarray, timeout_s: float = STEP_REPLY_TIMEOUT_S) -> tuple[list[bool], int]:
+    """Advance every worker by one step, bounded; returns each worker's `done` flag and how many of those dones
+    were backend-fault truncations (resilient workers end a faulted episode instead of raising).
 
     Deliberately bypasses SB3's `step_async()`/`step_wait()` (together, equivalent to this): `step_wait()`
     does an unbounded `remote.recv()` per worker, which is exactly the hazard `_call_reset_with_timeout`
@@ -165,11 +167,15 @@ def _step_all(vec_env: SubprocVecEnv, actions: np.ndarray, timeout_s: float = ST
     episodes_completed) and the step count, never the observation/reward/info SB3 normally stacks, so
     there is no need to reconstruct step_wait()'s full return shape.
     """
+    if not isinstance(vec_env, SubprocVecEnv):
+        _obs, _rewards, done_array, infos = vec_env.step(actions)
+        return [bool(d) for d in done_array], sum(1 for info in infos if info.get("sim_fault"))
     remotes = vec_env.remotes
     for remote, action in zip(remotes, actions, strict=True):
         remote.send(("step", action))
     deadline = time.monotonic() + timeout_s
     dones: list[bool] = []
+    faults = 0
     for i, remote in enumerate(remotes):
         remaining = deadline - time.monotonic()
         if remaining <= 0 or not remote.poll(remaining):
@@ -177,12 +183,13 @@ def _step_all(vec_env: SubprocVecEnv, actions: np.ndarray, timeout_s: float = ST
                 f"worker {i} did not reply to step() within {timeout_s}s -- it likely crashed without "
                 f"exiting (check the job log for a worker traceback) and must be torn down forcibly"
             )
-        _obs, _reward, done, _info, _reset_info = remote.recv()
+        _obs, _reward, done, info, _reset_info = remote.recv()
         dones.append(bool(done))
-    return dones
+        faults += int(bool(info.get("sim_fault")))
+    return dones, faults
 
 
-def _step_for(vec_env: SubprocVecEnv, n: int, duration_s: float, timeout_s: float = STEP_REPLY_TIMEOUT_S) -> None:
+def _step_for(vec_env: VecEnv, n: int, duration_s: float, timeout_s: float = STEP_REPLY_TIMEOUT_S) -> None:
     deadline = time.monotonic() + duration_s
     while time.monotonic() < deadline:
         _step_all(vec_env, _random_actions(vec_env, n), timeout_s)
@@ -191,18 +198,24 @@ def _step_for(vec_env: SubprocVecEnv, n: int, duration_s: float, timeout_s: floa
 def measure_n(
     n: int, scene: SceneFile, layout: Layout, warmup_s: float = WARMUP_S, timed_s: float = TIMED_S,
     launch_reply_timeout_s: float = LAUNCH_REPLY_TIMEOUT_S, step_reply_timeout_s: float = STEP_REPLY_TIMEOUT_S,
+    *, sim_factory: Callable[[], object] = ProjectAirSimSimulator, vram_reader: Callable[[], tuple[int, int]] = gpu_memory_mib,
+    sim_root: Path = SIM_RUN_DIR, monitor_dir: Path | None = None, map_path: str = MAP_PATH,
 ) -> dict:
-    """Launch n AutoFlyEnv workers (staggered, VRAM-checked between each), warm up, then measure random-
-    action throughput over a fixed wall-clock window. Always tears down its own workers before returning
-    or raising."""
-    env_fns = [make_env_fn(scene, layout, i, seed_base=(i + 1) * WORKER_SEED_STRIDE) for i in range(n)]
-    vec_env: SubprocVecEnv | None = None
+    """Launch n workers (staggered, VRAM-checked between each), warm up, then measure random-action throughput over
+    a fixed wall-clock window. Always tears down its own workers before returning or raising.
+
+    The workers are exactly training's (`make_vec_env`: resilient, DummyVecEnv at n=1, SubprocVecEnv above). The
+    2026-09-16 measurement used bare AutoFlyEnvs, so its n=2 run died on an unrecovered CameraPoseError hang and
+    chosen_n=1 recorded a crash, not a throughput comparison."""
+    monitor_dir = monitor_dir or RUNS_DIR / "m2" / "measure_monitor" / f"n{n}"
+    vec_env: VecEnv | None = None
     per_instance_launch_s: list[float] = []
     try:
-        vec_env = SubprocVecEnv(env_fns)
+        vec_env = make_vec_env(scene, layout, n, map_path=map_path, monitor_dir=monitor_dir, sim_factory=sim_factory,
+                               sim_root=sim_root, launch=False)
         launch_start = time.monotonic()
         for i in range(n):
-            used, _total = gpu_memory_mib()
+            used, _total = vram_reader()
             projected = used + EST_PER_INSTANCE_MIB
             if projected > VRAM_BUDGET_MIB:
                 raise RuntimeError(
@@ -210,8 +223,7 @@ def measure_n(
                     f"(currently {used} MiB with {i} instance(s) up), over the {VRAM_BUDGET_MIB} MiB budget"
                 )
             t0 = time.monotonic()
-            # blocks (with a bound) until this ONE worker's launch+reset completes
-            _call_reset_with_timeout(vec_env, i, launch_reply_timeout_s)
+            _launch(vec_env, i, launch_reply_timeout_s)  # this ONE worker's launch + first reset, bounded
             per_instance_launch_s.append(time.monotonic() - t0)
         launch_s = time.monotonic() - launch_start
 
@@ -221,19 +233,21 @@ def measure_n(
         next_sample = time.monotonic()
         total_steps = 0
         episodes_completed = 0
+        fault_truncations = 0
         window_start = time.monotonic()
         window_end = window_start + timed_s
         while time.monotonic() < window_end:
-            dones = _step_all(vec_env, _random_actions(vec_env, n), step_reply_timeout_s)
+            dones, faults = _step_all(vec_env, _random_actions(vec_env, n), step_reply_timeout_s)
             total_steps += n
-            episodes_completed += sum(dones)
+            episodes_completed += sum(dones) - faults
+            fault_truncations += faults
             now = time.monotonic()
             if now >= next_sample:
-                vram_samples.append(gpu_memory_mib()[0])
+                vram_samples.append(vram_reader()[0])
                 next_sample = now + VRAM_SAMPLE_INTERVAL_S
         elapsed_s = time.monotonic() - window_start
         if not vram_samples:  # window shorter than one sample interval: still sample once, inside the window
-            vram_samples.append(gpu_memory_mib()[0])
+            vram_samples.append(vram_reader()[0])
 
         total_per_s = total_steps / elapsed_s
         return {
@@ -244,27 +258,30 @@ def measure_n(
             "launch_s": launch_s,
             "per_instance_launch_s": per_instance_launch_s,
             "episodes_completed": episodes_completed,
+            "fault_truncations": fault_truncations,
+            "backend_faults": combine_fault_summaries(_fault_summaries(vec_env, n, step_reply_timeout_s)),
             "total_env_steps": total_steps,
             "warmup_s": warmup_s,
             "timed_window_s": elapsed_s,
         }
     finally:
-        stale = teardown(vec_env, range(n))
-        if stale:
-            print(f"WARNING: swept stale instances after n={n}: {stale}", file=sys.stderr)
+        stopped = teardown(vec_env, range(n), sim_root)
+        print(f"n={n}: stopped its own slots: {stopped}", file=sys.stderr)
 
 
 def run(
     out_path: Path, candidate_ns: tuple[int, ...] = CANDIDATE_NS, warmup_s: float = WARMUP_S, timed_s: float = TIMED_S,
     launch_reply_timeout_s: float = LAUNCH_REPLY_TIMEOUT_S, step_reply_timeout_s: float = STEP_REPLY_TIMEOUT_S,
+    scene_config: str = "scene_autofly_s01.jsonc",
 ) -> dict:
+    sim_factory = scene_config_factory(scene_config)
     scene, layout = scene_and_layout()
     baseline_used_mib, gpu_total_mib = gpu_memory_mib()
     run_started = time.strftime("%Y-%m-%d %H:%M:%S")
 
     initial_sweep = sweep_orphaned_instances()
     if initial_sweep:
-        print(f"swept stale instances before starting: {initial_sweep}", file=sys.stderr)
+        print(f"swept orphaned instances before starting: {initial_sweep}", file=sys.stderr)
         baseline_used_mib = wait_for_vram_drop(baseline_used_mib)
 
     per_n: dict[str, dict] = {}
@@ -287,7 +304,7 @@ def run(
             try:
                 record = measure_n(
                     n, scene, layout, warmup_s=warmup_s, timed_s=timed_s, launch_reply_timeout_s=launch_reply_timeout_s,
-                    step_reply_timeout_s=step_reply_timeout_s,
+                    step_reply_timeout_s=step_reply_timeout_s, sim_factory=sim_factory,
                 )
             except Exception as err:
                 last_error = f"{type(err).__name__}: {err}"
@@ -330,6 +347,8 @@ def run(
     gate = {
         "description": "Task 7: instance-scaling throughput measurement with an RL env in the loop (spec §8/§12).",
         "map": MAP_PATH,
+        "scene_config": scene_config_record(scene_config),
+        "resilient": True,  # training's own workers (make_vec_env); the 2026-09-16 record used bare AutoFlyEnvs
         "candidate_ns": list(candidate_ns),
         "attempted_ns": attempted_ns,
         "warmup_s": warmup_s,
@@ -359,10 +378,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--timed-s", type=float, default=TIMED_S)
     parser.add_argument("--launch-reply-timeout-s", type=float, default=LAUNCH_REPLY_TIMEOUT_S)
     parser.add_argument("--step-reply-timeout-s", type=float, default=STEP_REPLY_TIMEOUT_S)
+    parser.add_argument("--scene-config", default="scene_autofly_s01.jsonc",
+                        help="e.g. scene_autofly_s01_fast.jsonc (1 ms clock); recorded with its sha256")
     args = parser.parse_args(argv)
     gate = run(
         args.out, candidate_ns=tuple(args.candidate_ns), warmup_s=args.warmup_s, timed_s=args.timed_s,
         launch_reply_timeout_s=args.launch_reply_timeout_s, step_reply_timeout_s=args.step_reply_timeout_s,
+        scene_config=args.scene_config,
     )
     if not gate["per_n"]:
         print(f"no N could be measured safely: {gate['stop_reason']}", file=sys.stderr)

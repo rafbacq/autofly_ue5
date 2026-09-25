@@ -150,6 +150,7 @@ from autofly_ue5.expert.seeds import (  # noqa: F401  (EVAL_SEED_BASE etc. re-ex
 from autofly_ue5.expert.vec import call_reset_with_timeout, make_vec_env, teardown  # noqa: F401
 from autofly_ue5.paths import ROOT, RUNS_DIR, SCENES_DIR
 from autofly_ue5.scenes.model import Bounds, Instance, Layout, SceneFile, load_scene_file
+from autofly_ue5.sim.airsim_backend import scene_config_factory, scene_config_record
 from autofly_ue5.sim.process import instance_dir, stop_instances, sweep_orphaned_instances
 from autofly_ue5.validate.engine_check import audit_engine_faults, boot_id, xid_count
 
@@ -217,7 +218,9 @@ def build_model(
         learning_starts=learning_starts,
         batch_size=batch_size,
         train_freq=1,
-        gradient_steps=1,
+        # -1: as many gradient steps as transitions collected (C3). At n=1 this is exactly 1, as before; with n
+        # workers, gradient_steps=1 would have done ONE update per n transitions.
+        gradient_steps=-1,
         gamma=gamma,
         tau=tau,
         learning_rate=learning_rate,
@@ -458,6 +461,9 @@ def build_arg_parser() -> argparse.ArgumentParser:
     p.add_argument("--total-timesteps", type=int, default=DEFAULT_TOTAL_TIMESTEPS)
     p.add_argument("--out", type=Path, default=ROOT / "docs" / "gates" / "m2_train.json")
     p.add_argument("--map-path", default=None, help='default: "/Game/AutoFly/Maps/<SCENE upper-cased>"')
+    p.add_argument("--scene-config", default=None,
+                   help="Project AirSim scene config in configs/ (default scene_autofly_<scene>.jsonc); e.g. "
+                        "scene_autofly_s01_fast.jsonc for the 1 ms clock once M1 has passed on it")
     p.add_argument("--device", default="cuda")
     p.add_argument("--seed", type=int, default=0, help=f"0 <= seed < {SESSION_SEED_STRIDE - 64} (keeps SB3's explicit reset seeds out of every counter range)")
     p.add_argument("--run-root", type=Path, default=None,
@@ -494,6 +500,8 @@ def main(argv: list[str] | None = None) -> int:
         d.mkdir(parents=True, exist_ok=True)
 
     map_path = args.map_path or f"/Game/AutoFly/Maps/{args.scene.upper()}"
+    scene_config = args.scene_config or f"scene_autofly_{args.scene}.jsonc"
+    sim_factory = scene_config_factory(scene_config)
     scene_file, layout = scene_and_layout(args.scene)
 
     run_started = time.strftime("%Y-%m-%d %H:%M:%S")
@@ -525,14 +533,14 @@ def main(argv: list[str] | None = None) -> int:
     try:
         train_env = make_vec_env(
             scene_file, layout, args.instances, map_path=map_path, monitor_dir=monitor_dir,
-            seed_base_fn=lambda rank: session_seed_base(rank, session), instance_offset=0,
+            seed_base_fn=lambda rank: session_seed_base(rank, session), instance_offset=0, sim_factory=sim_factory,
         )
         # A separate simulator instance (own ports), one slot past the training workers, so evaluation
         # can run concurrently with training without colliding on ports with any training worker. Its own seed
         # range, disjoint from the M2 gate's EVAL_SEED_BASE episodes.
         eval_env = make_vec_env(
             scene_file, layout, 1, map_path=map_path, monitor_dir=eval_monitor_dir,
-            seed_base_fn=lambda _rank: EVAL_CALLBACK_SEED_BASE, instance_offset=args.instances,
+            seed_base_fn=lambda _rank: EVAL_CALLBACK_SEED_BASE, instance_offset=args.instances, sim_factory=sim_factory,
         )
 
         if args.resume:
@@ -546,7 +554,8 @@ def main(argv: list[str] | None = None) -> int:
                     f"missing -- a SAC resume without its replay buffer restarts exploration from scratch, "
                     f"which this trainer refuses to do silently"
                 )
-            model = SAC.load(resume_path, env=train_env, device=args.device, tensorboard_log=str(tb_dir))
+            # gradient_steps=-1 explicitly: a checkpoint saved before C3 restores gradient_steps=1.
+            model = SAC.load(resume_path, env=train_env, device=args.device, tensorboard_log=str(tb_dir), gradient_steps=-1)
             model.load_replay_buffer(buffer_path)
             if not isinstance(model.replay_buffer, FaultFilteringDictReplayBuffer):
                 raise RuntimeError(
@@ -637,6 +646,7 @@ def main(argv: list[str] | None = None) -> int:
         "resume": args.resume,
         "resumed_from": str(resume_path) if resume_path is not None else None,
         "run_root": str(run_root),
+        "scene_config": scene_config_record(scene_config),
         "session": session,
         "reward_version": REWARD_VERSION,
         "seed_bases": [session_seed_base(rank, session) for rank in train_slots],
@@ -647,8 +657,9 @@ def main(argv: list[str] | None = None) -> int:
             "buffer_size": args.buffer_size,
             "learning_starts": args.learning_starts,
             "batch_size": args.batch_size,
-            "train_freq": 1,
-            "gradient_steps": 1,
+            # What the model actually trained with, not what this file intends (a resumed model restores its own).
+            "train_freq": str(model.train_freq) if model is not None else None,
+            "gradient_steps": model.gradient_steps if model is not None else None,
             "gamma": GAMMA,
             "tau": TAU,
             "learning_rate": LEARNING_RATE,

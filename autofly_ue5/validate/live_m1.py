@@ -18,7 +18,7 @@ import numpy as np
 from autofly_ue5.gpu import gpu_memory_mib
 from autofly_ue5.paths import PACKAGED_BINARY, RUNS_DIR
 from autofly_ue5.scenes.model import Bounds
-from autofly_ue5.sim.airsim_backend import ProjectAirSimSimulator
+from autofly_ue5.sim.airsim_backend import ProjectAirSimSimulator, scene_config_record
 from autofly_ue5.sim.process import instance_dir, route_client_log
 from autofly_ue5.sim.protocol import Simulator
 from autofly_ue5.sim.types import Pose
@@ -220,11 +220,14 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--check-map", type=Path, default=RUNS_DIR / "m1" / "check_map.json")
     parser.add_argument("--package-manifest", type=Path, default=RUNS_DIR / "package" / "package_manifest.json")
     parser.add_argument("--out", type=Path, default=RUNS_DIR / "m1" / "m1_gate.json")
+    parser.add_argument("--scene-config", default="scene_autofly_s01.jsonc",
+                        help="e.g. scene_autofly_s01_fast.jsonc: M1 must pass on a clock before M2 trains on it")
     args = parser.parse_args(argv)
     data = json.loads(args.layout.read_text())
     b = data["layout"]["bounds"]
     probes = choose_depth_probes(pillars_from_layout_json(data), Bounds(b["x_min"], b["x_max"], b["y_min"], b["y_max"]))
     report: dict = {"map": args.map, "layout": str(args.layout), "scene_sha256": data["scene_sha256"], "checks": {},
+                    "scene_config": scene_config_record(args.scene_config),
                     "check_map": json.loads(args.check_map.read_text()) if args.check_map.exists() else {},
                     "package_manifest": json.loads(args.package_manifest.read_text()) if args.package_manifest.exists() else {}}
     binary_digest = hashlib.sha256()
@@ -235,7 +238,7 @@ def main(argv: list[str] | None = None) -> int:
         report["package_manifest"].get("binary", {}).get("sha256") == binary_digest.hexdigest())
     args.out.parent.mkdir(parents=True, exist_ok=True)
     route_client_log(args.out.with_suffix(".client.log"))
-    sim = ProjectAirSimSimulator(scene_config="scene_autofly_s01.jsonc")
+    sim = ProjectAirSimSimulator(scene_config=args.scene_config)
     checks = [
         ("rgb_changes_with_pose", lambda: check_rgb_changes(sim)),
         ("depth_matches_geometry", lambda: check_depth(sim, probes)),

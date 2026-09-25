@@ -56,6 +56,7 @@ def make_vec_env(
     sim_factory: Callable[[], object] = ProjectAirSimSimulator,
     sim_root: Path = SIM_RUN_DIR,
     owner: RunOwner | None = None,
+    launch: bool = True,
 ) -> VecEnv:
     """n `AutoFlyEnv`s, each `ResilientAutoFlyEnv(Monitor(AutoFlyEnv(...)))`, vectorised.
 
@@ -74,6 +75,8 @@ def make_vec_env(
     `sim_root`: where each slot's simulator is recorded (and its client log written). `owner`: the run the simulators
     belong to -- the calling process by default; SubprocVecEnv workers adopt it so a slot is never recorded as owned
     by a worker (see `autofly_ue5.sim.process.set_run_owner`). Workers (n > 1) run their wrapper in `worker_mode`.
+    `launch=False` skips the staggered first reset, for a caller that launches the workers itself (the throughput
+    measurement checks VRAM between launches).
     """
     if n < 1:
         raise ValueError(f"n must be >= 1, got {n}")
@@ -96,8 +99,9 @@ def make_vec_env(
         return DummyVecEnv([_env_fn(0)])
 
     vec_env = SubprocVecEnv([_env_fn(i) for i in range(n)])
-    for i in range(n):
-        call_reset_with_timeout(vec_env, i)  # staggered, bounded -- not SB3's unbounded env_method()
+    if launch:
+        for i in range(n):
+            call_reset_with_timeout(vec_env, i)  # staggered, bounded -- not SB3's unbounded env_method()
     return vec_env
 
 
@@ -143,8 +147,8 @@ def teardown(vec_env: SubprocVecEnv | None, instances, sim_root: Path = SIM_RUN_
     return stop_instances(list(instances), sim_root)
 
 
-def call_reset_with_timeout(vec_env: SubprocVecEnv, index: int, timeout_s: float = LAUNCH_REPLY_TIMEOUT_S) -> None:
-    """Like `vec_env.env_method("reset", indices=[index])`, but bounded.
+def call_method_with_timeout(vec_env: SubprocVecEnv, index: int, method: str, timeout_s: float):
+    """Like `vec_env.env_method(method, indices=[index])[0]`, but bounded.
 
     SB3's env_method() does an unbounded `remote.recv()`. That is safe only if a crashed worker always
     exits promptly; measured live, it does not (see LAUNCH_REPLY_TIMEOUT_S's comment), so this polls with a
@@ -152,10 +156,15 @@ def call_reset_with_timeout(vec_env: SubprocVecEnv, index: int, timeout_s: float
     teardown path.
     """
     remote = vec_env.remotes[index]
-    remote.send(("env_method", ("reset", (), {})))
+    remote.send(("env_method", (method, (), {})))
     if not remote.poll(timeout_s):
         raise TimeoutError(
-            f"worker {index} did not reply to reset() within {timeout_s}s -- it likely crashed without "
+            f"worker {index} did not reply to {method}() within {timeout_s}s -- it likely crashed without "
             f"exiting (check the job log for a worker traceback) and must be torn down forcibly"
         )
-    remote.recv()
+    return remote.recv()
+
+
+def call_reset_with_timeout(vec_env: SubprocVecEnv, index: int, timeout_s: float = LAUNCH_REPLY_TIMEOUT_S) -> None:
+    """A bounded `reset()` of one worker (its simulator launches lazily inside it)."""
+    call_method_with_timeout(vec_env, index, "reset", timeout_s)
