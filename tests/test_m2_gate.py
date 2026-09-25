@@ -130,6 +130,8 @@ def test_evaluate_policy_episodes_draws_the_requested_seed_stream():
     assert [e["seed"] for e in report.per_episode] == list(range(seed_base, seed_base + 5))
     assert report.success_rate == 1.0, "a straight-line pilot must succeed against FakeSimulator every time"
     assert report.episodes_retried == 0
+    assert all(e["return"] > 10.0 for e in report.per_episode), "a success earns the +10 bonus on top of progress"
+    assert report.mean_return == pytest.approx(sum(e["return"] for e in report.per_episode) / 5)
 
 
 def test_evaluate_policy_episodes_accepts_a_deterministic_flag():
@@ -194,8 +196,9 @@ def test_exhausting_episode_level_fault_retries_also_raises_evaluation_interrupt
 
     # Fails on every even-numbered step() call -- guarantees the very first real policy step of every
     # single attempt faults (call #2, #4, #6, ... -- see the mid-episode fault test above for why call #2
-    # is the first real step), while each attempt's own internal reset()-render step (an odd call) and the
-    # wrapper's recovery reset() (also odd) both succeed, so this never escalates to a relaunch.
+    # is the first real step), while each attempt's own reset()-render step (an odd call) succeeds, so this
+    # never escalates to a relaunch. (The wrapper no longer resets by itself after a fault: the harness's
+    # next attempt is the only reset.)
     class _EveryOtherStepFaults(FakeSimulator):
         def __init__(self, *a, **kw):
             super().__init__(*a, **kw)

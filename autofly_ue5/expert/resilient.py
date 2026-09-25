@@ -13,6 +13,7 @@ from collections import Counter
 from pathlib import Path
 
 import gymnasium as gym
+from stable_baselines3.common.buffers import DictReplayBuffer
 
 from autofly_ue5.expert.faults import FAULT_ERRORS_LAUNCH, FAULT_ERRORS_RESET, FAULT_ERRORS_STEP, KNOWN_FAULT_NAMES
 from autofly_ue5.sim.process import SIM_RUN_DIR, stop_instance
@@ -49,9 +50,13 @@ class ResilientAutoFlyEnv(gym.Wrapper):
     full design.
 
     `step()`'s contract on a fault: end the episode by truncation (terminated=False, truncated=True,
-    reward=0.0) rather than pretending the same episode continues -- the action that triggered the fault
-    was never actually confirmed applied, so returning a `reset()`-fresh observation as if it were the
-    consequence of that action would corrupt the RL problem far worse than one lost transition does.
+    reward=0.0) on the episode's LAST REAL observation, with `info["sim_fault"]` naming the hazard,
+    `info["outcome"] == "sim_fault"` and `info["is_success"] is None` (not a policy outcome; SB3's success_rate
+    skips None). Nothing else happens until the caller calls reset(): until the 2026-09-24 review (C2) the
+    wrapper reset internally and returned the NEXT episode's first observation as this transition's outcome,
+    which SAC stored and bootstrapped from. The fault's transition itself is not data -- training drops it
+    (`FaultFilteringDictReplayBuffer`), evaluation replays the episode (`evaluate.py`). step() before that
+    reset() raises.
 
     `sim_root`: where this slot's simulator is recorded (`autofly_ue5.sim.process`); a relaunch stops that one slot
     and nothing else. `worker_mode` (SubprocVecEnv workers): any exception that would leave reset()/step() ends the
@@ -80,13 +85,23 @@ class ResilientAutoFlyEnv(gym.Wrapper):
         self.fault_counts: Counter[str] = Counter({name: 0 for name in KNOWN_FAULT_NAMES})
         self.recovered_counts: Counter[str] = Counter({name: 0 for name in KNOWN_FAULT_NAMES})
         self.relaunch_count = 0
+        self._last_obs = None
+        self._last_info: dict = {}
+        self._pending_fault: str | None = None
 
     def reset(self, seed: int | None = None, options: dict | None = None):
         try:
-            return self._reset_with_retry(seed=seed, options=options)
+            obs, info = self._reset_with_retry(seed=seed, options=options)
         except BaseException:
             self._exit_if_worker()
             raise
+        if self._pending_fault is not None:
+            self.recovered_counts[self._pending_fault] += 1
+            print(f"RECOVERED instance {self._instance}: reset() after a {self._pending_fault} step fault succeeded",
+                  file=sys.stderr)
+            self._pending_fault = None
+        self._last_obs, self._last_info = obs, info
+        return obs, info
 
     def step(self, action):
         try:
@@ -105,20 +120,27 @@ class ResilientAutoFlyEnv(gym.Wrapper):
             os._exit(1)
 
     def _step(self, action):
+        if self._pending_fault is not None:
+            raise RuntimeError(
+                f"instance {self._instance}: step() after a {self._pending_fault} backend fault; reset() required "
+                f"after a backend fault"
+            )
         try:
             obs, reward, terminated, truncated, info = self.env.step(action)
         except FAULT_ERRORS_STEP as err:
             name = type(err).__name__
             self.fault_counts[name] += 1
+            self._pending_fault = name
             print(
                 f"FAULT instance {self._instance}: caught {name} during step() (occurrence "
-                f"#{self.fault_counts[name]} this instance): {err}; truncating the episode and recovering via reset()",
+                f"#{self.fault_counts[name]} this instance): {err}; truncating the episode on its last real "
+                f"observation (reset() required)",
                 file=sys.stderr,
             )
-            obs, info = self._reset_with_retry(seed=None, options=None)
-            self.recovered_counts[name] += 1
-            info = {**info, "sim_fault": name}
-            return obs, 0.0, False, True, info
+            info = {k: v for k, v in self._last_info.items() if k != "episode"}
+            info.update(sim_fault=name, outcome="sim_fault", is_success=None)
+            return self._last_obs, 0.0, False, True, info
+        self._last_obs, self._last_info = obs, info
         return obs, reward, terminated, truncated, info
 
     def _reset_with_retry(self, *, seed: int | None, options: dict | None):
@@ -196,3 +218,24 @@ class ResilientAutoFlyEnv(gym.Wrapper):
             "recovered_counts": dict(self.recovered_counts),
             "relaunch_count": self.relaunch_count,
         }
+
+
+class FaultFilteringDictReplayBuffer(DictReplayBuffer):
+    """SB3's DictReplayBuffer minus backend-fault transitions (C2). A faulted step is truncated on its last real
+    observation with reward 0; stored, SAC would bootstrap Q(s, a) from a made-up self-loop. The whole vec-env row
+    is dropped (SB3 stores all envs' transitions in one row), so with n envs each dropped row also loses n-1 good
+    transitions: `dropped_transitions` records that cost next to `dropped_fault_rows`.
+
+    Lives in this importable module, not train.py: under `python -m autofly_ue5.expert.train` that module is
+    `__main__`, and a pickled buffer referencing `__main__` would not load anywhere else."""
+
+    dropped_fault_rows = 0
+    dropped_transitions = 0
+
+    def add(self, obs, next_obs, action, reward, done, infos) -> None:
+        if any(info.get("sim_fault") for info in infos):
+            self.dropped_fault_rows += 1
+            self.dropped_transitions += self.n_envs
+            return
+        super().add(obs, next_obs, action, reward, done, infos)
+

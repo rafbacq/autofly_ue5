@@ -54,11 +54,15 @@ Two lines of defence, matching the two places that hazard can bite:
 
 1. `ResilientAutoFlyEnv` (below) wraps the raw `AutoFlyEnv` *inside* whatever process runs it (in-process
    for the n=1 `DummyVecEnv` this project actually runs, per Task 7's `chosen_n=1`; inside an SB3
-   `SubprocVecEnv` worker for n>1). It catches the fault classes above around both `reset()` and `step()`
-   and retries `reset()` -- never the same `step()` -- since a `CameraPoseError` mid-step means the episode
+   `SubprocVecEnv` worker for n>1). It catches the fault classes above around both `reset()` and `step()`.
+   A fault in `reset()` is retried in place. A fault mid-`step()` ends the episode by truncation on its last
+   real observation -- never retrying the same `step()`, since a `CameraPoseError` mid-step means the episode
    itself cannot continue (the drone's true position is unknown to be right), only that the SIMULATOR can
-   recover from it, which spec §7.1 and Task 7's own measurement agree it almost always does on a fresh
-   reset. This means the exception now NEVER reaches SB3's worker loop in the first place -- there is
+   recover from it on a fresh reset, which spec §7.1 and Task 7's own measurement agree it almost always
+   does. That transition is not data: `FaultFilteringDictReplayBuffer` drops it, `FaultAwareEvalCallback`
+   replays the episode, and neither Monitor nor `rollout/success_rate` counts it (C2, 2026-09-24 review --
+   before it, the wrapper reset internally and SAC stored the next episode's start as this step's outcome).
+   This means the exception NEVER reaches SB3's worker loop in the first place -- there is
    nothing for `step_wait()`/`env_method()`'s unbounded `recv()` to hang on, because the worker process
    never tries to exit abnormally. Every occurrence and every recovery is counted (see `fault_counts`/
    `recovered_counts`) so the run record reports how often this actually fired, not how often the spec
@@ -114,7 +118,7 @@ from pathlib import Path
 
 import numpy as np
 from stable_baselines3 import SAC
-from stable_baselines3.common.callbacks import BaseCallback, CallbackList, CheckpointCallback, EvalCallback
+from stable_baselines3.common.callbacks import BaseCallback, CallbackList, CheckpointCallback
 from stable_baselines3.common.vec_env import VecEnv
 
 from autofly_ue5.expert.env import AutoFlyEnv  # noqa: F401  (re-exported for callers of this module)
@@ -124,11 +128,13 @@ from autofly_ue5.expert.faults import (  # noqa: F401  (re-exported: moved from 
     KNOWN_FAULT_NAMES,
     combine_fault_summaries,
 )
+from autofly_ue5.expert.evaluate import FaultAwareEvalCallback
 from autofly_ue5.expert.features import POLICY_KWARGS
 from autofly_ue5.expert.resilient import (  # noqa: F401  (re-exported: moved from this module)
     DEFAULT_CLOSE_TIMEOUT_S,
     DEFAULT_MAX_RELAUNCH_ATTEMPTS,
     DEFAULT_MAX_RESET_ATTEMPTS,
+    FaultFilteringDictReplayBuffer,
     ResilientAutoFlyEnv,
     _bounded_close,
 )
@@ -206,6 +212,7 @@ def build_model(
         "MultiInputPolicy",
         env,
         policy_kwargs=POLICY_KWARGS,
+        replay_buffer_class=FaultFilteringDictReplayBuffer,  # backend-fault transitions are never stored (C2)
         buffer_size=buffer_size,
         learning_starts=learning_starts,
         batch_size=batch_size,
@@ -382,13 +389,11 @@ class OutcomeHistogramCallback(BaseCallback):
     """Tallies the outcome at every completed episode (terminated or truncated), across training --
     "if success_rate is flat at ~0 after 100k steps ... check the outcome histogram" (brief).
 
-    A `ResilientAutoFlyEnv` fault-truncation's `info["outcome"]` is the FRESH episode's own initial value
-    ("running" -- see `AutoFlyEnv._info`), not a real outcome of the episode that just got cut short; that
-    episode's actual fate is `info["sim_fault"]` (the error class name). Live finding (Task 8 shakedown3, a
-    45-fault run): without preferring `sim_fault` when present, every fault-truncated episode was tallied
-    as "running", indistinguishable from a policy/reward-shaping bucket rather than a backend hazard -- this
-    keeps backend faults out of the same buckets as genuine policy outcomes (success/collision/out_of_bounds
-    /timeout), mirroring the same separation Task 9's own gate now requires.
+    A `ResilientAutoFlyEnv` fault-truncation is tallied under `info["sim_fault"]` (the error class name), not
+    under an outcome. Live finding (Task 8 shakedown3, a 45-fault run): when the wrapper still reset internally,
+    such an episode's `info["outcome"]` was the fresh episode's "running", indistinguishable from a
+    policy/reward-shaping bucket -- this keeps backend faults out of the same buckets as genuine policy outcomes
+    (success/collision/out_of_bounds/timeout), mirroring the same separation Task 9's own gate requires.
     """
 
     def __init__(self, verbose: int = 0) -> None:
@@ -405,7 +410,7 @@ class OutcomeHistogramCallback(BaseCallback):
 
 
 def read_eval_results(run_root: Path) -> dict:
-    """Reads EvalCallback's own evaluations.npz (written under `<run_root>/eval_logs/`), if any."""
+    """Reads the evaluation callback's evaluations.npz (SB3's format, under `<run_root>/eval_logs/`), if any."""
     npz_path = run_root / "eval_logs" / "evaluations.npz"
     result = {
         "n_evaluations": 0,
@@ -513,6 +518,7 @@ def main(argv: list[str] | None = None) -> int:
     checkpoint_path: Path | None = None
     checkpoint_sha256: str | None = None
     outcome_cb = OutcomeHistogramCallback()
+    eval_cb: FaultAwareEvalCallback | None = None
     status = "failed"
     error_message: str | None = None
 
@@ -542,6 +548,11 @@ def main(argv: list[str] | None = None) -> int:
                 )
             model = SAC.load(resume_path, env=train_env, device=args.device, tensorboard_log=str(tb_dir))
             model.load_replay_buffer(buffer_path)
+            if not isinstance(model.replay_buffer, FaultFilteringDictReplayBuffer):
+                raise RuntimeError(
+                    f"{buffer_path} holds a {type(model.replay_buffer).__name__}, not a FaultFilteringDictReplayBuffer: "
+                    f"it predates backend-fault filtering and may contain fabricated fault transitions"
+                )
             reseed_resumed_model(model, seed=args.seed, session=session)
             num_timesteps_at_start = int(model.num_timesteps)
             print(f"resumed from {resume_path} (num_timesteps={model.num_timesteps}) with replay buffer {buffer_path}")
@@ -560,9 +571,12 @@ def main(argv: list[str] | None = None) -> int:
         # model .zip forever but only the newest DEFAULT_KEEP_REPLAY_BUFFERS replay buffers -- see the
         # prune_old_replay_buffers()/PruneOldReplayBuffersCallback docstring for why.
         prune_cb = PruneOldReplayBuffersCallback(save_freq=checkpoint_save_freq, checkpoints_dir=checkpoints_dir, verbose=1)
-        eval_cb = EvalCallback(
-            eval_env, n_eval_episodes=args.eval_episodes, eval_freq=max(args.eval_freq // args.instances, 1),
-            best_model_save_path=str(best_dir), log_path=str(run_root / "eval_logs"), deterministic=True,
+        # The same args.eval_episodes episodes every evaluation (seeds EVAL_CALLBACK_SEED_BASE + i), faults replayed,
+        # every args.eval_freq timesteps; best_model.zip on a new best mean return (SB3's criterion).
+        eval_cb = FaultAwareEvalCallback(
+            eval_env.envs[0], n_eval_episodes=args.eval_episodes, eval_freq=args.eval_freq,
+            seed_base=EVAL_CALLBACK_SEED_BASE, best_model_save_path=best_dir, log_path=run_root / "eval_logs",
+            deterministic=True, verbose=1,
         )
         callbacks: list[BaseCallback] = [checkpoint_cb, prune_cb, eval_cb, outcome_cb]
         if args.hours is not None:
@@ -657,6 +671,10 @@ def main(argv: list[str] | None = None) -> int:
         "env_steps_per_s": (num_timesteps_this_session / wall_s) if wall_s > 0 else None,
         "eval": read_eval_results(run_root),
         "outcome_histogram": dict(outcome_cb.histogram),
+        # Backend-fault transitions dropped from the replay buffer (C2); with n workers a dropped row costs n.
+        "dropped_fault_rows": int(getattr(getattr(model, "replay_buffer", None), "dropped_fault_rows", 0)),
+        "dropped_fault_transitions": int(getattr(getattr(model, "replay_buffer", None), "dropped_transitions", 0)),
+        "interrupted_evaluations": eval_cb.interrupted_evaluations if eval_cb is not None else 0,
         "backend_faults": combine_fault_summaries(fault_summaries),
         "engine_faults": engine_faults,
         "faults_ok": faults_ok,

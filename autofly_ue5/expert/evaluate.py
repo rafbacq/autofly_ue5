@@ -8,21 +8,28 @@ EVAL_SEED_BASE` / `worker_seed_base`; see that module's own disjointness test) -
 Backend faults, never policy failures (Task 9 brief, gate item 6): reuses `autofly_ue5.expert.train.
 ResilientAutoFlyEnv` -- not a second retry wrapper -- for the five recoverable hazards Task 8 measured
 live (`CameraPoseError`, `StepTimingError`, `StaleStateError`, `CommandTimeoutError`,
-`pynng.exceptions.Timeout`). A fault DURING `reset()` is already retried transparently by that wrapper
-with the SAME seed, so it never reaches this module. A fault mid-`step()` is different: the wrapper's own
-step() contract truncates the CURRENT episode and internally calls `reset(seed=None)` to recover (see its
-docstring) -- which means the observation handed back belongs to a fresh, wrongly-seeded episode, not the
-one this harness asked for. This module detects that (`info["sim_fault"]` is set) and discards the whole
-attempt, replaying the SAME seed from `env.reset(seed=seed)` again, so a simulator hiccup is never counted
-as a success/collision/out_of_bounds/timeout outcome and every eval seed still gets a genuine policy
-outcome. `episodes_retried` and `fault_counts` report exactly how often that happened.
+`pynng.exceptions.Timeout`, ...). A fault DURING `reset()` is already retried transparently by that wrapper
+with the SAME seed, so it never reaches this module. A fault mid-`step()` truncates the current episode on its
+last real observation with `info["sim_fault"]` set (see the wrapper's docstring); this module discards the whole
+attempt and replays the SAME seed from `env.reset(seed=seed)`, so a simulator hiccup is never counted as a
+success/collision/out_of_bounds/timeout outcome and every eval seed still gets a genuine policy outcome.
+`episodes_retried` and `fault_counts` report exactly how often that happened.
+
+`FaultAwareEvalCallback` runs this same harness periodically during training, replacing SB3's `EvalCallback`,
+which scored faulted episodes as policy outcomes and drew a new slice of the eval env's seed stream at every
+evaluation (walking through the M2 gate's own episodes in the 2026-09-17 run).
 """
 
 from __future__ import annotations
 
+import sys
 from collections import Counter
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Any
+
+import numpy as np
+from stable_baselines3.common.callbacks import BaseCallback
 
 # Reused so a clean eval run's fault_counts still show an explicit 0 for every known hazard (not just the
 # ones actually seen) -- exactly the same reasoning as train.py's own KNOWN_FAULT_NAMES-seeded counters, so
@@ -56,6 +63,7 @@ class EvalReport:
     per_episode: list[dict[str, Any]]
     episodes_retried: int = 0
     fault_counts: dict[str, int] = field(default_factory=lambda: {name: 0 for name in KNOWN_FAULT_NAMES})
+    mean_return: float | None = None
 
     @classmethod
     def from_outcomes(
@@ -72,6 +80,7 @@ class EvalReport:
             per_episode = [{"outcome": o} for o in outcomes]
         steps = [e["steps"] for e in per_episode if e.get("steps") is not None]
         dists = [e["final_distance_m"] for e in per_episode if e.get("final_distance_m") is not None]
+        returns = [e["return"] for e in per_episode if e.get("return") is not None]
         merged_faults = {name: 0 for name in KNOWN_FAULT_NAMES}
         merged_faults.update(fault_counts or {})
         return cls(
@@ -85,6 +94,7 @@ class EvalReport:
             per_episode=per_episode,
             episodes_retried=episodes_retried,
             fault_counts=merged_faults,
+            mean_return=(sum(returns) / len(returns)) if returns else None,
         )
 
     def to_dict(self) -> dict[str, Any]:
@@ -96,6 +106,7 @@ class EvalReport:
             "out_of_bounds_rate": self.out_of_bounds_rate,
             "mean_steps": self.mean_steps,
             "mean_final_distance_m": self.mean_final_distance_m,
+            "mean_return": self.mean_return,
             "episodes_retried": self.episodes_retried,
             "fault_counts": dict(self.fault_counts),
             "per_episode": self.per_episode,
@@ -118,12 +129,14 @@ def _run_one_episode(model, env, seed: int, *, deterministic: bool, max_steps: i
     """One attempt at `seed`. Returns `{"fault": <name>}` if a backend hazard truncated it before a real
     outcome, or the completed episode's own record otherwise."""
     obs, info = env.reset(seed=seed)
+    episode_return = 0.0
     for step in range(1, max_steps + 1):
         action, _ = model.predict(obs, deterministic=deterministic)
         obs, reward, terminated, truncated, info = env.step(action)
         fault = info.get("sim_fault")
         if fault:
             return {"fault": fault}
+        episode_return += float(reward)
         if terminated or truncated:
             return {
                 "seed": seed,
@@ -131,6 +144,7 @@ def _run_one_episode(model, env, seed: int, *, deterministic: bool, max_steps: i
                 "steps": info.get("steps", step),
                 "final_distance_m": info.get("final_distance_m"),
                 "is_success": bool(info.get("is_success", False)),
+                "return": episode_return,
             }
     # AutoFlyEnv's own step_limit (default 300, spec Sec8) always truncates well before this bound;
     # reaching it means something is not honouring that contract -- report it, don't spin forever.
@@ -140,6 +154,7 @@ def _run_one_episode(model, env, seed: int, *, deterministic: bool, max_steps: i
         "steps": max_steps,
         "final_distance_m": info.get("final_distance_m"),
         "is_success": False,
+        "return": episode_return,
     }
 
 
@@ -225,3 +240,89 @@ def fault_summary_delta(before: dict[str, Any], after: dict[str, Any]) -> dict[s
         "recovered_counts": {**names, **{k: rc_after.get(k, 0) - rc_before.get(k, 0) for k in rc_after}},
         "relaunch_count": after.get("relaunch_count", 0) - before.get("relaunch_count", 0),
     }
+
+
+class FaultAwareEvalCallback(BaseCallback):
+    """Periodic evaluation during training, through `evaluate_policy_episodes` -- SB3's `EvalCallback` replaced.
+
+    Every `eval_freq` timesteps (counted in `num_timesteps`, so a resumed run keeps its cadence) it plays the SAME
+    `n_eval_episodes` episodes, `reset(seed=seed_base + i)`, so successive evaluations are comparable and a faulted
+    episode is replayed rather than scored. It writes SB3's `evaluations.npz` keys (`timesteps`, `results`,
+    `ep_lengths`, `successes`, one equal-length row per evaluation) and saves `best_model.zip` on a new best mean
+    return -- SB3's own selection criterion. On resume it reloads the npz, so the history and the best value
+    survive. An evaluation the backend cannot finish is logged and skipped; it never ends a 12-hour run.
+    """
+
+    def __init__(self, eval_env, *, n_eval_episodes: int, eval_freq: int, seed_base: int, best_model_save_path: Path,
+                 log_path: Path, deterministic: bool = True, verbose: int = 0) -> None:
+        super().__init__(verbose)
+        if eval_freq <= 0 or n_eval_episodes <= 0:
+            raise ValueError(f"eval_freq and n_eval_episodes must be > 0, got {eval_freq}, {n_eval_episodes}")
+        self._eval_env = eval_env
+        self._n_eval_episodes = n_eval_episodes
+        self._eval_freq = eval_freq
+        self._seed_base = seed_base
+        self._best_model_save_path = Path(best_model_save_path)
+        self._log_path = Path(log_path)
+        self._deterministic = deterministic
+        self.evaluations_timesteps: list[int] = []
+        self.evaluations_results: list[list[float]] = []
+        self.evaluations_length: list[list[int]] = []
+        self.evaluations_successes: list[list[bool]] = []
+        self.best_mean_reward = -np.inf
+        self.interrupted_evaluations = 0
+        self._next_eval = eval_freq
+
+    def _init_callback(self) -> None:
+        self._best_model_save_path.mkdir(parents=True, exist_ok=True)
+        self._log_path.mkdir(parents=True, exist_ok=True)
+        npz = self._log_path / "evaluations.npz"
+        if npz.is_file():
+            data = np.load(npz)
+            self.evaluations_timesteps = [int(t) for t in data["timesteps"]]
+            self.evaluations_results = [[float(r) for r in row] for row in data["results"]]
+            self.evaluations_length = [[int(n) for n in row] for row in data["ep_lengths"]]
+            self.evaluations_successes = [[bool(x) for x in row] for row in data["successes"]]
+            if self.evaluations_results:
+                self.best_mean_reward = max(float(np.mean(row)) for row in self.evaluations_results)
+        self._next_eval = (self.model.num_timesteps // self._eval_freq + 1) * self._eval_freq
+
+    def _on_step(self) -> bool:
+        if self.num_timesteps < self._next_eval:
+            return True
+        self._next_eval = (self.num_timesteps // self._eval_freq + 1) * self._eval_freq
+        try:
+            report = evaluate_policy_episodes(self.model, self._eval_env, self._n_eval_episodes, self._seed_base,
+                                              deterministic=self._deterministic)
+        except EvaluationInterrupted as err:
+            self.interrupted_evaluations += 1
+            print(f"WARNING: evaluation at {self.num_timesteps} timesteps could not finish and is skipped: {err}",
+                  file=sys.stderr)
+            self.logger.record("eval/interrupted_evaluations", self.interrupted_evaluations)
+            return True
+        returns = [float(e["return"]) for e in report.per_episode]
+        lengths = [int(e["steps"]) for e in report.per_episode]
+        self.evaluations_timesteps.append(self.num_timesteps)
+        self.evaluations_results.append(returns)
+        self.evaluations_length.append(lengths)
+        self.evaluations_successes.append([bool(e["is_success"]) for e in report.per_episode])
+        np.savez(self._log_path / "evaluations.npz", timesteps=self.evaluations_timesteps,
+                 results=self.evaluations_results, ep_lengths=self.evaluations_length,
+                 successes=self.evaluations_successes)
+        mean_reward = float(np.mean(returns))
+        self.logger.record("eval/mean_reward", mean_reward)
+        self.logger.record("eval/mean_ep_length", float(np.mean(lengths)))
+        self.logger.record("eval/success_rate", report.success_rate)
+        self.logger.record("eval/episodes_retried", report.episodes_retried)
+        self.logger.record("time/total_timesteps", self.num_timesteps, exclude="tensorboard")
+        self.logger.dump(self.num_timesteps)
+        if self.verbose:
+            print(f"Eval num_timesteps={self.num_timesteps}, episode_reward={mean_reward:.2f}, "
+                  f"success_rate={report.success_rate:.2f}, episodes_retried={report.episodes_retried}")
+        if mean_reward > self.best_mean_reward:
+            self.best_mean_reward = mean_reward
+            self.model.save(self._best_model_save_path / "best_model")
+            if self.verbose:
+                print("New best mean reward!")
+        return True
+

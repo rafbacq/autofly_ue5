@@ -3,7 +3,6 @@ belongs to one run -- a fresh run cannot mix with an old one, a resumed session 
 
 import json
 
-import numpy as np
 import pytest
 
 from autofly_ue5.sim.fake import FakeSimulator

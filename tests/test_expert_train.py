@@ -277,7 +277,11 @@ def test_resilient_env_retries_reset_when_episode_setup_raises(monkeypatch):
 
 
 @pytest.mark.parametrize("error", ALL_STEP_FAULTS)
-def test_resilient_env_step_fault_truncates_and_recovers(error):
+def test_a_step_fault_ends_the_episode_on_its_last_real_observation_until_reset(error):
+    # C2 (2026-09-24 review): the wrapper used to reset internally and hand back the NEXT episode's first
+    # observation as this transition's outcome -- SAC then stored (s, a, 0, s' from another episode) and
+    # bootstrapped from it. Now the fault ends the episode on the last real observation, and nothing new starts
+    # until the caller resets.
     from autofly_ue5.expert.env import AutoFlyEnv
     from autofly_ue5.expert.train import ResilientAutoFlyEnv
 
@@ -287,21 +291,25 @@ def test_resilient_env_step_fault_truncates_and_recovers(error):
     sim = _FlakyFakeSimulator(fail_on_step_calls=(2,), error=error)
     base = AutoFlyEnv(scene, layout, lambda: sim, map_path="/Game/AutoFly/Maps/S01", instance=0)
     env = ResilientAutoFlyEnv(base, instance=0)
+    zero = np.array([0.0, 0.0, 0.0], dtype=np.float32)
 
-    env.reset(seed=1)
-    obs, reward, terminated, truncated, info = env.step(np.array([0.0, 0.0, 0.0], dtype=np.float32))
+    obs0, _ = env.reset(seed=1)
+    obs, reward, terminated, truncated, info = env.step(zero)
 
     assert not terminated and truncated, "a fault must end the episode by truncation, not termination"
     assert reward == 0.0
-    assert env.observation_space.contains(obs)
-    assert info["sim_fault"] == error.__name__
-    assert info["is_success"] is False
+    assert all(np.array_equal(obs[k], obs0[k]) for k in obs0), "the last real observation, never another episode's"
+    assert info["sim_fault"] == error.__name__ and info["outcome"] == "sim_fault"
+    assert info["is_success"] is None, "a fault is not a policy outcome: SB3's success_rate must skip it"
     assert env.fault_counts[error.__name__] == 1
-    assert env.recovered_counts[error.__name__] == 1
-    assert env.relaunch_count == 0
+    assert env.recovered_counts[error.__name__] == 0, "nothing has recovered until reset() succeeds"
+    assert sim._reset_call_count == 1, "no internal reset: the caller owns the next episode"
+    with pytest.raises(RuntimeError, match="reset"):
+        env.step(zero)
 
-    # The wrapper must actually be usable afterward -- prove recovery, don't just assert it was attempted.
-    obs2, reward2, terminated2, truncated2, info2 = env.step(np.array([0.0, 0.0, 0.0], dtype=np.float32))
+    env.reset()
+    assert env.recovered_counts[error.__name__] == 1 and env.relaunch_count == 0
+    obs2, reward2, terminated2, truncated2, info2 = env.step(zero)
     assert np.isfinite(reward2)
     assert info2["outcome"] == "running"
 
@@ -535,9 +543,9 @@ def test_outcome_histogram_tallies_only_completed_episodes():
 
 
 def test_outcome_histogram_buckets_a_fault_truncation_under_its_own_hazard_not_running():
-    # Live finding (Task 8 shakedown3): a ResilientAutoFlyEnv fault-truncation's info["outcome"] is the
-    # FRESH episode's own "running", not the truncated episode's real fate -- info["sim_fault"] is. Without
-    # preferring it, every fault-truncated episode is indistinguishable from a genuine "running" bucket.
+    # Live finding (Task 8 shakedown3): a fault-truncation's info["outcome"] was not the truncated episode's
+    # real fate -- info["sim_fault"] is. Without preferring it, every fault-truncated episode is
+    # indistinguishable from a genuine "running" bucket.
     from autofly_ue5.expert.train import OutcomeHistogramCallback
 
     cb = OutcomeHistogramCallback()
@@ -710,4 +718,129 @@ def test_make_vec_env_routes_client_logs_under_its_sim_root(tmp_path):
         assert (tmp_path / "sim" / "inst0" / "client.log").is_file()
     finally:
         vec_env.close()
+
+
+# ------------------------------------------------------------------------------------------------------
+# C2: a backend fault never becomes training data, a Monitor episode, or an evaluation result.
+# ------------------------------------------------------------------------------------------------------
+def _flaky_vec(tmp_path, fail_on_step_calls, n_calls_box=None, **kwargs):
+    from autofly_ue5.expert.vec import make_vec_env
+
+    sims = []
+
+    def factory():
+        sim = _FlakyFakeSimulator(fail_on_step_calls=fail_on_step_calls, error=CameraPoseError)
+        sims.append(sim)
+        return sim
+
+    scene, layout = scene_and_layout()
+    vec = make_vec_env(scene, layout, 1, map_path="/x", monitor_dir=tmp_path / "monitor", sim_factory=factory,
+                       sim_root=tmp_path / "sim", **kwargs)
+    return vec, sims
+
+
+def test_sac_stores_no_transition_for_a_mid_step_fault(tmp_path):
+    from autofly_ue5.expert.resilient import FaultFilteringDictReplayBuffer
+    from autofly_ue5.expert.train import build_model
+
+    vec, sims = _flaky_vec(tmp_path, fail_on_step_calls=(8,))
+    model = build_model(vec, device="cpu", buffer_size=200, learning_starts=1000, seed=0, verbose=0)
+    model.learn(total_timesteps=12)
+    rb = model.replay_buffer
+
+    assert isinstance(rb, FaultFilteringDictReplayBuffer)
+    assert sims[0]._reset_call_count == 2, "the first episode, then exactly one reset after the fault"
+    assert rb.dropped_fault_rows == 1 and rb.dropped_transitions == 1
+    assert rb.pos == 11, "12 environment steps, one of them the fault"
+    dist = rb.observations["vector"][: rb.pos, 0, 0] * 100.0
+    next_dist = rb.next_observations["vector"][: rb.pos, 0, 0] * 100.0
+    assert np.all(np.abs(next_dist - dist) <= 0.5), "a stored next observation came from another episode"
+
+
+def test_monitor_and_success_rate_never_see_a_faulted_episode(tmp_path):
+    vec, _ = _flaky_vec(tmp_path, fail_on_step_calls=(3,))
+    zero = np.zeros((1, 3), dtype=np.float32)
+    vec.reset()
+    vec.step(zero)
+    _, _, dones, infos = vec.step(zero)  # sim step call 3: the fault
+
+    assert dones[0] and infos[0]["sim_fault"] == "CameraPoseError"
+    assert "episode" not in infos[0], "SB3 would log the faulted episode's partial return as rollout/ep_rew_mean"
+    assert infos[0]["is_success"] is None
+    rows = (tmp_path / "monitor" / "0.monitor.csv").read_text().splitlines()
+    assert len(rows) == 2, f"only the metadata and header lines, no episode row: {rows}"
+
+
+def _eval_env(tmp_path, sim_factory, **wrapper_kwargs):
+    from stable_baselines3.common.monitor import Monitor
+
+    from autofly_ue5.expert.env import AutoFlyEnv
+    from autofly_ue5.expert.resilient import ResilientAutoFlyEnv
+    from autofly_ue5.expert.seeds import EVAL_CALLBACK_SEED_BASE
+
+    scene, layout = scene_and_layout()
+    base = AutoFlyEnv(scene, layout, sim_factory, map_path="/x", instance=1, seed_base=EVAL_CALLBACK_SEED_BASE,
+                      max_episode_steps=4)
+    return ResilientAutoFlyEnv(Monitor(base), instance=1, sim_root=tmp_path / "sim", **wrapper_kwargs)
+
+
+def test_fault_aware_eval_callback_uses_fixed_seeds_replays_faults_and_writes_sb3s_npz(tmp_path, monkeypatch):
+    import autofly_ue5.expert.env as env_module
+    from autofly_ue5.expert.evaluate import FaultAwareEvalCallback
+    from autofly_ue5.expert.seeds import EVAL_CALLBACK_SEED_BASE
+    from autofly_ue5.expert.train import build_model, read_eval_results
+
+    seen: list[int] = []
+    real = env_module.sample_setup
+    monkeypatch.setattr(env_module, "sample_setup",
+                        lambda sc, la, rng: (seen.append(int(rng.bit_generator.seed_seq.entropy)), real(sc, la, rng))[1])
+    train_vec, _ = _flaky_vec(tmp_path, fail_on_step_calls=())
+    eval_env = _eval_env(tmp_path, lambda: _FlakyFakeSimulator(fail_on_step_calls=(3,), error=CameraPoseError))
+    model = build_model(train_vec, device="cpu", buffer_size=200, learning_starts=1000, seed=0, verbose=0)
+    cb = FaultAwareEvalCallback(eval_env, n_eval_episodes=3, eval_freq=5, seed_base=EVAL_CALLBACK_SEED_BASE,
+                                best_model_save_path=tmp_path / "best", log_path=tmp_path / "eval_logs")
+    model.learn(total_timesteps=10, callback=cb)
+
+    data = np.load(tmp_path / "eval_logs" / "evaluations.npz")
+    assert data["timesteps"].tolist() == [5, 10]
+    assert data["results"].shape == (2, 3) and data["successes"].shape == (2, 3) and data["ep_lengths"].shape == (2, 3)
+    eval_seeds = [s - EVAL_CALLBACK_SEED_BASE for s in seen if s >= EVAL_CALLBACK_SEED_BASE]
+    assert eval_seeds == [0, 0, 1, 2, 0, 1, 2], "the same three episodes each time; the faulted first one replayed"
+    assert (tmp_path / "best" / "best_model.zip").is_file()
+    assert read_eval_results(tmp_path)["n_evaluations"] == 2
+
+
+def test_a_resumed_eval_callback_keeps_its_history_and_best_value(tmp_path):
+    from autofly_ue5.expert.evaluate import FaultAwareEvalCallback
+    from autofly_ue5.expert.train import build_model
+
+    (tmp_path / "eval_logs").mkdir()
+    np.savez(tmp_path / "eval_logs" / "evaluations.npz", timesteps=np.array([25_000]), results=np.array([[70.0, 80.0]]),
+             ep_lengths=np.array([[100, 120]]), successes=np.array([[True, True]]))
+    train_vec, _ = _flaky_vec(tmp_path, fail_on_step_calls=())
+    model = build_model(train_vec, device="cpu", buffer_size=100, learning_starts=1000, seed=0, verbose=0)
+    cb = FaultAwareEvalCallback(_eval_env(tmp_path, FakeSimulator), n_eval_episodes=2, eval_freq=25_000, seed_base=0,
+                                best_model_save_path=tmp_path / "best", log_path=tmp_path / "eval_logs")
+    cb.init_callback(model)
+    assert cb.evaluations_timesteps == [25_000]
+    assert cb.best_mean_reward == 75.0, "a resumed run's first evaluation must beat the old best to replace it"
+
+
+def test_an_interrupted_evaluation_is_logged_and_training_continues(tmp_path):
+    from autofly_ue5.expert.evaluate import FaultAwareEvalCallback
+    from autofly_ue5.expert.train import build_model
+
+    class AlwaysFaults(FakeSimulator):
+        def step(self, dt=CONTROL_DT_S):
+            raise CameraPoseError("permanently broken")
+
+    train_vec, _ = _flaky_vec(tmp_path, fail_on_step_calls=())
+    model = build_model(train_vec, device="cpu", buffer_size=100, learning_starts=1000, seed=0, verbose=0)
+    cb = FaultAwareEvalCallback(_eval_env(tmp_path, AlwaysFaults, max_reset_attempts=1, max_relaunch_attempts=0),
+                                n_eval_episodes=2, eval_freq=3, seed_base=0,
+                                best_model_save_path=tmp_path / "best", log_path=tmp_path / "eval_logs")
+    model.learn(total_timesteps=6, callback=cb)
+    assert model.num_timesteps == 6, "a failed evaluation must not end training"
+    assert cb.interrupted_evaluations == 2
+    assert not (tmp_path / "eval_logs" / "evaluations.npz").exists()
 

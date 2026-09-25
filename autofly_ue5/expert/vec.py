@@ -57,12 +57,14 @@ def make_vec_env(
     sim_root: Path = SIM_RUN_DIR,
     owner: RunOwner | None = None,
 ) -> VecEnv:
-    """n `AutoFlyEnv`s, each `Monitor(ResilientAutoFlyEnv(AutoFlyEnv(...)))`, vectorised.
+    """n `AutoFlyEnv`s, each `ResilientAutoFlyEnv(Monitor(AutoFlyEnv(...)))`, vectorised.
 
-    `Monitor` is outermost (what the VecEnv actually calls) so SB3 can find `info["episode"]` and
-    `rollout/ep_rew_mean`/`ep_len_mean` get logged; `info_keywords=("is_success",)` because a plain Monitor
-    does not copy `is_success` into its episode record on its own. `ResilientAutoFlyEnv` sits directly
-    around the raw env so the fault it catches never has to cross Monitor's step() at all.
+    `Monitor` sits inside the resilient wrapper, so it only ever sees real episodes: a backend fault raises
+    through it (no done, no `info["episode"]`, no CSV row) and its `allow_early_resets` drops the partial episode
+    on the next reset. With Monitor outermost (before 2026-09-24), every faulted episode's partial return reached
+    `rollout/ep_rew_mean`. `info_keywords=("is_success",)` because a plain Monitor does not copy `is_success` into
+    its episode record on its own. SB3 still finds `info["episode"]` on real episode ends: the resilient wrapper
+    passes those infos through unchanged.
 
     n == 1 uses DummyVecEnv: in-process, no IPC to hang on, which is what this project's Task 7 measurement
     chose (chosen_n=1). n > 1 uses SubprocVecEnv, staggering each worker's first reset() (hazard #2: two
@@ -85,8 +87,8 @@ def make_vec_env(
             set_run_owner(owner)
             route_client_log(instance_dir(instance, sim_root) / "client.log")
             base = AutoFlyEnv(scene, layout, sim_factory, map_path=map_path, instance=instance, seed_base=seed_base_fn(rank))
-            resilient = ResilientAutoFlyEnv(base, instance=instance, sim_root=sim_root, worker_mode=n > 1)
-            return Monitor(resilient, filename=str(monitor_dir / f"{instance}.monitor.csv"), info_keywords=("is_success",))
+            monitored = Monitor(base, filename=str(monitor_dir / f"{instance}.monitor.csv"), info_keywords=("is_success",))
+            return ResilientAutoFlyEnv(monitored, instance=instance, sim_root=sim_root, worker_mode=n > 1)
 
         return _make
 
