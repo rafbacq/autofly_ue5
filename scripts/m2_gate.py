@@ -83,12 +83,12 @@ def gate_passes(*, success_rate: float, n_episodes: int, faults_ok: bool) -> boo
     return success_rate >= GATE_MIN_SUCCESS_RATE and n_episodes >= GATE_MIN_EPISODES and bool(faults_ok)
 
 
-def parse_model_args(specs: list[str] | None, scene: str) -> dict[str, Path]:
+def parse_model_args(specs: list[str] | None, scene: str, run_root: Path | None = None) -> dict[str, Path]:
     """`--model NAME=PATH` entries (repeatable) into an ordered {name: path} dict; the CLI default (no
-    `--model` given) is BOTH of Task 8's checkpoints under `runs/expert/<scene>/`, best before final so
-    `combo_order` runs the higher-priority checkpoint's deterministic condition first."""
+    `--model` given) is BOTH of a training run's checkpoints under `run_root` (default `runs/expert/<scene>/`),
+    best before final so `combo_order` runs the higher-priority checkpoint's deterministic condition first."""
     if not specs:
-        run_root = RUNS_DIR / "expert" / scene
+        run_root = run_root or RUNS_DIR / "expert" / scene
         return {"best_model": run_root / "best" / "best_model.zip", "final": run_root / "final.zip"}
     out: dict[str, Path] = {}
     for spec in specs:
@@ -221,11 +221,11 @@ def run(
                 "flies M3's data collection is the controller's decision, not this script's.",
                 "A 20-episode eval cannot distinguish 0.85 from 1.0 against a 0.95 threshold; this run "
                 "uses >= 200 episodes specifically so it can.",
-                "Deterministic episodes seed_base+0 .. seed_base+19 of this run are the SAME episodes "
-                "Task 8's own EvalCallback used throughout training for periodic model selection (both "
-                "use EVAL_SEED_BASE by design, spec Sec8) -- best_model.zip was saved BECAUSE of its "
-                "reward on (a subset of) those 20, so they are not fully held-out for that checkpoint "
-                "specifically. final.zip was not selected on any eval episode.",
+                "Held out for both checkpoints: training-time evaluation (best_model.zip selection) draws its "
+                "episodes from EVAL_CALLBACK_SEED_BASE (200,000,000+), disjoint from this gate's EVAL_SEED_BASE "
+                "range, and training workers draw from ranges below both. (The 2026-09-17 run predates this: its "
+                "EvalCallback walked seeds 100,000,000+0..~177, overlapping this gate's -- see "
+                "docs/decisions/2026-09-25-code-review-findings.md.)",
             ],
             "cumulative_backend_faults": cumulative,
             "engine_faults": engine_faults,
@@ -311,6 +311,8 @@ def build_arg_parser() -> argparse.ArgumentParser:
     p.add_argument("--episodes", type=int, default=GATE_MIN_EPISODES)
     p.add_argument("--conditions", nargs="+", choices=CONDITION_PRIORITY, default=list(CONDITION_PRIORITY))
     p.add_argument("--out", type=Path, default=ROOT / "docs" / "gates" / "m2_gate.json")
+    p.add_argument("--run-root", type=Path, default=None,
+                   help="the training run whose best/best_model.zip and final.zip to gate (default runs/expert/<scene>)")
     p.add_argument("--instance", type=int, default=0)
     p.add_argument("--seed-base", type=int, default=EVAL_SEED_BASE)
     p.add_argument("--device", default="auto")
@@ -321,7 +323,7 @@ def build_arg_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> int:
     args = build_arg_parser().parse_args(argv)
-    model_paths = parse_model_args(args.model, args.scene)
+    model_paths = parse_model_args(args.model, args.scene, run_root=args.run_root)
     gate = run(
         scene=args.scene, model_paths=model_paths, conditions=list(args.conditions), n_episodes=args.episodes,
         seed_base=args.seed_base, instance=args.instance, out_path=args.out, device=args.device,

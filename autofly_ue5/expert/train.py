@@ -132,7 +132,15 @@ from autofly_ue5.expert.resilient import (  # noqa: F401  (re-exported: moved fr
     ResilientAutoFlyEnv,
     _bounded_close,
 )
-from autofly_ue5.expert.seeds import EVAL_SEED_BASE, WORKER_SEED_STRIDE, worker_seed_base  # noqa: F401
+from autofly_ue5.expert.reward import REWARD_VERSION
+from autofly_ue5.expert.seeds import (  # noqa: F401  (EVAL_SEED_BASE etc. re-exported for callers)
+    EVAL_CALLBACK_SEED_BASE,
+    EVAL_SEED_BASE,
+    SESSION_SEED_STRIDE,
+    WORKER_SEED_STRIDE,
+    session_seed_base,
+    worker_seed_base,
+)
 from autofly_ue5.expert.vec import call_reset_with_timeout, make_vec_env, teardown  # noqa: F401
 from autofly_ue5.paths import ROOT, RUNS_DIR, SCENES_DIR
 from autofly_ue5.scenes.model import Bounds, Instance, Layout, SceneFile, load_scene_file
@@ -247,6 +255,59 @@ def replay_buffer_for(checkpoint: Path) -> Path:
     if not m:
         raise ValueError(f"{checkpoint} does not look like a checkpoint (rl_model_<N>_steps.zip)")
     return checkpoint.with_name(f"rl_model_replay_buffer_{m.group(1)}_steps.pkl")
+
+
+# --------------------------------------------------------------------------------------------------------
+# Run isolation: one run directory holds one run, and each resumed session draws fresh episodes.
+# --------------------------------------------------------------------------------------------------------
+SESSIONS_FILE = "sessions.json"
+
+
+def prepare_run_root(run_root: Path, *, resume: bool, reward_version: str, seed: int) -> int:
+    """Claim `run_root` for this training session and return the session index (0 for a fresh run).
+
+    A fresh run refuses a directory that already holds a run: its old checkpoints would otherwise sit next to the
+    new ones, and a later --resume picks the highest step count -- possibly the OLD run's. A resume refuses a run
+    recorded under another reward version (its replay buffer holds the other objective's rewards), or one with no
+    sessions record at all (it predates this record, and its buffer still holds unfilterable backend-fault rows).
+    """
+    run_root = Path(run_root)
+    sessions_path = run_root / SESSIONS_FILE
+    if resume:
+        if not sessions_path.is_file():
+            raise RuntimeError(
+                f"--resume: {sessions_path} is missing, so the run's reward version is unknown -- it predates run "
+                f"records and cannot be resumed safely; start a fresh run with a new --run-root"
+            )
+        sessions = json.loads(sessions_path.read_text())["sessions"]
+        recorded = sessions[-1].get("reward_version") if sessions else None
+        if recorded != reward_version:
+            raise RuntimeError(
+                f"--resume: {run_root} was trained under reward version {recorded!r}, this code computes "
+                f"{reward_version!r}; resuming would mix two objectives in one replay buffer -- start a fresh run"
+            )
+        session = len(sessions)
+    else:
+        existing = [p for p in (run_root / "checkpoints").glob("rl_model_*") if p.is_file()] if run_root.is_dir() else []
+        if existing or sessions_path.is_file() or (run_root / "final.zip").is_file():
+            raise RuntimeError(
+                f"{run_root} already holds a training run (checkpoints, final.zip or {SESSIONS_FILE}); pass "
+                f"--resume to continue it, or a new --run-root for a fresh run"
+            )
+        sessions = []
+        session = 0
+    session_seed_base(0, session)  # raises before any work if this session would overflow its seed slice
+    run_root.mkdir(parents=True, exist_ok=True)
+    sessions.append({"index": session, "started": time.strftime("%Y-%m-%d %H:%M:%S"), "resume": resume,
+                     "reward_version": reward_version, "seed": seed})
+    sessions_path.write_text(json.dumps({"sessions": sessions}, indent=2) + "\n")
+    return session
+
+
+def reseed_resumed_model(model: SAC, *, seed: int, session: int) -> None:
+    """SAC.load re-seeds the env with the saved seed, so a resumed session's first resets would replay session 0's
+    first episodes. Session k's explicit seeds are seed + k * SESSION_SEED_STRIDE (+ rank), below every counter range."""
+    model.set_random_seed(seed + session * SESSION_SEED_STRIDE)
 
 
 # --------------------------------------------------------------------------------------------------------
@@ -393,7 +454,10 @@ def build_arg_parser() -> argparse.ArgumentParser:
     p.add_argument("--out", type=Path, default=ROOT / "docs" / "gates" / "m2_train.json")
     p.add_argument("--map-path", default=None, help='default: "/Game/AutoFly/Maps/<SCENE upper-cased>"')
     p.add_argument("--device", default="cuda")
-    p.add_argument("--seed", type=int, default=0)
+    p.add_argument("--seed", type=int, default=0, help=f"0 <= seed < {SESSION_SEED_STRIDE - 64} (keeps SB3's explicit reset seeds out of every counter range)")
+    p.add_argument("--run-root", type=Path, default=None,
+                   help="where checkpoints, best/, final.zip and logs go; default runs/expert/<scene>. A fresh run "
+                        "refuses a directory that already holds one")
     p.add_argument("--checkpoint-freq", type=int, default=CHECKPOINT_FREQ)
     p.add_argument("--eval-freq", type=int, default=EVAL_FREQ)
     p.add_argument("--eval-episodes", type=int, default=EVAL_EPISODES)
@@ -406,11 +470,20 @@ def build_arg_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     args = build_arg_parser().parse_args(argv)
 
-    run_root = RUNS_DIR / "expert" / args.scene
+    if not 0 <= args.seed < SESSION_SEED_STRIDE - 64:
+        print(f"--seed must be in [0, {SESSION_SEED_STRIDE - 64}); got {args.seed}", file=sys.stderr)
+        return 2
+    run_root = args.run_root or RUNS_DIR / "expert" / args.scene
+    try:
+        session = prepare_run_root(run_root, resume=args.resume, reward_version=REWARD_VERSION, seed=args.seed)
+    except (RuntimeError, ValueError) as err:
+        print(f"refusing to start: {err}", file=sys.stderr)
+        return 2
     checkpoints_dir = run_root / "checkpoints"
     best_dir = run_root / "best"
     tb_dir = run_root / "tensorboard"
-    monitor_dir = run_root / "monitor"
+    # Per session: Monitor truncates an existing <instance>.monitor.csv, which would erase a resumed run's history.
+    monitor_dir = run_root / "monitor" / f"session{session}"
     eval_monitor_dir = monitor_dir / "eval"
     for d in (checkpoints_dir, best_dir, tb_dir, monitor_dir, eval_monitor_dir):
         d.mkdir(parents=True, exist_ok=True)
@@ -446,13 +519,14 @@ def main(argv: list[str] | None = None) -> int:
     try:
         train_env = make_vec_env(
             scene_file, layout, args.instances, map_path=map_path, monitor_dir=monitor_dir,
-            seed_base_fn=worker_seed_base, instance_offset=0,
+            seed_base_fn=lambda rank: session_seed_base(rank, session), instance_offset=0,
         )
-        # A separate simulator instance (own ports), one slot past the training workers, so EvalCallback
-        # can run concurrently with training without colliding on ports with any training worker.
+        # A separate simulator instance (own ports), one slot past the training workers, so evaluation
+        # can run concurrently with training without colliding on ports with any training worker. Its own seed
+        # range, disjoint from the M2 gate's EVAL_SEED_BASE episodes.
         eval_env = make_vec_env(
             scene_file, layout, 1, map_path=map_path, monitor_dir=eval_monitor_dir,
-            seed_base_fn=lambda _rank: EVAL_SEED_BASE, instance_offset=args.instances,
+            seed_base_fn=lambda _rank: EVAL_CALLBACK_SEED_BASE, instance_offset=args.instances,
         )
 
         if args.resume:
@@ -468,6 +542,7 @@ def main(argv: list[str] | None = None) -> int:
                 )
             model = SAC.load(resume_path, env=train_env, device=args.device, tensorboard_log=str(tb_dir))
             model.load_replay_buffer(buffer_path)
+            reseed_resumed_model(model, seed=args.seed, session=session)
             num_timesteps_at_start = int(model.num_timesteps)
             print(f"resumed from {resume_path} (num_timesteps={model.num_timesteps}) with replay buffer {buffer_path}")
         else:
@@ -547,6 +622,11 @@ def main(argv: list[str] | None = None) -> int:
         "error": error_message,
         "resume": args.resume,
         "resumed_from": str(resume_path) if resume_path is not None else None,
+        "run_root": str(run_root),
+        "session": session,
+        "reward_version": REWARD_VERSION,
+        "seed_bases": [session_seed_base(rank, session) for rank in train_slots],
+        "eval_callback_seed_base": EVAL_CALLBACK_SEED_BASE,
         "config": {
             "policy": "MultiInputPolicy",
             "policy_kwargs": "autofly_ue5.expert.features.POLICY_KWARGS",

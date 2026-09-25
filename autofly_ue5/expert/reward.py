@@ -6,6 +6,10 @@ import math
 from dataclasses import dataclass
 from enum import Enum
 
+# Recorded with every training session and gate run. A replay buffer or checkpoint trained under one version must not
+# be resumed or compared under another (train.prepare_run_root refuses the resume).
+REWARD_VERSION = "1-progress-everywhere"
+
 
 class Outcome(Enum):
     RUNNING = "running"

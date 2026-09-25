@@ -285,3 +285,13 @@ def test_load_throughput_projection_with_a_missing_file_is_none(tmp_path):
     from scripts.m2_gate import _load_throughput_projection
 
     assert _load_throughput_projection(tmp_path / "does_not_exist.json") is None
+
+
+def test_parse_model_args_default_paths_follow_the_run_root():
+    from pathlib import Path
+
+    from scripts.m2_gate import parse_model_args
+
+    models = parse_model_args(None, "s01", run_root=Path("/runs/expert/s01_r2"))
+    assert models == {"best_model": Path("/runs/expert/s01_r2/best/best_model.zip"),
+                      "final": Path("/runs/expert/s01_r2/final.zip")}
