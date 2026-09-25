@@ -65,20 +65,20 @@ Two lines of defence, matching the two places that hazard can bite:
    guessed it would.
 2. If in-place retries are exhausted (the connection itself, not just one sweep, looks broken),
    `ResilientAutoFlyEnv._relaunch()` tears the `Simulator` down and builds a brand new one at the same
-   `instance` slot, *before* raising again. Tearing down reuses the exact bounded-wait/force-teardown
-   machinery `scripts/measure_instances.py` already wrote and verified live (`sweep_stale_instances`) rather
-   than reinventing it: a bounded background-thread join around `close()` (the same pattern as that
-   script's `teardown()`, applied here to one `AutoFlyEnv` instead of a whole `SubprocVecEnv`, since a
-   relaunch operates on a single worker, not the whole vec env), then an unconditional
-   `sweep_stale_instances()` sweep, which stops the real OS-level Unreal process via this project's own
-   pidfile bookkeeping independent of whether the Python-level `close()` call ever returned. Only after
+   `instance` slot, *before* raising again. Tearing down is a bounded background-thread join around the old
+   simulator's `close()` (the same pattern as `autofly_ue5.expert.vec.teardown()`, applied to one simulator),
+   then `stop_instance()` on this slot alone, which stops the real OS-level Unreal process via this project's
+   own pidfile bookkeeping independent of whether the Python-level `close()` call ever returned. (Until the
+   2026-09-24 review this was a sweep of EVERY simulator on the host, so a relaunch in the training slot also
+   killed the eval simulator and vice versa: Task 8's run recorded that feedback loop as all 77 of its Timeout
+   faults and 14 of its 23 relaunches.) Only after
    retries are exhausted does a relaunch happen -- "losing a worker must never lose the run" -- and only
    after every relaunch attempt is exhausted does this finally raise, ending the run loudly rather than
    hanging it or silently discarding data.
 
-`make_vec_env` reuses `scripts/measure_instances.py`'s `_call_reset_with_timeout` for n>1's staggered first
-launch (hazard #2: two `AutoFlyEnv`s hitting `check_gpu_for_launch` at once could together exceed the GPU
-budget) and its `teardown` for closing the whole vec env in `main()`'s `finally` -- again, not reinvented.
+`make_vec_env` (`autofly_ue5.expert.vec`) uses `call_reset_with_timeout` for n>1's staggered first launch
+(hazard #2: two `AutoFlyEnv`s hitting `check_gpu_for_launch` at once could together exceed the GPU budget), and
+`teardown` closes each vec env in `main()`'s `finally`, stopping only this run's own slots.
 `_step_all`'s specific technique (bypassing SB3's `step_async`/`step_wait()` with a bounded
 `remote.poll()`) is Task 7's OWN measurement loop stepping manually; SB3's `SAC.learn()` owns its rollout
 loop internally and this trainer does not step vec envs by hand, so there is no call site for it here --
@@ -136,7 +136,7 @@ from autofly_ue5.expert.seeds import EVAL_SEED_BASE, WORKER_SEED_STRIDE, worker_
 from autofly_ue5.expert.vec import call_reset_with_timeout, make_vec_env, teardown  # noqa: F401
 from autofly_ue5.paths import ROOT, RUNS_DIR, SCENES_DIR
 from autofly_ue5.scenes.model import Bounds, Instance, Layout, SceneFile, load_scene_file
-from autofly_ue5.sim.process import instance_dir, sweep_stale_instances
+from autofly_ue5.sim.process import instance_dir, stop_instances, sweep_orphaned_instances
 from autofly_ue5.validate.engine_check import boot_id, count_device_lost, xid_count
 
 
@@ -422,9 +422,13 @@ def main(argv: list[str] | None = None) -> int:
     xid_before = xid_count(run_started)
     boot_before = boot_id()
 
-    swept = sweep_stale_instances()  # hazard #3: a crashed earlier run can leave Unreal children holding VRAM
+    # Hazard #3: a crashed earlier run can leave Unreal children holding VRAM. Only orphans -- a concurrently
+    # running job's simulators are not ours to stop.
+    swept = sweep_orphaned_instances()
     if swept:
-        print(f"swept stale instances before starting: {swept}", file=sys.stderr)
+        print(f"swept orphaned instances before starting: {swept}", file=sys.stderr)
+    train_slots = list(range(args.instances))
+    eval_slot = args.instances
 
     t_wall_start = time.monotonic()
     train_env: VecEnv | None = None
@@ -504,10 +508,9 @@ def main(argv: list[str] | None = None) -> int:
     finally:
         # Every step here is itself wrapped: a failure while cleaning up after a failure must still reach
         # the gate-record write below (docs/gates/m2_train.json must describe what happened even when
-        # teardown itself hits a surprise, e.g. the live TOCTOU race sweep_stale_instances() now guards
-        # against) rather than crashing main() before it can write anything.
+        # teardown itself hits a surprise) rather than crashing main() before it can write anything.
         fault_summaries: list[dict] = []
-        for env in (train_env, eval_env):
+        for env, slots in ((train_env, train_slots), (eval_env, [eval_slot])):
             if env is None:
                 continue
             try:
@@ -515,14 +518,14 @@ def main(argv: list[str] | None = None) -> int:
             except Exception as err:
                 print(f"WARNING: could not collect a fault summary: {type(err).__name__}: {err}", file=sys.stderr)
             try:
-                teardown(env)  # bounded close + force-kill + sweep_stale_instances -- reused, not reinvented
+                teardown(env, slots)  # bounded close + force-kill + stop this run's own slots
             except Exception as err:
                 print(f"WARNING: teardown() raised {type(err).__name__}: {err}; continuing cleanup", file=sys.stderr)
                 traceback.print_exc()
         try:
-            sweep_stale_instances()
+            stop_instances(train_slots + [eval_slot])  # belt-and-braces: every slot this run used, nothing else
         except Exception as err:
-            print(f"WARNING: final sweep_stale_instances() raised {type(err).__name__}: {err}", file=sys.stderr)
+            print(f"WARNING: final stop_instances() raised {type(err).__name__}: {err}", file=sys.stderr)
 
     wall_s = time.monotonic() - t_wall_start
     num_timesteps = int(model.num_timesteps) if model is not None else 0

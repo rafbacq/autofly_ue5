@@ -6,10 +6,17 @@ alive, whose /proc cmdline[0] equals the recorded cmd[0], and whose process
 group equals the recorded PGID. Unreal starts its helpers (ShaderCompileWorker,
 zenserver, CrashReportClient) in their own process groups (UnixPlatformProcess.cpp:1048-1049),
 so they are not signalled here; callers check for survivors with pgrep and report them.
+
+Ownership (C1, 2026-09-24 review): each record also names the *run* that launched it -- the main process of a
+training/gate/measurement run, as a (pid, start time) token, even when a SubprocVecEnv worker did the launching.
+A run stops only its own slots, or slots whose run is gone (`sweep_orphaned_instances`). The old global sweep
+stopped every simulator on the host, which made a relaunch in one slot kill the eval simulator in another --
+measured in Task 8's run: all 77 Timeout faults and 14 of its 23 relaunches.
 """
 
 from __future__ import annotations
 
+import fcntl
 import json
 import logging
 import os
@@ -17,6 +24,7 @@ import re
 import signal
 import subprocess
 import time
+from contextlib import contextmanager
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
@@ -30,6 +38,7 @@ PORT_STRIDE = 12
 # that writes ~/UnrealEngine/UnrealTrace and /tmp/UnrealTraceServer.pid (TraceAuxiliary.cpp:1980-1986).
 COMMON_FLAGS = ["-RenderOffScreen", "-nosound", "-unattended", "-nopause", "-nosplash", "-notraceserver", "-log",
                 "-ResX=640", "-ResY=480"]
+KILL_WAIT_S = 10.0  # how long stop() waits for a SIGKILLed process to disappear
 
 
 class NotOwnedError(RuntimeError):
@@ -38,6 +47,10 @@ class NotOwnedError(RuntimeError):
 
 class SimExitedError(RuntimeError):
     """The simulator process exited before becoming ready."""
+
+
+class SimReadyTimeout(TimeoutError):
+    """The simulator process stayed alive but never opened its ports within the ready timeout."""
 
 
 @dataclass(frozen=True)
@@ -56,6 +69,48 @@ class SimProcess:
     cmd: list[str]
     log_path: str
     started_unix: float
+    # The run that owns this simulator (see the module docstring). None in records written before ownership
+    # existed; such a record counts as orphaned.
+    owner_pid: int | None = None
+    owner_start_ticks: int | None = None
+
+
+def proc_start_ticks(pid: int) -> int | None:
+    """Field 22 of /proc/<pid>/stat (start time in clock ticks since boot): with the pid, it names one process
+    for its whole life, so a recycled pid cannot impersonate a dead run."""
+    try:
+        stat = Path(f"/proc/{pid}/stat").read_text()
+    except (FileNotFoundError, ProcessLookupError):
+        return None
+    return int(stat.rsplit(")", 1)[1].split()[19])
+
+
+@dataclass(frozen=True)
+class RunOwner:
+    pid: int
+    start_ticks: int | None
+
+    @classmethod
+    def of(cls, pid: int) -> "RunOwner":
+        return cls(pid, proc_start_ticks(pid))
+
+    def is_alive(self) -> bool:
+        return is_alive(self.pid) and proc_start_ticks(self.pid) == self.start_ticks
+
+
+_run_owner: RunOwner | None = None
+
+
+def set_run_owner(owner: RunOwner | None) -> None:
+    """Called in each SubprocVecEnv worker with the main process's token, so the simulators a worker launches are
+    recorded as the run's, not the worker's (a SIGKILLed main can leave hung workers alive, which would otherwise
+    keep their slots looking owned forever)."""
+    global _run_owner
+    _run_owner = owner
+
+
+def current_run_owner() -> RunOwner:
+    return _run_owner if _run_owner is not None else RunOwner.of(os.getpid())
 
 
 def ports_for_instance(instance: int) -> SimPorts:
@@ -120,6 +175,19 @@ def read_pid_file(path: Path) -> SimProcess:
     return SimProcess(**json.loads(Path(path).read_text()))
 
 
+@contextmanager
+def _slot_lock(directory: Path):
+    """Serialises every read-modify-write of one slot's pid.json (launch, stop): without it, a close() finishing
+    late on an abandoned thread could read, and then delete, the record of the simulator relaunched in its place."""
+    directory.mkdir(parents=True, exist_ok=True)
+    with open(directory / "pid.lock", "w") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        try:
+            yield
+        finally:
+            fcntl.flock(lock, fcntl.LOCK_UN)
+
+
 def _proc_state(pid: int) -> str | None:
     try:
         stat = Path(f"/proc/{pid}/stat").read_text()
@@ -171,30 +239,33 @@ def listening_pids(port: int) -> set[int]:
 
 
 def launch_process(
-    cmd: list[str], instance: int, ports: SimPorts, env: dict[str, str], run_root: Path = SIM_RUN_DIR
+    cmd: list[str], instance: int, ports: SimPorts, env: dict[str, str], run_root: Path = SIM_RUN_DIR,
+    owner: RunOwner | None = None,
 ) -> SimProcess:
     directory = instance_dir(instance, run_root)
-    directory.mkdir(parents=True, exist_ok=True)
-    pid_file = directory / "pid.json"
-    if pid_file.exists():
-        existing = read_pid_file(pid_file)
-        if is_alive(existing.pid) and is_owned(existing):
-            raise RuntimeError(f"instance {instance} is already running with pid {existing.pid}")
-        pid_file.unlink()
-    for port in (ports.topics, ports.services):
-        if listening_pids(port):
-            raise RuntimeError(f"port {port} is already in use")
-    with open(directory / "stdout.log", "wb") as out:
-        proc = subprocess.Popen(
-            cmd, stdin=subprocess.DEVNULL, stdout=out, stderr=subprocess.STDOUT, env=env,
-            start_new_session=True, cwd=directory,
+    owner = owner if owner is not None else current_run_owner()
+    with _slot_lock(directory):
+        pid_file = directory / "pid.json"
+        if pid_file.exists():
+            existing = read_pid_file(pid_file)
+            if is_alive(existing.pid) and is_owned(existing):
+                raise RuntimeError(f"instance {instance} is already running with pid {existing.pid}")
+            pid_file.unlink()
+        for port in (ports.topics, ports.services):
+            if listening_pids(port):
+                raise RuntimeError(f"port {port} is already in use")
+        with open(directory / "stdout.log", "wb") as out:
+            proc = subprocess.Popen(
+                cmd, stdin=subprocess.DEVNULL, stdout=out, stderr=subprocess.STDOUT, env=env,
+                start_new_session=True, cwd=directory,
+            )
+        log_path = next((c.split("=", 1)[1] for c in cmd if c.startswith("-abslog=")), str(directory / "stdout.log"))
+        sp = SimProcess(
+            pid=proc.pid, pgid=os.getpgid(proc.pid), instance=instance, topics_port=ports.topics,
+            services_port=ports.services, cmd=list(cmd), log_path=log_path, started_unix=time.time(),
+            owner_pid=owner.pid, owner_start_ticks=owner.start_ticks,
         )
-    log_path = next((c.split("=", 1)[1] for c in cmd if c.startswith("-abslog=")), str(directory / "stdout.log"))
-    sp = SimProcess(
-        pid=proc.pid, pgid=os.getpgid(proc.pid), instance=instance, topics_port=ports.topics,
-        services_port=ports.services, cmd=list(cmd), log_path=log_path, started_unix=time.time(),
-    )
-    pid_file.write_text(json.dumps(asdict(sp), indent=2))
+        pid_file.write_text(json.dumps(asdict(sp), indent=2))
     return sp
 
 
@@ -207,37 +278,46 @@ def wait_ready(sp: SimProcess, timeout_s: float, poll_s: float = 1.0) -> float:
         if sp.pid in listening_pids(sp.topics_port) and sp.pid in listening_pids(sp.services_port):
             return time.monotonic() - start
         if time.monotonic() - start > timeout_s:
-            raise TimeoutError(f"ports {sp.topics_port}/{sp.services_port} not open after {timeout_s} s; see {sp.log_path}")
+            raise SimReadyTimeout(f"ports {sp.topics_port}/{sp.services_port} not open after {timeout_s} s; see {sp.log_path}")
         time.sleep(poll_s)
 
 
-def stop(instance: int, grace_s: float = 30.0, run_root: Path = SIM_RUN_DIR) -> str:
-    pid_file = instance_dir(instance, run_root) / "pid.json"
-    if not pid_file.exists():
-        return "no_pid_file"
-    sp = read_pid_file(pid_file)
-    if not is_alive(sp.pid):
-        _reap(sp.pid)
-        pid_file.unlink()
-        return "not_running"
-    if not is_owned(sp):
-        raise NotOwnedError(
-            f"pid {sp.pid} in {pid_file} does not match the recorded command/process group; not stopping it"
-        )
-    os.killpg(sp.pgid, signal.SIGTERM)
-    result = "terminated"
-    deadline = time.monotonic() + grace_s
-    while is_alive(sp.pid) and time.monotonic() < deadline:
-        _reap(sp.pid)
-        time.sleep(0.2)
-    if is_alive(sp.pid):
-        os.killpg(sp.pgid, signal.SIGKILL)
-        result = "killed"
-        deadline = time.monotonic() + 10.0
+def stop(instance: int, grace_s: float = 30.0, run_root: Path = SIM_RUN_DIR, expected_pid: int | None = None) -> str:
+    """Stop the slot's recorded simulator. `expected_pid`: stop it only if it is still that process -- a caller
+    closing a simulator it launched earlier gets "superseded" (and nothing is signalled or unlinked) when the slot
+    has since been relaunched."""
+    directory = instance_dir(instance, run_root)
+    with _slot_lock(directory):
+        pid_file = directory / "pid.json"
+        if not pid_file.exists():
+            return "no_pid_file"
+        sp = read_pid_file(pid_file)
+        if expected_pid is not None and sp.pid != expected_pid:
+            return "superseded"
+        if not is_alive(sp.pid):
+            _reap(sp.pid)
+            pid_file.unlink()
+            return "not_running"
+        if not is_owned(sp):
+            raise NotOwnedError(
+                f"pid {sp.pid} in {pid_file} does not match the recorded command/process group; not stopping it"
+            )
+        os.killpg(sp.pgid, signal.SIGTERM)
+        result = "terminated"
+        deadline = time.monotonic() + grace_s
         while is_alive(sp.pid) and time.monotonic() < deadline:
             _reap(sp.pid)
             time.sleep(0.2)
-    pid_file.unlink()
+        if is_alive(sp.pid):
+            os.killpg(sp.pgid, signal.SIGKILL)
+            result = "killed"
+            deadline = time.monotonic() + KILL_WAIT_S
+            while is_alive(sp.pid) and time.monotonic() < deadline:
+                _reap(sp.pid)
+                time.sleep(0.2)
+        if is_alive(sp.pid):
+            return "unkillable"  # keep the record: the process still holds its ports and VRAM
+        pid_file.unlink()
     return result
 
 
@@ -250,24 +330,43 @@ def own_running_instances(run_root: Path = SIM_RUN_DIR) -> list[SimProcess]:
     return running
 
 
-def sweep_stale_instances() -> list[dict]:
-    """Stop any simulator this project owns that is still recorded as running. A crashed earlier run can
-    leave Unreal children holding VRAM, and launch_process() then refuses with "already running" or "port
-    already in use".
+def _recorded_owner(sp: SimProcess) -> RunOwner | None:
+    return None if sp.owner_pid is None else RunOwner(sp.owner_pid, sp.owner_start_ticks)
 
-    Tolerates a live-measured TOCTOU race (Task 8 shakedown, 2026-09-16): `stop()` checks the pid file exists,
-    then later unconditionally unlinks it -- if a second, concurrent path stops the SAME instance in between
-    (e.g. this function called once per vec env while each vec env's own close() also stops its own instance
-    independently), that unlink() can raise FileNotFoundError. The pid file being gone is proof the instance is
-    already stopped, not a real failure, so this is caught and recorded rather than left to crash the caller.
-    """
+
+def stop_instance(instance: int, run_root: Path = SIM_RUN_DIR, owner: RunOwner | None = None) -> str:
+    """Stop one slot on behalf of `owner` (default: this run). Refuses ("owner_alive_elsewhere") a slot another
+    live run owns; never raises for a slot that is already empty or not ours to signal."""
+    owner = owner if owner is not None else current_run_owner()
+    pid_file = instance_dir(instance, run_root) / "pid.json"
+    try:
+        recorded = _recorded_owner(read_pid_file(pid_file))
+    except FileNotFoundError:
+        return "no_pid_file"
+    if recorded is not None and recorded != owner and recorded.is_alive():
+        return "owner_alive_elsewhere"
+    try:
+        return stop(instance, run_root=run_root)
+    except NotOwnedError:
+        return "not_owned"
+
+
+def stop_instances(instances, run_root: Path = SIM_RUN_DIR, owner: RunOwner | None = None) -> list[dict]:
+    """stop_instance() for each listed slot -- the teardown for a run's own simulators, and nothing else."""
+    return [{"instance": i, "result": stop_instance(i, run_root, owner)} for i in instances]
+
+
+def sweep_orphaned_instances(run_root: Path = SIM_RUN_DIR) -> list[dict]:
+    """Stop every owned, running simulator whose run is gone (dead owner, or a record from before ownership) --
+    what a crashed earlier run leaves holding VRAM. Simulators of a live run, including another concurrent one,
+    are left alone. `scripts/launch_sim.py` exits after launching, so its simulators count as orphans here;
+    `scripts/stop_sim.py` stops a slot explicitly."""
     swept = []
-    for sp in own_running_instances():
-        try:
-            result = stop(sp.instance)
-        except FileNotFoundError:
-            result = "already_stopped_concurrently"
-        swept.append({"instance": sp.instance, "pid": sp.pid, "result": result})
+    for sp in own_running_instances(run_root):
+        recorded = _recorded_owner(sp)
+        if recorded is not None and recorded.is_alive():
+            continue
+        swept.append({"instance": sp.instance, "pid": sp.pid, "result": stop(sp.instance, run_root=run_root)})
     return swept
 
 

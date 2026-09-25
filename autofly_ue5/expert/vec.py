@@ -18,7 +18,15 @@ from autofly_ue5.expert.resilient import ResilientAutoFlyEnv
 from autofly_ue5.expert.seeds import worker_seed_base
 from autofly_ue5.scenes.model import Layout, SceneFile
 from autofly_ue5.sim.airsim_backend import ProjectAirSimSimulator
-from autofly_ue5.sim.process import instance_dir, route_client_log, sweep_stale_instances
+from autofly_ue5.sim.process import (
+    SIM_RUN_DIR,
+    RunOwner,
+    current_run_owner,
+    instance_dir,
+    route_client_log,
+    set_run_owner,
+    stop_instances,
+)
 
 # SB3's SubprocVecEnv.close() joins each worker process; if a worker died on an uncaught exception (e.g. an
 # AutoFlyEnv.reset() failure -- measured live: a spawn() material error) that join can hang far longer than any
@@ -30,9 +38,10 @@ VEC_ENV_CLOSE_TIMEOUT_S = 20.0
 # leaves a non-daemon background thread running, so the crashed worker blocks forever in interpreter shutdown, its
 # pipe never reaches EOF, and a plain env_method() call (which does an unbounded remote.recv()) hangs forever right
 # along with it, never reaching the caller's own try/finally. Polling with a timeout is the only way an
-# orchestrator can guarantee it reaches teardown. 300s is generous next to every launch measured so far (single
-# digits to tens of seconds).
-LAUNCH_REPLY_TIMEOUT_S = 300.0
+# orchestrator can guarantee it reaches teardown. The bound covers a worker's own worst case: every relaunch round
+# (DEFAULT_MAX_RELAUNCH_ATTEMPTS + 1 = 4) spending a full 300 s ready timeout, plus margin -- measured launches take
+# single-digit seconds, so reaching it means the worker is hung, not slow.
+LAUNCH_REPLY_TIMEOUT_S = 1500.0
 
 
 def make_vec_env(
@@ -45,6 +54,8 @@ def make_vec_env(
     seed_base_fn: Callable[[int], int] = worker_seed_base,
     instance_offset: int = 0,
     sim_factory: Callable[[], object] = ProjectAirSimSimulator,
+    sim_root: Path = SIM_RUN_DIR,
+    owner: RunOwner | None = None,
 ) -> VecEnv:
     """n `AutoFlyEnv`s, each `Monitor(ResilientAutoFlyEnv(AutoFlyEnv(...)))`, vectorised.
 
@@ -57,18 +68,24 @@ def make_vec_env(
     chose (chosen_n=1). n > 1 uses SubprocVecEnv, staggering each worker's first reset() (hazard #2: two
     simulators' first reset() at once race check_gpu_for_launch) via a bounded-timeout call rather than SB3's
     unbounded env_method().
+
+    `sim_root`: where each slot's simulator is recorded (and its client log written). `owner`: the run the simulators
+    belong to -- the calling process by default; SubprocVecEnv workers adopt it so a slot is never recorded as owned
+    by a worker (see `autofly_ue5.sim.process.set_run_owner`). Workers (n > 1) run their wrapper in `worker_mode`.
     """
     if n < 1:
         raise ValueError(f"n must be >= 1, got {n}")
     monitor_dir.mkdir(parents=True, exist_ok=True)
+    owner = owner if owner is not None else current_run_owner()
 
     def _env_fn(rank: int) -> Callable[[], gym.Env]:
         instance = instance_offset + rank
 
         def _make() -> gym.Env:
-            route_client_log(instance_dir(instance) / "client.log")
+            set_run_owner(owner)
+            route_client_log(instance_dir(instance, sim_root) / "client.log")
             base = AutoFlyEnv(scene, layout, sim_factory, map_path=map_path, instance=instance, seed_base=seed_base_fn(rank))
-            resilient = ResilientAutoFlyEnv(base, instance=instance)
+            resilient = ResilientAutoFlyEnv(base, instance=instance, sim_root=sim_root, worker_mode=n > 1)
             return Monitor(resilient, filename=str(monitor_dir / f"{instance}.monitor.csv"), info_keywords=("is_success",))
 
         return _make
@@ -82,13 +99,14 @@ def make_vec_env(
     return vec_env
 
 
-def teardown(vec_env: SubprocVecEnv | None) -> list[dict]:
-    """Close every worker (which closes its Simulator, which stops its process), then sweep stale
-    instances as a belt-and-braces check -- so a failed run never leaves processes holding VRAM.
+def teardown(vec_env: SubprocVecEnv | None, instances, sim_root: Path = SIM_RUN_DIR) -> list[dict]:
+    """Close every worker (which closes its Simulator, which stops its process), then stop the listed slots
+    directly as a belt-and-braces check -- so a failed run never leaves its processes holding VRAM. Only the
+    listed slots: another run's simulators are never touched (C1).
 
     vec_env.close() runs in a background thread with a hard timeout: measured live, it can hang
     indefinitely joining a worker that already died on an uncaught exception. Whether or not that thread
-    finishes, sweep_stale_instances() below stops the actual Unreal process directly via our own pidfile
+    finishes, stop_instances() below stops the actual Unreal processes directly via our own pidfile
     bookkeeping (autofly_ue5.sim.process), independent of SB3's cooperative shutdown.
     """
     if vec_env is not None:
@@ -120,7 +138,7 @@ def teardown(vec_env: SubprocVecEnv | None) -> list[dict]:
                     proc.join(5.0)
             except Exception as err:
                 print(f"WARNING: could not kill worker {i}: {type(err).__name__}: {err}", file=sys.stderr)
-    return sweep_stale_instances()
+    return stop_instances(list(instances), sim_root)
 
 
 def call_reset_with_timeout(vec_env: SubprocVecEnv, index: int, timeout_s: float = LAUNCH_REPLY_TIMEOUT_S) -> None:

@@ -12,11 +12,21 @@ from collections import Counter
 # exceptions). Not a new project dependency: pynng is installed transitively (projectairsim depends on it).
 from pynng.exceptions import Timeout as NngTimeout
 
+# pynng.exceptions.ConnectionReset: never observed in any run log (the killed-simulator case surfaced as Timeout),
+# but it is the same kind of transport-level failure and ending a 12-hour run on it would be the costlier mistake.
+# The rest of NNGException stays uncaught on purpose: NotSupported, InvalidOperation, ... are configuration or
+# protocol bugs that retrying cannot fix.
+from pynng.exceptions import ConnectionReset as NngConnectionReset
+
 from autofly_ue5.expert.episode import EpisodeSetupError
 from autofly_ue5.sim.airsim_backend import CameraPoseError, CommandTimeoutError, StaleStateError, StepTimingError
+from autofly_ue5.sim.process import SimExitedError, SimReadyTimeout
 
-FAULT_ERRORS_STEP = (CameraPoseError, StepTimingError, StaleStateError, CommandTimeoutError, NngTimeout)
-FAULT_ERRORS_RESET = FAULT_ERRORS_STEP + (EpisodeSetupError,)
+FAULT_ERRORS_STEP = (CameraPoseError, StepTimingError, StaleStateError, CommandTimeoutError, NngTimeout, NngConnectionReset)
+# A launch that failed: retrying reset() on the same slot cannot help, so the wrapper goes straight to its next
+# relaunch round instead of spending max_reset_attempts launch timeouts on it.
+FAULT_ERRORS_LAUNCH = (SimExitedError, SimReadyTimeout)
+FAULT_ERRORS_RESET = FAULT_ERRORS_STEP + (EpisodeSetupError,) + FAULT_ERRORS_LAUNCH
 # Every fault name the resilient wrapper knows how to recover from. Seeded into every fault/recovery counter dict
 # (see ResilientAutoFlyEnv.__init__, combine_fault_summaries) so the run record always shows an explicit 0 for a
 # hazard that never fired, rather than omitting the key -- a 12-hour run that never faults must be distinguishable

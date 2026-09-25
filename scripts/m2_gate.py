@@ -19,7 +19,7 @@ see `combo_order`.
 Reuses, rather than reinvents: `autofly_ue5.expert.resilient.ResilientAutoFlyEnv` for the documented
 recoverable backend hazards (`CameraPoseError`, `StepTimingError`, `StaleStateError`,
 `CommandTimeoutError`, `pynng.exceptions.Timeout`); `autofly_ue5.expert.evaluate.evaluate_policy_episodes`
-for the actual episode loop and its fault-vs-policy-outcome separation; `autofly_ue5.sim.process.sweep_stale_instances`
+for the actual episode loop and its fault-vs-policy-outcome separation; `autofly_ue5.sim.process.sweep_orphaned_instances`
 and `autofly_ue5.expert.vec.teardown` for GPU-safe startup/shutdown; `autofly_ue5.expert.train.sha256_of` for
 checkpoint provenance.
 
@@ -66,7 +66,7 @@ from autofly_ue5.expert.train import sha256_of, scene_and_layout as _scene_and_l
 from autofly_ue5.expert.vec import teardown  # noqa: E402
 from autofly_ue5.paths import ROOT, RUNS_DIR  # noqa: E402
 from autofly_ue5.sim.airsim_backend import ProjectAirSimSimulator  # noqa: E402
-from autofly_ue5.sim.process import instance_dir, route_client_log, sweep_stale_instances  # noqa: E402
+from autofly_ue5.sim.process import instance_dir, route_client_log, stop_instances, sweep_orphaned_instances  # noqa: E402
 from autofly_ue5.validate.engine_check import boot_id, count_device_lost, xid_count  # noqa: E402
 
 # --------------------------------------------------------------------------------------------------------
@@ -165,9 +165,9 @@ def run(
     xid_before = xid_count(run_started)
     boot_before = boot_id()
 
-    swept = sweep_stale_instances()
+    swept = sweep_orphaned_instances()  # a crashed earlier run's simulators; never a live run's
     if swept:
-        print(f"swept stale instances before starting: {swept}", file=sys.stderr)
+        print(f"swept orphaned instances before starting: {swept}", file=sys.stderr)
 
     throughput_projection = _load_throughput_projection()
     combos = combo_order(model_paths, conditions)
@@ -288,15 +288,15 @@ def run(
         # failure still reaches the gate-record write below rather than crashing before anything is saved.
         if env is not None:
             try:
-                teardown(env)  # bounded close + force-kill + sweep_stale_instances -- reused, not reinvented
+                teardown(env, [instance])  # bounded close + stop this gate's own slot, nothing else
             except Exception as err:
                 print(f"WARNING: teardown() raised {type(err).__name__}: {err}", file=sys.stderr)
                 traceback.print_exc()
         else:
             try:
-                sweep_stale_instances()
+                stop_instances([instance])
             except Exception as err:
-                print(f"WARNING: sweep_stale_instances() raised {type(err).__name__}: {err}", file=sys.stderr)
+                print(f"WARNING: stop_instances() raised {type(err).__name__}: {err}", file=sys.stderr)
 
     return _write()
 

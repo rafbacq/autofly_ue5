@@ -85,8 +85,11 @@ class AutoFlyEnv(gym.Env):
 
     def _ensure_launched(self) -> Simulator:
         if self._sim is None:
-            self._sim = self._sim_factory()
-            self._sim.launch(self._map_path, self._instance)
+            # Kept only once launch() succeeds: a simulator whose launch raised is not connected, and reusing it
+            # would turn every later reset() into "not connected" instead of a fresh launch.
+            sim = self._sim_factory()
+            sim.launch(self._map_path, self._instance)
+            self._sim = sim
         return self._sim
 
     def reset(self, seed: int | None = None, options: dict | None = None) -> tuple[dict[str, np.ndarray], dict]:
@@ -171,6 +174,8 @@ class AutoFlyEnv(gym.Env):
         }
 
     def close(self) -> None:
-        if self._sim is not None:
-            self._sim.close()
-            self._sim = None
+        # Detach first, then close: a relaunch may abandon a hung close() and install a new simulator, and the late
+        # return of this call must not detach that replacement.
+        sim, self._sim = self._sim, None
+        if sim is not None:
+            sim.close()

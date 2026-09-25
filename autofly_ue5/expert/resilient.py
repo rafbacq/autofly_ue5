@@ -5,34 +5,36 @@ measurements behind it.
 
 from __future__ import annotations
 
+import os
 import sys
 import threading
+import traceback
 from collections import Counter
+from pathlib import Path
 
 import gymnasium as gym
 
-from autofly_ue5.expert.env import AutoFlyEnv
-from autofly_ue5.expert.faults import FAULT_ERRORS_RESET, FAULT_ERRORS_STEP, KNOWN_FAULT_NAMES
-from autofly_ue5.sim.process import sweep_stale_instances
+from autofly_ue5.expert.faults import FAULT_ERRORS_LAUNCH, FAULT_ERRORS_RESET, FAULT_ERRORS_STEP, KNOWN_FAULT_NAMES
+from autofly_ue5.sim.process import SIM_RUN_DIR, stop_instance
 
 DEFAULT_MAX_RESET_ATTEMPTS = 5
 DEFAULT_MAX_RELAUNCH_ATTEMPTS = 3
 DEFAULT_CLOSE_TIMEOUT_S = 20.0  # matches autofly_ue5.expert.vec.VEC_ENV_CLOSE_TIMEOUT_S's philosophy.
 
 
-def _bounded_close(env: AutoFlyEnv, timeout_s: float) -> bool:
+def _bounded_close(closable, timeout_s: float) -> bool:
     """Best-effort, bounded close(). Task 7 measured live that a hung backend call can block a caller
     forever (the projectairsim client can leave a background thread a caller ends up waiting on); a
     relaunch must never block on it. Returns whether close() actually finished in time -- callers must
-    sweep_stale_instances() regardless, since that (not this thread) is what frees the real Unreal process
+    stop the slot's process regardless, since that (not this thread) is what frees the real Unreal process
     if close() did not return."""
     finished = threading.Event()
 
     def _do_close() -> None:
         try:
-            env.close()
+            closable.close()
         except Exception:
-            pass  # a raising close() is still a close attempt; sweep_stale_instances() cleans up either way
+            pass  # a raising close() is still a close attempt; the caller stops the slot either way
         finally:
             finished.set()
 
@@ -50,30 +52,59 @@ class ResilientAutoFlyEnv(gym.Wrapper):
     reward=0.0) rather than pretending the same episode continues -- the action that triggered the fault
     was never actually confirmed applied, so returning a `reset()`-fresh observation as if it were the
     consequence of that action would corrupt the RL problem far worse than one lost transition does.
+
+    `sim_root`: where this slot's simulator is recorded (`autofly_ue5.sim.process`); a relaunch stops that one slot
+    and nothing else. `worker_mode` (SubprocVecEnv workers): any exception that would leave reset()/step() ends the
+    process instead, because a worker that raises does not exit -- projectairsim's non-daemon thread blocks its
+    interpreter shutdown, and the training process then waits on its pipe forever.
     """
 
     def __init__(
         self,
-        env: AutoFlyEnv,
+        env: gym.Env,
         instance: int,
         *,
         max_reset_attempts: int = DEFAULT_MAX_RESET_ATTEMPTS,
         max_relaunch_attempts: int = DEFAULT_MAX_RELAUNCH_ATTEMPTS,
         close_timeout_s: float = DEFAULT_CLOSE_TIMEOUT_S,
+        sim_root: Path = SIM_RUN_DIR,
+        worker_mode: bool = False,
     ) -> None:
         super().__init__(env)
         self._instance = instance
         self._max_reset_attempts = max_reset_attempts
         self._max_relaunch_attempts = max_relaunch_attempts
         self._close_timeout_s = close_timeout_s
+        self._sim_root = Path(sim_root)
+        self._worker_mode = worker_mode
         self.fault_counts: Counter[str] = Counter({name: 0 for name in KNOWN_FAULT_NAMES})
         self.recovered_counts: Counter[str] = Counter({name: 0 for name in KNOWN_FAULT_NAMES})
         self.relaunch_count = 0
 
     def reset(self, seed: int | None = None, options: dict | None = None):
-        return self._reset_with_retry(seed=seed, options=options)
+        try:
+            return self._reset_with_retry(seed=seed, options=options)
+        except BaseException:
+            self._exit_if_worker()
+            raise
 
     def step(self, action):
+        try:
+            return self._step(action)
+        except BaseException:
+            self._exit_if_worker()
+            raise
+
+    def _exit_if_worker(self) -> None:
+        if self._worker_mode:
+            traceback.print_exc()
+            print(f"FATAL instance {self._instance}: unrecoverable error in a vec-env worker; exiting the worker "
+                  f"so the training process sees EOF instead of hanging", file=sys.stderr)
+            sys.stdout.flush()
+            sys.stderr.flush()
+            os._exit(1)
+
+    def _step(self, action):
         try:
             obs, reward, terminated, truncated, info = self.env.step(action)
         except FAULT_ERRORS_STEP as err:
@@ -107,13 +138,16 @@ class ResilientAutoFlyEnv(gym.Wrapper):
                     name = type(err).__name__
                     self.fault_counts[name] += 1
                     faults_so_far.append(name)
+                    launch_failed = isinstance(err, FAULT_ERRORS_LAUNCH)
                     print(
                         f"FAULT instance {self._instance}: caught {name} during reset() (occurrence "
                         f"#{self.fault_counts[name]} this instance, in-place attempt {attempt + 1}/"
                         f"{self._max_reset_attempts}, relaunch round {relaunch_round}/{self._max_relaunch_attempts}): "
-                        f"{err}; retrying",
+                        f"{err}; {'going to the next relaunch round' if launch_failed else 'retrying'}",
                         file=sys.stderr,
                     )
+                    if launch_failed:
+                        break  # the simulator never came up: another reset() on this slot cannot help
                     continue
                 for name in faults_so_far:
                     self.recovered_counts[name] += 1
@@ -129,30 +163,27 @@ class ResilientAutoFlyEnv(gym.Wrapper):
         raise RuntimeError(
             f"instance {self._instance}: reset() did not recover after {self._max_reset_attempts} "
             f"in-place retries x {self._max_relaunch_attempts + 1} relaunch attempts -- giving up "
-            f"(fault_counts={dict(self.fault_counts)}); losing this worker, not the process, is the "
-            f"correct failure mode here, but this should be investigated -- it means the simulator itself "
-            f"could not be relaunched cleanly {self._max_relaunch_attempts} times in a row"
+            f"(fault_counts={dict(self.fault_counts)}). The simulator could not be brought back "
+            f"{self._max_relaunch_attempts} times in a row; this ends the run (or, in a vec-env worker, the "
+            f"worker) and must be investigated"
         )
 
     def _relaunch(self) -> None:
         print(f"RELAUNCH instance {self._instance}: relaunching (this will be relaunch #{self.relaunch_count + 1})", file=sys.stderr)
-        finished = _bounded_close(self.env, self._close_timeout_s)
-        if not finished:
+        # Detach the old simulator before closing it, and close only it: if the bounded close() is abandoned and
+        # returns later, it can neither detach nor (via stop(expected_pid=...)) stop the replacement. Acts on the
+        # unwrapped AutoFlyEnv so a Monitor between us and it is never closed (that would end its CSV for good).
+        base = self.env.unwrapped
+        old_sim, base._sim = base._sim, None
+        if old_sim is not None and not _bounded_close(old_sim, self._close_timeout_s):
             print(
                 f"WARNING: instance {self._instance}: close() did not return within {self._close_timeout_s}s "
-                f"during relaunch; abandoning it and sweeping stale instances directly",
+                f"during relaunch; abandoning it and stopping this slot's process directly",
                 file=sys.stderr,
             )
-        # AutoFlyEnv.close() (autofly_ue5/expert/env.py, closed for editing) has no try/finally around its
-        # own `self._sim = None`: if close() raised, or is still hung in the background thread above,
-        # self._sim may still reference a broken connection. Force it to None here (an attribute poke, not
-        # a file edit -- the existing test suite already treats AutoFlyEnv's private state this way, e.g.
-        # tests/test_expert_env.py's env._sim/_spawned/_setup) so the next reset() unconditionally goes
-        # through _ensure_launched() and builds a brand new Simulator + process, instead of reusing a
-        # zombie one that would raise "not connected" -- a RuntimeError this wrapper does not know how to
-        # treat as recoverable, unlike the faults above.
-        self.env._sim = None
-        sweep_stale_instances()
+        # This slot only: the global sweep this replaced also stopped every sibling's simulator (C1).
+        result = stop_instance(self._instance, self._sim_root)
+        print(f"RELAUNCH instance {self._instance}: stopped its own slot: {result}", file=sys.stderr)
         self.relaunch_count += 1
 
     def get_fault_summary(self) -> dict:

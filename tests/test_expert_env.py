@@ -227,3 +227,34 @@ def test_truncates_exactly_at_max_episode_steps():
     _, _, terminated, truncated, info = env.step(zero_action)
     assert truncated and not terminated
     assert info["outcome"] == "timeout" and info["steps"] == 5
+
+
+def test_close_detaches_the_simulator_before_closing_it():
+    # C1: a relaunch abandons a hung close() and installs a new simulator; when the old close() finally returns it
+    # must not detach the replacement. Detaching first means the late close() has nothing of the new one to touch.
+    env = make_env()
+    env.reset(seed=1)
+    sim = env._sim
+    seen = []
+    real_close = sim.close
+    sim.close = lambda: (seen.append(env._sim), real_close())
+    env.close()
+    assert seen == [None]
+
+
+def test_a_failed_launch_is_not_kept():
+    from autofly_ue5.expert.env import AutoFlyEnv
+    from autofly_ue5.sim.process import SimExitedError
+
+    class ExitsOnLaunch(FakeSimulator):
+        def launch(self, map_path, instance):
+            raise SimExitedError("simulator exited before its ports opened")
+
+    sims = [ExitsOnLaunch(), FakeSimulator()]
+    scene, layout = scene_and_layout()
+    env = AutoFlyEnv(scene, layout, lambda: sims.pop(0), map_path="/Game/AutoFly/Maps/S01", instance=0)
+    with pytest.raises(SimExitedError):
+        env.reset(seed=1)
+    assert env._sim is None, "a simulator that never launched must not be reused by the next reset()"
+    obs, _ = env.reset(seed=1)
+    assert env.observation_space.contains(obs)

@@ -42,7 +42,7 @@ from autofly_ue5.gpu import gpu_memory_mib
 from autofly_ue5.paths import ROOT, RUNS_DIR
 from autofly_ue5.scenes.model import Bounds, Instance, Layout, SceneFile, load_scene_file
 from autofly_ue5.sim.airsim_backend import ProjectAirSimSimulator
-from autofly_ue5.sim.process import instance_dir, route_client_log, sweep_stale_instances
+from autofly_ue5.sim.process import instance_dir, route_client_log, sweep_orphaned_instances
 from autofly_ue5.validate.engine_check import boot_id, count_device_lost, xid_count
 
 MAP_PATH = "/Game/AutoFly/Maps/S01"
@@ -249,7 +249,7 @@ def measure_n(
             "timed_window_s": elapsed_s,
         }
     finally:
-        stale = teardown(vec_env)
+        stale = teardown(vec_env, range(n))
         if stale:
             print(f"WARNING: swept stale instances after n={n}: {stale}", file=sys.stderr)
 
@@ -262,7 +262,7 @@ def run(
     baseline_used_mib, gpu_total_mib = gpu_memory_mib()
     run_started = time.strftime("%Y-%m-%d %H:%M:%S")
 
-    initial_sweep = sweep_stale_instances()
+    initial_sweep = sweep_orphaned_instances()
     if initial_sweep:
         print(f"swept stale instances before starting: {initial_sweep}", file=sys.stderr)
         baseline_used_mib = wait_for_vram_drop(baseline_used_mib)

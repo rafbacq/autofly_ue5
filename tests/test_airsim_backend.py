@@ -324,16 +324,50 @@ def test_close_stops_process_even_when_disconnect_raises(monkeypatch):
     # A raising disconnect() must not skip stop(), or the simulator process leaks (~1.7 GiB of VRAM) and
     # the next launch() fails permanently ("already running" / "port already in use").
     sim = make_sim()
-    sim._proc = SimpleNamespace(instance=3)
+    sim._proc = SimpleNamespace(instance=3, pid=12345)
     stopped = []
-    monkeypatch.setattr(airsim_backend, "stop", lambda instance, run_root=None: stopped.append(instance))
+    monkeypatch.setattr(airsim_backend, "stop",
+                        lambda instance, run_root=None, expected_pid=None: stopped.append((instance, expected_pid)))
     sim._client.disconnect = lambda: (_ for _ in ()).throw(RuntimeError("disconnect boom"))
 
     with pytest.raises(RuntimeError, match="disconnect boom"):
         sim.close()
 
-    assert stopped == [3]
+    assert stopped == [(3, 12345)], "close() stops only the process it launched"
     assert sim._proc is None and sim._client is None and sim._world is None and sim._drone is None
+
+
+def test_a_close_abandoned_past_a_relaunch_does_not_stop_the_successor(tmp_path):
+    # C1 (2026-09-24 review), reproduced with real processes: the resilient wrapper gives close() a bounded wait,
+    # then clears the slot and relaunches it. If the abandoned close() returns later, its stop() must not kill the
+    # simulator now recorded in the same slot.
+    import os
+    import threading
+    import time
+
+    from autofly_ue5.sim.process import is_alive, launch_process, ports_for_instance, stop
+
+    def sleeper():
+        return launch_process(["sleep", "300"], 7, ports_for_instance(47), dict(os.environ), run_root=tmp_path)
+
+    class HangingClient:
+        def disconnect(self):
+            time.sleep(1.5)
+
+    sim = ProjectAirSimSimulator(run_root=tmp_path)
+    sim._client, sim._proc = HangingClient(), sleeper()
+    closer = threading.Thread(target=sim.close, daemon=True)
+    closer.start()
+    closer.join(0.3)
+    assert closer.is_alive(), "the test needs close() still hung when the slot is relaunched"
+    stop(7, grace_s=2.0, run_root=tmp_path)  # the relaunch path clears the slot ...
+    successor = sleeper()  # ... and launches its replacement
+    try:
+        closer.join(10.0)
+        assert not closer.is_alive()
+        assert is_alive(successor.pid), "the late close() stopped the simulator that replaced it"
+    finally:
+        stop(7, grace_s=2.0, run_root=tmp_path)
 
 
 def test_connect_clears_per_session_state():

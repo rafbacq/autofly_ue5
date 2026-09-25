@@ -88,7 +88,7 @@ class ProjectAirSimSimulator:
         api: PasApi | None = None,
         frame_timeout_s: float = 5.0,
         first_frame_timeout_s: float = 120.0,
-        ready_timeout_s: float = 900.0,
+        ready_timeout_s: float = 300.0,  # packaged launches measure ~3.4 s; bounded so a relaunch round stays short
         safe_altitude_m: float = 20.0,
         settle_steps: int = 2,
         collision_grace_s: float = 0.02,
@@ -198,7 +198,9 @@ class ProjectAirSimSimulator:
                 self._loop.close()
                 self._loop = None
             if self._proc is not None:
-                stop(self._proc.instance, run_root=self._run_root)
+                # expected_pid: if a bounded relaunch abandoned this close() and has since started a new simulator
+                # in the same slot, stop() leaves that one alone (C1).
+                stop(self._proc.instance, run_root=self._run_root, expected_pid=self._proc.pid)
                 self._proc = None
 
     def _require_connected(self) -> None:

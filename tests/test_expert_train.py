@@ -10,6 +10,8 @@ import numpy as np
 import pytest
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv
 
+from pynng.exceptions import ConnectionReset as NngConnectionReset
+from pynng.exceptions import NNGException
 from pynng.exceptions import Timeout as NngTimeout
 
 from autofly_ue5.sim.airsim_backend import CameraPoseError, CommandTimeoutError, StaleStateError, StepTimingError
@@ -20,7 +22,9 @@ from tests.test_expert_episode import scene_and_layout
 # All five step-time hazards ResilientAutoFlyEnv must recover from -- the spec's four documented siblings
 # plus the raw NNG transport timeout found live during this task's own shakedown (train.py's docstring has
 # the full story). Shared here so both parametrized tests below stay in sync with train.py's own set.
-ALL_STEP_FAULTS = [CameraPoseError, StepTimingError, StaleStateError, CommandTimeoutError, NngTimeout]
+ALL_STEP_FAULTS = [CameraPoseError, StepTimingError, StaleStateError, CommandTimeoutError, NngTimeout, NngConnectionReset]
+# pynng's own errno for each exception it raises (pynng.exceptions.EXCEPTION_MAP).
+_NNG_ERRNO = {NngTimeout: 5, NngConnectionReset: 19}
 
 
 # ------------------------------------------------------------------------------------------------------
@@ -132,10 +136,9 @@ class _FlakyFakeSimulator(FakeSimulator):
         self.close_count = 0
 
     def _raise(self, msg: str):
-        # pynng's NNGException subclasses (unlike our other four error types) require an `errno` argument;
-        # 110 is Linux's real ETIMEDOUT, matching what a genuine pynng.exceptions.Timeout carries.
-        if issubclass(self._error, NngTimeout):
-            raise self._error(msg, 110)
+        # pynng's NNGException subclasses (unlike our own error types) require an `errno` argument.
+        if issubclass(self._error, NNGException):
+            raise self._error(msg, _NNG_ERRNO[self._error])
         raise self._error(msg)
 
     def close(self):
@@ -170,9 +173,14 @@ def _sequenced_factory(configs: list[dict]):
 
 
 def _make_resilient(sim_factory, **wrapper_kwargs):
+    import tempfile
+
     from autofly_ue5.expert.env import AutoFlyEnv
     from autofly_ue5.expert.train import ResilientAutoFlyEnv
 
+    # A relaunch stops its own slot's recorded simulator; point that bookkeeping at a scratch directory so no test
+    # ever reads or signals the real runs/sim (a live training run's simulators live there).
+    wrapper_kwargs.setdefault("sim_root", Path(tempfile.mkdtemp(prefix="autofly_sim_")))
     scene, layout = scene_and_layout()
     base = AutoFlyEnv(scene, layout, sim_factory, map_path="/Game/AutoFly/Maps/S01", instance=0)
     return ResilientAutoFlyEnv(base, instance=0, **wrapper_kwargs)
@@ -449,7 +457,7 @@ def test_make_vec_env_n1_is_a_dummy_vec_env_and_works_end_to_end(tmp_path):
     scene, layout = scene_and_layout()
     vec_env = make_vec_env(
         scene, layout, 1, map_path="/Game/AutoFly/Maps/S01", monitor_dir=tmp_path,
-        seed_base_fn=worker_seed_base, sim_factory=FakeSimulator,
+        seed_base_fn=worker_seed_base, sim_factory=FakeSimulator, sim_root=tmp_path / "sim",
     )
     try:
         assert isinstance(vec_env, DummyVecEnv)
@@ -470,7 +478,7 @@ def test_make_vec_env_n_greater_than_1_is_a_subproc_vec_env(tmp_path):
     scene, layout = scene_and_layout()
     vec_env = make_vec_env(
         scene, layout, 2, map_path="/Game/AutoFly/Maps/S01", monitor_dir=tmp_path,
-        seed_base_fn=worker_seed_base, sim_factory=FakeSimulator,
+        seed_base_fn=worker_seed_base, sim_factory=FakeSimulator, sim_root=tmp_path / "sim",
     )
     try:
         assert isinstance(vec_env, SubprocVecEnv)
@@ -487,7 +495,7 @@ def test_two_workers_via_make_vec_env_get_disjoint_seed_bases(tmp_path):
     scene, layout = scene_and_layout()
     vec_env = make_vec_env(
         scene, layout, 2, map_path="/Game/AutoFly/Maps/S01", monitor_dir=tmp_path,
-        seed_base_fn=worker_seed_base, sim_factory=FakeSimulator,
+        seed_base_fn=worker_seed_base, sim_factory=FakeSimulator, sim_root=tmp_path / "sim",
     )
     try:
         obs = vec_env.reset()
@@ -540,3 +548,166 @@ def test_outcome_histogram_buckets_a_fault_truncation_under_its_own_hazard_not_r
     cb._on_step()
 
     assert cb.histogram == {"CameraPoseError": 1, "success": 1}
+
+
+# ------------------------------------------------------------------------------------------------------
+# C1 (2026-09-24 review): a relaunch or teardown stops only its own simulator, and a worker never hangs.
+# ------------------------------------------------------------------------------------------------------
+class _ProcessBackedFake(_FlakyFakeSimulator):
+    """A fake whose launch() starts a real, recorded `sleep` process in its slot under `root`, and whose close()
+    stops it the way the real backend does -- so slot bookkeeping is exercised against real processes."""
+
+    def __init__(self, root, **kwargs):
+        super().__init__(**kwargs)
+        self._root = root
+        self.proc = None
+
+    def launch(self, map_path, instance):
+        import os
+
+        from autofly_ue5.sim.process import launch_process, ports_for_instance
+
+        super().launch(map_path, instance)
+        self.proc = launch_process(["sleep", "300"], instance, ports_for_instance(60 + instance), dict(os.environ),
+                                   run_root=self._root)
+
+    def close(self):
+        from autofly_ue5.sim.process import stop
+
+        super().close()
+        if self.proc is not None:
+            stop(self.proc.instance, grace_s=2.0, run_root=self._root, expected_pid=self.proc.pid)
+
+
+def _wrap(factory, instance, sim_root, **kwargs):
+    from autofly_ue5.expert.env import AutoFlyEnv
+    from autofly_ue5.expert.resilient import ResilientAutoFlyEnv
+
+    scene, layout = scene_and_layout()
+    base = AutoFlyEnv(scene, layout, factory, map_path="/Game/AutoFly/Maps/S01", instance=instance)
+    return ResilientAutoFlyEnv(base, instance=instance, sim_root=sim_root, **kwargs)
+
+
+def test_a_relaunch_stops_only_its_own_slot_never_a_siblings_simulator(tmp_path):
+    # The Task 8 run's feedback loop, in miniature: the training (inst0) and eval (inst1) simulators killed each
+    # other at every evaluation because a relaunch swept every simulator on the host.
+    from autofly_ue5.sim.process import is_alive, stop
+
+    sibling = _wrap(lambda: _ProcessBackedFake(tmp_path), 2, tmp_path)
+    sibling.reset(seed=1)
+    sibling_pid = sibling.unwrapped._sim.proc.pid
+    broken = _wrap(lambda: _ProcessBackedFake(tmp_path, fail_on_reset_calls=set(range(1, 100))), 1, tmp_path,
+                   max_reset_attempts=1, max_relaunch_attempts=1)
+    try:
+        with pytest.raises(RuntimeError, match="giving up"):
+            broken.reset(seed=1)
+        assert broken.relaunch_count == 1
+        assert is_alive(sibling_pid), "a relaunch in slot 1 stopped the simulator in slot 2"
+    finally:
+        for inst in (1, 2):
+            stop(inst, grace_s=2.0, run_root=tmp_path)
+
+
+def test_a_close_that_returns_after_the_relaunch_leaves_the_new_simulator_in_place(tmp_path):
+    import threading
+    import time
+
+    release = threading.Event()
+
+    class SlowToClose(_FlakyFakeSimulator):
+        def close(self):
+            release.wait(5.0)
+            super().close()
+
+    sims = [SlowToClose(fail_on_reset_calls=set(range(1, 100))), _FlakyFakeSimulator()]
+    env = _make_resilient(lambda: sims.pop(0), max_reset_attempts=1, max_relaunch_attempts=1, close_timeout_s=0.2)
+    env.reset(seed=1)  # round 0 fails; the relaunch abandons the hung close() after 0.2 s; round 1 succeeds
+    replacement = env.unwrapped._sim
+    release.set()
+    time.sleep(0.3)  # let the abandoned close() finish
+    assert env.unwrapped._sim is replacement, "the late close() detached the simulator that replaced it"
+    env.step(np.array([0.0, 0.0, 0.0], dtype=np.float32))
+
+
+def test_a_launch_failure_moves_straight_to_the_next_relaunch_round():
+    from autofly_ue5.sim.process import SimReadyTimeout
+
+    launches = {"n": 0}
+
+    class ReadyOnThirdLaunch(FakeSimulator):
+        def launch(self, map_path, instance):
+            launches["n"] += 1
+            if launches["n"] <= 2:
+                raise SimReadyTimeout("ports never opened")
+            super().launch(map_path, instance)
+
+    env = _make_resilient(ReadyOnThirdLaunch, max_reset_attempts=5, max_relaunch_attempts=3)
+    obs, _ = env.reset(seed=1)
+
+    assert env.observation_space.contains(obs)
+    assert launches["n"] == 3, "a failed launch costs one attempt per relaunch round, not max_reset_attempts of them"
+    assert env.fault_counts["SimReadyTimeout"] == 2 and env.recovered_counts["SimReadyTimeout"] == 2
+    assert env.relaunch_count == 2
+
+
+def test_worker_mode_exits_the_process_on_an_error_it_cannot_recover(tmp_path):
+    # In a SubprocVecEnv worker an uncaught exception does not end the process: projectairsim's non-daemon thread
+    # blocks interpreter shutdown, the worker hangs, and so does the training process waiting on its pipe.
+    import os
+    import subprocess
+    import sys
+    import textwrap
+
+    from autofly_ue5.paths import ROOT
+
+    code = textwrap.dedent(f"""
+        import sys, threading
+        sys.path.insert(0, {str(ROOT)!r})
+        threading.Thread(target=threading.Event().wait, daemon=False).start()  # like projectairsim's client thread
+        from autofly_ue5.expert.env import AutoFlyEnv
+        from autofly_ue5.expert.resilient import ResilientAutoFlyEnv
+        from autofly_ue5.sim.fake import FakeSimulator
+        from tests.test_expert_episode import scene_and_layout
+
+        class Busy(FakeSimulator):
+            def launch(self, map_path, instance):
+                raise RuntimeError("GPU busy: not a recoverable fault")
+
+        scene, layout = scene_and_layout()
+        env = ResilientAutoFlyEnv(AutoFlyEnv(scene, layout, Busy, map_path="/x", instance=0), instance=0,
+                                  sim_root={str(tmp_path)!r}, worker_mode=True)
+        env.reset(seed=1)
+    """)
+    env = {k: v for k, v in os.environ.items() if k != "PYTHONPATH"}
+    result = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, timeout=30, env=env, cwd=ROOT)
+    assert result.returncode == 1
+    assert "GPU busy" in result.stderr
+
+
+def test_teardown_stops_only_the_slots_it_is_given(tmp_path):
+    import os
+
+    from autofly_ue5.expert.vec import teardown
+    from autofly_ue5.sim.process import is_alive, launch_process, ports_for_instance, stop
+
+    a = launch_process(["sleep", "300"], 1, ports_for_instance(71), dict(os.environ), run_root=tmp_path)
+    b = launch_process(["sleep", "300"], 2, ports_for_instance(72), dict(os.environ), run_root=tmp_path)
+    try:
+        results = teardown(None, [1], tmp_path)
+        assert [r["instance"] for r in results] == [1]
+        assert not is_alive(a.pid) and is_alive(b.pid)
+    finally:
+        stop(2, grace_s=2.0, run_root=tmp_path)
+
+
+def test_make_vec_env_routes_client_logs_under_its_sim_root(tmp_path):
+    from autofly_ue5.expert.vec import make_vec_env
+
+    scene, layout = scene_and_layout()
+    vec_env = make_vec_env(scene, layout, 1, map_path="/x", monitor_dir=tmp_path / "mon", sim_factory=FakeSimulator,
+                           sim_root=tmp_path / "sim")
+    try:
+        assert (tmp_path / "sim" / "inst0" / "client.log").is_file()
+    finally:
+        vec_env.close()
+

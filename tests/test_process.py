@@ -2,6 +2,7 @@ import json
 import logging
 import os
 import socket
+import subprocess
 import sys
 import time
 
@@ -14,6 +15,7 @@ from autofly_ue5.sim.process import (
     SimPorts,
     editor_game_command,
     instance_dir,
+    is_alive,
     launch_process,
     listening_pids,
     own_running_instances,
@@ -166,40 +168,137 @@ def test_launch_refuses_a_busy_port(tmp_path):
             launch_process([sys.executable, "-c", "pass"], 6, SimPorts(busy, free_port()), dict(os.environ), run_root=tmp_path)
 
 
-def test_sweep_stale_instances_tolerates_a_concurrent_stop_race(monkeypatch):
-    # Live finding (Task 8 shakedown, 2026-09-16): stop() checks the pid file exists, then unconditionally unlinks it later -- a second, independent
-    # caller stopping the SAME instance concurrently (e.g. two vec envs each closing their own simulator
-    # while this function ALSO sweeps both) can delete it in between, raising FileNotFoundError and, before
-    # this fix, crashing the whole caller uncaught. The pid file being gone already IS the instance being
-    # stopped, so this must be tolerated, not propagated.
-    import autofly_ue5.sim.process as mi
-    from autofly_ue5.sim.process import SimProcess
+def _sleeper(instance: int, root, owner=None):
+    """A real, owned process in slot `instance` under `root` (no ports needed: `sleep` never listens)."""
+    from autofly_ue5.sim.process import ports_for_instance
 
-    fake = SimProcess(
-        pid=1, pgid=1, instance=0, topics_port=8989, services_port=8990,
-        cmd=["fake"], log_path="/dev/null", started_unix=0.0,
-    )
-    monkeypatch.setattr(mi, "own_running_instances", lambda: [fake])
-
-    def _raise_file_not_found(instance):
-        raise FileNotFoundError(f"[Errno 2] No such file or directory: 'runs/sim/inst{instance}/pid.json'")
-
-    monkeypatch.setattr(mi, "stop", _raise_file_not_found)
-
-    swept = mi.sweep_stale_instances()
-
-    assert swept == [{"instance": 0, "pid": 1, "result": "already_stopped_concurrently"}]
+    return launch_process(["sleep", "300"], instance, ports_for_instance(40 + instance), dict(os.environ),
+                          run_root=root, owner=owner)
 
 
-def test_sweep_stale_instances_still_reports_a_normal_stop_result(monkeypatch):
-    import autofly_ue5.sim.process as mi
-    from autofly_ue5.sim.process import SimProcess
+def _dead_owner():
+    from autofly_ue5.sim.process import RunOwner, proc_start_ticks
 
-    fake = SimProcess(
-        pid=2, pgid=2, instance=1, topics_port=9001, services_port=9002,
-        cmd=["fake"], log_path="/dev/null", started_unix=0.0,
-    )
-    monkeypatch.setattr(mi, "own_running_instances", lambda: [fake])
-    monkeypatch.setattr(mi, "stop", lambda instance: "terminated")
+    done = subprocess.Popen(["true"])
+    ticks = proc_start_ticks(done.pid)
+    done.wait()
+    return RunOwner(done.pid, ticks if ticks is not None else 1)
 
-    assert mi.sweep_stale_instances() == [{"instance": 1, "pid": 2, "result": "terminated"}]
+
+def _init_owner():
+    from autofly_ue5.sim.process import RunOwner, proc_start_ticks
+
+    return RunOwner(1, proc_start_ticks(1))  # pid 1: always alive, never this test's run
+
+
+def test_launch_records_the_run_owner_token(tmp_path):
+    from autofly_ue5.sim.process import proc_start_ticks, read_pid_file
+
+    _sleeper(1, tmp_path)
+    try:
+        record = read_pid_file(instance_dir(1, tmp_path) / "pid.json")
+        assert record.owner_pid == os.getpid()
+        assert record.owner_start_ticks == proc_start_ticks(os.getpid())
+    finally:
+        stop(1, grace_s=2.0, run_root=tmp_path)
+
+
+def test_an_old_pid_file_without_owner_fields_still_loads(tmp_path):
+    from autofly_ue5.sim.process import read_pid_file
+
+    d = instance_dir(2, tmp_path)
+    d.mkdir(parents=True)
+    (d / "pid.json").write_text(json.dumps({"pid": 1, "pgid": 1, "instance": 2, "topics_port": 1, "services_port": 2,
+                                            "cmd": ["x"], "log_path": "x", "started_unix": 0.0}))
+    assert read_pid_file(d / "pid.json").owner_pid is None
+
+
+def test_stop_with_a_superseded_expected_pid_signals_nothing_and_keeps_the_record(tmp_path):
+    # C1: a close() abandoned by a bounded relaunch can return after the slot was relaunched; it must not stop
+    # the successor recorded in the same pid.json.
+    sp = _sleeper(1, tmp_path)
+    try:
+        assert stop(1, run_root=tmp_path, expected_pid=sp.pid + 100_000) == "superseded"
+        assert (instance_dir(1, tmp_path) / "pid.json").exists()
+        assert is_alive(sp.pid)
+    finally:
+        stop(1, grace_s=2.0, run_root=tmp_path)
+
+
+def test_orphan_sweep_stops_a_dead_owners_instance_and_skips_a_live_foreign_owner(tmp_path):
+    from autofly_ue5.sim.process import sweep_orphaned_instances
+
+    orphan = _sleeper(1, tmp_path, owner=_dead_owner())
+    foreign = _sleeper(2, tmp_path, owner=_init_owner())
+    try:
+        swept = sweep_orphaned_instances(tmp_path)
+        assert [s["instance"] for s in swept] == [1]
+        assert not is_alive(orphan.pid)
+        assert is_alive(foreign.pid), "a live run's simulator must survive another run's startup sweep"
+    finally:
+        stop(2, grace_s=2.0, run_root=tmp_path)
+
+
+def test_orphan_sweep_treats_a_legacy_record_without_an_owner_as_orphaned(tmp_path):
+    from autofly_ue5.sim.process import sweep_orphaned_instances
+
+    sp = _sleeper(1, tmp_path)
+    pid_file = instance_dir(1, tmp_path) / "pid.json"
+    record = json.loads(pid_file.read_text())
+    record.pop("owner_pid"), record.pop("owner_start_ticks")
+    pid_file.write_text(json.dumps(record))
+    assert [s["instance"] for s in sweep_orphaned_instances(tmp_path)] == [1]
+    assert not is_alive(sp.pid)
+
+
+def test_stop_instance_refuses_a_slot_a_live_foreign_run_owns_and_stops_its_own(tmp_path):
+    from autofly_ue5.sim.process import stop_instance
+
+    foreign = _sleeper(1, tmp_path, owner=_init_owner())
+    mine = _sleeper(2, tmp_path)
+    try:
+        assert stop_instance(1, tmp_path) == "owner_alive_elsewhere"
+        assert is_alive(foreign.pid)
+        assert stop_instance(2, tmp_path) in ("terminated", "killed")
+        assert not is_alive(mine.pid)
+        assert stop_instance(2, tmp_path) == "no_pid_file"
+    finally:
+        stop(1, grace_s=2.0, run_root=tmp_path)
+
+
+def test_stop_instances_stops_only_the_listed_slots(tmp_path):
+    from autofly_ue5.sim.process import stop_instances
+
+    a, b = _sleeper(1, tmp_path), _sleeper(2, tmp_path)
+    try:
+        results = stop_instances([1], tmp_path)
+        assert [r["instance"] for r in results] == [1]
+        assert not is_alive(a.pid) and is_alive(b.pid)
+    finally:
+        stop(2, grace_s=2.0, run_root=tmp_path)
+
+
+def test_wait_ready_timeout_is_a_typed_error(tmp_path):
+    from autofly_ue5.sim.process import SimReadyTimeout
+
+    sp = _sleeper(1, tmp_path)
+    try:
+        with pytest.raises(SimReadyTimeout):
+            wait_ready(sp, timeout_s=0.3, poll_s=0.1)
+        assert issubclass(SimReadyTimeout, TimeoutError)
+    finally:
+        stop(1, grace_s=2.0, run_root=tmp_path)
+
+
+def test_stop_keeps_the_record_of_a_process_that_survives_sigkill(tmp_path, monkeypatch):
+    import autofly_ue5.sim.process as process
+
+    _sleeper(1, tmp_path)
+    try:
+        monkeypatch.setattr(process.os, "killpg", lambda pgid, sig: None)  # the signal "does nothing"
+        monkeypatch.setattr(process, "KILL_WAIT_S", 0.2)
+        assert stop(1, grace_s=0.2, run_root=tmp_path) == "unkillable"
+        assert (instance_dir(1, tmp_path) / "pid.json").exists(), "an unkillable process must stay on the record"
+    finally:
+        monkeypatch.undo()
+        stop(1, grace_s=2.0, run_root=tmp_path)
