@@ -1,10 +1,11 @@
 """Gymnasium environment wrapping a Simulator with the expert's obs/reward/episode stack (spec 7.1, 8, 9).
 
 `AutoFlyEnv` is the only place that owns a `Simulator` instance and its lifecycle. Everything it needs to
-turn that simulator into an RL environment already exists and is closed for editing: `episode.py` samples
-and (de)spawns episodes, `obs.py` encodes observations and is the single source of target geometry, and
-`reward.py` scores a step and decides termination. This module just sequences those calls in the order the
-simulator's lifecycle requires.
+turn that simulator into an RL environment lives elsewhere: `episode.py` samples and (de)spawns episodes,
+`obs.py` encodes observations and is the single source of target geometry, and `reward.py` scores a step and
+decides termination. This module just sequences those calls in the order the simulator's lifecycle requires.
+(Earlier plans marked these modules "closed for editing"; the 2026-09-24 review reopened them -- see
+docs/decisions/2026-09-25-code-review-findings.md.)
 """
 
 from __future__ import annotations

@@ -19,8 +19,7 @@ real configuration/protocol bugs that retrying cannot fix and should fail loudly
 forever on a 12-hour budget.
 
 That crash also surfaced a second, independent finding: the top-level training process itself (this
-script, not a `SubprocVecEnv` worker -- Task 7's chosen_n=1 means the real backend's connections live
-in-process here) hung after printing its own traceback, never exiting, for the exact reason Task 7 already
+script, not a `SubprocVecEnv` worker -- at n=1 the real backend's connections live in-process here) hung after printing its own traceback, never exiting, for the exact reason Task 7 already
 documented for worker processes: the projectairsim client leaves a non-daemon thread alive, and CPython's
 interpreter-shutdown sequence blocks forever joining it. `main()` therefore force-exits the process
 (`os._exit`) after writing the gate record, rather than trusting a plain `return`/`sys.exit()` to actually
@@ -54,7 +53,7 @@ shows this happening live, twice.
 Two lines of defence, matching the two places that hazard can bite:
 
 1. `ResilientAutoFlyEnv` (below) wraps the raw `AutoFlyEnv` *inside* whatever process runs it (in-process
-   for the n=1 `DummyVecEnv` this project actually runs, per Task 7's `chosen_n=1`; inside an SB3
+   for an n=1 `DummyVecEnv`; inside an SB3
    `SubprocVecEnv` worker for n>1). It catches the fault classes above around both `reset()` and `step()`.
    A fault in `reset()` is retried in place. A fault mid-`step()` ends the episode by truncation on its last
    real observation -- never retrying the same `step()`, since a `CameraPoseError` mid-step means the episode

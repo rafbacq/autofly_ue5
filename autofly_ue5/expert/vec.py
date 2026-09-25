@@ -67,8 +67,8 @@ def make_vec_env(
     its episode record on its own. SB3 still finds `info["episode"]` on real episode ends: the resilient wrapper
     passes those infos through unchanged.
 
-    n == 1 uses DummyVecEnv: in-process, no IPC to hang on, which is what this project's Task 7 measurement
-    chose (chosen_n=1). n > 1 uses SubprocVecEnv, staggering each worker's first reset() (hazard #2: two
+    n == 1 uses DummyVecEnv: in-process, no IPC to hang on (run 1 trained at n=1; its throughput record's
+    chosen_n=1 was a crash, see scripts/measure_instances.py). n > 1 uses SubprocVecEnv, staggering each worker's first reset() (hazard #2: two
     simulators' first reset() at once race check_gpu_for_launch) via a bounded-timeout call rather than SB3's
     unbounded env_method().
 

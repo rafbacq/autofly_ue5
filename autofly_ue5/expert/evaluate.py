@@ -1,14 +1,14 @@
 """Evaluation harness for a trained expert (spec Sec8/Sec9.5, Task 9's M2 gate).
 
 Draws episodes from `reset(seed=seed_base + i)` for `i in range(n_episodes)` -- a fixed, reproducible
-evaluation stream, disjoint from every training worker's own stream (`autofly_ue5.expert.train.
-EVAL_SEED_BASE` / `worker_seed_base`; see that module's own disjointness test) -- and scores each with
+evaluation stream, disjoint from every training worker's and the training-time evaluation's own streams
+(`autofly_ue5.expert.seeds`; see its disjointness test) -- and scores each with
 `model.predict(obs, deterministic=...)`.
 
-Backend faults, never policy failures (Task 9 brief, gate item 6): reuses `autofly_ue5.expert.train.
-ResilientAutoFlyEnv` -- not a second retry wrapper -- for the five recoverable hazards Task 8 measured
-live (`CameraPoseError`, `StepTimingError`, `StaleStateError`, `CommandTimeoutError`,
-`pynng.exceptions.Timeout`, ...). A fault DURING `reset()` is already retried transparently by that wrapper
+Backend faults, never policy failures (Task 9 brief, gate item 6): reuses `autofly_ue5.expert.resilient.
+ResilientAutoFlyEnv` -- not a second retry wrapper -- for the recoverable hazards in `autofly_ue5.expert.faults`
+(`CameraPoseError`, `StepTimingError`, `StaleStateError`, `CommandTimeoutError`, `pynng.exceptions.Timeout`, the
+C9 start/teleport checks, ...). A fault DURING `reset()` is already retried transparently by that wrapper
 with the SAME seed, so it never reaches this module. A fault mid-`step()` truncates the current episode on its
 last real observation with `info["sim_fault"]` set (see the wrapper's docstring); this module discards the whole
 attempt and replays the SAME seed from `env.reset(seed=seed)`, so a simulator hiccup is never counted as a
