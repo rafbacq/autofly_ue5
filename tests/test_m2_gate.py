@@ -131,6 +131,8 @@ def test_evaluate_policy_episodes_draws_the_requested_seed_stream():
     assert report.success_rate == 1.0, "a straight-line pilot must succeed against FakeSimulator every time"
     assert report.episodes_retried == 0
     assert all(e["return"] > 10.0 for e in report.per_episode), "a success earns the +10 bonus on top of progress"
+    first = report.per_episode[0]
+    assert len(first["final_pose"]) == 4 and first["oob_kind"] is None and abs(first["final_bearing_deg"]) <= 15.0
     assert report.mean_return == pytest.approx(sum(e["return"] for e in report.per_episode) / 5)
 
 
@@ -298,3 +300,25 @@ def test_parse_model_args_default_paths_follow_the_run_root():
     models = parse_model_args(None, "s01", run_root=Path("/runs/expert/s01_r2"))
     assert models == {"best_model": Path("/runs/expert/s01_r2/best/best_model.zip"),
                       "final": Path("/runs/expert/s01_r2/final.zip")}
+
+
+def test_the_gate_runs_end_to_end_against_the_fake_and_records_what_it_measured(tmp_path):
+    # The whole gate path offline: launch, both conditions' bookkeeping, fault audit, record -- in scratch dirs.
+    from autofly_ue5.expert.reward import REWARD_VERSION
+    from autofly_ue5.expert.seeds import EVAL_SEED_BASE
+    from scripts.m2_gate import run
+
+    checkpoint = tmp_path / "model.zip"
+    checkpoint.write_bytes(b"not a real model; the fake loader ignores it")
+    gate = run(scene="s01", model_paths={"model": checkpoint}, conditions=["deterministic"], n_episodes=2,
+               seed_base=EVAL_SEED_BASE, instance=5, out_path=tmp_path / "gate.json", sim_factory=FakeSimulator,
+               load_model=lambda path: _StraightAtTargetModel(), sim_root=tmp_path / "sim")
+
+    assert gate["status"] == "ok"
+    assert gate["reward_version"] == REWARD_VERSION
+    det = gate["checkpoints"]["model"]["deterministic"]
+    assert det["status"] == "ok" and det["n_episodes"] == 2 and det["success_rate"] == 1.0
+    assert det["mean_return"] is not None and len(det["per_episode"][0]["final_pose"]) == 4
+    assert "kernel_journal_readable" in gate["engine_faults"]
+    assert (tmp_path / "gate.json").is_file()
+    assert (tmp_path / "sim" / "inst5" / "client.log").is_file(), "client logs go under the given sim_root"

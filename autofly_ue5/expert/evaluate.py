@@ -145,6 +145,9 @@ def _run_one_episode(model, env, seed: int, *, deterministic: bool, max_steps: i
                 "final_distance_m": info.get("final_distance_m"),
                 "is_success": bool(info.get("is_success", False)),
                 "return": episode_return,
+                "final_pose": info.get("pose"),
+                "final_bearing_deg": info.get("bearing_deg"),
+                "oob_kind": info.get("oob_kind"),
             }
     # AutoFlyEnv's own step_limit (default 300, spec Sec8) always truncates well before this bound;
     # reaching it means something is not honouring that contract -- report it, don't spin forever.

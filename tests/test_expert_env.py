@@ -276,3 +276,13 @@ def test_reset_raises_when_the_episode_starts_in_a_collision():
     env = AutoFlyEnv(scene, layout, CollidesRightAfterReset, map_path="/Game/AutoFly/Maps/S01", instance=0)
     with pytest.raises(StartCollisionError):
         env.reset(seed=1)
+
+
+def test_step_info_carries_the_diagnostics_the_gate_records():
+    # C8: the recorded gate could not say where an episode ended or which bound it left.
+    env = make_env()
+    env.reset(seed=1)
+    _, _, _, _, info = env.step(np.array([1.0, 0.0, 0.0], dtype=np.float32))
+    assert len(info["pose"]) == 4 and all(isinstance(v, float) for v in info["pose"])
+    assert -180.0 <= info["bearing_deg"] <= 180.0
+    assert info["oob_kind"] is None

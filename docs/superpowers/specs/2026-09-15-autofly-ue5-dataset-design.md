@@ -300,6 +300,13 @@ R5–R9.
   `+R_s` on success (≤ 5 m and ≤ 15°), `−R_c` on collision (episode ends), `−R_b` for leaving the altitude band or the
   bounds (episode ends). Step limit 300 (60 s simulated). Coefficients start at `k_p = 1, k_h = 0.1, k_t = 0.01,
   R_s = 10, R_c = 10, R_b = 5` and are tuned on s01 only.
+  **Progress stops at the success radius** (`REWARD_VERSION = "2-no-progress-inside-success-radius"`, 2026-09-24
+  review): the progress term is `k_p · (max(d_prev, 5 m) − max(d, 5 m))`. Paid all the way in, closing from 5 m to 2 m
+  misaligned and turning at the end out-earned an aligned success at 5 m (discounted ≈ 13.1 vs 10.5), and the first
+  trained expert learned exactly that: its final checkpoint's successes ended a median 2.35 m from the target, and
+  7 of its 16 real gate failures left the bounds within 5 m of a target that sits 0–3 m from the edge. Inside the
+  radius only the alignment bonus and the time penalty remain, so turning onto the target at once is optimal. The
+  form is still potential-based, so crossing the radius back and forth earns nothing.
 - Implementation: stable-baselines3 SAC with a custom feature extractor and vectorised environments, one simulator
   instance per environment.
 - Throughput gate (M2): measure environment steps per second per instance, the number of instances the RTX 4090 holds,

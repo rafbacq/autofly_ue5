@@ -61,12 +61,19 @@ from autofly_ue5.expert.evaluate import (  # noqa: E402
 )
 from autofly_ue5.expert.faults import KNOWN_FAULT_NAMES  # noqa: E402
 from autofly_ue5.expert.resilient import ResilientAutoFlyEnv  # noqa: E402
+from autofly_ue5.expert.reward import REWARD_VERSION  # noqa: E402
 from autofly_ue5.expert.seeds import EVAL_SEED_BASE  # noqa: E402
 from autofly_ue5.expert.train import sha256_of, scene_and_layout as _scene_and_layout  # noqa: E402
 from autofly_ue5.expert.vec import teardown  # noqa: E402
 from autofly_ue5.paths import ROOT, RUNS_DIR  # noqa: E402
 from autofly_ue5.sim.airsim_backend import ProjectAirSimSimulator  # noqa: E402
-from autofly_ue5.sim.process import instance_dir, route_client_log, stop_instances, sweep_orphaned_instances  # noqa: E402
+from autofly_ue5.sim.process import (  # noqa: E402
+    SIM_RUN_DIR,
+    instance_dir,
+    route_client_log,
+    stop_instances,
+    sweep_orphaned_instances,
+)
 from autofly_ue5.validate.engine_check import audit_engine_faults, boot_id, xid_count  # noqa: E402
 
 # --------------------------------------------------------------------------------------------------------
@@ -128,12 +135,15 @@ def _load_throughput_projection(instances_path: Path = ROOT / "docs" / "gates" /
 # Live env construction -- reuses AutoFlyEnv + ResilientAutoFlyEnv exactly as train.py builds them for one
 # worker (no VecEnv needed: the gate steps a single environment sequentially, never in parallel).
 # --------------------------------------------------------------------------------------------------------
-def build_eval_env(scene: str, *, instance: int, sim_factory: Callable[[], Any]) -> ResilientAutoFlyEnv:
+def build_eval_env(scene: str, *, instance: int, sim_factory: Callable[[], Any], seed_base: int = EVAL_SEED_BASE,
+                   sim_root: Path = SIM_RUN_DIR) -> ResilientAutoFlyEnv:
+    # seed_base: every gate episode is an explicit reset(seed=...); the counter base only matters for a stray
+    # seed=None reset, which then still draws from the gate's own range.
     scene_file, layout = _scene_and_layout(scene)
     map_path = f"/Game/AutoFly/Maps/{scene.upper()}"
-    route_client_log(instance_dir(instance) / "client.log")
-    base = AutoFlyEnv(scene_file, layout, sim_factory, map_path=map_path, instance=instance, seed_base=0)
-    return ResilientAutoFlyEnv(base, instance=instance)
+    route_client_log(instance_dir(instance, sim_root) / "client.log")
+    base = AutoFlyEnv(scene_file, layout, sim_factory, map_path=map_path, instance=instance, seed_base=seed_base)
+    return ResilientAutoFlyEnv(base, instance=instance, sim_root=sim_root)
 
 
 def default_sac_loader(path: Path, *, device: str = "auto"):
@@ -159,6 +169,7 @@ def run(
     load_model: Callable[[Path], Any] | None = None,
     max_steps_per_episode: int = DEFAULT_MAX_STEPS_PER_EPISODE,
     max_fault_retries_per_episode: int = DEFAULT_MAX_FAULT_RETRIES_PER_EPISODE,
+    sim_root: Path = SIM_RUN_DIR,
 ) -> dict[str, Any]:
     load_model = load_model or (lambda p: default_sac_loader(p, device=device))
     run_started = time.strftime("%Y-%m-%d %H:%M:%S")
@@ -166,7 +177,7 @@ def run(
     xid_before = xid_count(run_started)
     boot_before = boot_id()
 
-    swept = sweep_orphaned_instances()  # a crashed earlier run's simulators; never a live run's
+    swept = sweep_orphaned_instances(sim_root)  # a crashed earlier run's simulators; never a live run's
     if swept:
         print(f"swept orphaned instances before starting: {swept}", file=sys.stderr)
 
@@ -187,7 +198,7 @@ def run(
     def _write() -> dict[str, Any]:
         # Every log this slot wrote during the run (relaunches rotate sim.log) and a readable journal (C7).
         engine_faults = audit_engine_faults(since=run_started, since_epoch=run_start_epoch, xid_before=xid_before,
-                                            boot_before=boot_before, log_dirs=[instance_dir(instance)])
+                                            boot_before=boot_before, log_dirs=[instance_dir(instance, sim_root)])
         faults_ok = engine_faults.pop("ok")
         cumulative = (
             env.get_fault_summary()
@@ -209,6 +220,7 @@ def run(
         gate = {
             "description": "Task 9: M2 exit gate -- SAC expert acceptance evaluation (spec Sec8/Sec9.5).",
             "scene": scene,
+            "reward_version": REWARD_VERSION,
             "eval_seed_base": seed_base,
             "episodes_requested_per_condition": n_episodes,
             "conditions_requested": list(conditions),
@@ -241,7 +253,7 @@ def run(
         return gate
 
     try:
-        env = build_eval_env(scene, instance=instance, sim_factory=sim_factory)
+        env = build_eval_env(scene, instance=instance, sim_factory=sim_factory, seed_base=seed_base, sim_root=sim_root)
         _write()  # an honest "everything not_run yet" record exists on disk even if launch itself fails
         for name, cond in combos:
             path = model_paths[name]
@@ -284,13 +296,13 @@ def run(
         # failure still reaches the gate-record write below rather than crashing before anything is saved.
         if env is not None:
             try:
-                teardown(env, [instance])  # bounded close + stop this gate's own slot, nothing else
+                teardown(env, [instance], sim_root)  # bounded close + stop this gate's own slot, nothing else
             except Exception as err:
                 print(f"WARNING: teardown() raised {type(err).__name__}: {err}", file=sys.stderr)
                 traceback.print_exc()
         else:
             try:
-                stop_instances([instance])
+                stop_instances([instance], sim_root)
             except Exception as err:
                 print(f"WARNING: stop_instances() raised {type(err).__name__}: {err}", file=sys.stderr)
 

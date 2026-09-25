@@ -10,6 +10,7 @@ simulator's lifecycle requires.
 from __future__ import annotations
 
 import dataclasses
+import math
 from typing import Any, Callable
 
 import gymnasium as gym
@@ -18,7 +19,7 @@ from gymnasium import spaces
 
 from autofly_ue5.expert.episode import EpisodeSetup, apply_setup, clear_setup, sample_setup
 from autofly_ue5.expert.obs import DEPTH_SIZE, VECTOR_DIM, encode, target_geometry
-from autofly_ue5.expert.reward import Outcome, RewardConfig, evaluate
+from autofly_ue5.expert.reward import Outcome, RewardConfig, evaluate, oob_kind
 from autofly_ue5.scenes.model import Layout, SceneFile
 from autofly_ue5.sim.protocol import Simulator
 from autofly_ue5.sim.types import CONTROL_DT_S, StartCollisionError
@@ -136,10 +137,10 @@ class AutoFlyEnv(gym.Env):
             # An episode that starts in contact is lost before its first action (C9): not a policy outcome.
             raise StartCollisionError(f"the episode's first observation already reports a collision at {obs.pose}")
 
-        self._prev_dist, _, _ = target_geometry(obs.pose, setup.target_xy_z)
+        self._prev_dist, bearing, _ = target_geometry(obs.pose, setup.target_xy_z)
         self._step_index = 0
 
-        info = self._info(Outcome.RUNNING, self._prev_dist)
+        info = self._info(Outcome.RUNNING, self._prev_dist, obs.pose, bearing, None)
         return encode(obs, setup.target_xy_z), info
 
     def step(self, action: np.ndarray) -> tuple[dict[str, np.ndarray], float, bool, bool, dict]:
@@ -165,15 +166,21 @@ class AutoFlyEnv(gym.Env):
         )
         self._prev_dist = dist
 
-        info = self._info(result.outcome, dist)
+        kind = oob_kind(in_bounds=in_bounds, altitude_m=altitude, cfg=self._cfg) if result.outcome is Outcome.OUT_OF_BOUNDS else None
+        info = self._info(result.outcome, dist, obs.pose, bearing, kind)
         return encode(obs, self._setup.target_xy_z), result.reward, result.terminated, result.truncated, info
 
-    def _info(self, outcome: Outcome, dist_m: float) -> dict:
+    def _info(self, outcome: Outcome, dist_m: float, pose, bearing_rad: float, oob: str | None) -> dict:
+        # pose/bearing_deg/oob_kind: where an episode ended and which bound it left, for the run record (the
+        # 2026-09-17 gate could not say either).
         return {
             "outcome": outcome.value,
             "steps": self._step_index,
             "final_distance_m": float(dist_m),
             "is_success": outcome is Outcome.SUCCESS,
+            "pose": [float(pose.x), float(pose.y), float(pose.z), float(pose.yaw)],
+            "bearing_deg": math.degrees(bearing_rad),
+            "oob_kind": oob,
         }
 
     def close(self) -> None:

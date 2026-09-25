@@ -96,3 +96,59 @@ def test_evaluate_maps_outcomes_to_gymnasium_flags():
 
     crash = evaluate(**{**common, "collided": True}, step_index=5)
     assert crash.terminated is True and crash.truncated is False
+
+
+# ------------------------------------------------------------------------------------------------------
+# C8 (2026-09-24 review): no progress credit inside the success radius. With it, closing in misaligned and
+# turning at the end out-earned an aligned success at 5 m -- final.zip's successes ended a median 2.35 m from the
+# target (best_model's 4.89 m), and 7 of its 16 real failures left the bounds within 5 m of the target.
+# ------------------------------------------------------------------------------------------------------
+def test_the_reward_version_names_the_clamp():
+    from autofly_ue5.expert.reward import REWARD_VERSION
+
+    assert REWARD_VERSION == "2-no-progress-inside-success-radius"
+
+
+def test_moving_inside_the_success_radius_earns_no_progress():
+    from autofly_ue5.expert.reward import Outcome, step_reward
+
+    c = cfg()
+    inside = step_reward(4.0, 3.0, math.pi / 2, Outcome.RUNNING, c)  # misaligned, 1 m closer, well inside 5 m
+    assert inside == pytest.approx(-c.k_t + c.k_h * math.cos(math.pi / 2))
+
+
+def test_crossing_into_the_radius_credits_only_the_part_outside_it():
+    from autofly_ue5.expert.reward import Outcome, step_reward
+
+    c = cfg()
+    assert step_reward(6.0, 4.0, 0.0, Outcome.RUNNING, c) == pytest.approx(1.0 - c.k_t + c.k_h)
+    assert step_reward(6.0, 4.0, 0.0, Outcome.SUCCESS, c) == pytest.approx(11.09)  # still > r_success
+    assert step_reward(4.0, 6.0, 0.0, Outcome.RUNNING, c) == pytest.approx(-1.0 - c.k_t + c.k_h)  # leaving costs it back
+
+
+def test_an_aligned_success_at_5_m_is_worth_at_least_a_misaligned_dive_to_2_m():
+    # Discounted (gamma 0.99) returns from 5.4 m out at 0.4 m/step: succeed now, or keep a 20-degree offset,
+    # close to 2 m at 0.4*cos(20 deg) per step, then spend two steps turning onto the target.
+    from autofly_ue5.expert.reward import Outcome, step_reward
+
+    c, gamma = cfg(), 0.99
+    aligned = step_reward(5.4, 5.0, 0.0, Outcome.SUCCESS, c)
+    offset, dist, rewards = math.radians(20), 5.4, []
+    while dist > 2.0:
+        nxt = max(dist - 0.4 * math.cos(offset), 2.0)
+        rewards.append(step_reward(dist, nxt, offset, Outcome.RUNNING, c))
+        dist = nxt
+    rewards.append(step_reward(dist, dist, offset / 2, Outcome.RUNNING, c))
+    rewards.append(step_reward(dist, dist, 0.0, Outcome.SUCCESS, c))
+    dive = sum(r * gamma**i for i, r in enumerate(rewards))
+    assert aligned >= dive
+
+
+@pytest.mark.parametrize("in_bounds, altitude, expected", [
+    (True, 2.0, None), (False, 2.0, "lateral"), (True, 0.5, "altitude_low"), (True, 3.5, "altitude_high"),
+    (False, 0.5, "lateral"),
+])
+def test_oob_kind_names_which_bound_was_left(in_bounds, altitude, expected):
+    from autofly_ue5.expert.reward import oob_kind
+
+    assert oob_kind(in_bounds=in_bounds, altitude_m=altitude, cfg=cfg()) == expected

@@ -8,7 +8,7 @@ from enum import Enum
 
 # Recorded with every training session and gate run. A replay buffer or checkpoint trained under one version must not
 # be resumed or compared under another (train.prepare_run_root refuses the resume).
-REWARD_VERSION = "1-progress-everywhere"
+REWARD_VERSION = "2-no-progress-inside-success-radius"
 
 
 class Outcome(Enum):
@@ -58,9 +58,29 @@ def classify(*, dist_m: float, bearing_rad: float, altitude_m: float, in_bounds:
     return Outcome.RUNNING
 
 
+def oob_kind(*, in_bounds: bool, altitude_m: float, cfg: RewardConfig) -> str | None:
+    """Which bound an OUT_OF_BOUNDS step left, for the run record: "lateral" (the scene's x/y bounds, checked first),
+    "altitude_low" or "altitude_high"; None while inside every bound."""
+    low, high = cfg.altitude_band_m
+    if not in_bounds:
+        return "lateral"
+    if altitude_m < low:
+        return "altitude_low"
+    if altitude_m > high:
+        return "altitude_high"
+    return None
+
+
 def step_reward(prev_dist_m: float, dist_m: float, bearing_rad: float,
                 outcome: Outcome, cfg: RewardConfig) -> float:
-    r = cfg.k_p * (prev_dist_m - dist_m) - cfg.k_t
+    # Progress stops counting at the success radius (2026-09-24 review, C8). Paid all the way in, closing from 5 m to
+    # 2 m misaligned and turning at the end earned more than succeeding aligned at 5 m, and the trained policy learned
+    # exactly that (final.zip's successes ended a median 2.35 m out; 7 of its 16 real gate failures left the bounds
+    # within 5 m of a target that sits 0-3 m from the edge). Inside the radius only the alignment bonus and the time
+    # penalty remain, so turning onto the target at once is the best move. Still potential-based, so it cannot be
+    # farmed by oscillating across the radius.
+    r_s = cfg.success_radius_m
+    r = cfg.k_p * (max(prev_dist_m, r_s) - max(dist_m, r_s)) - cfg.k_t
     if dist_m <= cfg.align_radius_m:
         r += cfg.k_h * math.cos(bearing_rad)
     if outcome is Outcome.SUCCESS:
