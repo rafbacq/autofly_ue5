@@ -6,7 +6,7 @@
 #   run_job.sh stop <name>                      SIGTERM, then SIGKILL after 30 s, to the recorded process group, only if it is ours
 # Files live in $AUTOFLY_JOBS_DIR (default ROOT/runs/jobs).
 set -euo pipefail
-ROOT=/home/nvidiasims/research_uav/autofly_ue5
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 JOBS=${AUTOFLY_JOBS_DIR:-$ROOT/runs/jobs}
 USAGE="usage: run_job.sh start <name> -- <cmd...> | wait <name> [timeout_s] | stop <name>"
 MODE="${1:?$USAGE}"
@@ -19,7 +19,8 @@ STOPPED=$JOBS/$NAME.stopped
 LOG=$JOBS/$NAME.log
 MARKER="autofly_job:$NAME"
 
-recorded() { jq -r ".$1" "$PIDFILE"; }
+# python3 rather than jq: jq is not installed on a stock host, and every host that runs this project has python3.
+recorded() { env -u PYTHONPATH python3 -c 'import json, sys; print(json.load(open(sys.argv[1]))[sys.argv[2]])' "$PIDFILE" "$1"; }
 
 is_ours() {  # recorded PID alive, argv[3] is our marker, process group unchanged
   local pid pgid
@@ -50,7 +51,7 @@ case "$MODE" in
       [ "$PGID" = "$PID" ] && break
       sleep 0.1
     done
-    env -u PYTHONPATH /usr/bin/python3.12 -c 'import json, sys, time; pid, pgid, log = sys.argv[1:4]; print(json.dumps({"pid": int(pid), "pgid": int(pgid), "started": time.strftime("%Y-%m-%dT%H:%M:%S%z"), "log": log, "cmd": sys.argv[4:]}))' \
+    env -u PYTHONPATH python3 -c 'import json, sys, time; pid, pgid, log = sys.argv[1:4]; print(json.dumps({"pid": int(pid), "pgid": int(pgid), "started": time.strftime("%Y-%m-%dT%H:%M:%S%z"), "log": log, "cmd": sys.argv[4:]}))' \
       "$PID" "$PGID" "$LOG" "$@" > "$PIDFILE"
     echo "job $NAME started: pid $PID, log $LOG"
     ;;

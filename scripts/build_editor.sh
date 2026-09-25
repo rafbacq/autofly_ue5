@@ -6,7 +6,7 @@
 # and after for both the in-ROOT DerivedDataCache and the out-of-ROOT ~/.config/Epic/.../Zen/Data, and
 # stop (before writing build_result.json) if the out-of-ROOT directory grew.
 set -euo pipefail
-ROOT=/home/nvidiasims/research_uav/autofly_ue5
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 LOG=$ROOT/runs/build/build_BlocksEditor_Development.log
 RESULT=$ROOT/runs/build/build_result.json
 DDC_DIR=$ROOT/ue_project/DerivedDataCache

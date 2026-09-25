@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Download the Project AirSim 1.0.1 Linux UE5.7 plugin, check size and sha256, unzip, verify the manifest.
 set -euo pipefail
-ROOT=/home/nvidiasims/research_uav/autofly_ue5
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 NAME=ProjectAirSim-Plugin-Linux-UE5_7-1.0.1.zip
 URL=https://github.com/iamaisim/ProjectAirSim/releases/download/v1.0.1/$NAME
 SHA=11f016ac7aa292a1a353dfde9ff7c4a1b5cebd660cf9e8f400f2ed4c030dcb49
