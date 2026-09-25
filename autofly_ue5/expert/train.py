@@ -137,7 +137,7 @@ from autofly_ue5.expert.vec import call_reset_with_timeout, make_vec_env, teardo
 from autofly_ue5.paths import ROOT, RUNS_DIR, SCENES_DIR
 from autofly_ue5.scenes.model import Bounds, Instance, Layout, SceneFile, load_scene_file
 from autofly_ue5.sim.process import instance_dir, stop_instances, sweep_orphaned_instances
-from autofly_ue5.validate.engine_check import boot_id, count_device_lost, xid_count
+from autofly_ue5.validate.engine_check import audit_engine_faults, boot_id, xid_count
 
 
 # --------------------------------------------------------------------------------------------------------
@@ -419,6 +419,7 @@ def main(argv: list[str] | None = None) -> int:
     scene_file, layout = scene_and_layout(args.scene)
 
     run_started = time.strftime("%Y-%m-%d %H:%M:%S")
+    run_start_epoch = time.time()
     xid_before = xid_count(run_started)
     boot_before = boot_id()
 
@@ -531,11 +532,11 @@ def main(argv: list[str] | None = None) -> int:
     num_timesteps = int(model.num_timesteps) if model is not None else 0
     num_timesteps_this_session = num_timesteps - num_timesteps_at_start
 
-    logs = [instance_dir(i) / "sim.log" for i in range(args.instances + 1) if (instance_dir(i) / "sim.log").is_file()]
-    xid_after = xid_count(run_started)
-    boot_after = boot_id()
-    device_lost = count_device_lost(logs)
-    faults_ok = (xid_after == xid_before) and (boot_after == boot_before) and sum(device_lost.values()) == 0
+    # Every log each slot wrote during the run -- the live sim.log AND the sim-backup-*.log each relaunch rotated it
+    # to (Task 8's record scanned only the final session's sim.log, missing 24 in-run logs) -- and a readable journal.
+    engine_faults = audit_engine_faults(since=run_started, since_epoch=run_start_epoch, xid_before=xid_before,
+                                        boot_before=boot_before, log_dirs=[instance_dir(i) for i in train_slots + [eval_slot]])
+    faults_ok = engine_faults.pop("ok")
 
     gate = {
         "description": f"Task 8: SAC training on scene {args.scene} (spec §8).",
@@ -577,11 +578,7 @@ def main(argv: list[str] | None = None) -> int:
         "eval": read_eval_results(run_root),
         "outcome_histogram": dict(outcome_cb.histogram),
         "backend_faults": combine_fault_summaries(fault_summaries),
-        "engine_faults": {
-            "xid_delta": xid_after - xid_before,
-            "boot_changed": boot_after != boot_before,
-            "device_lost": device_lost,
-        },
+        "engine_faults": engine_faults,
         "faults_ok": faults_ok,
         "checkpoint": {
             "path": str(checkpoint_path) if checkpoint_path is not None else None,

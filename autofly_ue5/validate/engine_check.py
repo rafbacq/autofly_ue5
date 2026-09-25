@@ -98,7 +98,46 @@ def xid_journal_command(since: str | None) -> list[str]:
 
 
 def xid_count(since: str | None = None) -> int:
+    """Never raises (post-run callers must still write their record). Returns 0 for a journal this user cannot
+    read -- which is why every fault record also carries kernel_journal_readable() and fails without it."""
     return count_xid(_run(xid_journal_command(since)))
+
+
+def kernel_journal_readable() -> bool:
+    """Whether this user can read kernel messages at all. Without it (not in `adm`/`systemd-journal`), journalctl
+    prints nothing and xid_count() reads 0 before and after a run: a "no new Xid" that proved nothing."""
+    try:
+        result = subprocess.run(["journalctl", "_TRANSPORT=kernel", "-b", "-n", "1", "-q", "--no-pager"],
+                                capture_output=True, text=True)
+    except FileNotFoundError:
+        return False
+    return result.returncode == 0 and bool(result.stdout.strip())
+
+
+def instance_logs_since(directory: Path, since_epoch: float, pattern: str = "sim*.log", slack_s: float = 2.0) -> list[Path]:
+    """Every log in `directory` written during a run that started at `since_epoch`: the live sim.log plus the
+    sim-backup-<time>.log files UE renames it to at each relaunch. Filtered on mtime, which a rename keeps; the
+    names carry UTC times, so they are never compared with local time strings."""
+    return sorted(p for p in Path(directory).glob(pattern) if p.is_file() and p.stat().st_mtime >= since_epoch - slack_s)
+
+
+def audit_engine_faults(*, since: str, since_epoch: float, xid_before: int, boot_before: str, log_dirs) -> dict:
+    """The engine-level fault record for a run (M2 training, gate, throughput measurement): new Xid lines in the
+    kernel journal, a reboot, or VK_ERROR_DEVICE_LOST in any simulator log the run wrote. Fails closed: `ok`
+    requires a readable kernel journal."""
+    logs = [p for d in log_dirs for p in instance_logs_since(d, since_epoch)]
+    readable = kernel_journal_readable()
+    xid_after = xid_count(since)
+    boot_after = boot_id()
+    device_lost = count_device_lost(logs)
+    return {
+        "xid_delta": xid_after - xid_before,
+        "boot_changed": boot_after != boot_before,
+        "device_lost": device_lost,
+        "logs_scanned": len(logs),
+        "kernel_journal_readable": readable,
+        "ok": readable and xid_after == xid_before and boot_after == boot_before and sum(device_lost.values()) == 0,
+    }
 
 
 def boot_id() -> str:
@@ -223,10 +262,13 @@ def run_checks(editor_wait_s: float = 120.0) -> dict:
         checks["editor_opens_x11"] = {"pass": False, "skipped": "GPU busy"}
         checks["zen_data_path_redirected"] = {"pass": False, "skipped": "GPU busy"}
     xid_after = xid_count(started_at)
+    readable = kernel_journal_readable()
     # Xid lines from before this check (e.g. another program) are recorded, not failed on; counts from started_at on
-    # span reboots, and M0 gates on the delta from this baseline plus an unchanged boot id.
+    # span reboots, and M0 gates on the delta from this baseline plus an unchanged boot id. An unreadable journal
+    # fails the check: its 0 == 0 would otherwise pass without having looked.
     checks["nvidia_xid"] = {"since": started_at, "before": xid_before, "after": xid_after,
-                            "current_boot_total_at_start": xid_boot_total, "pass": xid_after == xid_before}
+                            "current_boot_total_at_start": xid_boot_total, "journal_readable": readable,
+                            "pass": readable and xid_after == xid_before}
     return {"started_at": started_at, "boot_id": boot_id(), "checks": checks, "epic_config_before": epic_before,
             "out_of_root_before": out_of_root_before, "pass": all(c["pass"] for c in checks.values())}
 

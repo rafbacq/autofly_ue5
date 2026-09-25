@@ -67,7 +67,7 @@ from autofly_ue5.expert.vec import teardown  # noqa: E402
 from autofly_ue5.paths import ROOT, RUNS_DIR  # noqa: E402
 from autofly_ue5.sim.airsim_backend import ProjectAirSimSimulator  # noqa: E402
 from autofly_ue5.sim.process import instance_dir, route_client_log, stop_instances, sweep_orphaned_instances  # noqa: E402
-from autofly_ue5.validate.engine_check import boot_id, count_device_lost, xid_count  # noqa: E402
+from autofly_ue5.validate.engine_check import audit_engine_faults, boot_id, xid_count  # noqa: E402
 
 # --------------------------------------------------------------------------------------------------------
 # The gate itself: a pure function of the numbers, so it is trivially unit-testable without a live run.
@@ -162,6 +162,7 @@ def run(
 ) -> dict[str, Any]:
     load_model = load_model or (lambda p: default_sac_loader(p, device=device))
     run_started = time.strftime("%Y-%m-%d %H:%M:%S")
+    run_start_epoch = time.time()
     xid_before = xid_count(run_started)
     boot_before = boot_id()
 
@@ -184,11 +185,10 @@ def run(
     error_message: str | None = None
 
     def _write() -> dict[str, Any]:
-        logs = [p for p in (instance_dir(instance) / "sim.log",) if p.is_file()]
-        xid_after = xid_count(run_started)
-        boot_after = boot_id()
-        device_lost = count_device_lost(logs)
-        faults_ok = (xid_after == xid_before) and (boot_after == boot_before) and sum(device_lost.values()) == 0
+        # Every log this slot wrote during the run (relaunches rotate sim.log) and a readable journal (C7).
+        engine_faults = audit_engine_faults(since=run_started, since_epoch=run_start_epoch, xid_before=xid_before,
+                                            boot_before=boot_before, log_dirs=[instance_dir(instance)])
+        faults_ok = engine_faults.pop("ok")
         cumulative = (
             env.get_fault_summary()
             if env is not None
@@ -228,11 +228,7 @@ def run(
                 "specifically. final.zip was not selected on any eval episode.",
             ],
             "cumulative_backend_faults": cumulative,
-            "engine_faults": {
-                "xid_delta": xid_after - xid_before,
-                "boot_changed": boot_after != boot_before,
-                "device_lost": device_lost,
-            },
+            "engine_faults": engine_faults,
             "faults_ok": faults_ok,
             "throughput_projection": throughput_projection,
             "status": status,

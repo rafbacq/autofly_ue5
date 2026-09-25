@@ -302,3 +302,15 @@ def test_stop_keeps_the_record_of_a_process_that_survives_sigkill(tmp_path, monk
     finally:
         monkeypatch.undo()
         stop(1, grace_s=2.0, run_root=tmp_path)
+
+
+def test_stdout_log_keeps_every_launch_of_a_slot(tmp_path):
+    # C7: stdout.log was reopened with "wb" on every launch, so a relaunch erased the engine output (a crash's
+    # last words included) of every earlier session in that slot.
+    _sleeper(1, tmp_path)
+    stop(1, grace_s=2.0, run_root=tmp_path)
+    _sleeper(1, tmp_path)
+    stop(1, grace_s=2.0, run_root=tmp_path)
+    text = (instance_dir(1, tmp_path) / "stdout.log").read_text()
+    assert text.count("=== launch ") == 2
+

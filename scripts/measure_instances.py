@@ -43,7 +43,7 @@ from autofly_ue5.paths import ROOT, RUNS_DIR
 from autofly_ue5.scenes.model import Bounds, Instance, Layout, SceneFile, load_scene_file
 from autofly_ue5.sim.airsim_backend import ProjectAirSimSimulator
 from autofly_ue5.sim.process import instance_dir, route_client_log, sweep_orphaned_instances
-from autofly_ue5.validate.engine_check import boot_id, count_device_lost, xid_count
+from autofly_ue5.validate.engine_check import audit_engine_faults, boot_id, xid_count
 
 MAP_PATH = "/Game/AutoFly/Maps/S01"
 CANDIDATE_NS = (1, 2, 4, 6)
@@ -275,6 +275,7 @@ def run(
 
     for n in candidate_ns:
         attempted_ns.append(n)
+        n_start_epoch = time.time()
         xid_before = xid_count(run_started)
         boot_before = boot_id()
         record: dict | None = None
@@ -297,16 +298,9 @@ def run(
             stop_reason = f"n={n} failed to launch/measure after {attempts} attempt(s): {last_error}"
             break
 
-        logs = [instance_dir(i) / "sim.log" for i in range(n) if (instance_dir(i) / "sim.log").is_file()]
-        xid_after = xid_count(run_started)
-        boot_after = boot_id()
-        device_lost = count_device_lost(logs)
-        record["faults"] = {
-            "xid_delta": xid_after - xid_before,
-            "boot_changed": boot_after != boot_before,
-            "device_lost": device_lost,
-        }
-        record["faults_ok"] = (xid_after == xid_before) and (boot_after == boot_before) and sum(device_lost.values()) == 0
+        record["faults"] = audit_engine_faults(since=run_started, since_epoch=n_start_epoch, xid_before=xid_before,
+                                               boot_before=boot_before, log_dirs=[instance_dir(i) for i in range(n)])
+        record["faults_ok"] = record["faults"].pop("ok")
         per_n[str(n)] = record
 
         stop_climbing, reason = should_stop(

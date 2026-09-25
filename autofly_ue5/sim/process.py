@@ -254,7 +254,10 @@ def launch_process(
         for port in (ports.topics, ports.services):
             if listening_pids(port):
                 raise RuntimeError(f"port {port} is already in use")
-        with open(directory / "stdout.log", "wb") as out:
+        # Appended, with a header per launch: a relaunch must not erase an earlier session's output (C7).
+        with open(directory / "stdout.log", "ab") as out:
+            out.write(f"=== launch {time.strftime('%Y-%m-%d %H:%M:%S %z')} {cmd[0]} ===\n".encode())
+            out.flush()
             proc = subprocess.Popen(
                 cmd, stdin=subprocess.DEVNULL, stdout=out, stderr=subprocess.STDOUT, env=env,
                 start_new_session=True, cwd=directory,

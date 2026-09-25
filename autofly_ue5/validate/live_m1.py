@@ -22,7 +22,13 @@ from autofly_ue5.sim.airsim_backend import ProjectAirSimSimulator
 from autofly_ue5.sim.process import instance_dir, route_client_log
 from autofly_ue5.sim.protocol import Simulator
 from autofly_ue5.sim.types import Pose
-from autofly_ue5.validate.engine_check import boot_id, count_device_lost, xid_count
+from autofly_ue5.validate.engine_check import (
+    boot_id,
+    count_device_lost,
+    instance_logs_since,
+    kernel_journal_readable,
+    xid_count,
+)
 from autofly_ue5.validate.geometry import (
     CAMERA_OFFSET_M,
     DepthProbe,
@@ -240,6 +246,7 @@ def main(argv: list[str] | None = None) -> int:
     ]
     # Xid lines are counted from this run's start without journalctl's -k (which implies -b, the current boot only).
     run_started = time.strftime("%Y-%m-%d %H:%M:%S")
+    run_start_epoch = time.time()
     xid_before = xid_count(run_started)
     try:
         start = time.monotonic()
@@ -253,10 +260,12 @@ def main(argv: list[str] | None = None) -> int:
         report["error"] = f"{type(err).__name__}: {err}"
     finally:
         sim.close()
-    logs = sorted(instance_dir(args.instance).glob("sim*.log"))
+    # This run's logs only (every sim*.log ever written would include other runs'), and a readable journal (C7).
+    logs = instance_logs_since(instance_dir(args.instance), run_start_epoch)
+    readable = kernel_journal_readable()
     report["faults"] = {"xid_since": run_started, "xid_before": xid_before, "xid_after": xid_count(run_started),
-                        "boot_id": boot_id(), "device_lost": count_device_lost(logs)}
-    report["faults_ok"] = (report["faults"]["xid_after"] == xid_before and len(logs) > 0
+                        "boot_id": boot_id(), "device_lost": count_device_lost(logs), "kernel_journal_readable": readable}
+    report["faults_ok"] = (readable and report["faults"]["xid_after"] == xid_before and len(logs) > 0
                            and sum(report["faults"]["device_lost"].values()) == 0)
     report["pass"] = ("error" not in report and len(report["checks"]) == len(checks)
                       and all(c["pass"] for c in report["checks"].values())

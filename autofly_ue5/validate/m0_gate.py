@@ -7,11 +7,20 @@ env -u PYTHONPATH .venv/bin/python -m autofly_ue5.validate.m0_gate assemble
 
 import json
 import sys
+import time
 from pathlib import Path
 
 from autofly_ue5.gpu import gpu_memory_mib
 from autofly_ue5.paths import ROOT, RUNS_DIR
-from autofly_ue5.validate.engine_check import boot_id, count_device_lost, epic_config_usage, out_of_root_state, xid_count
+from autofly_ue5.validate.engine_check import (
+    boot_id,
+    count_device_lost,
+    epic_config_usage,
+    instance_logs_since,
+    kernel_journal_readable,
+    out_of_root_state,
+    xid_count,
+)
 
 M0_DIR = RUNS_DIR / "m0"
 PROBE_MIC_PARENT = "/Engine/BasicShapes/BasicShapeMaterial.BasicShapeMaterial"
@@ -44,8 +53,15 @@ def probe_ok(probe: dict) -> bool:
     )
 
 
+def m0_fault_logs(since_epoch: float, sim_root: Path = RUNS_DIR / "sim", m0_dir: Path = M0_DIR) -> list[Path]:
+    """The simulator and editor-probe logs written since the M0 run started. Scanning every sim*.log ever written
+    (as before) would pull every later M1/M2 run's logs into an M0 re-verification (C7)."""
+    sim_logs = [p for d in sorted(Path(sim_root).glob("inst*")) for p in instance_logs_since(d, since_epoch)]
+    return sim_logs + instance_logs_since(m0_dir, since_epoch, pattern="editor_open*.log")
+
+
 def fault_record(engine: dict, xid_now: int, device_lost: dict[str, int], epic_after: dict, boot_id_now: str,
-                 out_of_root_after: dict[str, bool]) -> dict:
+                 out_of_root_after: dict[str, bool], journal_readable: bool = True) -> dict:
     baseline = engine.get("checks", {}).get("nvidia_xid", {}).get("after")
     before = engine.get("epic_config_before", {})
     out_of_root_before = engine.get("out_of_root_before", {})
@@ -58,6 +74,7 @@ def fault_record(engine: dict, xid_now: int, device_lost: dict[str, int], epic_a
         "boot_id_now": boot_id_now,
         "boot_changed": engine.get("boot_id") != boot_id_now,
         "device_lost": device_lost,
+        "kernel_journal_readable": journal_readable,
         "epic_config_before": before,
         "epic_config_after": epic_after,
         "zen_default_data_created": bool(epic_after.get("zen_default_data_exists"))
@@ -72,6 +89,7 @@ def fault_record(engine: dict, xid_now: int, device_lost: dict[str, int], epic_a
 def _faults_ok(faults: dict) -> bool:
     lost = faults.get("device_lost") or {}
     return (faults.get("xid_delta") == 0 and faults.get("boot_changed") is False
+            and faults.get("kernel_journal_readable") is True
             and len(lost) > 0 and sum(lost.values()) == 0
             and faults.get("zen_default_data_created") is False and faults.get("out_of_root_created") == [])
 
@@ -146,10 +164,12 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(record_vram(M0_DIR / "vram.json", args[1], used)))
         return 0
     if args == ["faults"]:
-        logs = sorted((RUNS_DIR / "sim").glob("inst*/sim*.log")) + sorted(M0_DIR.glob("editor_open*.log"))
         engine = _load(M0_DIR / "engine_check.json")
-        record = fault_record(engine, xid_count(engine.get("started_at")), count_device_lost(logs), epic_config_usage(),
-                              boot_id(), out_of_root_state())
+        started = engine.get("started_at")
+        since_epoch = time.mktime(time.strptime(started, "%Y-%m-%d %H:%M:%S")) if started else 0.0
+        logs = m0_fault_logs(since_epoch)
+        record = fault_record(engine, xid_count(started), count_device_lost(logs), epic_config_usage(),
+                              boot_id(), out_of_root_state(), journal_readable=kernel_journal_readable())
         (M0_DIR / "faults.json").write_text(json.dumps(record, indent=2))
         print(json.dumps(record, indent=2))
         return 0 if _faults_ok(record) else 1

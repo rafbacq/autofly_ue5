@@ -130,3 +130,26 @@ def test_gate_fails_on_new_xid_reboot_device_lost_default_zen_cache_or_out_of_ro
     trace = fault_record(ENGINE, 0, {"sim.log": 0}, EPIC_AFTER, "boot-a", dict(OUT_OF_ROOT_CLEAN, unreal_trace_store=True))
     assert trace["out_of_root_created"] == ["unreal_trace_store"] and _gate(faults=trace)["pass"] is False
     assert _gate(faults={})["pass"] is False
+
+
+def test_an_unreadable_kernel_journal_fails_the_m0_fault_record():
+    unreadable = fault_record(ENGINE, 0, {"sim.log": 0}, EPIC_AFTER, "boot-a", OUT_OF_ROOT_CLEAN, journal_readable=False)
+    assert unreadable["kernel_journal_readable"] is False and _gate(faults=unreadable)["gpu_faults"] is False
+
+
+def test_m0_fault_logs_are_scoped_to_the_m0_run(tmp_path):
+    import os
+
+    from autofly_ue5.validate.m0_gate import m0_fault_logs
+
+    sim_root, m0_dir = tmp_path / "sim", tmp_path / "m0"
+    (sim_root / "inst0").mkdir(parents=True)
+    m0_dir.mkdir()
+    old = sim_root / "inst0" / "sim-backup-2026.09.16-20.00.00.log"  # an M2 run's log, long after M0 -- or before
+    new = sim_root / "inst0" / "sim.log"
+    probe = m0_dir / "editor_open.log"
+    for path, mtime in ((old, 1_000.0), (new, 5_000.0), (probe, 5_000.0)):
+        path.write_text("x\n")
+        os.utime(path, (mtime, mtime))
+    assert m0_fault_logs(since_epoch=4_000.0, sim_root=sim_root, m0_dir=m0_dir) == [new, probe]
+
