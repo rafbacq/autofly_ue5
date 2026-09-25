@@ -57,3 +57,25 @@ def test_the_probe_detects_a_reset_that_stays_at_the_crash_site_and_whether_a_se
     assert summary["fixed_by_second_reset"] == 2
     bad = [t for t in report["trials"] if t["first_reset"]["bad"]]
     assert all(t["first_reset"]["position_error_m"] > 1.0 for t in bad)
+
+
+def test_one_trial_that_raises_is_recorded_and_the_rest_still_run():
+    # Final review #7: a CameraPoseError in one trial's flight discarded every trial already measured.
+    from autofly_ue5.sim.airsim_backend import CameraPoseError
+    from scripts.probe_crash_reset import run_probe
+
+    class FaultsOnce(FakeSimulator):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self._calls = 0
+
+        def step(self, dt=0.2):
+            self._calls += 1
+            if self._calls == 3:
+                raise CameraPoseError("camera left behind")
+            return super().step(dt)
+
+    report = run_probe(_sim(FaultsOnce), PROBE, SCENE, LAYOUT, trials=3)
+    assert len(report["trials"]) == 3
+    assert sum(1 for t in report["trials"] if "error" in t) == 1
+    assert report["summary"]["errors"] == 1

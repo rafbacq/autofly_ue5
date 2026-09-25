@@ -24,7 +24,7 @@ ENGINE = {"pass": True, "started_at": "2026-09-15 12:00:00", "boot_id": "boot-a"
           "epic_config_before": {"kib": 1000, "zen_default_data_exists": False}, "out_of_root_before": OUT_OF_ROOT_CLEAN}
 EPIC_AFTER = {"kib": 5000, "zen_default_data_exists": False}
 FAULTS_OK = fault_record(ENGINE, 0, {"runs/sim/inst0/sim.log": 0, "runs/sim/inst1/sim.log": 0}, EPIC_AFTER, "boot-a",
-                         OUT_OF_ROOT_CLEAN)
+                         OUT_OF_ROOT_CLEAN, journal_readable=True)
 VRAM = {"baseline": 600, "idle_instance": 2100}
 
 
@@ -118,16 +118,16 @@ def test_gate_fails_on_failing_single_instance_smoke():
 
 
 def test_gate_fails_on_new_xid_reboot_device_lost_default_zen_cache_or_out_of_root_writes():
-    new_xid = fault_record(ENGINE, 1, {"sim.log": 0}, EPIC_AFTER, "boot-a", OUT_OF_ROOT_CLEAN)
+    new_xid = fault_record(ENGINE, 1, {"sim.log": 0}, EPIC_AFTER, "boot-a", OUT_OF_ROOT_CLEAN, journal_readable=True)
     assert new_xid["xid_delta"] == 1 and _gate(faults=new_xid)["gpu_faults"] is False
-    rebooted = fault_record(ENGINE, 0, {"sim.log": 0}, EPIC_AFTER, "boot-b", OUT_OF_ROOT_CLEAN)
+    rebooted = fault_record(ENGINE, 0, {"sim.log": 0}, EPIC_AFTER, "boot-b", OUT_OF_ROOT_CLEAN, journal_readable=True)
     assert rebooted["boot_changed"] is True and _gate(faults=rebooted)["pass"] is False
-    lost = fault_record(ENGINE, 0, {"sim.log": 2}, EPIC_AFTER, "boot-a", OUT_OF_ROOT_CLEAN)
+    lost = fault_record(ENGINE, 0, {"sim.log": 2}, EPIC_AFTER, "boot-a", OUT_OF_ROOT_CLEAN, journal_readable=True)
     assert _gate(faults=lost)["pass"] is False
     zen = fault_record(ENGINE, 0, {"sim.log": 0}, {"kib": 9000, "zen_default_data_exists": True}, "boot-a",
-                       OUT_OF_ROOT_CLEAN)
+                       OUT_OF_ROOT_CLEAN, journal_readable=True)
     assert zen["zen_default_data_created"] is True and _gate(faults=zen)["pass"] is False
-    trace = fault_record(ENGINE, 0, {"sim.log": 0}, EPIC_AFTER, "boot-a", dict(OUT_OF_ROOT_CLEAN, unreal_trace_store=True))
+    trace = fault_record(ENGINE, 0, {"sim.log": 0}, EPIC_AFTER, "boot-a", dict(OUT_OF_ROOT_CLEAN, unreal_trace_store=True), journal_readable=True)
     assert trace["out_of_root_created"] == ["unreal_trace_store"] and _gate(faults=trace)["pass"] is False
     assert _gate(faults={})["pass"] is False
 
@@ -153,3 +153,9 @@ def test_m0_fault_logs_are_scoped_to_the_m0_run(tmp_path):
         os.utime(path, (mtime, mtime))
     assert m0_fault_logs(since_epoch=4_000.0, sim_root=sim_root, m0_dir=m0_dir) == [new, probe]
 
+
+
+def test_a_fault_record_that_does_not_say_the_journal_was_readable_fails():
+    # Final review #10: fail closed -- a caller that forgets to pass readability must not get a passing record.
+    record = fault_record(ENGINE, 0, {"sim.log": 0}, EPIC_AFTER, "boot-a", OUT_OF_ROOT_CLEAN)
+    assert _gate(faults=record)["gpu_faults"] is False

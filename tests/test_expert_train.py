@@ -858,3 +858,90 @@ def test_the_wrapper_retries_an_episode_that_did_not_start_where_it_should(error
     assert env.observation_space.contains(obs)
     assert env.fault_counts[error.__name__] == 1 and env.recovered_counts[error.__name__] == 1
 
+
+
+def test_a_resumed_eval_callback_refuses_a_changed_episode_count_up_front(tmp_path):
+    # Final review #3: rows of different lengths make np.savez raise at the first evaluation after a resume -- an
+    # hour into the session. Refuse at start instead.
+    from autofly_ue5.expert.evaluate import FaultAwareEvalCallback
+    from autofly_ue5.expert.train import build_model
+
+    (tmp_path / "eval_logs").mkdir()
+    np.savez(tmp_path / "eval_logs" / "evaluations.npz", timesteps=np.array([25_000]), results=np.array([[70.0, 80.0]]),
+             ep_lengths=np.array([[100, 120]]), successes=np.array([[True, True]]))
+    train_vec, _ = _flaky_vec(tmp_path, fail_on_step_calls=())
+    model = build_model(train_vec, device="cpu", buffer_size=100, learning_starts=1000, seed=0, verbose=0)
+    cb = FaultAwareEvalCallback(_eval_env(tmp_path, FakeSimulator), n_eval_episodes=3, eval_freq=25_000, seed_base=0,
+                                best_model_save_path=tmp_path / "best", log_path=tmp_path / "eval_logs")
+    with pytest.raises(ValueError, match="eval-episodes"):
+        cb.init_callback(model)
+
+
+def test_a_dead_worker_loses_only_its_own_fault_summary(tmp_path):
+    # Final review #4: env_method() is all-or-nothing -- one dead worker (worker_mode exits on purpose) raised, every
+    # worker's summary was lost, and the record then showed explicit zeros: "no faults".
+    from autofly_ue5.expert.vec import collect_fault_summaries, make_vec_env
+
+    scene, layout = scene_and_layout()
+    vec = make_vec_env(scene, layout, 2, map_path="/x", monitor_dir=tmp_path / "mon", sim_factory=FakeSimulator,
+                       sim_root=tmp_path / "sim")
+    try:
+        vec.processes[1].kill()
+        vec.processes[1].join(5.0)
+        summaries, missing = collect_fault_summaries(vec, timeout_s=5.0)
+        assert [s["instance"] for s in summaries] == [0]
+        assert missing == [1]
+    finally:
+        for proc in vec.processes:
+            if proc.is_alive():
+                proc.kill()
+
+
+class _LaunchFailsInSlot(_ProcessBackedFake):
+    def __init__(self, root, failing_instance, **kwargs):
+        super().__init__(root, **kwargs)
+        self._failing_instance = failing_instance
+
+    def launch(self, map_path, instance):
+        if instance == self._failing_instance:
+            raise RuntimeError(f"launch refused in slot {instance}")
+        super().launch(map_path, instance)
+
+
+def test_a_failed_staggered_launch_stops_the_simulators_it_already_started(tmp_path):
+    # Final review #6: make_vec_env dropped the SubprocVecEnv when worker 1's first reset failed, leaving worker 0's
+    # simulator (and the worker) running with nobody to stop them.
+    import functools
+
+    from autofly_ue5.expert.vec import make_vec_env
+    from autofly_ue5.sim.process import own_running_instances, stop
+
+    root = tmp_path / "sim"
+    scene, layout = scene_and_layout()
+    try:
+        with pytest.raises(Exception):
+            make_vec_env(scene, layout, 2, map_path="/x", monitor_dir=tmp_path / "mon", sim_root=root,
+                         sim_factory=functools.partial(_LaunchFailsInSlot, root, 1))
+        assert own_running_instances(root) == [], "slot 0's simulator outlived the failed launch"
+    finally:
+        for inst in (0, 1):
+            stop(inst, grace_s=2.0, run_root=root)
+
+
+def test_an_evaluation_bug_is_not_mistaken_for_a_backend_failure(tmp_path):
+    # Final review #8: every exception reached the callback as EvaluationInterrupted, so a programming error in the
+    # evaluation path would skip every evaluation for 12 hours and never write best_model.zip.
+    from autofly_ue5.expert.evaluate import FaultAwareEvalCallback
+    from autofly_ue5.expert.train import build_model
+
+    train_vec, _ = _flaky_vec(tmp_path, fail_on_step_calls=())
+    model = build_model(train_vec, device="cpu", buffer_size=100, learning_starts=1000, seed=0, verbose=0)
+
+    def broken_predict(*args, **kwargs):
+        raise TypeError("a bug, not the simulator")
+
+    model.predict = broken_predict  # training never predicts before learning_starts; evaluation does
+    cb = FaultAwareEvalCallback(_eval_env(tmp_path, FakeSimulator), n_eval_episodes=1, eval_freq=2, seed_base=0,
+                                best_model_save_path=tmp_path / "best", log_path=tmp_path / "eval_logs")
+    with pytest.raises(TypeError, match="a bug"):
+        model.learn(total_timesteps=4, callback=cb)

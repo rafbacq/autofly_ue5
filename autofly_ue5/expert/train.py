@@ -148,7 +148,7 @@ from autofly_ue5.expert.seeds import (  # noqa: F401  (EVAL_SEED_BASE etc. re-ex
     session_seed_base,
     worker_seed_base,
 )
-from autofly_ue5.expert.vec import call_reset_with_timeout, make_vec_env, teardown  # noqa: F401
+from autofly_ue5.expert.vec import call_reset_with_timeout, collect_fault_summaries, make_vec_env, teardown  # noqa: F401
 from autofly_ue5.paths import ROOT, RUNS_DIR, SCENES_DIR
 from autofly_ue5.scenes.model import Bounds, Instance, Layout, SceneFile, load_scene_file
 from autofly_ue5.sim.airsim_backend import scene_config_factory, scene_config_record
@@ -277,13 +277,18 @@ SESSIONS_FILE = "sessions.json"
 def prepare_run_root(run_root: Path, *, resume: bool, reward_version: str, seed: int) -> int:
     """Claim `run_root` for this training session and return the session index (0 for a fresh run).
 
-    A fresh run refuses a directory that already holds a run: its old checkpoints would otherwise sit next to the
-    new ones, and a later --resume picks the highest step count -- possibly the OLD run's. A resume refuses a run
-    recorded under another reward version (its replay buffer holds the other objective's rewards), or one with no
-    sessions record at all (it predates this record, and its buffer still holds unfilterable backend-fault rows).
+    A fresh run refuses a directory that already holds a run's results: its old checkpoints would otherwise sit next
+    to the new ones, and a later --resume picks the highest step count -- possibly the OLD run's. A directory whose
+    earlier sessions produced no checkpoint and no final.zip holds nothing to protect, so a fresh run may reuse it
+    (the likeliest early failures on this shared host -- a foreign GPU job, a failed launch -- happen before the
+    first checkpoint). A resume refuses a run recorded under another reward version (its replay buffer holds the other
+    objective's rewards), one with no sessions record at all (it predates this record, and its buffer still holds
+    unfilterable backend-fault rows), and one with no checkpoint + replay buffer to continue from -- all before a
+    session is recorded.
     """
     run_root = Path(run_root)
     sessions_path = run_root / SESSIONS_FILE
+    has_results = (run_root / "final.zip").is_file() or newest_checkpoint(run_root / "checkpoints") is not None
     if resume:
         if not sessions_path.is_file():
             raise RuntimeError(
@@ -297,14 +302,18 @@ def prepare_run_root(run_root: Path, *, resume: bool, reward_version: str, seed:
                 f"--resume: {run_root} was trained under reward version {recorded!r}, this code computes "
                 f"{reward_version!r}; resuming would mix two objectives in one replay buffer -- start a fresh run"
             )
+        checkpoint = newest_checkpoint(run_root / "checkpoints")
+        if checkpoint is None or not replay_buffer_for(checkpoint).is_file():
+            raise RuntimeError(
+                f"--resume: {run_root} has no checkpoint with its replay buffer to continue from (the previous session "
+                f"ended before its first one); start it fresh instead -- the same command without --resume"
+            )
         session = len(sessions)
     else:
-        existing = [p for p in (run_root / "checkpoints").glob("rl_model_*") if p.is_file()] if run_root.is_dir() else []
-        if existing or sessions_path.is_file() or (run_root / "final.zip").is_file():
-            raise RuntimeError(
-                f"{run_root} already holds a training run (checkpoints, final.zip or {SESSIONS_FILE}); pass "
-                f"--resume to continue it, or a new --run-root for a fresh run"
-            )
+        if has_results:
+            hint = ("pass --resume to continue it, or a new --run-root for a fresh run" if sessions_path.is_file() else
+                    f"it predates run records (no {SESSIONS_FILE}) and cannot be resumed; use a new --run-root")
+            raise RuntimeError(f"{run_root} already holds a training run's checkpoints or final.zip; {hint}")
         sessions = []
         session = 0
     session_seed_base(0, session)  # raises before any work if this session would overflow its seed slice
@@ -486,11 +495,17 @@ def main(argv: list[str] | None = None) -> int:
         print(f"--seed must be in [0, {SESSION_SEED_STRIDE - 64}); got {args.seed}", file=sys.stderr)
         return 2
     run_root = args.run_root or RUNS_DIR / "expert" / args.scene
+    map_path = args.map_path or f"/Game/AutoFly/Maps/{args.scene.upper()}"
+    scene_config = args.scene_config or f"scene_autofly_{args.scene}.jsonc"
+    # Everything that can be checked without a simulator is checked before the run directory is claimed.
     try:
+        scene_file, layout = scene_and_layout(args.scene)
+        scene_config_record(scene_config)  # the config file must exist; its hash goes in the record
         session = prepare_run_root(run_root, resume=args.resume, reward_version=REWARD_VERSION, seed=args.seed)
-    except (RuntimeError, ValueError) as err:
+    except (FileNotFoundError, RuntimeError, ValueError) as err:
         print(f"refusing to start: {err}", file=sys.stderr)
         return 2
+    sim_factory = scene_config_factory(scene_config)
     checkpoints_dir = run_root / "checkpoints"
     best_dir = run_root / "best"
     tb_dir = run_root / "tensorboard"
@@ -500,21 +515,11 @@ def main(argv: list[str] | None = None) -> int:
     for d in (checkpoints_dir, best_dir, tb_dir, monitor_dir, eval_monitor_dir):
         d.mkdir(parents=True, exist_ok=True)
 
-    map_path = args.map_path or f"/Game/AutoFly/Maps/{args.scene.upper()}"
-    scene_config = args.scene_config or f"scene_autofly_{args.scene}.jsonc"
-    sim_factory = scene_config_factory(scene_config)
-    scene_file, layout = scene_and_layout(args.scene)
-
     run_started = time.strftime("%Y-%m-%d %H:%M:%S")
     run_start_epoch = time.time()
     xid_before = xid_count(run_started)
     boot_before = boot_id()
 
-    # Hazard #3: a crashed earlier run can leave Unreal children holding VRAM. Only orphans -- a concurrently
-    # running job's simulators are not ours to stop.
-    swept = sweep_orphaned_instances()
-    if swept:
-        print(f"swept orphaned instances before starting: {swept}", file=sys.stderr)
     train_slots = list(range(args.instances))
     eval_slot = args.instances
 
@@ -532,6 +537,11 @@ def main(argv: list[str] | None = None) -> int:
     error_message: str | None = None
 
     try:
+        # Hazard #3: a crashed earlier run can leave Unreal children holding VRAM. Only orphans -- a concurrently
+        # running job's simulators are not ours to stop.
+        swept = sweep_orphaned_instances()
+        if swept:
+            print(f"swept orphaned instances before starting: {swept}", file=sys.stderr)
         train_env = make_vec_env(
             scene_file, layout, args.instances, map_path=map_path, monitor_dir=monitor_dir,
             seed_base_fn=lambda rank: session_seed_base(rank, session), instance_offset=0, sim_factory=sim_factory,
@@ -610,13 +620,13 @@ def main(argv: list[str] | None = None) -> int:
         # the gate-record write below (docs/gates/m2_train.json must describe what happened even when
         # teardown itself hits a surprise) rather than crashing main() before it can write anything.
         fault_summaries: list[dict] = []
+        fault_summaries_missing: list[int] = []  # slots whose counts could not be read: the totals exclude them
         for env, slots in ((train_env, train_slots), (eval_env, [eval_slot])):
             if env is None:
                 continue
-            try:
-                fault_summaries.extend(env.env_method("get_fault_summary"))
-            except Exception as err:
-                print(f"WARNING: could not collect a fault summary: {type(err).__name__}: {err}", file=sys.stderr)
+            collected, missing = collect_fault_summaries(env)
+            fault_summaries.extend(collected)
+            fault_summaries_missing.extend(slots[i] for i in missing)
             try:
                 teardown(env, slots)  # bounded close + force-kill + stop this run's own slots
             except Exception as err:
@@ -683,11 +693,13 @@ def main(argv: list[str] | None = None) -> int:
         "env_steps_per_s": (num_timesteps_this_session / wall_s) if wall_s > 0 else None,
         "eval": read_eval_results(run_root),
         "outcome_histogram": dict(outcome_cb.histogram),
-        # Backend-fault transitions dropped from the replay buffer (C2); with n workers a dropped row costs n.
+        # Backend-fault transitions dropped from the replay buffer (C2); with n workers a dropped row costs n. Counted
+        # by the buffer itself, so across every session of a resumed run (backend_faults is this session's).
         "dropped_fault_rows": int(getattr(getattr(model, "replay_buffer", None), "dropped_fault_rows", 0)),
         "dropped_fault_transitions": int(getattr(getattr(model, "replay_buffer", None), "dropped_transitions", 0)),
         "interrupted_evaluations": eval_cb.interrupted_evaluations if eval_cb is not None else 0,
         "backend_faults": combine_fault_summaries(fault_summaries),
+        "backend_faults_missing_slots": fault_summaries_missing,
         "engine_faults": engine_faults,
         "faults_ok": faults_ok,
         "checkpoint": {

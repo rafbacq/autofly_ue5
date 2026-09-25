@@ -286,6 +286,12 @@ class FaultAwareEvalCallback(BaseCallback):
             self.evaluations_results = [[float(r) for r in row] for row in data["results"]]
             self.evaluations_length = [[int(n) for n in row] for row in data["ep_lengths"]]
             self.evaluations_successes = [[bool(x) for x in row] for row in data["successes"]]
+            recorded = {len(row) for row in self.evaluations_results}
+            if recorded and recorded != {self._n_eval_episodes}:
+                raise ValueError(
+                    f"{npz} holds evaluations of {sorted(recorded)} episodes but this run asks for {self._n_eval_episodes}; "
+                    f"resume with the same --eval-episodes (rows of different lengths cannot share one npz)"
+                )
             if self.evaluations_results:
                 self.best_mean_reward = max(float(np.mean(row)) for row in self.evaluations_results)
         self._next_eval = (self.model.num_timesteps // self._eval_freq + 1) * self._eval_freq
@@ -298,6 +304,11 @@ class FaultAwareEvalCallback(BaseCallback):
             report = evaluate_policy_episodes(self.model, self._eval_env, self._n_eval_episodes, self._seed_base,
                                               deterministic=self._deterministic)
         except EvaluationInterrupted as err:
+            if not isinstance(err.cause, RuntimeError):
+                # The backend's failures all arrive as RuntimeError (the wrapper giving up, the per-episode retry
+                # bound). Anything else is a bug in the evaluation path: skipping it silently would disable model
+                # selection for the whole run.
+                raise err.cause from err
             self.interrupted_evaluations += 1
             print(f"WARNING: evaluation at {self.num_timesteps} timesteps could not finish and is skipped: {err}",
                   file=sys.stderr)

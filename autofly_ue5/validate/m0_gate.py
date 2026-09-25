@@ -61,7 +61,7 @@ def m0_fault_logs(since_epoch: float, sim_root: Path = RUNS_DIR / "sim", m0_dir:
 
 
 def fault_record(engine: dict, xid_now: int, device_lost: dict[str, int], epic_after: dict, boot_id_now: str,
-                 out_of_root_after: dict[str, bool], journal_readable: bool = True) -> dict:
+                 out_of_root_after: dict[str, bool], journal_readable: bool = False) -> dict:
     baseline = engine.get("checks", {}).get("nvidia_xid", {}).get("after")
     before = engine.get("epic_config_before", {})
     out_of_root_before = engine.get("out_of_root_before", {})

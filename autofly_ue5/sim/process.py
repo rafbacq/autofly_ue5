@@ -268,7 +268,10 @@ def launch_process(
             services_port=ports.services, cmd=list(cmd), log_path=log_path, started_unix=time.time(),
             owner_pid=owner.pid, owner_start_ticks=owner.start_ticks,
         )
-        pid_file.write_text(json.dumps(asdict(sp), indent=2))
+        # Written whole or not at all: readers outside the lock (own_running_instances) never see half a record.
+        partial = pid_file.with_suffix(".json.tmp")
+        partial.write_text(json.dumps(asdict(sp), indent=2))
+        os.replace(partial, pid_file)
     return sp
 
 
@@ -327,7 +330,11 @@ def stop(instance: int, grace_s: float = 30.0, run_root: Path = SIM_RUN_DIR, exp
 def own_running_instances(run_root: Path = SIM_RUN_DIR) -> list[SimProcess]:
     running = []
     for pid_file in sorted(Path(run_root).glob("inst*/pid.json")):
-        sp = read_pid_file(pid_file)
+        try:
+            sp = read_pid_file(pid_file)
+        except (FileNotFoundError, json.JSONDecodeError, TypeError) as err:  # removed or mid-write: not a record yet
+            logging.getLogger(__name__).warning("skipping unreadable %s: %s", pid_file, err)
+            continue
         if is_alive(sp.pid) and is_owned(sp):
             running.append(sp)
     return running
@@ -343,13 +350,15 @@ def stop_instance(instance: int, run_root: Path = SIM_RUN_DIR, owner: RunOwner |
     owner = owner if owner is not None else current_run_owner()
     pid_file = instance_dir(instance, run_root) / "pid.json"
     try:
-        recorded = _recorded_owner(read_pid_file(pid_file))
+        sp = read_pid_file(pid_file)
     except FileNotFoundError:
         return "no_pid_file"
+    recorded = _recorded_owner(sp)
     if recorded is not None and recorded != owner and recorded.is_alive():
         return "owner_alive_elsewhere"
     try:
-        return stop(instance, run_root=run_root)
+        # expected_pid: the decision above came from an unlocked read; if the slot was relaunched since, leave it.
+        return stop(instance, run_root=run_root, expected_pid=sp.pid)
     except NotOwnedError:
         return "not_owned"
 
@@ -369,7 +378,9 @@ def sweep_orphaned_instances(run_root: Path = SIM_RUN_DIR) -> list[dict]:
         recorded = _recorded_owner(sp)
         if recorded is not None and recorded.is_alive():
             continue
-        swept.append({"instance": sp.instance, "pid": sp.pid, "result": stop(sp.instance, run_root=run_root)})
+        # expected_pid: the sweep stops slots one after another (up to ~40 s each), so its listing can go stale.
+        result = stop(sp.instance, run_root=run_root, expected_pid=sp.pid)
+        swept.append({"instance": sp.instance, "pid": sp.pid, "result": result})
     return swept
 
 

@@ -100,8 +100,14 @@ def make_vec_env(
 
     vec_env = SubprocVecEnv([_env_fn(i) for i in range(n)])
     if launch:
-        for i in range(n):
-            call_reset_with_timeout(vec_env, i)  # staggered, bounded -- not SB3's unbounded env_method()
+        try:
+            for i in range(n):
+                call_reset_with_timeout(vec_env, i)  # staggered, bounded -- not SB3's unbounded env_method()
+        except BaseException:
+            # The caller never gets this vec env, so nobody else can stop what already launched: the healthy workers
+            # (daemon processes that outlive an os._exit caller) and their simulators, holding VRAM.
+            teardown(vec_env, [instance_offset + i for i in range(n)], sim_root)
+            raise
     return vec_env
 
 
@@ -168,3 +174,22 @@ def call_method_with_timeout(vec_env: SubprocVecEnv, index: int, method: str, ti
 def call_reset_with_timeout(vec_env: SubprocVecEnv, index: int, timeout_s: float = LAUNCH_REPLY_TIMEOUT_S) -> None:
     """A bounded `reset()` of one worker (its simulator launches lazily inside it)."""
     call_method_with_timeout(vec_env, index, "reset", timeout_s)
+
+
+def collect_fault_summaries(vec_env: VecEnv, timeout_s: float = VEC_ENV_CLOSE_TIMEOUT_S) -> tuple[list[dict], list[int]]:
+    """Every reachable worker's `get_fault_summary()`, one worker at a time and bounded, plus the indices of the
+    workers that could not answer. SB3's env_method() is all-or-nothing: one dead worker lost every summary, and the
+    record then showed explicit zeros -- "no faults" -- for faults that did happen."""
+    summaries: list[dict] = []
+    missing: list[int] = []
+    for index in range(vec_env.num_envs):
+        try:
+            if isinstance(vec_env, SubprocVecEnv):
+                summaries.append(call_method_with_timeout(vec_env, index, "get_fault_summary", timeout_s))
+            else:
+                summaries.append(vec_env.env_method("get_fault_summary", indices=[index])[0])
+        except Exception as err:
+            print(f"WARNING: worker {index} gave no fault summary ({type(err).__name__}: {err})", file=sys.stderr)
+            missing.append(index)
+    return summaries, missing
+

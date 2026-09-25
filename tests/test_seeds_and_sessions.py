@@ -86,6 +86,9 @@ def test_sessions_are_numbered_and_recorded(tmp_path):
     from autofly_ue5.expert.train import prepare_run_root
 
     assert prepare_run_root(tmp_path, resume=False, reward_version="v2", seed=0) == 0
+    (tmp_path / "checkpoints").mkdir()
+    (tmp_path / "checkpoints" / "rl_model_10000_steps.zip").write_text("model")
+    (tmp_path / "checkpoints" / "rl_model_replay_buffer_10000_steps.pkl").write_text("buffer")
     assert prepare_run_root(tmp_path, resume=True, reward_version="v2", seed=0) == 1
     sessions = json.loads((tmp_path / "sessions.json").read_text())["sessions"]
     assert [s["index"] for s in sessions] == [0, 1] and all(s["reward_version"] == "v2" for s in sessions)
@@ -117,3 +120,78 @@ def test_a_resumed_session_reseeds_its_first_episodes(tmp_path, monkeypatch):
     reseed_resumed_model(loaded, seed=0, session=1)
     loaded.learn(total_timesteps=2, reset_num_timesteps=False)
     assert seen[0] == SESSION_SEED_STRIDE, seen
+
+
+# ------------------------------------------------------------------------------------------------------
+# Final review #1: claiming a run directory must not strand it. On this shared GPU host the likeliest failures
+# (foreign job, bad --scene-config, launch failure) happen before the first checkpoint.
+# ------------------------------------------------------------------------------------------------------
+def test_a_fresh_start_that_never_checkpointed_can_be_started_again(tmp_path):
+    from autofly_ue5.expert.train import prepare_run_root
+
+    assert prepare_run_root(tmp_path, resume=False, reward_version="v2", seed=0) == 0
+    # ... that session died before its first checkpoint; nothing in the directory is worth protecting
+    assert prepare_run_root(tmp_path, resume=False, reward_version="v2", seed=0) == 0
+    assert len(json.loads((tmp_path / "sessions.json").read_text())["sessions"]) == 1
+
+
+def test_resume_without_a_checkpoint_refuses_before_recording_a_session(tmp_path):
+    from autofly_ue5.expert.train import prepare_run_root
+
+    prepare_run_root(tmp_path, resume=False, reward_version="v2", seed=0)
+    with pytest.raises(RuntimeError, match="checkpoint"):
+        prepare_run_root(tmp_path, resume=True, reward_version="v2", seed=0)
+    assert len(json.loads((tmp_path / "sessions.json").read_text())["sessions"]) == 1
+
+
+def test_a_legacy_run_directory_is_refused_without_suggesting_resume(tmp_path):
+    from autofly_ue5.expert.train import prepare_run_root
+
+    (tmp_path / "checkpoints").mkdir()
+    (tmp_path / "checkpoints" / "rl_model_200000_steps.zip").write_text("run 1")
+    with pytest.raises(RuntimeError) as err:
+        prepare_run_root(tmp_path, resume=False, reward_version="v2", seed=0)
+    assert "--resume" not in str(err.value) and "--run-root" in str(err.value)
+
+
+@pytest.mark.parametrize("bad", [["--scene", "s99"], ["--scene-config", "no_such_config.jsonc"]])
+def test_a_bad_scene_or_scene_config_fails_before_claiming_the_run_root(tmp_path, bad, monkeypatch):
+    from autofly_ue5.expert.train import main
+    from autofly_ue5.sim import airsim_backend
+
+    def no_launch(self, map_path, instance):  # this test must never start a real simulator, whatever main() does
+        raise AssertionError("main() tried to launch a simulator instead of refusing up front")
+
+    monkeypatch.setattr(airsim_backend.ProjectAirSimSimulator, "launch", no_launch)
+
+    code = main([*bad, "--run-root", str(tmp_path / "run"), "--out", str(tmp_path / "out.json"), "--device", "cpu"])
+    assert code == 2
+    assert not (tmp_path / "run" / "sessions.json").exists()
+    assert not (tmp_path / "out.json").exists()
+
+
+def test_a_checkpointed_run_resumes_with_its_filtering_buffer_gradient_steps_and_fresh_seeds(tmp_path, monkeypatch):
+    # The whole offline resume path (final review recommendation): CheckpointCallback with the replay buffer, then
+    # SAC.load + load_replay_buffer + the class check + re-seeding + learn(reset_num_timesteps=False).
+    from stable_baselines3 import SAC
+    from stable_baselines3.common.callbacks import CheckpointCallback
+
+    from autofly_ue5.expert.resilient import FaultFilteringDictReplayBuffer
+    from autofly_ue5.expert.seeds import SESSION_SEED_STRIDE, session_seed_base
+    from autofly_ue5.expert.train import build_model, newest_checkpoint, replay_buffer_for, reseed_resumed_model
+
+    model = build_model(_vec(session_seed_base(0, 0)), device="cpu", buffer_size=100, learning_starts=1000, seed=0, verbose=0)
+    model.learn(total_timesteps=6, callback=CheckpointCallback(save_freq=6, save_path=str(tmp_path), save_replay_buffer=True))
+    checkpoint = newest_checkpoint(tmp_path)
+    assert checkpoint is not None and replay_buffer_for(checkpoint).is_file()
+
+    seen = _record_seeds(monkeypatch)
+    resumed = SAC.load(checkpoint, env=_vec(session_seed_base(0, 1)), device="cpu", gradient_steps=-1)
+    resumed.load_replay_buffer(replay_buffer_for(checkpoint))
+    assert isinstance(resumed.replay_buffer, FaultFilteringDictReplayBuffer)
+    # 5, not 6: SB3 runs callbacks (the checkpoint) before storing the step's transition.
+    assert resumed.replay_buffer.pos == 5 and resumed.gradient_steps == -1
+    reseed_resumed_model(resumed, seed=0, session=1)
+    resumed.learn(total_timesteps=4, reset_num_timesteps=False)
+    assert resumed.num_timesteps == 10
+    assert seen[0] == SESSION_SEED_STRIDE and seen[1] == session_seed_base(0, 1), seen

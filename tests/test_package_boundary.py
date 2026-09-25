@@ -3,6 +3,8 @@ resolves when a process happens to start from the repo root)."""
 
 import ast
 import json
+
+import pytest
 from pathlib import Path
 
 PACKAGE = Path(__file__).resolve().parents[1] / "autofly_ue5"
@@ -39,3 +41,18 @@ def test_build_scene_writes_the_layout_and_level_spec(tmp_path):
     expected = generate_layout(load_scene_file(SCENES_DIR / "s01_white_pillars.json"), load_registry())
     assert layout == json.loads(json.dumps(expected.to_json()))
     assert (tmp_path / "s01.level.json").is_file()
+
+
+ENTRY_POINTS_HOLDING_A_SIMULATOR = ["autofly_ue5/expert/train.py", "autofly_ue5/validate/live_m1.py",
+                                    "scripts/m2_gate.py", "scripts/measure_instances.py", "scripts/probe_crash_reset.py"]
+
+
+@pytest.mark.parametrize("path", ENTRY_POINTS_HOLDING_A_SIMULATOR)
+def test_entry_points_that_hold_a_simulator_force_their_exit(path):
+    # projectairsim leaves a non-daemon thread alive; after an abandoned close() it blocks interpreter shutdown and
+    # run_job.sh sees the job "still running" forever. sys.exit() is not enough -- os._exit() is.
+    tree = ast.parse((PACKAGE.parent / path).read_text())
+    main_blocks = [n for n in tree.body if isinstance(n, ast.If) and "__main__" in ast.unparse(n.test)]
+    assert main_blocks, f"{path} has no __main__ block"
+    calls = {ast.unparse(c.func) for c in ast.walk(main_blocks[0]) if isinstance(c, ast.Call)}
+    assert "os._exit" in calls, f"{path}'s __main__ block must end with os._exit(...), found {sorted(calls)}"

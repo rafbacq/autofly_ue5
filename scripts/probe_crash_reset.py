@@ -91,11 +91,15 @@ def run_probe(sim, probe, scene, layout, trials: int) -> dict:
     rows = []
     for i in range(trials):
         start = sample_setup(scene, layout, np.random.default_rng(PROBE_SEED_BASE + i)).start
-        rows.append(crash_reset_trial(sim, probe, start))
+        try:
+            rows.append(crash_reset_trial(sim, probe, start))
+        except Exception as err:  # e.g. a CameraPoseError mid-flight: record it, keep the other trials
+            rows.append({"start": [start.x, start.y, start.z, start.yaw], "error": f"{type(err).__name__}: {err}"})
     crashed = [t for t in rows if t.get("crashed")]
     bad = [t for t in crashed if t["first_reset"]["bad"]]
     summary = {
         "trials": trials,
+        "errors": sum(1 for t in rows if "error" in t),
         "crashed": len(crashed),
         "bad_first_reset": len(bad),
         "fixed_by_second_reset": sum(1 for t in bad if not t.get("second_reset", {}).get("bad", True)),
@@ -108,7 +112,7 @@ def run_probe(sim, probe, scene, layout, trials: int) -> dict:
 
 def main(argv: list[str] | None = None) -> int:
     from autofly_ue5.expert.train import scene_and_layout
-    from autofly_ue5.sim.airsim_backend import ProjectAirSimSimulator
+    from autofly_ue5.sim.airsim_backend import ProjectAirSimSimulator, scene_config_record
     from autofly_ue5.sim.process import instance_dir, route_client_log, sweep_orphaned_instances
 
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -130,7 +134,8 @@ def main(argv: list[str] | None = None) -> int:
     # The backend's own C9 checks off: this measures what they would react to.
     sim = ProjectAirSimSimulator(scene_config=args.scene_config, reset_position_tolerance_m=math.inf,
                                  reset_yaw_tolerance_rad=math.inf, max_speed_m_s=math.inf)
-    report: dict = {"description": __doc__.split("\n\n")[0], "scene_config": args.scene_config, "instance": args.instance,
+    report: dict = {"description": __doc__.split("\n\n")[0], "scene_config": scene_config_record(args.scene_config),
+                    "instance": args.instance,
                     "started": time.strftime("%Y-%m-%d %H:%M:%S")}
     try:
         sim.launch(f"/Game/AutoFly/Maps/{args.scene.upper()}", args.instance)

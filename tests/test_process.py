@@ -314,3 +314,39 @@ def test_stdout_log_keeps_every_launch_of_a_slot(tmp_path):
     text = (instance_dir(1, tmp_path) / "stdout.log").read_text()
     assert text.count("=== launch ") == 2
 
+
+
+def test_stop_instance_acts_only_on_the_process_it_decided_about(tmp_path, monkeypatch):
+    # Final review #5: the decision is made from an unlocked read; if the slot was relaunched in between, the stop
+    # must not land on the successor.
+    import dataclasses
+
+    import autofly_ue5.sim.process as process
+    from autofly_ue5.sim.process import stop_instance
+
+    successor = _sleeper(1, tmp_path)
+    real_read = process.read_pid_file
+    stale = dataclasses.replace(real_read(instance_dir(1, tmp_path) / "pid.json"), pid=successor.pid + 100_000)
+    reads = {"n": 0}
+
+    def first_read_is_stale(path):
+        reads["n"] += 1
+        return stale if reads["n"] == 1 else real_read(path)
+
+    monkeypatch.setattr(process, "read_pid_file", first_read_is_stale)
+    try:
+        assert stop_instance(1, tmp_path) == "superseded"
+        assert is_alive(successor.pid)
+    finally:
+        monkeypatch.undo()
+        stop(1, grace_s=2.0, run_root=tmp_path)
+
+
+def test_a_half_written_pid_file_does_not_break_a_sweep(tmp_path):
+    from autofly_ue5.sim.process import own_running_instances, sweep_orphaned_instances
+
+    d = instance_dir(9, tmp_path)
+    d.mkdir(parents=True)
+    (d / "pid.json").write_text('{"pid": 12')
+    assert own_running_instances(tmp_path) == []
+    assert sweep_orphaned_instances(tmp_path) == []

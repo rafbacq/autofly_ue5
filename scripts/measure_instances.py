@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 import time
 from pathlib import Path
@@ -39,6 +40,7 @@ from autofly_ue5.expert.vec import (  # noqa: F401  (moved from this script; nam
     VEC_ENV_CLOSE_TIMEOUT_S,
     call_method_with_timeout,
     call_reset_with_timeout,
+    collect_fault_summaries,
     make_vec_env,
     teardown,
 )
@@ -148,12 +150,6 @@ def _launch(vec_env: VecEnv, index: int, timeout_s: float) -> None:
         vec_env.env_method("reset", indices=[index])
 
 
-def _fault_summaries(vec_env: VecEnv, n: int, timeout_s: float) -> list[dict]:
-    if isinstance(vec_env, SubprocVecEnv):
-        return [call_method_with_timeout(vec_env, i, "get_fault_summary", timeout_s) for i in range(n)]
-    return vec_env.env_method("get_fault_summary")
-
-
 def _step_all(vec_env: VecEnv, actions: np.ndarray, timeout_s: float = STEP_REPLY_TIMEOUT_S) -> tuple[list[bool], int]:
     """Advance every worker by one step, bounded; returns each worker's `done` flag and how many of those dones
     were backend-fault truncations (resilient workers end a faulted episode instead of raising).
@@ -250,6 +246,7 @@ def measure_n(
             vram_samples.append(vram_reader()[0])
 
         total_per_s = total_steps / elapsed_s
+        summaries, missing = collect_fault_summaries(vec_env, step_reply_timeout_s)
         return {
             "env_steps_per_s_total": total_per_s,
             "env_steps_per_s_per_instance": total_per_s / n,
@@ -259,7 +256,8 @@ def measure_n(
             "per_instance_launch_s": per_instance_launch_s,
             "episodes_completed": episodes_completed,
             "fault_truncations": fault_truncations,
-            "backend_faults": combine_fault_summaries(_fault_summaries(vec_env, n, step_reply_timeout_s)),
+            "backend_faults": combine_fault_summaries(summaries),
+            "backend_faults_missing_workers": missing,
             "total_env_steps": total_steps,
             "warmup_s": warmup_s,
             "timed_window_s": elapsed_s,
@@ -399,4 +397,9 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    _code = main()
+    # Not sys.exit(): an abandoned close() can leave projectairsim's non-daemon thread blocking interpreter
+    # shutdown forever (see expert/train.py). Everything durable is already written.
+    sys.stdout.flush()
+    sys.stderr.flush()
+    os._exit(_code)

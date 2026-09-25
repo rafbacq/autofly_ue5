@@ -8,6 +8,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import math
 import sys
 import time
@@ -282,4 +283,9 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    _code = main()
+    # Not sys.exit(): an abandoned close() can leave projectairsim's non-daemon thread blocking interpreter
+    # shutdown forever (see expert/train.py). Everything durable is already written.
+    sys.stdout.flush()
+    sys.stderr.flush()
+    os._exit(_code)
