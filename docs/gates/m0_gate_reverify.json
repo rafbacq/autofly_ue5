@@ -1,0 +1,83 @@
+{
+  "engine_check": true,
+  "plugin_manifest": true,
+  "blocks_editor_build": true,
+  "editor_python_probe": true,
+  "smoke_single_instance": true,
+  "second_instance": true,
+  "two_instance_concurrency": {
+    "overlap_s": 17.384610891342163,
+    "vram_samples_inside_overlap": true
+  },
+  "gpu_faults": true,
+  "steps_per_s_rtur_3ms": 7.440808554342405,
+  "steps_per_s_rtur_1ms": 18.12682400147034,
+  "rtur_1ms_lockstep_pass": true,
+  "steps_per_s_two_instances": [
+    5.7522135258243665,
+    5.742636215069136
+  ],
+  "vram_mib": {
+    "baseline": 331,
+    "idle_instance": 1458,
+    "one_instance_capturing": 1578,
+    "two_instances_capturing": 2956
+  },
+  "vram_one_instance_capturing_mib": 1247,
+  "vram_two_instances_capturing_mib": 2625,
+  "vram_per_instance_mib": 1312.5,
+  "yaw_rate_ratio": 0.7172802476676408,
+  "get_images_probe": {
+    "ok": true,
+    "time_stamps": {
+      "0": 11000000000,
+      "1": 11000000000
+    },
+    "sim_time_ns": 11000000000,
+    "elapsed_s": 0.011
+  },
+  "teleport_through_camera_error_m": 0.0006617908920558192,
+  "hfov_face_width_px": [
+    54,
+    54.10236653824987
+  ],
+  "set_object_material_instance_ok": false,
+  "faults": {
+    "xid_since": "2026-09-25 18:18:34",
+    "xid_baseline": 0,
+    "xid_now": 0,
+    "xid_delta": 0,
+    "boot_id_m0_start": "8f22f3f0-293e-418d-bd6b-d5477811a232",
+    "boot_id_now": "8f22f3f0-293e-418d-bd6b-d5477811a232",
+    "boot_changed": false,
+    "device_lost": {
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst0/sim.log": 0,
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst1/sim.log": 0,
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/m0/editor_open.log": 0
+    },
+    "kernel_journal_readable": true,
+    "epic_config_before": {
+      "kib": 4,
+      "zen_default_data_exists": false
+    },
+    "epic_config_after": {
+      "kib": 97668,
+      "zen_default_data_exists": false
+    },
+    "zen_default_data_created": false,
+    "out_of_root_before": {
+      "unreal_trace_store": false,
+      "unreal_trace_server_pid": false,
+      "documents_unreal_projects": false,
+      "documents_unreal_engine_logs": false
+    },
+    "out_of_root_after": {
+      "unreal_trace_store": false,
+      "unreal_trace_server_pid": false,
+      "documents_unreal_projects": false,
+      "documents_unreal_engine_logs": false
+    },
+    "out_of_root_created": []
+  },
+  "pass": true
+}

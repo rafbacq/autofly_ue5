@@ -1,0 +1,72 @@
+{
+  "description": "C9 audit: gate episodes that could not have been flown from their start (see the rule).",
+  "source": "docs/gates/m2_gate.json",
+  "source_sha256": "3f9438f26650c6143cca421ec82cff705666eeadcbd8e4cf5abfcb439a4202e3",
+  "source_last_commit": "dda7835b4247f1890dab84afac5b78b40cc08339",
+  "rule": "|final_distance - start_distance| > 0.4 m x steps + 0.5 m",
+  "flagged": [],
+  "n_flagged": 0,
+  "worst_legitimate_ratio": 0.952,
+  "success_rate_excluding_flagged": {
+    "best_model": {
+      "deterministic": {
+        "successes": 196,
+        "episodes": 200,
+        "rate": 0.98
+      },
+      "stochastic": {
+        "successes": 198,
+        "episodes": 200,
+        "rate": 0.99
+      }
+    },
+    "final": {
+      "deterministic": {
+        "successes": 192,
+        "episodes": 200,
+        "rate": 0.96
+      },
+      "stochastic": {
+        "successes": 190,
+        "episodes": 200,
+        "rate": 0.95
+      }
+    }
+  },
+  "after_a_collision": {
+    "best_model:deterministic": {
+      "flagged": 0,
+      "resets": 2
+    },
+    "best_model:stochastic": {
+      "flagged": 0,
+      "resets": 1
+    },
+    "final:deterministic": {
+      "flagged": 0,
+      "resets": 8
+    },
+    "final:stochastic": {
+      "flagged": 0,
+      "resets": 10
+    }
+  },
+  "after_other_outcomes": {
+    "best_model:deterministic": {
+      "flagged": 0,
+      "resets": 197
+    },
+    "best_model:stochastic": {
+      "flagged": 0,
+      "resets": 198
+    },
+    "final:deterministic": {
+      "flagged": 0,
+      "resets": 191
+    },
+    "final:stochastic": {
+      "flagged": 0,
+      "resets": 189
+    }
+  }
+}
