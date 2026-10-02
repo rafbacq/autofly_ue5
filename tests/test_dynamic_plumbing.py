@@ -344,3 +344,29 @@ def test_throughput_is_measured_on_the_scene_asked_for(tmp_path, monkeypatch):
     assert seen["scene"] == "s01d" and seen["map"] == "/Game/AutoFly/Maps/S01"
     assert seen["factory"].keywords["movable_objects"][:2] == ("obs_0000", "obs_0001")
     assert gate["scene"] == "s01d" and gate["scene_config"]["file"] == "scene_autofly_s01.jsonc"
+
+
+# --------------------------------------------------------------------------------------------------------
+# The dynamic scene's report (scripts/build_scenes.py).
+# --------------------------------------------------------------------------------------------------------
+def test_building_a_dynamic_scene_reports_its_movers_on_training_seeds(tmp_path):
+    from autofly_ue5.expert.seeds import EVAL_SEED_BASE, worker_seed_base
+    from scripts.build_scenes import dynamic_report
+
+    report = dynamic_report("s01d", n_seeds=12)
+    assert report["scene"] == "s01d" and report["base_scene"] == "s01" and report["n_seeds"] == 12
+    assert report["seeds"] == [worker_seed_base(0), worker_seed_base(0) + 11]
+    assert report["seeds"][1] < EVAL_SEED_BASE, "statistics never come from the gate's episodes"
+    placed = report["movers_placed"]
+    assert 2 <= placed["min"] <= placed["mean"] <= placed["max"] <= 12 and sum(placed["histogram"].values()) == 12
+    assert set(report["guard"]) <= {"ok", "repaired", "static_unreachable"}
+    assert report["path_ratio"]["max"] <= 1.2 + 1e-9
+    assert report["reset_ms"]["median"] > 0 and set(report["route_kinds"]) <= {"pingpong", "orbit"}
+
+
+def test_build_scenes_writes_the_dynamic_report_and_no_level(tmp_path):
+    from scripts.build_scenes import main
+
+    assert main(["scenes/s01d_moving_pillars.json", "--out-dir", str(tmp_path), "--report-seeds", "5"]) == 0
+    assert json.loads((tmp_path / "s01d.dynamic_report.json").read_text())["n_seeds"] == 5
+    assert not (tmp_path / "s01d.level.json").exists() and not (tmp_path / "s01d.layout.json").exists()

@@ -78,6 +78,20 @@ start → target is always reachable around it. Instead:
 - **The sampler never raises.** An explicit-seed evaluation replays the same seed on any reset fault, so a raise
   would loop. If even static s01 has no path (never seen), the episode keeps no movers.
 
+**Measured on 500 training-range seeds** (worker 0's first 500 episodes, never the gate's;
+`scripts/build_scenes.py scenes/s01d_moving_pillars.json` writes `runs/levels/s01d.dynamic_report.json`):
+
+| Measure | Result |
+|---|---|
+| Movers placed | mean 10.04 (min 6, max 12) |
+| Movers within 4 m of the flight line | mean 3.68; 8 of 500 episodes have none |
+| Chosen movers left home | 56 of 5,074: 51 with no valid route (all for the start keep-out), 5 dropped by the guard |
+| Guard repairs | 5 episodes, one mover each |
+| Path ratio | median 1.00, p95 1.14, max 1.19 |
+| Sampling cost per reset | median 28 ms, p95 39 ms |
+
+`tests/test_motion.py` re-checks every constraint by brute force on 150 seeds, independently of `motion.py`.
+
 **Contact (the paper's d_col, spec §3.1).**
 
 - A mover contact is scored when the drone's swept segment D_k → D_{k+1} passes within `contact_m` = 1.0 m of the
