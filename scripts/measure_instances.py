@@ -33,6 +33,7 @@ from typing import Callable
 import numpy as np
 from stable_baselines3.common.vec_env import SubprocVecEnv, VecEnv
 
+from autofly_ue5.evidence import default_evidence_path, refuse_existing_evidence
 from autofly_ue5.expert.faults import combine_fault_summaries
 from autofly_ue5.expert.seeds import WORKER_SEED_STRIDE  # noqa: F401  (kept for callers of this script)
 from autofly_ue5.expert.vec import (  # noqa: F401  (moved from this script; names kept for its callers)
@@ -45,7 +46,7 @@ from autofly_ue5.expert.vec import (  # noqa: F401  (moved from this script; nam
     teardown,
 )
 from autofly_ue5.gpu import gpu_memory_mib
-from autofly_ue5.paths import ROOT, RUNS_DIR
+from autofly_ue5.paths import RUNS_DIR
 from autofly_ue5.scenes.model import Layout, SceneFile
 from autofly_ue5.scenes.resolve import resolve_scene
 from autofly_ue5.sim.airsim_backend import ProjectAirSimSimulator, scene_config_factory, scene_config_record
@@ -266,10 +267,14 @@ def measure_n(
 def run(
     out_path: Path, candidate_ns: tuple[int, ...] = CANDIDATE_NS, warmup_s: float = WARMUP_S, timed_s: float = TIMED_S,
     launch_reply_timeout_s: float = LAUNCH_REPLY_TIMEOUT_S, step_reply_timeout_s: float = STEP_REPLY_TIMEOUT_S,
-    scene_config: str = "scene_autofly_s01.jsonc",
+    scene_config: str | None = None, scene: str = "s01",
 ) -> dict:
-    sim_factory = scene_config_factory(scene_config)
-    scene, layout = scene_and_layout()
+    """`scene`: what the workers fly, with its own map, observation and (for a dynamic scene) movers -- s01d's
+    per-step pillar moves are part of what this measures."""
+    resolved = resolve_scene(scene)
+    scene_config = scene_config or resolved.default_scene_config
+    sim_factory = scene_config_factory(scene_config, resolved.movable_objects)
+    scene_file, layout = resolved.scene, resolved.layout
     baseline_used_mib, gpu_total_mib = gpu_memory_mib()
     run_started = time.strftime("%Y-%m-%d %H:%M:%S")
 
@@ -297,8 +302,8 @@ def run(
             wait_for_vram_drop(baseline_used_mib)
             try:
                 record = measure_n(
-                    n, scene, layout, warmup_s=warmup_s, timed_s=timed_s, launch_reply_timeout_s=launch_reply_timeout_s,
-                    step_reply_timeout_s=step_reply_timeout_s, sim_factory=sim_factory,
+                    n, scene_file, layout, warmup_s=warmup_s, timed_s=timed_s, launch_reply_timeout_s=launch_reply_timeout_s,
+                    step_reply_timeout_s=step_reply_timeout_s, sim_factory=sim_factory, map_path=resolved.map_path,
                 )
             except Exception as err:
                 last_error = f"{type(err).__name__}: {err}"
@@ -340,7 +345,8 @@ def run(
 
     gate = {
         "description": "Task 7: instance-scaling throughput measurement with an RL env in the loop (spec §8/§12).",
-        "map": MAP_PATH,
+        "scene": scene,
+        "map": resolved.map_path,
         "scene_config": scene_config_record(scene_config),
         "resilient": True,  # training's own workers (make_vec_env); the 2026-09-16 record used bare AutoFlyEnvs
         "candidate_ns": list(candidate_ns),
@@ -366,19 +372,30 @@ def run(
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--out", type=Path, default=ROOT / "docs" / "gates" / "m2_instances.json")
+    parser.add_argument("--scene", default="s01")
+    parser.add_argument("--out", type=Path, default=None,
+                        help="default docs/gates/<milestone>_instances.json (s01: m2, s01d: m2d); a committed record is "
+                             "never written over")
     parser.add_argument("--candidate-ns", type=int, nargs="+", default=list(CANDIDATE_NS))
     parser.add_argument("--warmup-s", type=float, default=WARMUP_S)
     parser.add_argument("--timed-s", type=float, default=TIMED_S)
     parser.add_argument("--launch-reply-timeout-s", type=float, default=LAUNCH_REPLY_TIMEOUT_S)
     parser.add_argument("--step-reply-timeout-s", type=float, default=STEP_REPLY_TIMEOUT_S)
-    parser.add_argument("--scene-config", default="scene_autofly_s01.jsonc",
-                        help="e.g. scene_autofly_s01_fast.jsonc (1 ms clock); recorded with its sha256")
+    parser.add_argument("--scene-config", default=None,
+                        help="default the scene's own (scene_autofly_<level>.jsonc); e.g. scene_autofly_s01_fast.jsonc "
+                             "(1 ms clock); recorded with its sha256")
     args = parser.parse_args(argv)
+    try:
+        out_path = args.out if args.out is not None else default_evidence_path(args.scene, "instances")
+        refuse_existing_evidence(out_path)
+        resolve_scene(args.scene)
+    except (FileNotFoundError, FileExistsError, ValueError) as err:
+        print(f"refusing to start: {err}", file=sys.stderr)
+        return 2
     gate = run(
-        args.out, candidate_ns=tuple(args.candidate_ns), warmup_s=args.warmup_s, timed_s=args.timed_s,
+        out_path, candidate_ns=tuple(args.candidate_ns), warmup_s=args.warmup_s, timed_s=args.timed_s,
         launch_reply_timeout_s=args.launch_reply_timeout_s, step_reply_timeout_s=args.step_reply_timeout_s,
-        scene_config=args.scene_config,
+        scene_config=args.scene_config, scene=args.scene,
     )
     if not gate["per_n"]:
         print(f"no N could be measured safely: {gate['stop_reason']}", file=sys.stderr)

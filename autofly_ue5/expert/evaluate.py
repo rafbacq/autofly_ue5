@@ -64,6 +64,8 @@ class EvalReport:
     episodes_retried: int = 0
     fault_counts: dict[str, int] = field(default_factory=lambda: {name: 0 for name in KNOWN_FAULT_NAMES})
     mean_return: float | None = None
+    # What the collisions hit (spec §6.5): "sim", "mover" or "mover_inferred"; empty without collisions.
+    collision_sources: dict[str, int] = field(default_factory=dict)
 
     @classmethod
     def from_outcomes(
@@ -83,6 +85,7 @@ class EvalReport:
         returns = [e["return"] for e in per_episode if e.get("return") is not None]
         merged_faults = {name: 0 for name in KNOWN_FAULT_NAMES}
         merged_faults.update(fault_counts or {})
+        sources = Counter(e.get("collision_source") or "sim" for e in per_episode if e.get("outcome") == "collision")
         return cls(
             n_episodes=n,
             success_rate=(counts.get("success", 0) / n) if n else 0.0,
@@ -95,6 +98,7 @@ class EvalReport:
             episodes_retried=episodes_retried,
             fault_counts=merged_faults,
             mean_return=(sum(returns) / len(returns)) if returns else None,
+            collision_sources=dict(sources),
         )
 
     def to_dict(self) -> dict[str, Any]:
@@ -109,6 +113,7 @@ class EvalReport:
             "mean_return": self.mean_return,
             "episodes_retried": self.episodes_retried,
             "fault_counts": dict(self.fault_counts),
+            "collision_sources": dict(self.collision_sources),
             "per_episode": self.per_episode,
         }
 
@@ -148,6 +153,11 @@ def _run_one_episode(model, env, seed: int, *, deterministic: bool, max_steps: i
                 "final_pose": info.get("pose"),
                 "final_bearing_deg": info.get("bearing_deg"),
                 "oob_kind": info.get("oob_kind"),
+                # Moving obstacles (spec §6.5): what a collision hit, how many movers flew, whether the one hit was seen.
+                "collision_source": info.get("collision_source"),
+                "n_movers": info.get("n_movers", 0),
+                "mover_in_view": info.get("mover_in_view"),
+                **({"inferred_from": info["inferred_from"]} if info.get("inferred_from") else {}),
             }
     # AutoFlyEnv's own step_limit (default 300, spec Sec8) always truncates well before this bound;
     # reaching it means something is not honouring that contract -- report it, don't spin forever.

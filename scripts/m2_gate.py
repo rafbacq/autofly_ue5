@@ -51,6 +51,7 @@ import time  # noqa: E402
 import traceback  # noqa: E402
 from typing import Any, Callable  # noqa: E402
 
+from autofly_ue5.evidence import default_evidence_path, refuse_existing_evidence  # noqa: E402
 from autofly_ue5.expert.env import AutoFlyEnv  # noqa: E402
 from autofly_ue5.expert.evaluate import (  # noqa: E402
     DEFAULT_MAX_FAULT_RETRIES_PER_EPISODE,
@@ -60,6 +61,7 @@ from autofly_ue5.expert.evaluate import (  # noqa: E402
     fault_summary_delta,
 )
 from autofly_ue5.expert.faults import KNOWN_FAULT_NAMES  # noqa: E402
+from autofly_ue5.expert.obs import ObsConfig, obs_config_from_space  # noqa: E402
 from autofly_ue5.expert.resilient import ResilientAutoFlyEnv  # noqa: E402
 from autofly_ue5.expert.reward import REWARD_VERSION  # noqa: E402
 from autofly_ue5.expert.seeds import EVAL_SEED_BASE  # noqa: E402
@@ -123,6 +125,24 @@ def combo_order(models: dict[str, Path], conditions: list[str]) -> list[tuple[st
 INSTANCES_PATH = ROOT / "docs" / "gates" / "m2_instances.json"
 
 
+def default_instances_path(scene: str) -> Path | None:
+    """The scene's own throughput measurement (scripts/measure_instances.py --scene), None for a scene without one."""
+    try:
+        return default_evidence_path(scene, "instances")
+    except ValueError:
+        return None
+
+
+def checkpoint_obs_config(path: Path) -> ObsConfig:
+    """The observation a checkpoint was trained on, read from its zip without building a model or an env: the gate
+    must fly each checkpoint on its own observation (an s01d checkpoint sees a 3-frame float16 stack, M2's one float32
+    frame)."""
+    from stable_baselines3.common.save_util import load_from_zip_file
+
+    data, _params, _variables = load_from_zip_file(path, device="cpu", load_data=True)
+    return obs_config_from_space(data["observation_space"])
+
+
 def _load_throughput_projection(instances_path: Path = INSTANCES_PATH) -> dict | None:
     """Task 7's own instance-scaling measurement, carried into the gate record so M5's cost (10 more
     experts) is on the record alongside M2's pass/fail (gate item 5)."""
@@ -144,13 +164,14 @@ def _load_throughput_projection(instances_path: Path = INSTANCES_PATH) -> dict |
 # worker (no VecEnv needed: the gate steps a single environment sequentially, never in parallel).
 # --------------------------------------------------------------------------------------------------------
 def build_eval_env(scene: str, *, instance: int, sim_factory: Callable[[], Any], seed_base: int = EVAL_SEED_BASE,
-                   sim_root: Path = SIM_RUN_DIR) -> ResilientAutoFlyEnv:
+                   sim_root: Path = SIM_RUN_DIR, obs_config: ObsConfig | None = None) -> ResilientAutoFlyEnv:
     # seed_base: every gate episode is an explicit reset(seed=...); the counter base only matters for a stray
     # seed=None reset, which then still draws from the gate's own range.
     resolved = resolve_scene(scene)
     scene_file, layout, map_path = resolved.scene, resolved.layout, resolved.map_path
     route_client_log(instance_dir(instance, sim_root) / "client.log")
-    base = AutoFlyEnv(scene_file, layout, sim_factory, map_path=map_path, instance=instance, seed_base=seed_base)
+    base = AutoFlyEnv(scene_file, layout, sim_factory, map_path=map_path, instance=instance, seed_base=seed_base,
+                      obs_config=obs_config)
     return ResilientAutoFlyEnv(base, instance=instance, sim_root=sim_root)
 
 
@@ -179,9 +200,12 @@ def run(
     max_fault_retries_per_episode: int = DEFAULT_MAX_FAULT_RETRIES_PER_EPISODE,
     sim_root: Path = SIM_RUN_DIR,
     scene_config: str | None = None,
-    instances_path: Path = INSTANCES_PATH,
+    instances_path: Path | None = None,
+    obs_config_reader: Callable[[Path], ObsConfig] | None = None,
 ) -> dict[str, Any]:
     load_model = load_model or (lambda p: default_sac_loader(p, device=device))
+    obs_config_reader = obs_config_reader or checkpoint_obs_config
+    instances_path = instances_path if instances_path is not None else default_instances_path(scene)
     run_started = time.strftime("%Y-%m-%d %H:%M:%S")
     run_start_epoch = time.time()
     xid_before = xid_count(run_started)
@@ -191,10 +215,12 @@ def run(
     if swept:
         print(f"swept orphaned instances before starting: {swept}", file=sys.stderr)
 
-    throughput_projection = _load_throughput_projection(instances_path)
+    throughput_projection = _load_throughput_projection(instances_path) if instances_path is not None else None
     projection_missing = (None if throughput_projection is not None else
-                          f"{instances_path} does not exist: run scripts/measure_instances.py for this run before the gate "
-                          f"(PLAN2 wants the throughput projection on the M2 record)")
+                          f"scene {scene} has no throughput measurement of its own: pass --out to "
+                          f"scripts/measure_instances.py --scene {scene}" if instances_path is None else
+                          f"{instances_path} does not exist: run scripts/measure_instances.py --scene {scene} before the "
+                          f"gate (PLAN2 wants the throughput projection on the record)")
     combos = combo_order(model_paths, conditions)
     checkpoints: dict[str, dict[str, Any]] = {}
     for name, path in model_paths.items():
@@ -207,6 +233,7 @@ def run(
     env: ResilientAutoFlyEnv | None = None
     status = "ok"
     error_message: str | None = None
+    obs_config: ObsConfig | None = None
 
     def _write() -> dict[str, Any]:
         # Every log this slot wrote during the run (relaunches rotate sim.log) and a readable journal (C7).
@@ -231,8 +258,9 @@ def run(
             for name in checkpoints
         }
         gate = {
-            "description": "Task 9: M2 exit gate -- SAC expert acceptance evaluation (spec Sec8/Sec9.5).",
+            "description": f"Expert exit gate on scene {scene} (spec Sec8/Sec9.5; Task 9 of plan 2, M2d for s01d).",
             "scene": scene,
+            "obs_config": obs_config.to_json() if obs_config is not None else None,
             "reward_version": REWARD_VERSION,
             "scene_config": scene_config_record(scene_config) if scene_config else None,
             "eval_seed_base": seed_base,
@@ -268,7 +296,15 @@ def run(
         return gate
 
     try:
-        env = build_eval_env(scene, instance=instance, sim_factory=sim_factory, seed_base=seed_base, sim_root=sim_root)
+        # Each checkpoint's own observation, read before anything launches: checkpoints that disagree cannot share one
+        # env, and comparing them on different observations would be no comparison.
+        configs = {name: obs_config_reader(path) for name, path in model_paths.items() if Path(path).is_file()}
+        if len(set(configs.values())) > 1:
+            raise ValueError(f"the checkpoints' observations disagree ({ {k: v.to_json() for k, v in configs.items()} }); "
+                             f"gate them in separate runs")
+        obs_config = next(iter(configs.values()), None)
+        env = build_eval_env(scene, instance=instance, sim_factory=sim_factory, seed_base=seed_base, sim_root=sim_root,
+                             obs_config=obs_config)
         _write()  # an honest "everything not_run yet" record exists on disk even if launch itself fails
         for name, cond in combos:
             path = model_paths[name]
@@ -337,7 +373,9 @@ def build_arg_parser() -> argparse.ArgumentParser:
     )
     p.add_argument("--episodes", type=int, default=GATE_MIN_EPISODES)
     p.add_argument("--conditions", nargs="+", choices=CONDITION_PRIORITY, default=list(CONDITION_PRIORITY))
-    p.add_argument("--out", type=Path, default=ROOT / "docs" / "gates" / "m2_gate.json")
+    p.add_argument("--out", type=Path, default=None,
+                   help="the gate record; default docs/gates/<milestone>_gate.json (s01: m2, s01d: m2d). A committed "
+                        "record is never written over")
     p.add_argument("--scene-config", default=None,
                    help="Project AirSim scene config in configs/ (default scene_autofly_<scene>.jsonc): gate on the clock the "
                         "expert was trained on")
@@ -353,12 +391,18 @@ def build_arg_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> int:
     args = build_arg_parser().parse_args(argv)
+    try:
+        out_path = args.out if args.out is not None else default_evidence_path(args.scene, "gate")
+        refuse_existing_evidence(out_path)
+        resolved = resolve_scene(args.scene)
+    except (FileNotFoundError, FileExistsError, ValueError) as err:
+        print(f"refusing to start: {err}", file=sys.stderr)
+        return 2
     model_paths = parse_model_args(args.model, args.scene, run_root=args.run_root)
-    resolved = resolve_scene(args.scene)
     scene_config = args.scene_config or resolved.default_scene_config
     gate = run(
         scene=args.scene, model_paths=model_paths, conditions=list(args.conditions), n_episodes=args.episodes,
-        seed_base=args.seed_base, instance=args.instance, out_path=args.out, device=args.device,
+        seed_base=args.seed_base, instance=args.instance, out_path=out_path, device=args.device,
         max_steps_per_episode=args.max_steps_per_episode,
         max_fault_retries_per_episode=args.max_fault_retries_per_episode,
         sim_factory=scene_config_factory(scene_config, resolved.movable_objects), scene_config=scene_config,

@@ -14,6 +14,7 @@ from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv, VecEnv
 
 from autofly_ue5.expert.env import AutoFlyEnv
+from autofly_ue5.expert.obs import ObsConfig
 from autofly_ue5.expert.resilient import ResilientAutoFlyEnv
 from autofly_ue5.expert.seeds import worker_seed_base
 from autofly_ue5.scenes.model import Layout, SceneFile
@@ -57,6 +58,7 @@ def make_vec_env(
     sim_root: Path = SIM_RUN_DIR,
     owner: RunOwner | None = None,
     launch: bool = True,
+    obs_config: ObsConfig | None = None,
 ) -> VecEnv:
     """n `AutoFlyEnv`s, each `ResilientAutoFlyEnv(Monitor(AutoFlyEnv(...)))`, vectorised.
 
@@ -76,7 +78,8 @@ def make_vec_env(
     belong to -- the calling process by default; SubprocVecEnv workers adopt it so a slot is never recorded as owned
     by a worker (see `autofly_ue5.sim.process.set_run_owner`). Workers (n > 1) run their wrapper in `worker_mode`.
     `launch=False` skips the staggered first reset, for a caller that launches the workers itself (the throughput
-    measurement checks VRAM between launches).
+    measurement checks VRAM between launches). `obs_config`: the expert's observation (default: the scene's own, one
+    depth frame for a static scene and a stack for a dynamic one; see `autofly_ue5.expert.obs.ObsConfig`).
     """
     if n < 1:
         raise ValueError(f"n must be >= 1, got {n}")
@@ -89,7 +92,8 @@ def make_vec_env(
         def _make() -> gym.Env:
             set_run_owner(owner)
             route_client_log(instance_dir(instance, sim_root) / "client.log")
-            base = AutoFlyEnv(scene, layout, sim_factory, map_path=map_path, instance=instance, seed_base=seed_base_fn(rank))
+            base = AutoFlyEnv(scene, layout, sim_factory, map_path=map_path, instance=instance, seed_base=seed_base_fn(rank),
+                              obs_config=obs_config)
             monitored = Monitor(base, filename=str(monitor_dir / f"{instance}.monitor.csv"), info_keywords=("is_success",))
             return ResilientAutoFlyEnv(monitored, instance=instance, sim_root=sim_root, worker_mode=n > 1)
 

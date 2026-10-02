@@ -136,6 +136,8 @@ def _independent_violations(layout, setup, routes) -> list[str]:
         for other in routes:
             if other.tag <= r.tag:
                 continue
+            if math.hypot(r.home_x - other.home_x, r.home_y - other.home_y) > r.reach_m() + other.reach_m() + SPEC.min_gap_m:
+                continue  # too far apart for any two points of their sweeps to come within min_gap
             q = _dense(other)
             d = np.sqrt(((pts[:, None, :] - q[None, :, :]) ** 2).sum(-1)).min() - rad - other.footprint.radius_m
             if d < SPEC.min_gap_m - 0.02:

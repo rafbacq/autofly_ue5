@@ -58,7 +58,7 @@ from autofly_ue5.scenes.resolve import resolve_scene  # noqa: E402
 from autofly_ue5.sim.airsim_backend import scene_config_factory, scene_config_record  # noqa: E402
 from autofly_ue5.sim.process import SIM_RUN_DIR, stop_instances, sweep_orphaned_instances  # noqa: E402
 from autofly_ue5.sim.types import CONTROL_DT_S  # noqa: E402
-from scripts.m2_gate import build_eval_env, default_sac_loader, parse_model_args  # noqa: E402
+from scripts.m2_gate import build_eval_env, checkpoint_obs_config, default_sac_loader, parse_model_args  # noqa: E402
 
 CAMERA_PX = 256  # FrontCamera's capture size (configs/robot_autofly_quadrotor.jsonc); frames are resized to it
 HUD_PX = 66  # status-line height per unit of --scale: three lines of text
@@ -68,6 +68,8 @@ OUTCOME_BGR = {"success": (90, 200, 90), "collision": (70, 70, 235), "out_of_bou
                "timeout": (0, 190, 255)}
 OUTCOME_MARKER = {"success": ("*", "tab:green"), "collision": ("X", "tab:red"), "out_of_bounds": ("P", "tab:purple"),
                   "timeout": ("s", "tab:olive")}
+MOVER_BGR = (60, 60, 230)  # moving pillars (s01d, spec §6.5): red; their routes are drawn faint
+ROUTE_BGR = (70, 70, 120)
 
 
 # --------------------------------------------------------------------------------------------------------
@@ -130,6 +132,7 @@ class Frame:
     bearing_deg: float
     command: tuple[float, float, float] | None  # what was flown into this frame; None for the reset frame
     reward: float
+    movers: list[tuple[float, float]]  # where each mover stood in this frame (empty for a static scene)
 
 
 @dataclass
@@ -146,9 +149,13 @@ class EpisodeRecording:
     target: tuple[float, float, float]
     distractors: list[tuple[float, float, float]]
     frames: list[Frame]
+    mover_routes: list[dict]  # the episode's routes (MoverRoute.to_json()), empty for a static scene
+    collision_source: str | None = None
+    mover_in_view: bool | None = None
 
 
-def capture_frame(recorder: FrameRecorder, info: dict, *, step: int, action, reward: float) -> Frame:
+def capture_frame(recorder: FrameRecorder, info: dict, *, step: int, action, reward: float,
+                  mover_tags: list[str] = ()) -> Frame:
     obs = recorder.last
     if obs is None:
         raise RuntimeError(f"step {step}: no observation has been recorded yet")
@@ -157,9 +164,15 @@ def capture_frame(recorder: FrameRecorder, info: dict, *, step: int, action, rew
     if any(abs(a - b) > 1e-6 for a, b in zip(seen, pose)):
         raise RuntimeError(f"step {step}: the last observation is at {seen} but the env reported {pose}; "
                            f"the video would show the wrong frame")
+    movers = [(float(x), float(y)) for x, y in info.get("movers", [])]
+    for tag, (x, y) in zip(mover_tags, movers):  # where the env says each mover is, against where it was sent
+        sent = recorder.object_poses.get(tag)
+        if sent is None or abs(sent[0] - x) > 1e-6 or abs(sent[1] - y) > 1e-6:
+            raise RuntimeError(f"step {step}: the env reports mover {tag} at {(x, y)} but it was last sent to {sent}")
     return Frame(step=step, rgb=np.array(obs.rgb, copy=True), depth=np.array(obs.depth, dtype=np.float32, copy=True),
                  pose=pose, distance_m=float(info["final_distance_m"]), bearing_deg=float(info["bearing_deg"]),
-                 command=None if action is None else tuple(float(a) for a in action), reward=float(reward))
+                 command=None if action is None else tuple(float(a) for a in action), reward=float(reward),
+                 movers=movers)
 
 
 def _spawned_objects(recorder: FrameRecorder) -> tuple[tuple[float, float, float], list[tuple[float, float, float]]]:
@@ -181,7 +194,9 @@ def record_episode(model, env, recorder: FrameRecorder, *, index: int, seed: int
         if abs(measured - info["final_distance_m"]) > 1e-3:
             raise RuntimeError(f"episode {index}: the spawned target is {measured:.3f} m away but the env measures "
                                f"{info['final_distance_m']:.3f} m; the map would show the wrong target")
-        frames = [capture_frame(recorder, info, step=0, action=None, reward=0.0)]
+        mover_routes = list(info.get("mover_routes", []))
+        mover_tags = [r["tag"] for r in mover_routes]
+        frames = [capture_frame(recorder, info, step=0, action=None, reward=0.0, mover_tags=mover_tags)]
         episode_return = 0.0
         for step in range(1, max_steps + 1):
             action, _ = model.predict(obs, deterministic=deterministic)
@@ -193,7 +208,7 @@ def record_episode(model, env, recorder: FrameRecorder, *, index: int, seed: int
                       f"frames and flying the seed again", file=sys.stderr)
                 break
             episode_return += float(reward)
-            frames.append(capture_frame(recorder, info, step=step, action=command, reward=reward))
+            frames.append(capture_frame(recorder, info, step=step, action=command, reward=reward, mover_tags=mover_tags))
             if terminated or truncated:
                 if int(info.get("steps", step)) != step:
                     raise RuntimeError(f"episode {index}: the env counted {info.get('steps')} steps, this loop {step}")
@@ -201,13 +216,15 @@ def record_episode(model, env, recorder: FrameRecorder, *, index: int, seed: int
                     index=index, seed=seed, outcome=str(info.get("outcome", "unknown")), steps=step,
                     final_distance_m=float(info["final_distance_m"]), is_success=bool(info.get("is_success", False)),
                     episode_return=episode_return, oob_kind=info.get("oob_kind"), retries=retries, target=target,
-                    distractors=distractors, frames=frames)
+                    distractors=distractors, frames=frames, mover_routes=mover_routes,
+                    collision_source=info.get("collision_source"), mover_in_view=info.get("mover_in_view"))
         else:
             # AutoFlyEnv's own step limit (300) always ends an episode first; as in evaluate.py, report rather than spin.
             return EpisodeRecording(
                 index=index, seed=seed, outcome="exceeded_max_steps", steps=max_steps,
                 final_distance_m=float(info["final_distance_m"]), is_success=False, episode_return=episode_return,
-                oob_kind=None, retries=retries, target=target, distractors=distractors, frames=frames)
+                oob_kind=None, retries=retries, target=target, distractors=distractors, frames=frames,
+                mover_routes=mover_routes)
     raise RuntimeError(f"episode {index} (seed {seed}): no real outcome after {max_fault_retries} backend-fault retries")
 
 
@@ -289,8 +306,21 @@ def _map_base(layout: Layout, rec: EpisodeRecording, size: int) -> np.ndarray:
 
     img = np.full((size, size, 3), 28, np.uint8)
     cv2.rectangle(img, to_px(b.x_max, b.y_min), to_px(b.x_min, b.y_max), (95, 95, 95), 1)
+    moving = {r["tag"] for r in rec.mover_routes}
     for inst in layout.instances:
+        if inst.tag in moving:
+            continue  # its home is empty this episode
         cv2.circle(img, to_px(inst.x, inst.y), max(2, round(inst.radius_m * px_per_m)), (205, 205, 205), -1, cv2.LINE_AA)
+    for route in rec.mover_routes:  # faint: where each mover can go
+        width = max(1, round(2 * route["footprint"]["radius_m"] * px_per_m))
+        if route["kind"] == "pingpong":
+            ux, uy = math.cos(route["heading_rad"]), math.sin(route["heading_rad"])
+            half = route["half_length_m"]
+            cv2.line(img, to_px(route["home_x"] - half * ux, route["home_y"] - half * uy),
+                     to_px(route["home_x"] + half * ux, route["home_y"] + half * uy), ROUTE_BGR, width, cv2.LINE_AA)
+        else:
+            cv2.circle(img, to_px(route["home_x"], route["home_y"]), max(1, round(route["orbit_radius_m"] * px_per_m)),
+                       ROUTE_BGR, width, cv2.LINE_AA)
     half = max(2, round(0.5 * px_per_m))
     for dx, dy, _dz in rec.distractors:
         c = to_px(dx, dy)
@@ -319,11 +349,14 @@ def _label(img: np.ndarray, text: str, scale: int) -> None:
 
 
 def render_frame(frame: Frame, rec: EpisodeRecording, base_map: np.ndarray, path_px: np.ndarray, *, scale: int,
-                 label: str) -> np.ndarray:
+                 label: str, movers_px: list[tuple[tuple[int, int], int]] = ()) -> np.ndarray:
+    """`movers_px`: each mover's (centre, radius) on the map in this frame (s01d, spec §6.5)."""
     p = CAMERA_PX * scale
     rgb = cv2.resize(np.ascontiguousarray(frame.rgb[:, :, ::-1]), (p, p), interpolation=cv2.INTER_LINEAR)
     depth = cv2.resize(depth_to_bgr(frame.depth), (p, p), interpolation=cv2.INTER_NEAREST)
     top = base_map.copy()
+    for centre, radius in movers_px:
+        cv2.circle(top, centre, radius, MOVER_BGR, -1, cv2.LINE_AA)
     if frame.step > 0:
         cv2.polylines(top, [path_px[: frame.step + 1]], False, (255, 220, 0), max(1, scale), cv2.LINE_AA)
     col, row = path_px[frame.step]
@@ -369,9 +402,13 @@ def episode_video_frames(rec: EpisodeRecording, layout: Layout, *, scale: int, l
     base_map = _map_base(layout, rec, size)
     path_px = np.array([_pt(world_to_px(f.pose[0], f.pose[1], layout.bounds, size, margin)) for f in rec.frames],
                        dtype=np.int32)
+    px_per_m = (size - 2 * margin) / max(layout.bounds.x_max - layout.bounds.x_min, layout.bounds.y_max - layout.bounds.y_min)
+    radii = [max(2, round(r["footprint"]["radius_m"] * px_per_m)) for r in rec.mover_routes]
     img = None
     for frame in rec.frames:
-        img = render_frame(frame, rec, base_map, path_px, scale=scale, label=label)
+        movers_px = [(_pt(world_to_px(x, y, layout.bounds, size, margin)), radius)
+                     for (x, y), radius in zip(frame.movers, radii)]
+        img = render_frame(frame, rec, base_map, path_px, scale=scale, label=label, movers_px=movers_px)
         yield img
     for _ in range(hold_frames):  # hold the outcome on screen
         yield img
@@ -412,8 +449,22 @@ def draw_map(ax, layout: Layout, rec: EpisodeRecording, *, compact: bool = False
 
     b = layout.bounds
     ax.add_patch(Rectangle((b.y_min, b.x_min), b.y_max - b.y_min, b.x_max - b.x_min, fill=False, ec="0.5", lw=0.8))
+    moving = {r["tag"] for r in rec.mover_routes}
     for inst in layout.instances:
-        ax.add_patch(Circle((inst.y, inst.x), inst.radius_m, color="0.6", lw=0))
+        if inst.tag not in moving:  # a mover's home is empty this episode
+            ax.add_patch(Circle((inst.y, inst.x), inst.radius_m, color="0.6", lw=0))
+    for i, route in enumerate(rec.mover_routes):  # each route faint, and where its mover stood at the end
+        if route["kind"] == "pingpong":
+            ux, uy, half = math.cos(route["heading_rad"]), math.sin(route["heading_rad"]), route["half_length_m"]
+            ax.plot([route["home_y"] - half * uy, route["home_y"] + half * uy],
+                    [route["home_x"] - half * ux, route["home_x"] + half * ux], "-", color="tab:red", alpha=0.25,
+                    lw=2.0, label="mover routes" if i == 0 else None)
+        else:
+            ax.add_patch(Circle((route["home_y"], route["home_x"]), route["orbit_radius_m"], fill=False, ec="tab:red",
+                                alpha=0.25, lw=2.0, label="mover routes" if i == 0 else None))
+        mx, my = rec.frames[-1].movers[i]
+        ax.add_patch(Circle((my, mx), route["footprint"]["radius_m"], color="tab:red", lw=0,
+                            label="movers at the end" if i == 0 else None))
     ms = 4 if compact else 7
     for i, (dx, dy, _dz) in enumerate(rec.distractors):
         ax.plot(dy, dx, "s", color="0.25", ms=ms, label="distractors" if i == 0 else None)
@@ -475,7 +526,8 @@ def run(*, scene: str, checkpoint_name: str, checkpoint_path: Path, episodes: li
         seed_base: int, instance: int, out_dir: Path, gate_path: Path | None, sim_factory: Callable[[], Any],
         load_model: Callable[[Path], Any], scene_config: str | None = None,
         max_steps: int = DEFAULT_MAX_STEPS_PER_EPISODE, max_fault_retries: int = DEFAULT_MAX_FAULT_RETRIES_PER_EPISODE,
-        fps: float = 1.0 / CONTROL_DT_S, scale: int = 2, hold_s: float = 2.0, sim_root: Path = SIM_RUN_DIR) -> dict:
+        fps: float = 1.0 / CONTROL_DT_S, scale: int = 2, hold_s: float = 2.0, sim_root: Path = SIM_RUN_DIR,
+        obs_config_reader: Callable[[Path], Any] | None = None) -> dict:
     out_dir, checkpoint_path = Path(out_dir), Path(checkpoint_path)
     summary_path = out_dir / "summary.json"
     if summary_path.exists():
@@ -487,8 +539,13 @@ def run(*, scene: str, checkpoint_name: str, checkpoint_path: Path, episodes: li
     if not checkpoint_path.is_file():
         raise FileNotFoundError(f"checkpoint not found: {checkpoint_path}")
 
+    gate = load_gate(gate_path)
+    if gate is not None and gate.get("scene", scene) != scene:
+        raise ValueError(f"{gate_path} is a gate record of scene {gate['scene']}, not {scene}: its episodes are not "
+                         f"these seeds' episodes")
     _scene_file, layout = scene_and_layout(scene)
-    gate_sha, gate_episodes = gate_record(load_gate(gate_path), checkpoint_name, condition)
+    obs_config = (obs_config_reader or checkpoint_obs_config)(checkpoint_path)  # fly it on what it was trained on
+    gate_sha, gate_episodes = gate_record(gate, checkpoint_name, condition)
     sha = sha256_of(checkpoint_path)
     label = f"{checkpoint_name} ({condition})"
     hold_frames = int(round(hold_s * fps))
@@ -500,6 +557,7 @@ def run(*, scene: str, checkpoint_name: str, checkpoint_path: Path, episodes: li
         "checkpoint": {"name": checkpoint_name, "path": str(checkpoint_path), "sha256": sha,
                        "matches_gate_sha256": None if gate_sha is None else gate_sha == sha},
         "condition": condition,
+        "obs_config": obs_config.to_json(),
         "gate": str(gate_path) if gate_path is not None and Path(gate_path).is_file() else None,
         "seed_base": seed_base,
         "episodes_requested": list(episodes),
@@ -529,7 +587,7 @@ def run(*, scene: str, checkpoint_name: str, checkpoint_path: Path, episodes: li
     try:
         model = load_model(checkpoint_path)
         env = build_eval_env(scene, instance=instance, sim_factory=lambda: RecordingSimulator(sim_factory(), recorder),
-                             seed_base=seed_base, sim_root=sim_root)
+                             seed_base=seed_base, sim_root=sim_root, obs_config=obs_config)
         for index in episodes:
             seed = seed_base + index
             print(f"=== episode {index} (seed {seed}) ===", file=sys.stderr)
@@ -552,6 +610,9 @@ def run(*, scene: str, checkpoint_name: str, checkpoint_path: Path, episodes: li
                 "map": f"{stem}_map.png", **comparison,
                 "trajectory": [list(f.pose) for f in rec.frames],
                 "commands": [None if f.command is None else list(f.command) for f in rec.frames],
+                "collision_source": rec.collision_source, "mover_in_view": rec.mover_in_view,
+                "mover_routes": rec.mover_routes,
+                "mover_positions": [[list(m) for m in f.movers] for f in rec.frames],
             })
             summary["n_compared"] = sum(e["matches_gate"] is not None for e in summary["episodes"])
             summary["n_matching_gate"] = sum(e["matches_gate"] is True for e in summary["episodes"])

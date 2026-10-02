@@ -12,6 +12,7 @@ import pytest
 
 import scripts.render_episodes as rv
 from autofly_ue5.expert.episode import sample_setup
+from autofly_ue5.expert.obs import ObsConfig
 from autofly_ue5.expert.seeds import EVAL_SEED_BASE
 from autofly_ue5.expert.train import scene_and_layout, sha256_of
 from autofly_ue5.scenes.model import Bounds
@@ -33,7 +34,7 @@ def _render(root: Path, episodes, *, gate_path=None, sim_factory=FakeSimulator):
     return rv.run(scene="s01", checkpoint_name="best_model", checkpoint_path=_checkpoint(root), episodes=episodes,
                   condition="deterministic", seed_base=EVAL_SEED_BASE, instance=3, out_dir=root / "viz",
                   gate_path=gate_path, sim_factory=sim_factory, load_model=lambda path: _StraightAtTargetModel(),
-                  sim_root=root / "sim", fps=5.0, scale=1, hold_s=0.0)
+                  sim_root=root / "sim", fps=5.0, scale=1, hold_s=0.0, obs_config_reader=lambda path: ObsConfig())
 
 
 def _scripted_gate_episodes(root: Path, n: int) -> list[dict]:

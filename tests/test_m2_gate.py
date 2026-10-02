@@ -9,6 +9,7 @@ import math
 import numpy as np
 import pytest
 
+from autofly_ue5.expert.obs import ObsConfig
 from autofly_ue5.sim.airsim_backend import CameraPoseError
 from autofly_ue5.sim.fake import FakeSimulator
 from autofly_ue5.sim.types import CONTROL_DT_S
@@ -323,7 +324,7 @@ def test_the_gate_runs_end_to_end_against_the_fake_and_records_what_it_measured(
     gate = run(scene="s01", model_paths={"model": checkpoint}, conditions=["deterministic"], n_episodes=2,
                seed_base=EVAL_SEED_BASE, instance=5, out_path=tmp_path / "gate.json", sim_factory=FakeSimulator,
                load_model=lambda path: _StraightAtTargetModel(), sim_root=tmp_path / "sim",
-               instances_path=tmp_path / "no_measurement.json")
+               instances_path=tmp_path / "no_measurement.json", obs_config_reader=lambda path: ObsConfig())
     assert gate["throughput_projection"] is None
     assert "measure_instances" in gate["throughput_projection_missing"], "a missing measurement must say so"
 

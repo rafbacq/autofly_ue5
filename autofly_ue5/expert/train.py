@@ -90,14 +90,15 @@ line 1 above (never letting the exception leave the worker) is what makes that h
 itself.
 
 Configuration values are D7/spec §8 fixed points, not tuned here: `MultiInputPolicy` + `POLICY_KWARGS`
-(Task 6), `buffer_size=150_000` (~8.5 GiB dict-replay-buffer arithmetic, spec'd exactly so it is not raised
-without redoing that sum), `learning_starts=5_000`, `batch_size=256`, `gamma=0.99`, `tau=0.005`,
+(Task 6), `buffer_size=150_000` (8.5 GB of dict replay buffer with one float32 depth frame, 12.7 GB with a dynamic
+scene's three float16 frames -- `replay_buffer_bytes`; checked against the host by `host_preflight` before a run
+starts), `learning_starts=5_000`, `batch_size=256`, `gamma=0.99`, `tau=0.005`,
 `learning_rate=3e-4`. `optimize_memory_usage` is asserted unsupported for `DictReplayBuffer` by SB3 2.9
 itself (`assert not optimize_memory_usage`, `stable_baselines3/common/buffers.py`), confirmed live in this
 venv before writing this module -- it stays off, at the spec'd 150k buffer.
 
-That same ~8.5 GiB-per-buffer arithmetic means `CheckpointCallback(save_replay_buffer=True)` -- which has no
-retention policy of its own -- would otherwise let a 12-hour run accumulate on the order of 200 GiB of
+That same per-buffer size means `CheckpointCallback(save_replay_buffer=True)` -- which has no
+retention policy of its own -- would otherwise let a 12-hour run accumulate on the order of 200 GB of
 replay-buffer pickles. `PruneOldReplayBuffersCallback`/`prune_old_replay_buffers` keep every model `.zip`
 (cheap, the whole training history) but only the newest `DEFAULT_KEEP_REPLAY_BUFFERS` replay buffers (one
 to resume from, one as a fallback if the newest was mid-write when a crash landed).
@@ -106,10 +107,12 @@ to resume from, one as a fallback if the newest was mid-write when a crash lande
 from __future__ import annotations
 
 import argparse
+import dataclasses
 import hashlib
 import json
 import os
 import re
+import shutil
 import sys
 import traceback
 import time
@@ -128,8 +131,10 @@ from autofly_ue5.expert.faults import (  # noqa: F401  (re-exported: moved from 
     KNOWN_FAULT_NAMES,
     combine_fault_summaries,
 )
+from autofly_ue5.evidence import default_evidence_path, refuse_existing_evidence
 from autofly_ue5.expert.evaluate import FaultAwareEvalCallback
 from autofly_ue5.expert.features import POLICY_KWARGS
+from autofly_ue5.expert.obs import DEPTH_SIZE, VECTOR_DIM, ObsConfig, obs_config_for_frames, obs_config_for_scene
 from autofly_ue5.expert.resilient import (  # noqa: F401  (re-exported: moved from this module)
     DEFAULT_CLOSE_TIMEOUT_S,
     DEFAULT_MAX_RELAUNCH_ATTEMPTS,
@@ -148,11 +153,11 @@ from autofly_ue5.expert.seeds import (  # noqa: F401  (EVAL_SEED_BASE etc. re-ex
     worker_seed_base,
 )
 from autofly_ue5.expert.vec import call_reset_with_timeout, collect_fault_summaries, make_vec_env, teardown  # noqa: F401
-from autofly_ue5.paths import ROOT, RUNS_DIR
+from autofly_ue5.paths import RUNS_DIR
 from autofly_ue5.scenes.model import Layout, SceneFile
-from autofly_ue5.scenes.resolve import resolve_scene
+from autofly_ue5.scenes.resolve import ResolvedScene, resolve_scene
 from autofly_ue5.sim.airsim_backend import scene_config_factory, scene_config_record
-from autofly_ue5.sim.process import instance_dir, stop_instances, sweep_orphaned_instances
+from autofly_ue5.sim.process import SIM_RUN_DIR, instance_dir, stop_instances, sweep_orphaned_instances
 from autofly_ue5.validate.engine_check import audit_engine_faults, boot_id, xid_count
 
 
@@ -262,7 +267,32 @@ def replay_buffer_for(checkpoint: Path) -> Path:
 SESSIONS_FILE = "sessions.json"
 
 
-def prepare_run_root(run_root: Path, *, resume: bool, reward_version: str, seed: int) -> int:
+# What every run recorded before 2026-10-02 (no "identity" in its sessions.json) trained on: static s01 with one float32
+# depth frame. Such a run may be resumed only under that observation.
+LEGACY_IDENTITY = {"obs_config": {"depth_frames": 1, "depth_dtype": "float32"}, "dynamic": None}
+
+
+def run_identity(resolved: ResolvedScene, obs_config: ObsConfig) -> dict:
+    """What a run's replay buffer and checkpoints are tied to: resuming under anything else would mix two tasks or two
+    observation shapes in one buffer."""
+    dynamic = resolved.scene.dynamic
+    return {
+        "scene": resolved.scene.id,
+        "scene_sha256": resolved.scene.sha256,
+        "base_scene": resolved.base_id,
+        "base_layout_sha256": resolved.layout_sha256,
+        "obs_config": obs_config.to_json(),
+        "dynamic": json.loads(json.dumps(dataclasses.asdict(dynamic))) if dynamic is not None else None,
+    }
+
+
+def _identity_mismatch(recorded: dict | None, identity: dict) -> list[str]:
+    if recorded is None:  # a run from before identities were recorded
+        return [k for k, v in LEGACY_IDENTITY.items() if identity.get(k) != v]
+    return [k for k in sorted(set(recorded) | set(identity)) if recorded.get(k) != identity.get(k)]
+
+
+def prepare_run_root(run_root: Path, *, resume: bool, reward_version: str, seed: int, identity: dict | None = None) -> int:
     """Claim `run_root` for this training session and return the session index (0 for a fresh run).
 
     A fresh run refuses a directory that already holds a run's results: its old checkpoints would otherwise sit next
@@ -272,7 +302,9 @@ def prepare_run_root(run_root: Path, *, resume: bool, reward_version: str, seed:
     first checkpoint). A resume refuses a run recorded under another reward version (its replay buffer holds the other
     objective's rewards), one with no sessions record at all (it predates this record, and its buffer still holds
     unfilterable backend-fault rows), and one with no checkpoint + replay buffer to continue from -- all before a
-    session is recorded.
+    session is recorded. With an `identity` (`run_identity`), a resume also refuses a run recorded under another scene,
+    scene file, layout, observation config or motion parameters (a run from before identities counts as
+    `LEGACY_IDENTITY`); the identity is recorded with the session.
     """
     run_root = Path(run_root)
     sessions_path = run_root / SESSIONS_FILE
@@ -290,6 +322,13 @@ def prepare_run_root(run_root: Path, *, resume: bool, reward_version: str, seed:
                 f"--resume: {run_root} was trained under reward version {recorded!r}, this code computes "
                 f"{reward_version!r}; resuming would mix two objectives in one replay buffer -- start a fresh run"
             )
+        if identity is not None:
+            mismatch = _identity_mismatch(sessions[-1].get("identity"), identity)
+            if mismatch:
+                raise RuntimeError(
+                    f"--resume: {run_root} was trained on a different {', '.join(mismatch)} "
+                    f"(recorded {sessions[-1].get('identity', LEGACY_IDENTITY)}, now {identity}); its replay buffer and "
+                    f"checkpoints belong to that task -- start a fresh run with a new --run-root")
         checkpoint = newest_checkpoint(run_root / "checkpoints")
         if checkpoint is None or not replay_buffer_for(checkpoint).is_file():
             raise RuntimeError(
@@ -306,8 +345,11 @@ def prepare_run_root(run_root: Path, *, resume: bool, reward_version: str, seed:
         session = 0
     session_seed_base(0, session)  # raises before any work if this session would overflow its seed slice
     run_root.mkdir(parents=True, exist_ok=True)
-    sessions.append({"index": session, "started": time.strftime("%Y-%m-%d %H:%M:%S"), "resume": resume,
-                     "reward_version": reward_version, "seed": seed})
+    entry = {"index": session, "started": time.strftime("%Y-%m-%d %H:%M:%S"), "resume": resume,
+             "reward_version": reward_version, "seed": seed}
+    if identity is not None:
+        entry["identity"] = identity
+    sessions.append(entry)
     sessions_path.write_text(json.dumps({"sessions": sessions}, indent=2) + "\n")
     return session
 
@@ -319,8 +361,60 @@ def reseed_resumed_model(model: SAC, *, seed: int, session: int) -> None:
 
 
 # --------------------------------------------------------------------------------------------------------
+# Host preflight: the replay buffer must fit in RAM next to the simulators, and its pickles on disk.
+# --------------------------------------------------------------------------------------------------------
+# Left for everything else a run holds in RAM: up to 5 packaged simulators, the SubprocVecEnv workers (each imports
+# torch) and the trainer itself. Not measured per process; generous on a 61 GB host whose run 2 used an 8.5 GB buffer.
+RAM_HEADROOM_BYTES = 16 * 2**30
+DISK_HEADROOM_BYTES = 10 * 2**30
+
+
+def replay_buffer_bytes(buffer_size: int, obs_config: ObsConfig) -> int:
+    """SB3's DictReplayBuffer for this observation: obs and next_obs (depth + vector) per transition, plus the action,
+    reward, done and timeout columns. 150k transitions: 8.47 GB for one float32 frame, 12.70 GB for three float16."""
+    depth = obs_config.depth_frames * DEPTH_SIZE * DEPTH_SIZE * np.dtype(obs_config.depth_dtype).itemsize
+    vector = VECTOR_DIM * 4
+    return int(buffer_size) * (2 * (depth + vector) + 3 * 4 + 4 + 4 + 4)
+
+
+def available_ram_bytes() -> int:
+    """MemAvailable from /proc/meminfo (the kernel's estimate of what can be allocated without swapping)."""
+    for line in Path("/proc/meminfo").read_text().splitlines():
+        if line.startswith("MemAvailable:"):
+            return int(line.split()[1]) * 1024
+    raise RuntimeError("/proc/meminfo has no MemAvailable line")
+
+
+def host_preflight(*, buffer_bytes: int, run_root: Path) -> dict:
+    """Refuse a run whose replay buffer will not fit: in RAM (plus RAM_HEADROOM_BYTES for the simulators and workers),
+    or on disk as the DEFAULT_KEEP_REPLAY_BUFFERS pickles kept plus the one being written. Returns what it measured,
+    for the run record."""
+    existing = Path(run_root)
+    while not existing.exists():
+        existing = existing.parent
+    report = {
+        "replay_buffer_bytes": int(buffer_bytes),
+        "available_ram_bytes": available_ram_bytes(),
+        "ram_needed_bytes": int(buffer_bytes) + RAM_HEADROOM_BYTES,
+        "free_disk_bytes": shutil.disk_usage(existing).free,
+        "disk_needed_bytes": (DEFAULT_KEEP_REPLAY_BUFFERS + 1) * int(buffer_bytes) + DISK_HEADROOM_BYTES,
+    }
+    problems = []
+    if report["available_ram_bytes"] < report["ram_needed_bytes"]:
+        problems.append(f"RAM: {report['available_ram_bytes'] / 1e9:.1f} GB available, {report['ram_needed_bytes'] / 1e9:.1f} "
+                        f"GB needed (a {buffer_bytes / 1e9:.1f} GB replay buffer plus {RAM_HEADROOM_BYTES / 2**30:.0f} GiB)")
+    if report["free_disk_bytes"] < report["disk_needed_bytes"]:
+        problems.append(f"disk: {report['free_disk_bytes'] / 1e9:.1f} GB free under {existing}, "
+                        f"{report['disk_needed_bytes'] / 1e9:.1f} GB needed for the replay-buffer pickles")
+    if problems:
+        raise RuntimeError("host preflight failed: " + "; ".join(problems) + " -- lower --buffer-size or free memory")
+    report["ok"] = True
+    return report
+
+
+# --------------------------------------------------------------------------------------------------------
 # Checkpoint retention: SB3's CheckpointCallback has no retention policy at all. Each replay-buffer pickle
-# is ~8.5 GiB (buffer_size=150_000's own arithmetic, see the module docstring); over a 12-hour run at the
+# is 8.5-12.7 GB (replay_buffer_bytes; see the module docstring); over a 12-hour run at the
 # production checkpoint_freq=10_000 that is dozens of them -- on the order of 200 GiB -- for a resume path
 # that only ever needs the newest one. Model checkpoints (.zip) are a few tens of MB each and are the run's
 # whole training history, so those are kept forever; only replay buffers are pruned.
@@ -400,6 +494,9 @@ class OutcomeHistogramCallback(BaseCallback):
     def __init__(self, verbose: int = 0) -> None:
         super().__init__(verbose)
         self.histogram: Counter[str] = Counter()
+        # What each collision hit (spec §6.5): "sim" (a static pillar, or physical contact), "mover" (the d_col rule),
+        # "mover_inferred" (a backend fault right next to a mover, scored as a collision).
+        self.collision_sources: Counter[str] = Counter()
 
     def _on_step(self) -> bool:
         infos = self.locals.get("infos", [])
@@ -407,6 +504,8 @@ class OutcomeHistogramCallback(BaseCallback):
         for info, done in zip(infos, dones):
             if done:
                 self.histogram[info.get("sim_fault") or info.get("outcome", "unknown")] += 1
+                if info.get("outcome") == "collision" and not info.get("sim_fault"):
+                    self.collision_sources[info.get("collision_source") or "sim"] += 1
         return True
 
 
@@ -457,7 +556,9 @@ def build_arg_parser() -> argparse.ArgumentParser:
     p.add_argument("--hours", type=float, default=None, help="wall-clock training budget; omit for none (rely on --total-timesteps alone)")
     p.add_argument("--resume", action="store_true")
     p.add_argument("--total-timesteps", type=int, default=DEFAULT_TOTAL_TIMESTEPS)
-    p.add_argument("--out", type=Path, default=ROOT / "docs" / "gates" / "m2_train.json")
+    p.add_argument("--out", type=Path, default=None,
+                   help="the run record; default docs/gates/<milestone>_train.json for a scene with a milestone (s01: "
+                        "m2, s01d: m2d). A committed record is never written over")
     p.add_argument("--map-path", default=None, help="default: the map of the level the scene flies (s01d: S01)")
     p.add_argument("--scene-config", default=None,
                    help="Project AirSim scene config in configs/ (default scene_autofly_<level>.jsonc); e.g. "
@@ -473,6 +574,10 @@ def build_arg_parser() -> argparse.ArgumentParser:
     p.add_argument("--buffer-size", type=int, default=BUFFER_SIZE)
     p.add_argument("--learning-starts", type=int, default=LEARNING_STARTS)
     p.add_argument("--batch-size", type=int, default=BATCH_SIZE)
+    p.add_argument("--depth-frames", type=int, default=None,
+                   help="depth frames the expert sees (default: 1 for a static scene, 3 for a dynamic one; >1 is float16)")
+    p.add_argument("--sim-root", type=Path, default=SIM_RUN_DIR,
+                   help="where this run's simulators are recorded (tests point it at a scratch directory)")
     return p
 
 
@@ -483,15 +588,23 @@ def main(argv: list[str] | None = None) -> int:
         print(f"--seed must be in [0, {SESSION_SEED_STRIDE - 64}); got {args.seed}", file=sys.stderr)
         return 2
     run_root = args.run_root or RUNS_DIR / "expert" / args.scene
+    sim_root = Path(args.sim_root)
     # Everything that can be checked without a simulator is checked before the run directory is claimed.
     try:
+        out_path = args.out if args.out is not None else default_evidence_path(args.scene, "train")
+        refuse_existing_evidence(out_path)
         resolved = resolve_scene(args.scene)
         scene_file, layout = resolved.scene, resolved.layout
         map_path = args.map_path or resolved.map_path
         scene_config = args.scene_config or resolved.default_scene_config
         scene_config_record(scene_config)  # the config file must exist; its hash goes in the record
-        session = prepare_run_root(run_root, resume=args.resume, reward_version=REWARD_VERSION, seed=args.seed)
-    except (FileNotFoundError, RuntimeError, ValueError) as err:
+        obs_config = (obs_config_for_frames(args.depth_frames) if args.depth_frames is not None
+                      else obs_config_for_scene(scene_file))
+        identity = run_identity(resolved, obs_config)
+        host = host_preflight(buffer_bytes=replay_buffer_bytes(args.buffer_size, obs_config), run_root=run_root)
+        session = prepare_run_root(run_root, resume=args.resume, reward_version=REWARD_VERSION, seed=args.seed,
+                                   identity=identity)
+    except (FileNotFoundError, FileExistsError, RuntimeError, ValueError) as err:
         print(f"refusing to start: {err}", file=sys.stderr)
         return 2
     sim_factory = scene_config_factory(scene_config, resolved.movable_objects)
@@ -528,12 +641,13 @@ def main(argv: list[str] | None = None) -> int:
     try:
         # Hazard #3: a crashed earlier run can leave Unreal children holding VRAM. Only orphans -- a concurrently
         # running job's simulators are not ours to stop.
-        swept = sweep_orphaned_instances()
+        swept = sweep_orphaned_instances(sim_root)
         if swept:
             print(f"swept orphaned instances before starting: {swept}", file=sys.stderr)
         train_env = make_vec_env(
             scene_file, layout, args.instances, map_path=map_path, monitor_dir=monitor_dir,
             seed_base_fn=lambda rank: session_seed_base(rank, session), instance_offset=0, sim_factory=sim_factory,
+            sim_root=sim_root, obs_config=obs_config,
         )
         # A separate simulator instance (own ports), one slot past the training workers, so evaluation
         # can run concurrently with training without colliding on ports with any training worker. Its own seed
@@ -541,6 +655,7 @@ def main(argv: list[str] | None = None) -> int:
         eval_env = make_vec_env(
             scene_file, layout, 1, map_path=map_path, monitor_dir=eval_monitor_dir,
             seed_base_fn=lambda _rank: EVAL_CALLBACK_SEED_BASE, instance_offset=args.instances, sim_factory=sim_factory,
+            sim_root=sim_root, obs_config=obs_config,
         )
 
         if args.resume:
@@ -617,12 +732,12 @@ def main(argv: list[str] | None = None) -> int:
             fault_summaries.extend(collected)
             fault_summaries_missing.extend(slots[i] for i in missing)
             try:
-                teardown(env, slots)  # bounded close + force-kill + stop this run's own slots
+                teardown(env, slots, sim_root)  # bounded close + force-kill + stop this run's own slots
             except Exception as err:
                 print(f"WARNING: teardown() raised {type(err).__name__}: {err}; continuing cleanup", file=sys.stderr)
                 traceback.print_exc()
         try:
-            stop_instances(train_slots + [eval_slot])  # belt-and-braces: every slot this run used, nothing else
+            stop_instances(train_slots + [eval_slot], sim_root)  # belt-and-braces: every slot this run used, nothing else
         except Exception as err:
             print(f"WARNING: final stop_instances() raised {type(err).__name__}: {err}", file=sys.stderr)
 
@@ -633,13 +748,17 @@ def main(argv: list[str] | None = None) -> int:
     # Every log each slot wrote during the run -- the live sim.log AND the sim-backup-*.log each relaunch rotated it
     # to (Task 8's record scanned only the final session's sim.log, missing 24 in-run logs) -- and a readable journal.
     engine_faults = audit_engine_faults(since=run_started, since_epoch=run_start_epoch, xid_before=xid_before,
-                                        boot_before=boot_before, log_dirs=[instance_dir(i) for i in train_slots + [eval_slot]])
+                                        boot_before=boot_before,
+                                        log_dirs=[instance_dir(i, sim_root) for i in train_slots + [eval_slot]])
     faults_ok = engine_faults.pop("ok")
 
     gate = {
-        "description": f"Task 8: SAC training on scene {args.scene} (spec §8).",
+        "description": f"SAC training on scene {args.scene} (spec §8; Task 8 of plan 2, §6.5 for a dynamic scene).",
         "scene": args.scene,
         "map": map_path,
+        "identity": identity,
+        "obs_config": obs_config.to_json(),
+        "host": host,
         "instances": args.instances,
         "status": status,
         "error": error_message,
@@ -682,6 +801,7 @@ def main(argv: list[str] | None = None) -> int:
         "env_steps_per_s": (num_timesteps_this_session / wall_s) if wall_s > 0 else None,
         "eval": read_eval_results(run_root),
         "outcome_histogram": dict(outcome_cb.histogram),
+        "collision_sources": dict(outcome_cb.collision_sources),
         # Backend-fault transitions dropped from the replay buffer (C2); with n workers a dropped row costs n. Counted
         # by the buffer itself, so across every session of a resumed run (backend_faults is this session's).
         "dropped_fault_rows": int(getattr(getattr(model, "replay_buffer", None), "dropped_fault_rows", 0)),
@@ -698,8 +818,8 @@ def main(argv: list[str] | None = None) -> int:
         "run_started": run_started,
         "run_finished": time.strftime("%Y-%m-%d %H:%M:%S"),
     }
-    args.out.parent.mkdir(parents=True, exist_ok=True)
-    args.out.write_text(json.dumps(gate, indent=2) + "\n")
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(json.dumps(gate, indent=2) + "\n")
     print(json.dumps({"status": status, "num_timesteps": num_timesteps, "wall_clock_s": wall_s, "faults_ok": faults_ok}, indent=2))
     return 0 if status == "ok" else 1
 
