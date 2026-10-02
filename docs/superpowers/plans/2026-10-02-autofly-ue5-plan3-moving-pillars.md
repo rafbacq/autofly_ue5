@@ -120,11 +120,16 @@ docs/runbook-m2d.md (A7)
 
 ### Phase A: live (GPU host, display `:1`; `docs/runbook-m2d.md`)
 
-- [ ] **A7.1** The probe → `docs/gates/m2d_mover_probe.json`. **Go/no-go.**
-- [ ] **A7.2** `measure_instances --scene s01d` → `docs/gates/m2d_instances.json`; set N.
-- [ ] **A7.3** The s01 regression: 10 gate seeds with `s01_r2` best_model, same outcomes as the M2 gate.
-- [ ] **A7.4** The s01d smoke: 20 minutes of training, a 10-episode gate and 2 renders.
-- [ ] **A7.5** 12 h training, with the watcher, the progress plot and TensorBoard → `docs/gates/m2d_train.json`.
+- [x] **A7.1** The probe → `docs/gates/m2d_mover_probe.json` (`5f137de`). **Go**: every check passed.
+- [x] **A7.2** `measure_instances --scene s01d` → `docs/gates/m2d_instances.json`. N = 4 at 13.49 steps/s (s01: 13.37).
+- [x] **A7.3** The s01 regression: 10 of 10 gate seeds reached the M2 gate's outcomes, with step counts drifting 0–6
+  (`runs/m2d/s01_regression_gate.json`).
+- [x] **A7.4** The s01d smoke (`runs/m2d/train_smoke.json`, `gate_smoke.json`, `runs/viz/s01d_smoke/`): status ok,
+  3×float16, collisions by source, every gate field present, videos and maps drawing the movers. Reset faults hit
+  23 % of resets, against 29 % in M2's own smoke.
+- [ ] **A7.5** 12 h training (`runs/expert/s01d_r1`, started 2026-10-02 17:23), with the watcher (`m2d_watch`), the
+  progress plot (`runs/expert/s01d_r1/progress.png`) and TensorBoard (`m2d_tensorboard`, 127.0.0.1:6006) →
+  `docs/gates/m2d_train.json`.
 - [ ] **A7.6** The 200-episode gate and its audit → `docs/gates/m2d_gate.json`, `m2d_gate_audit.json`.
 - [ ] **A7.7** The zero-shot baseline of the s01 expert on s01d → `docs/gates/m2d_baseline_s01_expert.json`.
 - [ ] **A7.8** Render 6–10 s01d gate episodes.

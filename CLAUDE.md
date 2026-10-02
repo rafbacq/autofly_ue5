@@ -48,7 +48,7 @@ Git-ignored but present on the GPU host:
 | M0 | Passed 2026-09-15 (`docs/gates/m0_gate.json`) |
 | M1 | Passed 2026-09-16 (`docs/gates/m1_gate.json`) |
 | M2 | Passed 2026-09-26 (`docs/gates/m2_gate.json`, run 2): best_model 0.98 deterministic / 0.99 stochastic, final 0.96 / 0.95, over 200 held-out episodes. Run 1's failed gate is archived in `docs/gates/archive/2026-09-17-m2-run1/`. Closeout: `docs/decisions/2026-10-02-m2-closeout.md` (best_model flies M3, stochastically) |
-| M2d | **Open** (moving pillars, scene s01d; added 2026-10-02 at the user's request). Offline work done on branch `feat/moving-pillars`. Next: `docs/runbook-m2d.md`, starting with the go/no-go probe |
+| M2d | **Open** (moving pillars, scene s01d; added 2026-10-02 at the user's request), on branch `feat/moving-pillars`. Probe passed (`docs/gates/m2d_mover_probe.json`), throughput recorded (`m2d_instances.json`, N = 4), smoke passed. The 12 h run `runs/expert/s01d_r1` started 2026-10-02 17:23. Next: `docs/runbook-m2d.md` step 6, the gate |
 | M3 | Not started. Its s01 pilot does not wait for M2d |
 
 Each milestone stops for the user's go-ahead before the next starts. The user asked for M2d and M3 on 2026-10-02.

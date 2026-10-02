@@ -122,12 +122,15 @@ stale "fact". Standing rules live in `CLAUDE.md`; this file is the reasoning and
 
 ## Open questions
 
-- Does moving a *baked* pillar work live, and what does it cost per step? `scripts/probe_movers.py` (runbook-m2d step 1)
-  decides M2d's go/no-go. Unmeasured as of 2026-10-02.
 - Can a depth-only expert with a 3-frame stack reach 0.95 on s01d in 12 h? If not, the levers (more hours, warm start
   from s01, fewer or slower movers, privileged mover state) are the user's call.
 
 Settled:
+- Moving a baked pillar works live (2026-10-02, `docs/gates/m2d_mover_probe.json`): moves land within 3e-6 m, show in
+  the same step's depth, and collide at once. 10 moves add 13 ms to a 74 ms step (+17 %), and at N = 4 nothing
+  (13.49 against 13.37 steps/s). A hovering drone covers only centimetres in its first step (M0: 2.33 m in 10 steps
+  at 2 m/s), and the rotor tips reach 0.367 m straight ahead (0.472 m on the diagonal). The probe's first version
+  missed both and would have failed live.
 - The crash-then-reset probe (2026-09-25, `docs/gates/m1_crash_reset_probe.json`): 0 of 30 first resets after a crash
   missed their pose (worst 1.9 mm). Run 2 still raised 22 `ResetPoseError`s in 12 h, all recovered by the retry.
 - M2 reached 0.98 with the C1–C9 fixes and N = 4 (run 2).
