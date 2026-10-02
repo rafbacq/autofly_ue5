@@ -51,9 +51,18 @@ MOVE_TOLERANCE_M = 0.05
 NEIGHBOUR_DRIFT_M = 0.01
 DEPTH_TOLERANCE_M = 0.3
 PARK_DEPTH_M = 50.0  # the same parking depth expert/movers.py uses
-ROTOR_HALF_SPAN_M = 0.472  # props at +-0.253 m, radius 0.1143 m (configs/robot_autofly_quadrotor.jsonc)
+# How far the rotors reach straight ahead: props at x = +0.253 m with radius 0.1143 m (configs/robot_autofly_quadrotor.jsonc;
+# 0.472 m is the diagonal, at 45 degrees).
+FRONT_TIP_M = 0.253 + 0.1143
 AHEAD_M = 4.0  # check c: the pillar's near surface, this far in front of the camera
-FIRST_STEP_GAP_M = 0.7  # check d2: pillar surface this far ahead of the drone's centre; one 2 m/s step covers 0.4 m
+# Check d2. From hover the drone is slow to speed up: M0 flew 2.33 m in its first 10 steps at a 2 m/s command
+# (docs/gates/m0_smoke_inst0.json), so one step from hover covers only centimetres. d2 first flies a clear runway
+# for RUNWAY_STEPS, then puts the pillar's surface FIRST_STEP_FRACTION of the last step's travel beyond the rotor tips:
+# the next step can only collide if the moved pillar is solid at once.
+RUNWAY_STEPS = 10
+FIRST_STEP_FRACTION = 0.5
+MIN_RUNWAY_STEP_M = 0.2  # the drone must be up to speed (M1 measured 1.81 m/s, 0.36 m per step)
+MAX_FLY_STEPS = 40
 LATENCY_BATCH = 12
 LATENCY_REPEATS = 20
 STEP_TIMING_STEPS = 20
@@ -113,31 +122,45 @@ def _check(name: str, fn) -> dict:
     return result
 
 
-def _through_line(layout: Layout, approach_m: float = 3.0, beyond_m: float = 2.0, clearance_m: float = 1.0):
+def _clear_line(layout: Layout, sx: float, sy: float, ex: float, ey: float, clearance_m: float, skip: str | None = None) -> bool:
+    b = layout.bounds
+    if not all(b.x_min + 2 <= x <= b.x_max - 2 and b.y_min + 2 <= y <= b.y_max - 2 for x, y in ((sx, sy), (ex, ey))):
+        return False
+    vx, vy = ex - sx, ey - sy
+    for q in layout.instances:
+        if q.tag == skip:
+            continue
+        t = max(0.0, min(1.0, ((q.x - sx) * vx + (q.y - sy) * vy) / (vx * vx + vy * vy)))
+        if math.hypot(q.x - (sx + t * vx), q.y - (sy + t * vy)) < q.radius_m + clearance_m:
+            return False
+    return True
+
+
+def _runway(layout: Layout, length_m: float = 14.0, clearance_m: float = 2.0) -> Pose:
+    """A start pose with `length_m` of open air ahead (every pillar >= clearance_m from the line): in s01, the free ring
+    around the pillar field."""
+    b = layout.bounds
+    for x in np.linspace(b.x_min + 4.0, b.x_max - 4.0, 15):
+        for y in np.linspace(b.y_min + 4.0, b.y_max - 4.0, 15):
+            for k in range(8):
+                yaw = k * math.pi / 4
+                ex, ey = x + length_m * math.cos(yaw), y + length_m * math.sin(yaw)
+                if _clear_line(layout, float(x), float(y), ex, ey, clearance_m):
+                    return Pose(float(x), float(y), -ALTITUDE_M, yaw)
+    raise ValueError(f"no {length_m} m runway with {clearance_m} m clearance")
+
+
+def _through_line(layout: Layout, approach_m: float = 3.0, beyond_m: float = 3.0, clearance_m: float = 1.0):
     """A pillar and a straight line that runs through its home spot with every other pillar >= clearance_m away from
     the line (check e flies it with the pillar parked)."""
-    insts = sorted(layout.instances, key=lambda i: i.tag)
-    b = layout.bounds
-    for inst in insts:
+    for inst in sorted(layout.instances, key=lambda i: i.tag):
         for k in range(8):
             yaw = k * math.pi / 4
             ux, uy = math.cos(yaw), math.sin(yaw)
             sx, sy = inst.x - (approach_m + inst.radius_m) * ux, inst.y - (approach_m + inst.radius_m) * uy
             ex, ey = inst.x + beyond_m * ux, inst.y + beyond_m * uy
-            if not all(b.x_min + 2 <= x <= b.x_max - 2 and b.y_min + 2 <= y <= b.y_max - 2 for x, y in ((sx, sy), (ex, ey))):
-                continue
-            clear = True
-            for q in insts:
-                if q.tag == inst.tag:
-                    continue
-                vx, vy = ex - sx, ey - sy
-                t = max(0.0, min(1.0, ((q.x - sx) * vx + (q.y - sy) * vy) / (vx * vx + vy * vy)))
-                if math.hypot(q.x - (sx + t * vx), q.y - (sy + t * vy)) < q.radius_m + clearance_m:
-                    clear = False
-                    break
-            if clear:
-                n_steps = math.ceil(math.hypot(ex - sx, ey - sy) / (2.0 * CONTROL_DT_S))
-                return inst, Pose(sx, sy, -ALTITUDE_M, yaw), n_steps
+            if _clear_line(layout, sx, sy, ex, ey, clearance_m, skip=inst.tag):
+                return inst, Pose(sx, sy, -ALTITUDE_M, yaw)
     raise ValueError("no pillar has a clear line through its home spot")
 
 
@@ -190,34 +213,53 @@ def run_probe(sim, layout: Layout, *, async_batch=None) -> dict:
                 "pillar_at": [centre.x, centre.y]}
 
     def d_collide() -> dict:
-        # d1: the pillar c left 4 m ahead; fly into it.
+        # d1: the pillar c left 4 m ahead; fly into it from hover.
         centre = Pose(view.x + (CAMERA_OFFSET_M + AHEAD_M + victim.radius_m) * ux,
                       view.y + (CAMERA_OFFSET_M + AHEAD_M + victim.radius_m) * uy, home.z, 0.0)
         sim.reset(view)
         sim.set_object_poses({victim.tag: centre})
-        step, obs = _fly(sim, 20)
+        step, obs = _fly(sim, MAX_FLY_STEPS)
         gap = _surface_gap(obs.pose, centre, victim.radius_m)
         d1 = {"collided_at_step": step, "surface_gap_at_collision_m": gap}
-        # d2: moved to just ahead of the rotor tips, then flown into on the first step after the move.
-        sim.reset(view)
-        near = Pose(view.x + (FIRST_STEP_GAP_M + victim.radius_m) * ux, view.y + (FIRST_STEP_GAP_M + victim.radius_m) * uy,
-                    home.z, 0.0)
+        # d2: up to speed on an open runway, then the pillar appears just beyond the rotor tips, inside the next
+        # step's travel. Only a pillar that is solid the moment it is moved stops that step.
+        start = _runway(layout)
+        sim.reset(start)
+        runway_step, obs = _fly(sim, RUNWAY_STEPS - 1)
+        last_step, after = (None, obs) if runway_step is not None else _fly(sim, 1)
+        if runway_step is not None or last_step is not None:
+            return {"pass": False, "d1": d1, "d2": {"error": "collided on the open runway", "runway_start": [start.x, start.y]}}
+        travel = math.hypot(after.pose.x - obs.pose.x, after.pose.y - obs.pose.y)  # the last runway step
+        pose = after.pose
+        gap_ahead = FRONT_TIP_M + FIRST_STEP_FRACTION * travel
+        wx, wy = math.cos(pose.yaw), math.sin(pose.yaw)
+        near = Pose(pose.x + (gap_ahead + victim.radius_m) * wx, pose.y + (gap_ahead + victim.radius_m) * wy, home.z, 0.0)
         sim.set_object_poses({victim.tag: near})
-        step2, _obs2 = _fly(sim, 3)
-        d2 = {"collided_at_step": step2, "rotor_gap_before_m": FIRST_STEP_GAP_M - ROTOR_HALF_SPAN_M}
-        return {"pass": step is not None and gap < 1.0 and step2 == 1, "d1": d1, "d2": d2}
+        step2, _obs2 = _fly(sim, 1)
+        d2 = {"runway_start": [start.x, start.y, start.yaw], "last_runway_step_m": travel,
+              "rotor_gap_at_move_m": gap_ahead - FRONT_TIP_M, "collided_on_first_step": step2 == 1}
+        up_to_speed = travel >= MIN_RUNWAY_STEP_M
+        return {"pass": step is not None and gap < 1.0 and up_to_speed and step2 == 1, "d1": d1, "d2": d2}
 
     def e_vacated() -> dict:
-        inst, start, n_steps = _through_line(layout)
+        inst, start = _through_line(layout)
         sim.set_object_poses({inst.tag: _offset(_home(inst), 0.0, 0.0, PARK_DEPTH_M)})
         sim.reset(start)
+        past_home = math.hypot(inst.x - start.x, inst.y - start.y) + 1.0  # through the spot and 1 m beyond it
+        step, raised = None, None
         try:
-            step, obs = _fly(sim, n_steps)
-            raised = None
+            for i in range(MAX_FLY_STEPS):  # however slowly the drone speeds up from hover
+                step, obs = _fly(sim, 1)
+                if step is not None:
+                    step = i + 1
+                    break
+                if math.hypot(obs.pose.x - start.x, obs.pose.y - start.y) >= past_home:
+                    break
         except Exception as err:  # a CameraPoseError here is exactly what this check looks for
-            step, obs, raised = None, sim.observe(), f"{type(err).__name__}: {err}"
+            raised = f"{type(err).__name__}: {err}"
+        obs = sim.observe()
         flown = math.hypot(obs.pose.x - start.x, obs.pose.y - start.y)
-        through = flown > math.hypot(inst.x - start.x, inst.y - start.y)
+        through = flown >= past_home
         sim.reset(start)  # out of the home spot before the pillar returns
         sim.set_object_poses({inst.tag: _home(inst)})
         return {"pass": step is None and raised is None and through, "pillar": inst.tag, "collided_at_step": step,
