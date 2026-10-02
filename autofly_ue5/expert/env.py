@@ -25,7 +25,7 @@ from autofly_ue5.expert.obs import DepthStacker, ObsConfig, encode_depth, encode
 from autofly_ue5.expert.reward import Outcome, RewardConfig, evaluate, oob_kind
 from autofly_ue5.scenes.model import Layout, SceneFile
 from autofly_ue5.sim.protocol import Simulator
-from autofly_ue5.sim.types import CONTROL_DT_S, CameraPoseError, KinematicsJumpError, Pose, StartCollisionError
+from autofly_ue5.sim.types import CONTROL_DT_S, CameraPoseError, KinematicsJumpError, Observation, Pose, StartCollisionError
 
 # Step faults that a moving pillar the drone was about to touch can cause (spec §6.5, "defensive inference").
 MOVER_INFERABLE_FAULTS = (CameraPoseError, KinematicsJumpError)
@@ -96,6 +96,7 @@ class AutoFlyEnv(gym.Env):
         self._displaced: set[str] = set()
         self._last_pose: Pose | None = None
         self._last_obs: dict[str, np.ndarray] | None = None
+        self._last_raw: Observation | None = None
         # Advances by one on every seed=None reset() so a given env instance replays episodes 0, 1, 2,
         # ... in a fixed, reproducible order (offset per-env by seed_base, so vectorised workers stay
         # disjoint even when the caller resets every one of them with seed=None). An explicit seed does
@@ -187,6 +188,7 @@ class AutoFlyEnv(gym.Env):
         self._prev_dist, bearing, _ = target_geometry(obs.pose, setup.target_xy_z)
         self._step_index = 0
         self._last_pose = obs.pose
+        self._last_raw = obs
 
         info = self._info(Outcome.RUNNING, self._prev_dist, obs.pose, bearing, None)
         if movers is not None:
@@ -239,6 +241,7 @@ class AutoFlyEnv(gym.Env):
         )
         self._prev_dist = dist
         self._last_pose = obs.pose
+        self._last_raw = obs
 
         kind = oob_kind(in_bounds=in_bounds, altitude_m=altitude, cfg=self._cfg) if result.outcome is Outcome.OUT_OF_BOUNDS else None
         info = self._info(result.outcome, dist, obs.pose, bearing, kind,
@@ -246,6 +249,12 @@ class AutoFlyEnv(gym.Env):
         self._last_obs = {"depth": self._stacker.push(encode_depth(obs.depth)),
                           "vector": encode_vector(obs.pose, obs.velocity_ned, obs.yaw_rate, self._setup.target_xy_z)}
         return self._last_obs, result.reward, result.terminated, result.truncated, info
+
+    @property
+    def last_observation(self) -> Observation | None:
+        """The simulator's full observation behind the last reset() or step() -- RGB included, which the expert never
+        sees but M3's collector records (spec §9-§10)."""
+        return self._last_raw
 
     def _inferred_mover_collision(self, err: Exception) -> tuple[dict[str, np.ndarray], float, bool, bool, dict]:
         """End the episode as a collision on its last real observation, nothing having been observed this step."""

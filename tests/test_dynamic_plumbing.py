@@ -10,6 +10,8 @@ from pathlib import Path
 
 import pytest
 
+import numpy as np
+
 from autofly_ue5.expert.obs import ObsConfig
 from autofly_ue5.paths import ROOT
 from autofly_ue5.sim.fake import FakeSimulator
@@ -370,3 +372,60 @@ def test_build_scenes_writes_the_dynamic_report_and_no_level(tmp_path):
     assert main(["scenes/s01d_moving_pillars.json", "--out-dir", str(tmp_path), "--report-seeds", "5"]) == 0
     assert json.loads((tmp_path / "s01d.dynamic_report.json").read_text())["n_seeds"] == 5
     assert not (tmp_path / "s01d.level.json").exists() and not (tmp_path / "s01d.layout.json").exists()
+
+
+# --------------------------------------------------------------------------------------------------------
+# What the watchers read.
+# --------------------------------------------------------------------------------------------------------
+def test_monitor_rows_carry_each_episodes_outcome_and_collision_source(tmp_path):
+    import csv
+
+    import numpy as np
+
+    from autofly_ue5.expert.vec import make_vec_env
+
+    scene, layout = dynamic_scene()
+    vec = make_vec_env(scene, layout, 1, map_path="/x", monitor_dir=tmp_path / "mon", sim_factory=_dynamic_fake_factory(),
+                       sim_root=tmp_path / "sim")
+    vec.reset()
+    for _ in range(400):
+        _obs, _r, dones, _infos = vec.step(np.array([[2.0, 0.3, 0.0]], dtype=np.float32))
+        if dones[0]:
+            break
+    vec.close()
+    lines = [line for line in (tmp_path / "mon" / "0.monitor.csv").read_text().splitlines() if not line.startswith("#")]
+    row = next(csv.DictReader(lines))
+    assert row["outcome"] in {"success", "collision", "out_of_bounds", "timeout"}
+    assert "collision_source" in row
+
+
+def test_the_outcome_callback_logs_rolling_outcome_and_collision_source_fractions():
+    from types import SimpleNamespace
+
+    from stable_baselines3.common.logger import Logger
+
+    from autofly_ue5.expert.train import OutcomeHistogramCallback
+
+    logger = Logger(folder=None, output_formats=[])
+    cb = OutcomeHistogramCallback()
+    cb.model = SimpleNamespace(logger=logger)
+    episodes = [{"outcome": "success"}, {"outcome": "collision", "collision_source": "mover"},
+                {"outcome": "collision", "collision_source": "sim"}, {"outcome": "timeout"},
+                {"outcome": "running", "sim_fault": "CameraPoseError"}]
+    for info in episodes:
+        cb.update_locals({"infos": [info], "dones": [True]})
+        cb._on_step()
+    values = logger.name_to_value
+    assert values["outcomes/success"] == 0.25 and values["outcomes/collision"] == 0.5 and values["outcomes/timeout"] == 0.25
+    assert values["outcomes/collision_mover"] == 0.25 and values["outcomes/collision_sim"] == 0.25
+    assert values["outcomes/sim_fault_episodes"] == 1
+    assert cb.histogram["CameraPoseError"] == 1 and cb.collision_sources == {"mover": 1, "sim": 1}
+
+
+def test_the_env_exposes_the_raw_observation_for_the_collector():
+    env = make_dynamic_env()
+    _obs, _info = env.reset(seed=1_000_090)
+    raw = env.last_observation
+    assert raw.rgb.shape == (256, 256, 3) and raw.pose == env._last_pose
+    env.step(np.zeros(3, dtype=np.float32))
+    assert env.last_observation.sim_time_ns > raw.sim_time_ns

@@ -94,7 +94,9 @@ def make_vec_env(
             route_client_log(instance_dir(instance, sim_root) / "client.log")
             base = AutoFlyEnv(scene, layout, sim_factory, map_path=map_path, instance=instance, seed_base=seed_base_fn(rank),
                               obs_config=obs_config)
-            monitored = Monitor(base, filename=str(monitor_dir / f"{instance}.monitor.csv"), info_keywords=("is_success",))
+            # outcome and collision_source per episode, for scripts/watch_training.py (the info always carries both).
+            monitored = Monitor(base, filename=str(monitor_dir / f"{instance}.monitor.csv"),
+                                info_keywords=("is_success", "outcome", "collision_source"))
             return ResilientAutoFlyEnv(monitored, instance=instance, sim_root=sim_root, worker_mode=n > 1)
 
         return _make

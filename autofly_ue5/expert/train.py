@@ -116,7 +116,7 @@ import shutil
 import sys
 import traceback
 import time
-from collections import Counter
+from collections import Counter, deque
 from pathlib import Path
 
 import numpy as np
@@ -497,16 +497,43 @@ class OutcomeHistogramCallback(BaseCallback):
         # What each collision hit (spec §6.5): "sim" (a static pillar, or physical contact), "mover" (the d_col rule),
         # "mover_inferred" (a backend fault right next to a mover, scored as a collision).
         self.collision_sources: Counter[str] = Counter()
+        # The last OUTCOME_WINDOW real episodes, for TensorBoard's outcomes/* curves (watchers, runbook-m2d step 5).
+        self._recent: deque[str] = deque(maxlen=self.OUTCOME_WINDOW)
+        self._fault_episodes = 0
+
+    OUTCOME_WINDOW = 100
 
     def _on_step(self) -> bool:
         infos = self.locals.get("infos", [])
         dones = self.locals.get("dones", [])
         for info, done in zip(infos, dones):
-            if done:
-                self.histogram[info.get("sim_fault") or info.get("outcome", "unknown")] += 1
-                if info.get("outcome") == "collision" and not info.get("sim_fault"):
-                    self.collision_sources[info.get("collision_source") or "sim"] += 1
+            if not done:
+                continue
+            self.histogram[info.get("sim_fault") or info.get("outcome", "unknown")] += 1
+            if info.get("sim_fault"):
+                self._fault_episodes += 1
+                if getattr(self, "model", None) is not None:
+                    self.logger.record("outcomes/sim_fault_episodes", self._fault_episodes)
+                continue
+            label = info.get("outcome", "unknown")
+            if label == "collision":
+                source = info.get("collision_source") or "sim"
+                self.collision_sources[source] += 1
+                label = f"collision_{source}"
+            self._recent.append(label)
+            if getattr(self, "model", None) is not None:  # SB3 attaches the model (and its logger) in init_callback
+                self._log()
         return True
+
+    def _log(self) -> None:
+        n = len(self._recent)
+        counts = Counter(self._recent)
+        for outcome in ("success", "out_of_bounds", "timeout"):
+            self.logger.record(f"outcomes/{outcome}", counts[outcome] / n)
+        self.logger.record("outcomes/collision", sum(v for k, v in counts.items() if k.startswith("collision_")) / n)
+        for source in ("sim", "mover", "mover_inferred"):
+            self.logger.record(f"outcomes/collision_{source}", counts[f"collision_{source}"] / n)
+        self.logger.record("outcomes/sim_fault_episodes", self._fault_episodes)
 
 
 def read_eval_results(run_root: Path) -> dict:
