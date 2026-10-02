@@ -20,7 +20,9 @@ from dataclasses import dataclass
 
 import numpy as np
 
+from autofly_ue5.expert.reward import RewardConfig
 from autofly_ue5.scenes.model import Bounds, Instance, Layout, SceneFile, load_registry
+from autofly_ue5.scenes.motion import MoverRoute, sample_movers
 from autofly_ue5.sim.protocol import Simulator
 from autofly_ue5.sim.types import ObjectNotFoundError, Pose
 
@@ -101,6 +103,9 @@ class EpisodeSetup:
     # one material name here keeps apply_setup scene-independent without adding a parameter that would
     # break the brief's own round-trip test call `apply_setup(sim, setup)`. See the task report.
     obstacle_material: str
+    # A dynamic scene's movers and how they were placed (spec §6.5); empty for a static scene.
+    movers: tuple[MoverRoute, ...] = ()
+    mover_stats: dict | None = None
 
 
 def _nearest_obstacle_gap(x: float, y: float, instances: tuple[Instance, ...]) -> float:
@@ -189,7 +194,8 @@ def sample_setup(
 
     Fixed draw order so a seed reproduces exactly: start edge -> start position -> start altitude ->
     start yaw -> target position on the opposite edge -> distractor count -> distractor positions ->
-    instruction template.
+    instruction template -> (dynamic scenes only) movers. The movers come last so a static scene's episodes, which
+    the M2 gate and its replays depend on, are drawn exactly as before.
     """
     bounds = layout.bounds
     clearance = spawn_clearance_m()
@@ -253,6 +259,17 @@ def sample_setup(
     # from the split-appropriate pool.
     instruction = template.format(target="target", obstacle=scene.instruction_obstacle)
 
+    # 9: movers (spec §6.5), after every draw above.
+    movers: tuple[MoverRoute, ...] = ()
+    mover_stats = None
+    if scene.dynamic is not None:
+        sample = sample_movers(
+            scene.dynamic, layout, start_xy=(start_x, start_y), target_xy=(target_x, target_y),
+            distractors_xy=[(dx, dy) for dx, dy, _dz in distractors], rng=rng, inflate_m=clearance,
+            success_radius_m=RewardConfig().success_radius_m,
+        )
+        movers, mover_stats = sample.routes, sample.stats
+
     return EpisodeSetup(
         scene_id=scene.id,  # s01d flies s01's layout but its episodes are s01d's
         seed=layout.seed,
@@ -264,6 +281,8 @@ def sample_setup(
         start_edge=start_edge,
         target_edge=target_edge,
         obstacle_material=scene.obstacle_groups[0].palette[0],
+        movers=movers,
+        mover_stats=mover_stats,
     )
 
 
