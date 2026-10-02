@@ -17,8 +17,12 @@ harness.
 
 Out of scope for this design: training π0 or any VLA on the data (a later LeRobot export is a separate project step),
 the pseudo-depth encoder, real-world flights, human-piloted demonstrations (AutoFly mixed some in; we have none), and
-the paper's three challenge scenes (dense cylinders, dense forest, moving obstacles), which can be added later as
-extra scene files.
+two of the paper's three challenge scenes (dense cylinders, dense forest), which can be added later as extra scene
+files.
+
+**Amended 2026-10-02 (user request): moving obstacles are in scope.** Scene `s01d` moves a subset of s01's baked
+pillars along random routes so the expert learns to dodge them (§6.5, milestone M2d in §12). It reuses s01's level, and
+static s01 is unchanged. Rules and evidence: `docs/decisions/2026-10-02-dynamic-obstacles.md`.
 
 ## 2. Decisions taken with the user
 
@@ -157,6 +161,10 @@ One JSON file per scene in `scenes/`, validated by a schema in `autofly_ue5/scen
 - `start_band` and `target_band`: distance range from the boundary (start 2–6 m inside, targets 0–3 m inside).
 - `altitude_band`: 1.0–3.0 m above ground, from §3.2.
 - `instruction_obstacle`: the phrase used in instructions (`white pillars`, `stone field`, …).
+- Optional (2026-10-02): `level`, the id of the scene whose built level this scene reuses (e.g. `s01d` reuses `s01`),
+  and `dynamic`, the moving-obstacle block of §6.5. A scene with `level` must match that scene in every static field
+  (seed, bounds, ground, obstacle groups, bands), and gets no level of its own. Ids may end in `r` (re-seeded test
+  layout) or `d` (dynamic variant).
 
 ### 6.2 Generator and reachability
 
@@ -205,6 +213,28 @@ TV, barrels, suitcases, coloured primitive shapes; unseen includes crane, tiger,
 and the Fig. 3c category mix. Scene s01 uses engine primitives only, so M1 needs no downloaded assets. Asset sources
 for M4 (free UE sample content, Fab free assets) are recorded per asset with licence.
 
+### 6.5 Dynamic obstacles (added 2026-10-02)
+
+A scene's `dynamic` block moves some of its baked obstacles at runtime. The rules, with their evidence, are in
+`docs/decisions/2026-10-02-dynamic-obstacles.md`. In brief:
+
+- **Movers.** k ∈ `movers.count` of the layout's obstacles move each episode (s01d: 8–12 of 80). Of these, a share
+  (`movers.path_movers`, 2–4) is drawn from obstacles within `movers.path_corridor_m` (4 m) of the start → target
+  segment. All draws come after every existing draw of the episode sampler.
+- **Routes.** `pingpong` (back and forth through home, half-length 1.0–2.5 m) or `orbit` (a circle around home,
+  radius 1.0–2.0 m), at 0.4–1.2 m/s from a random phase. Each pose is an analytic function of the mover's own clock.
+- **Yielding.** A mover's clock advances only if its next pose stays at least `contact_m + yield_margin_m` (2.5 m)
+  from the drone or is no closer than its current pose. Movers never ram the drone. Every mover contact is the
+  policy's own doing.
+- **Constraints.** Every sweep stays inside the bounds, at least `min_gap_m` (1.0 m) from every pillar that may stand
+  still and from every other sweep, at least 6 m from the start, and at least 4 m from the target and distractors.
+- **Path-length guard.** The BFS path through mover sweeps is at most 1.20 × the static path, on the §6.2 occupancy
+  grid. It is repaired by dropping movers greedily, and the sampler never raises.
+- **Contact.** The drone's swept segment passes within `contact_m` (1.0 m, the paper's d_col) of a mover's surface.
+  The invariant `contact_m − max_speed·dt > 0.48 m` (the rotor-tip half-span) is checked at load.
+- **Reset.** Displaced pillars are parked 50 m underground before the reset sequence, and placed only after the drone
+  stands at its start.
+
 ## 7. Simulator interface (`autofly_ue5/sim/`)
 
 One module wraps Project AirSim so nothing else imports it:
@@ -215,6 +245,8 @@ One module wraps Project AirSim so nothing else imports it:
 - `command_velocity(v_forward, yaw_rate, v_z)` held for one step.
 - `step(dt=0.2)`: advance the simulator clock exactly one control period (pause between steps).
 - `observe()`: front RGB 256×256, front depth, pose, velocity, simulator time, collision flag.
+- `set_object_poses(poses)` (added 2026-10-02 for §6.5): teleport named, already-placed movable objects (no sweep).
+  Names are checked exactly against the backend's allow-list. The batch is applied name by name.
 - A fake implementation with the same interface drives all offline tests.
 
 ### 7.1 Measured simulator contract (M0, 2026-09-16)
@@ -236,6 +268,12 @@ R5–R9.
   through a solid object does fire a collision event, and its camera-versus-state agreement is not reproducible
   (0.000127 m in one run, 6.019 m in another). The up–across–down recovery sequence is reproducible to 1e-7–1e-6 m in
   every run and is the supported episode reset.
+- **Moving scene objects (2026-10-02, §6.5; measured by `docs/gates/m2d_mover_probe.json`).** `set_object_pose`
+  with `teleport=true` moves an actor without a sweep, on the game thread. An unknown name, an immovable actor or an
+  `"ERROR code"` reply raises `ObjectPoseError`, which is not recoverable. A `"Fatal Timeout"` reply disconnects
+  projectairsim's client before it raises: the backend raises `SimRequestTimeoutError` (a step fault), and every
+  later call raises `SimConnectionLostError`, which the resilient wrapper answers with an immediate relaunch.
+  `CameraPoseError` now lives in `sim/types.py`.
 - **Backend hazards are typed, counted and recovered, never scored (M2).** A live run hits simulator-side faults that
   a fresh reset (or, after repeated failure, a relaunch of that one instance) recovers from: `CameraPoseError` (the
   camera left behind by a `set_pose` sweep -- mostly during reset), `StepTimingError`, `StaleStateError`,
@@ -293,7 +331,9 @@ R5–R9.
   Test scenes need no expert: they are only used to evaluate students (M6), and their optimal path length L_opt comes
   from a shortest-path search on the scene's occupancy grid.
 - Observation: front depth image downsampled to 84×84 and clipped to 30 m; target relative position (horizontal
-  distance, bearing in the body frame, height difference); body velocity. The target position is privileged
+  distance, bearing in the body frame, height difference); body velocity. **Dynamic scenes (§6.5, 2026-10-02)** stack
+  the last 3 depth frames (0.4 s, newest last), stored as float16, so a depth-only policy can see motion. A static
+  scene keeps one float32 frame, which is what every M2 checkpoint was trained on. The target position is privileged
   information for the expert only; it never enters the dataset record except where AutoFly's state[9] already carries
   it (state[0]).
 - Action: `[v_forward ∈ [0, 2] m/s, yaw_rate ∈ [−1, 1] rad/s, v_z ∈ [−1, 1] m/s]`, one command per 0.2 s step.
@@ -422,6 +462,7 @@ NaN; images decode; episode lengths; per-scene and per-target counts.
 | M0 | UE5 + Project AirSim installed under ROOT; sample environment runs | Python smoke test: connect, spawn an object, fly a velocity command, get RGB and depth, register a collision, step the clock |
 | M1 | `sim/` module; scene s01 built from its JSON file into a packaged map | live checks of §11 pass on s01 |
 | M2 | SAC on s01 | ≥ 95 % success over 200 episodes; throughput numbers recorded |
+| M2d | moving pillars (s01d, §6.5; added 2026-10-02) | `docs/gates/m2d_mover_probe.json` passes; the s01d expert's deterministic success is ≥ 95 % over 200 held-out episodes |
 | M3 | collector, dataset writer, validator; state[9] decoding | 100-episode pilot passes the validator |
 | M3b | optional AutoFly-checkpoint pilot (only if the §8.1 activation condition holds) | decoded action ranges match the statistics files; an s01 pilot passes the validator with "pilot": "autofly_checkpoint" in every provenance file |
 | M4 | asset library; scenes s02–s12 and s05r/s06r | every scene builds, passes reachability and live checks |
@@ -445,4 +486,8 @@ Each milestone stops for the user's go-ahead before the next one starts.
   routes needs a difficulty/detour metric (e.g. shortest-path length through vs. around the field), designed when
   M4 replaces the circle-only occupancy grid for the richer asset library. s01's jittered pillar grid is not
   affected: its gaps are what episodes cross.
+- **Moving obstacles (M2d):** moving a *baked* actor at runtime is unmeasured until the probe runs. Each step
+  issues one request per moving mover, each waiting on the game thread, which costs throughput by an amount only
+  the probe and `measure_instances --scene s01d` can tell. The fallback for baked actors is runtime-spawned
+  movers on a rebuilt level.
 - **AutoFly checkpoint:** not public as of 2026-09-15. If released, its ~48 % SR, out-of-distribution scenes, forward-speed floor and unknown licence limit it to a separately tagged optional source (§8.1).
