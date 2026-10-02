@@ -15,36 +15,32 @@ def pytest_sessionstart(session):
 # --------------------------------------------------------------------------------------------------------
 # docs/gates/ holds committed evidence, and no test may change it (CLAUDE.md). On 2026-10-02 the RED run of a test of
 # m2_gate.main()'s refusal -- written before the refusal existed -- ran the gate with its old default --out and wrote
-# over docs/gates/m2_gate.json (restored from git). Every test is now checked: any file under docs/gates/ that a test
-# changes, adds or deletes is put back from the session's snapshot, and the test fails.
+# over docs/gates/m2_gate.json (restored from git). Two defences:
+#   1. every test's evidence directory (autofly_ue5.evidence.GATES_DIR) is a scratch directory, so a default evidence
+#      path can never reach the real one;
+#   2. a test during which a file under the real docs/gates/ changes fails. Nothing is deleted or rewritten: a live run
+#      may legitimately write its record while the suite runs (a guard that restored a snapshot would destroy it), so
+#      the failure says what changed and leaves the decision to whoever reads it.
 # --------------------------------------------------------------------------------------------------------
 import pytest  # noqa: E402
 
-from autofly_ue5.paths import ROOT  # noqa: E402
+from autofly_ue5 import evidence  # noqa: E402
 
-GATES = ROOT / "docs" / "gates"
+COMMITTED = evidence.COMMITTED_GATES_DIR
 
 
 def _gate_files() -> dict:
-    return {p: p.stat() for p in GATES.rglob("*") if p.is_file()}
-
-
-@pytest.fixture(scope="session")
-def _gates_snapshot():
-    return {p: p.read_bytes() for p in GATES.rglob("*") if p.is_file()}
+    return {p: (p.stat().st_size, p.stat().st_mtime_ns) for p in COMMITTED.rglob("*") if p.is_file()}
 
 
 @pytest.fixture(autouse=True)
-def _evidence_is_never_touched(_gates_snapshot):
-    before = {p: (s.st_size, s.st_mtime_ns) for p, s in _gate_files().items()}
+def _evidence_is_never_touched(tmp_path_factory, monkeypatch):
+    monkeypatch.setattr(evidence, "GATES_DIR", tmp_path_factory.mktemp("gates"))
+    before = _gate_files()
     yield
-    after = {p: (s.st_size, s.st_mtime_ns) for p, s in _gate_files().items()}
-    if after == before:
-        return
-    damaged = sorted(str(p.relative_to(ROOT)) for p in set(before) | set(after) if before.get(p) != after.get(p))
-    for p in set(after) - set(_gates_snapshot):
-        p.unlink()
-    for p, blob in _gates_snapshot.items():
-        if not p.is_file() or p.read_bytes() != blob:
-            p.write_bytes(blob)
-    pytest.fail(f"this test changed committed evidence {damaged} (restored from the session snapshot)")
+    after = _gate_files()
+    if after != before:
+        changed = sorted(str(p.relative_to(COMMITTED.parent.parent)) for p in set(before) | set(after)
+                         if before.get(p) != after.get(p))
+        pytest.fail(f"{changed} changed under docs/gates/ while this test ran. If no live run wrote them, this test "
+                    f"touched committed evidence: restore it with `git checkout -- docs/gates` and fix the test")

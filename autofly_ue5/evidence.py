@@ -12,7 +12,9 @@ from pathlib import Path
 
 from autofly_ue5.paths import ROOT
 
-GATES_DIR = ROOT / "docs" / "gates"
+COMMITTED_GATES_DIR = ROOT / "docs" / "gates"
+# Where runs write evidence. The test suite points it at a scratch directory for every test (tests/conftest.py).
+GATES_DIR = COMMITTED_GATES_DIR
 # The milestone whose evidence each scene's runs are (spec §12).
 EVIDENCE_PREFIX = {"s01": "m2", "s01d": "m2d"}
 
@@ -28,6 +30,7 @@ def default_evidence_path(scene_id: str, kind: str) -> Path:
 def refuse_existing_evidence(path: Path) -> None:
     """Raise if `path` is an existing file under docs/gates/: a committed record is never written over."""
     resolved = Path(path).resolve()
-    if resolved.exists() and GATES_DIR.resolve() in resolved.parents:
+    protected = {GATES_DIR.resolve(), COMMITTED_GATES_DIR.resolve()}  # the same directory outside the test suite
+    if resolved.exists() and protected & set(resolved.parents):
         raise FileExistsError(f"{path} is a committed record and is never written over (CLAUDE.md, evidence rules); "
                               f"pass a new --out, or archive the old record first")

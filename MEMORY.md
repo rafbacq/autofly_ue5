@@ -9,8 +9,9 @@ stale "fact". Standing rules live in `CLAUDE.md`; this file is the reasoning and
 - **A RED test of a refusal path ran the real path and wrote over committed evidence (2026-10-02).** A new test of
   `m2_gate.main()` refusing to overwrite `docs/gates/` ran, before the refusal existed, with the gate's old default
   `--out docs/gates/m2_gate.json`, and wrote a failed record over it (restored from git; sha256 3f9438f2…). The same
-  run truncated `runs/sim/inst0/client.log` (`route_client_log` opens with mode "w"). `tests/conftest.py` now fails any
-  test that changes `docs/gates/` and restores it. Point such tests at a scratch directory and stub the work, so even
+  run truncated `runs/sim/inst0/client.log` (`route_client_log` opens with mode "w"). `tests/conftest.py` now gives every
+  test a scratch evidence directory and fails a test during which the real `docs/gates/` changed. Its first version also
+  restored a snapshot, which the review caught: that would have deleted a live run's record written mid-suite. Point such tests at a scratch directory and stub the work, so even
   the RED run is harmless.
 - **projectairsim's "Fatal Timeout" disconnects the client before it raises (2026-10-02, `client.py:255-282`).** A reset
   cannot recover; only a relaunch can. The mover path maps it to `SimRequestTimeoutError` → `SimConnectionLostError`

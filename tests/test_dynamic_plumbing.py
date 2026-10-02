@@ -50,11 +50,15 @@ def test_each_scene_has_its_own_default_evidence_and_others_must_name_one():
 
 
 def test_a_committed_record_is_never_written_over(tmp_path):
-    from autofly_ue5.evidence import GATES_DIR, refuse_existing_evidence
+    from autofly_ue5 import evidence
+    from autofly_ue5.evidence import refuse_existing_evidence
 
+    (evidence.GATES_DIR / "m2_gate.json").write_text("{}")  # the suite's stand-in for docs/gates (conftest.py)
     with pytest.raises(FileExistsError, match="m2_gate.json"):
-        refuse_existing_evidence(GATES_DIR / "m2_gate.json")
-    refuse_existing_evidence(GATES_DIR / "m2d_no_such_record.json")  # a new record is fine
+        refuse_existing_evidence(evidence.GATES_DIR / "m2_gate.json")
+    refuse_existing_evidence(evidence.GATES_DIR / "m2d_no_such_record.json")  # a new record is fine
+    with pytest.raises(FileExistsError):  # the committed directory stays protected whatever GATES_DIR says
+        refuse_existing_evidence(ROOT / "docs" / "gates" / "m2_train.json")
     (tmp_path / "out.json").write_text("{}")
     refuse_existing_evidence(tmp_path / "out.json")  # outside docs/gates: a scratch file may be replaced
 
@@ -99,9 +103,10 @@ def test_the_gate_and_the_throughput_script_refuse_too(tmp_path, monkeypatch):
 
 
 def test_the_real_evidence_directory_is_docs_gates():
-    from autofly_ue5.evidence import GATES_DIR
+    from autofly_ue5 import evidence
 
-    assert GATES_DIR == ROOT / "docs" / "gates"
+    assert evidence.COMMITTED_GATES_DIR == ROOT / "docs" / "gates"
+    assert evidence.GATES_DIR != evidence.COMMITTED_GATES_DIR, "the suite must point runs at a scratch directory"
 
 
 # --------------------------------------------------------------------------------------------------------
@@ -269,10 +274,11 @@ def test_the_s01d_gate_flies_the_checkpoints_observation_and_records_mover_outco
 
 
 def test_the_gate_takes_its_throughput_projection_from_its_own_scene(tmp_path):
+    from autofly_ue5 import evidence
     from scripts.m2_gate import default_instances_path
 
-    assert default_instances_path("s01") == ROOT / "docs" / "gates" / "m2_instances.json"
-    assert default_instances_path("s01d") == ROOT / "docs" / "gates" / "m2d_instances.json"
+    assert default_instances_path("s01") == evidence.GATES_DIR / "m2_instances.json"
+    assert default_instances_path("s01d") == evidence.GATES_DIR / "m2d_instances.json"
     assert default_instances_path("s02") is None
 
 

@@ -33,8 +33,9 @@ evidence rules. In addition:
 - **Static s01 must not change.** `tests/test_static_s01_golden.py` pins it from M2's own code, `5d0abf5`: its
   episodes, its simulator calls (never `set_object_poses`), its observations, rewards and outcomes. Its info dicts
   may only gain keys.
-- **No test may change `docs/gates/`.** `tests/conftest.py` fails such a test and restores the files. A RED run once
-  overwrote `m2_gate.json`, which was restored from git.
+- **No test may change `docs/gates/`.** `tests/conftest.py` gives every test a scratch evidence directory and fails a
+  test during which the real one changed. It never restores, because a live run may write its record mid-suite. A RED
+  run once overwrote `m2_gate.json`, which was restored from git.
 - **Movers always teleport.** A sweep would stop at the drone.
 - **Names are checked exactly** against the allow-list, because the server's lookup also matches substrings.
 - **The sampler never raises**, because explicit-seed evaluation replays a seed whose reset faulted.

@@ -87,9 +87,10 @@ Each milestone stops for the user's go-ahead before the next starts. The user as
   and refuse to write over an existing file there. A smoke run still passes `--out runs/...`, and training passes a
   fresh `--run-root runs/expert/<scene>_<tag>`. `train.py` refuses a `--run-root` that already holds a run, and a resume
   under another scene, observation or motion setting; `runs/expert/s01` holds run 1, `s01_r2` run 2.
-- **No test may change `docs/gates/`.** `tests/conftest.py` fails such a test and restores the files. A test of a
-  refusal path must not be able to reach the real path even before the refusal exists (its RED run): point it at a
-  scratch directory and stub the work.
+- **No test may change `docs/gates/`.** `tests/conftest.py` points every test's evidence directory
+  (`evidence.GATES_DIR`) at a scratch directory, and fails a test during which the real `docs/gates/` changed. It never
+  deletes or rewrites anything, because a live run may be writing its record. A test of a refusal path must not be able
+  to reach the real path even before the refusal exists (its RED run): point it at a scratch directory and stub the work.
 - **Change the reward, bump the version.** Any change to `expert/reward.py`'s reward bumps `REWARD_VERSION`. Resuming
   across versions is refused, and the gate records the version.
 
