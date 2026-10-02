@@ -26,11 +26,12 @@ FORWARD_SPEED_MAX_M_S = 2.0  # the action space's forward limit (spec §8)
 
 
 def home_poses(instances: dict[str, Instance], tags) -> dict[str, Pose]:
-    return {tag: Pose(instances[tag].x, instances[tag].y, instances[tag].z_center, 0.0) for tag in sorted(tags)}
+    return {tag: Pose(instances[tag].x, instances[tag].y, instances[tag].z_center, instances[tag].yaw)
+            for tag in sorted(tags)}
 
 
 def park_poses(instances: dict[str, Instance], tags) -> dict[str, Pose]:
-    return {tag: Pose(instances[tag].x, instances[tag].y, instances[tag].z_center + PARK_DEPTH_M, 0.0)
+    return {tag: Pose(instances[tag].x, instances[tag].y, instances[tag].z_center + PARK_DEPTH_M, instances[tag].yaw)
             for tag in sorted(tags)}
 
 
@@ -50,7 +51,7 @@ class MoverController:
         self._frames: deque = deque(maxlen=VIEW_HISTORY_FRAMES)
 
     def initial_poses(self) -> dict[str, Pose]:
-        return {r.tag: Pose(x, y, r.z, 0.0) for r, (x, y) in zip(self.routes, self.positions)}
+        return {r.tag: Pose(x, y, r.z, r.yaw) for r, (x, y) in zip(self.routes, self.positions)}
 
     def advance(self, drone_xy: tuple[float, float]) -> dict[str, Pose]:
         """Advance every clock that may advance (yield rule) and return the poses of the movers that moved."""
@@ -59,7 +60,7 @@ class MoverController:
         for i, (route, old, tau) in enumerate(zip(self.routes, self.taus, new)):
             if tau != old:
                 self.positions[i] = route.position(tau)
-                moved[route.tag] = Pose(*self.positions[i], route.z, 0.0)
+                moved[route.tag] = Pose(*self.positions[i], route.z, route.yaw)
         self.taus = new
         return moved
 

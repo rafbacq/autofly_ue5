@@ -60,6 +60,7 @@ class MoverRoute:
     half_length_m: float = 0.0
     orbit_radius_m: float = 0.0
     direction: int = 1
+    yaw: float = 0.0  # the pillar's own orientation, kept while it moves (the layout instance's yaw)
 
     @property
     def period_s(self) -> float:
@@ -156,7 +157,7 @@ def _draw_route(inst: Instance, spec: DynamicSpec, rng: np.random.Generator) -> 
     orbit_radius = float(rng.uniform(*spec.orbit_radius_m))
     direction = 1 if rng.uniform() < 0.5 else -1
     common = dict(tag=inst.tag, home_x=inst.x, home_y=inst.y, z=inst.z_center, footprint=CircleFootprint(inst.radius_m),
-                  kind=kind, speed_m_s=speed, phase=phase)
+                  kind=kind, speed_m_s=speed, phase=phase, yaw=inst.yaw)
     if kind == "pingpong":
         return MoverRoute(**common, heading_rad=heading, half_length_m=half_length)
     return MoverRoute(**common, orbit_radius_m=orbit_radius, direction=direction)
@@ -198,6 +199,25 @@ def route_violations(route: MoverRoute, *, fixed: list[Instance], accepted: list
             out.append(f"sweep:{other.tag}")
             break
     return out
+
+
+def revalidate_after_drops(routes: list[MoverRoute], instances: list[Instance], spec: DynamicSpec,
+                           ) -> tuple[list[MoverRoute], list[str]]:
+    """Routes that still keep min_gap_m from every pillar now standing at home, and the tags dropped for it. A mover the
+    guard dropped goes home, but movers accepted after it were checked against its sweep only: for an orbit, home is
+    the circle's centre, so a later sweep inside the ring can be too close to it. Dropping one can expose another, so
+    this repeats until nothing changes. (Impossible on s01, whose centres are >= 4.42 m apart and whose sweeps reach at
+    most 2.5 m; kept for the layouts and parameters to come.)"""
+    kept, dropped = list(routes), []
+    while True:
+        moving = {r.tag for r in kept}
+        homes = [i for i in instances if i.tag not in moving]
+        bad = next((r for r in kept if any(
+            i.tag != r.tag and r.surface_distance(i.x, i.y) - i.radius_m < spec.min_gap_m for i in homes)), None)
+        if bad is None:
+            return kept, dropped
+        kept.remove(bad)
+        dropped.append(bad.tag)
 
 
 def _sweep_mask(route: MoverRoute, xs: np.ndarray, ys: np.ndarray, b: Bounds, resolution_m: float, grow_m: float) -> np.ndarray:
@@ -333,10 +353,16 @@ def sample_movers(
             dropped_by_guard.append(accepted[best_i].tag)
             accepted = accepted[:best_i] + accepted[best_i + 1:]
             dynamic_m = best_m if accepted else static_m
+    dropped_after_guard: list[str] = []
+    if dropped_by_guard:
+        accepted, dropped_after_guard = revalidate_after_drops(accepted, list(layout.instances), spec)
+        if dropped_after_guard:  # fewer sweeps can only shorten the path; measure what is flown
+            dynamic_m = guard.length(homes_without(accepted), accepted) if accepted else static_m
     stats = {
         "k": k, "n_path_requested": n_path, "n_near_line": len(near), "n_near_chosen": n_near_chosen,
         "chosen": [i.tag for i in chosen], "placed": len(accepted), "unplaced": unplaced,
-        "dropped_by_guard": dropped_by_guard, "guard": outcome, "path_static_m": static_m, "path_dynamic_m": dynamic_m,
+        "dropped_by_guard": dropped_by_guard, "dropped_after_guard": dropped_after_guard, "guard": outcome,
+        "path_static_m": static_m, "path_dynamic_m": dynamic_m,
         "path_ratio": (dynamic_m / static_m) if (static_m and dynamic_m is not None) else None,
     }
     return MoverSample(routes=tuple(accepted), stats=stats)

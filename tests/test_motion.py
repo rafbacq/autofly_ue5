@@ -256,3 +256,24 @@ def test_in_view_is_the_cameras_horizontal_field_of_view():
     assert not in_view((0.0, 0.0, 0.0), (5.0, 5.2))
     assert not in_view((0.0, 0.0, 0.0), (-5.0, 0.0))
     assert in_view((0.0, 0.0, math.pi), (-5.0, 0.0))
+
+
+def test_movers_that_a_guard_drop_brings_too_close_to_a_home_are_dropped_too():
+    # Review finding: a mover dropped by the guard goes home, and a mover accepted after it was checked only against
+    # its sweep. For an orbit, home is the circle's centre, so a later sweep may sit inside the ring, near that home.
+    from autofly_ue5.scenes.motion import revalidate_after_drops
+
+    a_home = Instance(tag="obs_0000", asset="cylinder", x=0.0, y=0.0, z_center=-5.0, yaw=0.0, scale=(1.0, 1.0, 10.0),
+                      material="white", radius_m=0.5, height_m=10.0)
+    b_home = Instance(tag="obs_0001", asset="cylinder", x=2.0, y=0.0, z_center=-5.0, yaw=0.0, scale=(1.0, 1.0, 10.0),
+                      material="white", radius_m=0.5, height_m=10.0)
+    b = _pingpong(tag="obs_0001", home_x=2.0, home_y=0.0, half_length_m=1.5)  # reaches (0.5, 0): onto A's home
+    far = _pingpong(tag="obs_0002", home_x=20.0, home_y=0.0)
+    kept, dropped = revalidate_after_drops([b, far], [a_home, b_home], SPEC)
+    assert kept == [far] and dropped == ["obs_0001"]
+    assert revalidate_after_drops([far], [a_home], SPEC) == ([far], [])
+
+
+def test_a_movers_pose_keeps_its_pillars_yaw():
+    route = _pingpong(yaw=0.7)
+    assert route.yaw == 0.7

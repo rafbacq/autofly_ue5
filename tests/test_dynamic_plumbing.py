@@ -134,7 +134,7 @@ def test_a_resume_must_fly_the_same_scene_with_the_same_observation(tmp_path):
     recorded = json.loads((tmp_path / "sessions.json").read_text())["sessions"]
     assert recorded[0]["identity"] == _identity()
     for change in ({"obs_config": STATIC_OBS.to_json()}, {"scene": "s01"}, {"dynamic": {"count": [4, 6]}},
-                   {"base_layout_sha256": "c" * 64}):
+                   {"base_layout_sha256": "c" * 64}, {"scene_config": {"file": "scene_autofly_s01.jsonc", "sha256": "d"}}):
         with pytest.raises(RuntimeError, match=next(iter(change))):
             prepare_run_root(tmp_path, resume=True, reward_version="v2", seed=0, identity=_identity(**change))
     assert len(json.loads((tmp_path / "sessions.json").read_text())["sessions"]) == 2, "a refusal records nothing"
@@ -191,6 +191,7 @@ def test_training_on_s01d_stacks_depth_records_its_identity_and_counts_mover_col
     assert record["obs_config"] == STACKED_OBS.to_json()
     identity = record["identity"]
     assert identity["scene"] == "s01d" and identity["base_scene"] == "s01" and identity["dynamic"]["count"] == [8, 12]
+    assert identity["scene_config"]["file"] == "scene_autofly_s01.jsonc" and len(identity["scene_config"]["sha256"]) == 64
     assert record["host"]["ok"] and record["host"]["replay_buffer_bytes"] > 0
     assert "collision_sources" in record
     sessions = json.loads((tmp_path / "run" / "sessions.json").read_text())["sessions"]

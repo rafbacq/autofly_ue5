@@ -272,11 +272,12 @@ SESSIONS_FILE = "sessions.json"
 LEGACY_IDENTITY = {"obs_config": {"depth_frames": 1, "depth_dtype": "float32"}, "dynamic": None}
 
 
-def run_identity(resolved: ResolvedScene, obs_config: ObsConfig) -> dict:
-    """What a run's replay buffer and checkpoints are tied to: resuming under anything else would mix two tasks or two
-    observation shapes in one buffer."""
+def run_identity(resolved: ResolvedScene, obs_config: ObsConfig, scene_config: str | None = None) -> dict:
+    """What a run's replay buffer and checkpoints are tied to: resuming under anything else would mix two tasks, two
+    observation shapes or two simulator clocks (the scene config holds the clock rate) in one buffer."""
     dynamic = resolved.scene.dynamic
     return {
+        "scene_config": scene_config_record(scene_config) if scene_config is not None else None,
         "scene": resolved.scene.id,
         "scene_sha256": resolved.scene.sha256,
         "base_scene": resolved.base_id,
@@ -627,7 +628,7 @@ def main(argv: list[str] | None = None) -> int:
         scene_config_record(scene_config)  # the config file must exist; its hash goes in the record
         obs_config = (obs_config_for_frames(args.depth_frames) if args.depth_frames is not None
                       else obs_config_for_scene(scene_file))
-        identity = run_identity(resolved, obs_config)
+        identity = run_identity(resolved, obs_config, scene_config)
         host = host_preflight(buffer_bytes=replay_buffer_bytes(args.buffer_size, obs_config), run_root=run_root)
         session = prepare_run_root(run_root, resume=args.resume, reward_version=REWARD_VERSION, seed=args.seed,
                                    identity=identity)

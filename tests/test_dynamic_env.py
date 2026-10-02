@@ -303,3 +303,13 @@ def test_sac_builds_steps_saves_and_reloads_on_the_float16_stack(tmp_path):
     assert loaded.observation_space["depth"].dtype == np.float16
     action, _ = loaded.predict(vec.reset(), deterministic=True)
     assert action.shape == (1, 3)
+
+
+def test_home_and_park_poses_keep_each_pillars_yaw():
+    from autofly_ue5.expert.movers import home_poses, park_poses
+
+    _scene, layout = dynamic_scene()
+    inst = layout.instances[0]
+    turned = {inst.tag: type(inst)(**{**inst.__dict__, "yaw": 0.4})}
+    assert home_poses(turned, [inst.tag])[inst.tag].yaw == 0.4
+    assert park_poses(turned, [inst.tag])[inst.tag].yaw == 0.4
