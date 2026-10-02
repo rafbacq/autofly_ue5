@@ -456,3 +456,39 @@ def test_the_sim_root_reaches_the_simulators_themselves(tmp_path, monkeypatch):
                 "--device", "cpu", "--sim-root", str(tmp_path / "sim"), "--total-timesteps", "5",
                 "--learning-starts", "100", "--buffer-size", "100", "--eval-freq", "1000"])
     assert seen.get("run_root") == tmp_path / "sim"
+
+
+# --------------------------------------------------------------------------------------------------------
+# A run that never started leaves no record in the evidence directory (it would block its own retry).
+# --------------------------------------------------------------------------------------------------------
+def test_a_training_run_refused_at_its_first_launch_does_not_block_the_retry(tmp_path, monkeypatch):
+    from autofly_ue5 import evidence
+    from autofly_ue5.expert import train
+
+    _no_launch(monkeypatch)  # stands in for the GPU guard refusing the very first launch
+    argv = ["--scene", "s01d", "--run-root", str(tmp_path / "run"), "--device", "cpu", "--sim-root", str(tmp_path / "sim"),
+            "--total-timesteps", "5", "--buffer-size", "100", "--eval-freq", "1000"]
+    assert train.main(argv) == 1
+    assert not (evidence.GATES_DIR / "m2d_train.json").exists(), "nothing ran: not evidence"
+    record = json.loads((evidence.NOT_STARTED_DIR / "m2d_train.json").read_text())
+    assert record["status"] == "failed" and record["num_timesteps"] == 0
+    assert train.main(argv) == 1, "the retry is not refused"
+
+
+def test_a_gate_that_evaluated_nothing_leaves_its_record_outside_the_evidence(tmp_path):
+    from autofly_ue5 import evidence
+
+    def refused():
+        raise RuntimeError("launch refused")
+
+    gate = _gate(tmp_path, "s01d", _fake_checkpoints(tmp_path, "best_model"), reader=lambda p: STACKED_OBS,
+                 sim_factory=refused)
+    assert gate["status"] in ("failed", "partial") and gate["checkpoints"]["best_model"]["deterministic"]["n_episodes"] == 0
+    # _gate writes to tmp_path / "gate.json" (not protected): kept there as asked.
+    assert (tmp_path / "gate.json").is_file()
+    from autofly_ue5.evidence import record_destination
+
+    protected = evidence.GATES_DIR / "m2d_gate.json"
+    assert record_destination(protected, did_work=False) == evidence.NOT_STARTED_DIR / "m2d_gate.json"
+    assert record_destination(protected, did_work=True) == protected
+    assert record_destination(tmp_path / "x.json", did_work=False) == tmp_path / "x.json"

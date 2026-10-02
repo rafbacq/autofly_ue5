@@ -131,7 +131,7 @@ from autofly_ue5.expert.faults import (  # noqa: F401  (re-exported: moved from 
     KNOWN_FAULT_NAMES,
     combine_fault_summaries,
 )
-from autofly_ue5.evidence import default_evidence_path, refuse_existing_evidence
+from autofly_ue5.evidence import default_evidence_path, record_destination, refuse_existing_evidence
 from autofly_ue5.expert.evaluate import FaultAwareEvalCallback
 from autofly_ue5.expert.features import POLICY_KWARGS
 from autofly_ue5.expert.obs import DEPTH_SIZE, VECTOR_DIM, ObsConfig, obs_config_for_frames, obs_config_for_scene
@@ -845,8 +845,12 @@ def main(argv: list[str] | None = None) -> int:
         "run_started": run_started,
         "run_finished": time.strftime("%Y-%m-%d %H:%M:%S"),
     }
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(json.dumps(gate, indent=2) + "\n")
+    destination = record_destination(out_path, did_work=num_timesteps_this_session > 0)
+    if destination != out_path:
+        print(f"no step was trained: this record is not evidence and goes to {destination}, not {out_path}",
+              file=sys.stderr)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    destination.write_text(json.dumps(gate, indent=2) + "\n")
     print(json.dumps({"status": status, "num_timesteps": num_timesteps, "wall_clock_s": wall_s, "faults_ok": faults_ok}, indent=2))
     return 0 if status == "ok" else 1
 

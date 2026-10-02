@@ -36,6 +36,7 @@ def _gate_files() -> dict:
 @pytest.fixture(autouse=True)
 def _evidence_is_never_touched(tmp_path_factory, monkeypatch):
     monkeypatch.setattr(evidence, "GATES_DIR", tmp_path_factory.mktemp("gates"))
+    monkeypatch.setattr(evidence, "NOT_STARTED_DIR", tmp_path_factory.mktemp("not_started"))
     before = _gate_files()
     yield
     after = _gate_files()

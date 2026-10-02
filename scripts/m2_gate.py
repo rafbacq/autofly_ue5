@@ -51,7 +51,7 @@ import time  # noqa: E402
 import traceback  # noqa: E402
 from typing import Any, Callable  # noqa: E402
 
-from autofly_ue5.evidence import default_evidence_path, refuse_existing_evidence  # noqa: E402
+from autofly_ue5.evidence import default_evidence_path, record_destination, refuse_existing_evidence  # noqa: E402
 from autofly_ue5.expert.env import AutoFlyEnv  # noqa: E402
 from autofly_ue5.expert.evaluate import (  # noqa: E402
     DEFAULT_MAX_FAULT_RETRIES_PER_EPISODE,
@@ -291,8 +291,11 @@ def run(
             "run_started": run_started,
             "run_finished": time.strftime("%Y-%m-%d %H:%M:%S"),
         }
-        out_path.parent.mkdir(parents=True, exist_ok=True)
-        out_path.write_text(json.dumps(gate, indent=2) + "\n")
+        # Until an episode has been scored the record is not evidence: under docs/gates/ it would block the retry.
+        evaluated = any(isinstance(c, dict) and c.get("n_episodes", 0) > 0 for ck in checkpoints.values() for c in ck.values())
+        destination = record_destination(out_path, did_work=evaluated)
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_text(json.dumps(gate, indent=2) + "\n")
         return gate
 
     try:
