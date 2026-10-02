@@ -12,24 +12,26 @@ the hard way; read both before changing anything.
 | What | Where |
 |---|---|
 | Design (binding) | `docs/superpowers/specs/2026-09-15-autofly-ue5-dataset-design.md`: milestones §12, risks §13 |
-| Plans | `docs/superpowers/plans/`: plan1 = M0/M1, plan2 = M2 (SAC expert) |
+| Plans | `docs/superpowers/plans/`: plan1 = M0/M1, plan2 = M2 (SAC expert), plan3 = M2d (moving pillars) |
 | Evidence | `docs/gates/*.json`; superseded runs in `docs/gates/archive/` |
-| Decisions | `docs/decisions/`: rulings, and the 2026-09-25 code-review findings |
-| Live procedures | `docs/runbook-m2.md`: re-verify M0/M1, then close M2 |
+| Decisions | `docs/decisions/`: rulings, the 2026-09-25 code-review findings, the 2026-10-02 M2 closeout, moving obstacles and the M4 asset survey |
+| Live procedures | `docs/runbook-m2.md` (M0/M1/M2, done); `docs/runbook-m2d.md` (M2d: probe, throughput, smoke, 12 h run with watchers, gate) |
 
 Code (`autofly_ue5/`):
 
 | Package | Contents |
 |---|---|
 | `sim/` | The `Simulator` protocol (`protocol.py`) and the only code that imports `projectairsim` (`airsim_backend.py`). Also the in-memory `FakeSimulator`, process ownership (`process.py`) and typed errors (`types.py`) |
-| `scenes/` | Scene JSON → layout → reachability → level spec |
-| `expert/` | `AutoFlyEnv` (`env.py`), reward, observation, episode sampling, the resilient wrapper (`resilient.py`), fault classes (`faults.py`), seed ranges (`seeds.py`), vec envs (`vec.py`), the SAC trainer (`train.py`) and the evaluation harness (`evaluate.py`) |
+| `scenes/` | Scene JSON → layout → reachability → level spec; the scene resolver (`resolve.py`: id → file, base level, layout, map, config, allow-list); moving-obstacle rules (`motion.py`, pure) |
+| `expert/` | `AutoFlyEnv` (`env.py`), reward, observation and depth stacking (`obs.py`), episode sampling, movers at runtime (`movers.py`), the resilient wrapper (`resilient.py`), fault classes (`faults.py`), seed ranges (`seeds.py`), vec envs (`vec.py`), the SAC trainer (`train.py`) and the evaluation harness (`evaluate.py`) |
+| `evidence.py` | Per-scene default evidence paths, and the refusal to write over `docs/gates/` |
 | `validate/` | M0/M1 gate checks and the engine-fault audit (`engine_check.py`) |
 
 Elsewhere in the repo:
-- `scripts/`: shell and Python entry points (run_job, setup, launch/stop sim, throughput, M2 gate, audits).
+- `scripts/`: shell and Python entry points (run_job, setup, launch/stop sim, throughput, the gate for any scene, audits,
+  the mover probe, renders, and `watch_training.py`, the live training dashboard).
 - `configs/`: Project AirSim scene configs; `*_fast` means a 1 ms real-time update rate.
-- `scenes/`: scene JSONs.
+- `scenes/`: scene JSONs. `s01d_moving_pillars.json` flies s01's level (`"level": "s01"`) with 8–12 moving pillars.
 - `tests/`: offline tests (the FakeSimulator plus fakes of the projectairsim API).
 
 Git-ignored but present on the GPU host:
@@ -45,10 +47,11 @@ Git-ignored but present on the GPU host:
 |---|---|
 | M0 | Passed 2026-09-15 (`docs/gates/m0_gate.json`) |
 | M1 | Passed 2026-09-16 (`docs/gates/m1_gate.json`) |
-| M2 | **Open.** The first run failed its gate: deterministic success 0.83 (best_model) and 0.90 (final) against 0.95. It is archived in `docs/gates/archive/2026-09-17-m2-run1/`. The C1–C9 fixes landed on branch `fix/code-review-findings` on 2026-09-25. Next: `docs/runbook-m2.md` steps 1–8 |
+| M2 | Passed 2026-09-26 (`docs/gates/m2_gate.json`, run 2): best_model 0.98 deterministic / 0.99 stochastic, final 0.96 / 0.95, over 200 held-out episodes. Run 1's failed gate is archived in `docs/gates/archive/2026-09-17-m2-run1/`. Closeout: `docs/decisions/2026-10-02-m2-closeout.md` (best_model flies M3, stochastically) |
+| M2d | **Open** (moving pillars, scene s01d; added 2026-10-02 at the user's request). Offline work done on branch `feat/moving-pillars`. Next: `docs/runbook-m2d.md`, starting with the go/no-go probe |
+| M3 | Not started. Its s01 pilot does not wait for M2d |
 
-The M0/M1 re-verification after those fixes has not been run yet: it needs display `:1` and a GPU free of foreign
-jobs. Each milestone stops for the user's go-ahead before the next starts.
+Each milestone stops for the user's go-ahead before the next starts. The user asked for M2d and M3 on 2026-10-02.
 
 ## Hard rules on this host
 
@@ -80,9 +83,13 @@ jobs. Each milestone stops for the user's go-ahead before the next starts.
 - **A failed gate stays failed.** Never lower a threshold, re-run hunting for a lucky seed, or report a flattering
   number. Record the real one, and let the user choose the next lever.
 - **Smoke runs must not overwrite evidence.** `expert/train.py`, `scripts/m2_gate.py` and `scripts/measure_instances.py`
-  write into `docs/gates/` by default, so a smoke run passes `--out runs/...`, and training passes a fresh
-  `--run-root runs/expert/<scene>_<tag>`. `train.py` refuses a `--run-root` that already holds a run; `runs/expert/s01`
-  holds run 1.
+  write into `docs/gates/<milestone>_*.json` by default (s01: `m2_`, s01d: `m2d_`; any other scene must pass `--out`),
+  and refuse to write over an existing file there. A smoke run still passes `--out runs/...`, and training passes a
+  fresh `--run-root runs/expert/<scene>_<tag>`. `train.py` refuses a `--run-root` that already holds a run, and a resume
+  under another scene, observation or motion setting; `runs/expert/s01` holds run 1, `s01_r2` run 2.
+- **No test may change `docs/gates/`.** `tests/conftest.py` fails such a test and restores the files. A test of a
+  refusal path must not be able to reach the real path even before the refusal exists (its RED run): point it at a
+  scratch directory and stub the work.
 - **Change the reward, bump the version.** Any change to `expert/reward.py`'s reward bumps `REWARD_VERSION`. Resuming
   across versions is refused, and the gate records the version.
 
@@ -90,12 +97,14 @@ jobs. Each milestone stops for the user's go-ahead before the next starts.
 
 ```bash
 bash scripts/setup_venv.sh                                    # venv from requirements.lock (--relock / --recreate)
-env -u PYTHONPATH .venv/bin/python -m pytest                  # ~384 tests, ~36 s, all offline; engine test skips without engine/
+env -u PYTHONPATH .venv/bin/python -m pytest                  # ~500 tests, ~75 s, all offline; engine test skips without engine/
 uvx ruff check --select F autofly_ue5 scripts tests           # unused/undefined names (5 pre-existing test-file hits)
 bash -n scripts/*.sh
 ```
 
-Live work: see `docs/runbook-m2.md`. Every step there lists its exact command and how to read the result.
+Live work: see `docs/runbook-m2d.md` (and `docs/runbook-m2.md` for M0–M2). Every step lists its exact command and how
+to read the result. Watch a training run with `scripts/watch_training.py --run-root <run> --job <job>` and TensorBoard
+on `<run>/tensorboard` (bind 127.0.0.1: the host is shared).
 
 ## How to change code here
 
@@ -110,6 +119,9 @@ Live work: see `docs/runbook-m2.md`. Every step there lists its exact command an
 - **New backend hazards get a typed exception.** Put it in `sim/types.py` or `airsim_backend.py`, add it to
   `expert/faults.py` if recoverable, and document it in `sim/protocol.py` and spec §7.1. A bare `RuntimeError` ends a
   12-hour run.
+- **Static s01 must not change.** `tests/test_static_s01_golden.py` pins its episodes, simulator calls, observations,
+  rewards and infos from M2's own code. A new feature draws its random numbers after every existing draw and makes no
+  new simulator call on a static scene.
 - **Seeds come from `expert/seeds.py`'s ranges.** Workers use `(rank+1)·1e6 + session·1e5`, the gate 100e6, training
   evaluation 200e6, and probes 300e6. Don't invent new bases without adding them there and to its disjointness test.
 - **Docstrings explain *why*, citing the measurement or incident that forced a choice.** Match the surrounding

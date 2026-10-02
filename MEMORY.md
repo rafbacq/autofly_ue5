@@ -6,6 +6,18 @@ stale "fact". Standing rules live in `CLAUDE.md`; this file is the reasoning and
 
 ## Traps: read these before touching the simulator path
 
+- **A RED test of a refusal path ran the real path and wrote over committed evidence (2026-10-02).** A new test of
+  `m2_gate.main()` refusing to overwrite `docs/gates/` ran, before the refusal existed, with the gate's old default
+  `--out docs/gates/m2_gate.json`, and wrote a failed record over it (restored from git; sha256 3f9438f2…). The same
+  run truncated `runs/sim/inst0/client.log` (`route_client_log` opens with mode "w"). `tests/conftest.py` now fails any
+  test that changes `docs/gates/` and restores it. Point such tests at a scratch directory and stub the work, so even
+  the RED run is harmless.
+- **projectairsim's "Fatal Timeout" disconnects the client before it raises (2026-10-02, `client.py:255-282`).** A reset
+  cannot recover; only a relaunch can. The mover path maps it to `SimRequestTimeoutError` → `SimConnectionLostError`
+  (launch-class). The other backend requests (`set_pose`, kinematics, `world.step`) still raise it bare: 0 seen in run 2.
+- **The server's object lookup matches substrings (2026-10-02, `UnrealHelpers.h:56-96`).** `FindActor` returns a
+  spawned object of that exact name first, then the first actor whose name *contains* the string or whose tag equals
+  it. `set_object_poses` therefore checks names exactly against an allow-list (the layout's tags) before any request.
 - **A global sweep kills other runs' simulators (2026-09-24, C1).** Stopping "every simulator we own" from a relaunch
   made the training (inst0) and eval (inst1) simulators kill each other at every evaluation. That accounted for all
   77 Timeout faults and 14 of the 23 relaunches in run 1. Stop only your own slots. Ownership is the *main* run
@@ -26,8 +38,8 @@ stale "fact". Standing rules live in `CLAUDE.md`; this file is the reasoning and
   after a collision episode left the drone ≥ 4 m from its start; 0 of 723 other resets did. They scored as one-step
   "collisions". The camera-pose check is skipped on collision steps, so it never saw them. `reset()` now verifies the
   pose, `step()` refuses teleports (collision steps included), and `AutoFlyEnv.reset` refuses a start in contact.
-  13 of the 15 fit "the drone stayed at the crash site". `scripts/probe_crash_reset.py` measures it live; its result
-  is not recorded yet.
+  13 of the 15 fit "the drone stayed at the crash site". `scripts/probe_crash_reset.py` measured it live on
+  2026-09-25: 0 of 30 bad first resets after a crash (`docs/gates/m1_crash_reset_probe.json`).
 - **CameraPoseError happens almost only during reset (run 1: 97 of 97 in training).** That's the set_pose sweep of the
   up–across–down recovery sequence. Five in a row with a near-identical error (e.g. 17.916 m three times) means a
   stuck simulator: relaunch.
@@ -49,6 +61,10 @@ stale "fact". Standing rules live in `CLAUDE.md`; this file is the reasoning and
 
 ## RL and evaluation learnings
 
+- **Run 2's stochastic training success plateaued near 0.8 while its deterministic evaluations reached 1.0
+  (2026-09-26 data, read 2026-10-02 with `scripts/watch_training.py`).** Training-time evaluation is 20 episodes and
+  noisy: 1.00 at 200k, 0.15 at 225k, 1.00 at 275k, 0.65 at 450k. Judge a run by the 200-episode gate, never by one
+  evaluation point.
 - **Progress credit inside the success radius taught a dive (2026-09-24, C8).** `final.zip` closed in misaligned and
   turned at the end: its successes ended a median 2.35 m out against 4.89 m for `best_model`. 7 of its 16 real
   failures left the bounds within 5 m of a target sitting 0–3 m from the edge. The reward now clamps progress at
@@ -100,15 +116,19 @@ stale "fact". Standing rules live in `CLAUDE.md`; this file is the reasoning and
   launch attempt, and only the GPU guard (a foreign job was up) stopped it (2026-09-25).
 - **`uvx ruff check --select F` works without touching the venv.** 5 pre-existing unused-import hits in older test
   files remain.
-- **Full suite: ~384 tests in ~36 s on this host.** A fresh clone without `runs/` passes too (`tests/conftest.py`
+- **Full suite: ~500 tests in ~75 s on this host (2026-10-02; ~384 in ~36 s before moving pillars).** A fresh clone without `runs/` passes too (`tests/conftest.py`
   builds the s01 layout, identical to the stored one).
 
 ## Open questions
 
-- Why does a reset right after a crash sometimes leave the drone at the crash site? Run
-  `scripts/probe_crash_reset.py` (runbook step 3). If a second reset always fixes it, the wrapper's retry is enough;
-  if not, look at Project AirSim's collision state on `set_pose`.
-- Can M2 reach 0.95 with the fixes plus 2–3× throughput? Collisions in the pillar field were the largest real
-  failure class. If the retrain falls short, PLAN2's D6 levers (curriculum, `k_p`, step limit) are the user's call.
-- Spec §9 step 5 says the expert collects data stochastically, while PLAN2 gates the deterministic policy. Settle this
-  at M3.
+- Does moving a *baked* pillar work live, and what does it cost per step? `scripts/probe_movers.py` (runbook-m2d step 1)
+  decides M2d's go/no-go. Unmeasured as of 2026-10-02.
+- Can a depth-only expert with a 3-frame stack reach 0.95 on s01d in 12 h? If not, the levers (more hours, warm start
+  from s01, fewer or slower movers, privileged mover state) are the user's call.
+
+Settled:
+- The crash-then-reset probe (2026-09-25, `docs/gates/m1_crash_reset_probe.json`): 0 of 30 first resets after a crash
+  missed their pose (worst 1.9 mm). Run 2 still raised 22 `ResetPoseError`s in 12 h, all recovered by the retry.
+- M2 reached 0.98 with the C1–C9 fixes and N = 4 (run 2).
+- Stochastic or deterministic collection: stochastic, flown by best_model (`docs/decisions/2026-10-02-m2-closeout.md`).
+  The deterministic gate stays the acceptance bar.
