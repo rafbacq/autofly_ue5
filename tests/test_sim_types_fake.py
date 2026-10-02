@@ -108,3 +108,57 @@ def test_spawn_unique_names_and_destroy():
     sim.destroy(first)
     with pytest.raises(ObjectNotFoundError):
         sim.destroy(first)
+
+
+# --------------------------------------------------------------------------------------------------------
+# Moving scene objects (spec §6.5, §7): set_object_poses and its typed errors.
+# --------------------------------------------------------------------------------------------------------
+PILLARS = {"obs_0000": (Pose(10.0, 0.0, -5.0, 0.0), 0.5), "obs_0001": (Pose(10.0, 6.0, -5.0, 0.0), 0.5)}
+
+
+def test_backend_hazards_are_typed_in_the_interface_module():
+    from autofly_ue5.sim import airsim_backend, types
+
+    for name in ("ObjectPoseError", "SimRequestTimeoutError", "SimConnectionLostError", "CameraPoseError"):
+        assert issubclass(getattr(types, name), RuntimeError), name
+    # CameraPoseError moved here so the env can catch it without importing the backend; the backend re-exports it.
+    assert airsim_backend.CameraPoseError is types.CameraPoseError
+
+
+def test_fake_moves_named_scene_objects_before_reset():
+    sim = FakeSimulator(scene_objects=PILLARS)
+    sim.launch("/Game/AutoFly/Maps/S01", 0)
+    sim.set_object_poses({"obs_0000": Pose(11.0, 1.0, -5.0, 0.0)})  # the real server accepts this before any reset
+    assert sim.scene_object_poses()["obs_0000"] == Pose(11.0, 1.0, -5.0, 0.0)
+    assert sim.scene_object_poses()["obs_0001"] == Pose(10.0, 6.0, -5.0, 0.0)
+
+
+def test_fake_rejects_unknown_names_like_the_server_and_applies_a_batch_in_order():
+    from autofly_ue5.sim.types import ObjectPoseError
+
+    sim = FakeSimulator(scene_objects=PILLARS)
+    with pytest.raises(RuntimeError, match="not launched"):
+        sim.set_object_poses({"obs_0000": Pose(0.0, 0.0, 0.0, 0.0)})
+    sim.launch("/Game/AutoFly/Maps/S01", 0)
+    with pytest.raises(ObjectPoseError, match="obs_9999"):
+        sim.set_object_poses({"obs_0000": Pose(12.0, 0.0, -5.0, 0.0), "obs_9999": Pose(0.0, 0.0, 0.0, 0.0),
+                              "obs_0001": Pose(13.0, 0.0, -5.0, 0.0)})
+    poses = sim.scene_object_poses()
+    # One request per name, in order (the real backend has no batch setter): the first moved, the last did not.
+    assert poses["obs_0000"].x == 12.0 and poses["obs_0001"].x == 10.0
+
+
+def test_fake_collides_with_scene_objects_where_they_are_now():
+    sim = FakeSimulator(scene_objects=PILLARS)
+    sim.launch("/Game/AutoFly/Maps/S01", 0)
+    sim.reset(Pose(0.0, 0.0, -2.0, 0.0))
+    sim.set_object_poses({"obs_0000": Pose(0.9, 0.0, -5.0, 0.0)})  # moved into the flight line
+    sim.command_velocity(2.0, 0.0, 0.0)
+    sim.step()
+    obs = sim.observe()
+    assert obs.collided and obs.step_collisions[0].object_name == "obs_0000"
+    sim.set_object_poses({"obs_0000": Pose(10.0, 0.0, 45.0, 0.0)})  # parked underground: no longer in the way
+    sim.reset(Pose(0.0, 0.0, -2.0, 0.0))
+    sim.command_velocity(2.0, 0.0, 0.0)
+    sim.step()
+    assert not sim.observe().collided

@@ -22,10 +22,18 @@ from tests.test_expert_episode import scene_and_layout
 # All five step-time hazards ResilientAutoFlyEnv must recover from -- the spec's four documented siblings
 # plus the raw NNG transport timeout found live during this task's own shakedown (train.py's docstring has
 # the full story). Shared here so both parametrized tests below stay in sync with train.py's own set.
-from autofly_ue5.sim.types import KinematicsJumpError, ResetPoseError, SetPoseError, StartCollisionError
+from autofly_ue5.sim.types import (
+    KinematicsJumpError,
+    ObjectPoseError,
+    ResetPoseError,
+    SetPoseError,
+    SimConnectionLostError,
+    SimRequestTimeoutError,
+    StartCollisionError,
+)
 
 ALL_STEP_FAULTS = [CameraPoseError, StepTimingError, StaleStateError, CommandTimeoutError, NngTimeout, NngConnectionReset,
-                   KinematicsJumpError]
+                   KinematicsJumpError, SimRequestTimeoutError]
 # Raised only while an episode is being set up (C9): a wrong start pose, a start in contact, a refused teleport.
 RESET_ONLY_FAULTS = [ResetPoseError, StartCollisionError, SetPoseError]
 # pynng's own errno for each exception it raises (pynng.exceptions.EXCEPTION_MAP).
@@ -334,6 +342,31 @@ def test_resilient_env_relaunches_after_exhausting_in_place_retries():
     assert env.relaunch_count == 1
     assert env.fault_counts["CameraPoseError"] == 2, "both in-place attempts against the broken connection must be counted"
     assert env.recovered_counts["CameraPoseError"] == 2, "the eventual success recovers every prior fault, not just the last"
+
+
+def test_the_mover_request_errors_are_classified():
+    from autofly_ue5.expert.faults import FAULT_ERRORS_LAUNCH, FAULT_ERRORS_RESET, FAULT_ERRORS_STEP, KNOWN_FAULT_NAMES
+
+    assert issubclass(SimRequestTimeoutError, FAULT_ERRORS_STEP)
+    assert issubclass(SimConnectionLostError, FAULT_ERRORS_LAUNCH)
+    assert {"SimRequestTimeoutError", "SimConnectionLostError"} <= set(KNOWN_FAULT_NAMES)
+    assert len(KNOWN_FAULT_NAMES) == len(set(KNOWN_FAULT_NAMES))
+    # An unknown or immovable object means a wrong level or a bug: it must end the run loudly, never be retried.
+    assert not issubclass(ObjectPoseError, FAULT_ERRORS_RESET)
+
+
+def test_a_lost_connection_goes_straight_to_a_relaunch():
+    # After a request timeout projectairsim's client has disconnected itself: another reset() on it cannot work, so
+    # the wrapper must not spend its in-place attempts on it.
+    factory = _sequenced_factory([{"fail_on_reset_calls": set(range(1, 10)), "error": SimConnectionLostError}, {}])
+    env = _make_resilient(factory, max_reset_attempts=5, max_relaunch_attempts=1)
+
+    obs, _info = env.reset(seed=1)
+
+    assert env.observation_space.contains(obs)
+    assert env.relaunch_count == 1
+    assert env.fault_counts["SimConnectionLostError"] == 1, "no in-place retry on a dead client"
+    assert env.recovered_counts["SimConnectionLostError"] == 1
 
 
 def test_resilient_env_gives_up_after_exhausting_every_relaunch_attempt():

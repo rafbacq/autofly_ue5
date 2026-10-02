@@ -10,6 +10,7 @@ import math
 import time
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Iterable, Mapping
 
 from autofly_ue5.frames import body_to_ned, quat_to_yaw, wrap_pi, yaw_to_quat
 from autofly_ue5.gpu import check_gpu_for_launch, gpu_memory_mib
@@ -30,16 +31,20 @@ from autofly_ue5.sim.process import (
     wait_ready,
 )
 from autofly_ue5.sim.sync import FrameCollector
-from autofly_ue5.sim.types import (
+from autofly_ue5.sim.types import (  # noqa: F401  (CameraPoseError re-exported: it was defined here until 2026-10-02)
     CONTROL_DT_S,
     STEP_NS,
+    CameraPoseError,
     KinematicsJumpError,
     ObjectNotFoundError,
+    ObjectPoseError,
     Observation,
     Pose,
     ResetPoseError,
     SessionNotResetError,
     SetPoseError,
+    SimConnectionLostError,
+    SimRequestTimeoutError,
     dt_to_ns,
 )
 
@@ -79,10 +84,6 @@ class CommandTimeoutError(RuntimeError):
     """A velocity command's reply did not arrive after its step (the server measured its duration from a later tick)."""
 
 
-class CameraPoseError(RuntimeError):
-    """The camera pose stamped in the image disagrees with kinematics (Unreal actor left behind by a set_pose sweep)."""
-
-
 class ProjectAirSimSimulator:
     def __init__(
         self,
@@ -104,6 +105,7 @@ class ProjectAirSimSimulator:
         reset_position_tolerance_m: float = 0.3,  # M1 measured millimetres after a reset; the phantoms were >= 4 m off
         reset_yaw_tolerance_rad: float = 0.1,
         max_speed_m_s: float = 10.0,  # 5x the 2 m/s command limit: legitimate gate steps stayed under 0.4 m
+        movable_objects: Iterable[str] = (),
     ) -> None:
         self._scene_config = scene_config
         self._config_dir = Path(config_dir)
@@ -123,6 +125,12 @@ class ProjectAirSimSimulator:
         self._reset_position_tolerance_m = reset_position_tolerance_m
         self._reset_yaw_tolerance_rad = reset_yaw_tolerance_rad
         self._max_speed_m_s = max_speed_m_s
+        # The only names set_object_poses() may move (spec §6.5): the server's lookup also returns a spawned object
+        # of that name, or the first actor whose name merely CONTAINS the string (UnrealHelpers.h:56-96).
+        self._movable_objects = frozenset(movable_objects)
+        # Set when a request timed out: projectairsim's client then disconnects itself (client.py:255-282), so every
+        # later call on this connection would fail in some untyped way. Cleared by connect() (a relaunch).
+        self._connection_lost = False
         self._frames = FrameCollector(FRAME_KEYS)
         self._collisions = CollisionLog()
         self._loop: asyncio.AbstractEventLoop | None = None
@@ -171,6 +179,7 @@ class ProjectAirSimSimulator:
         # session, and callers that care about a single session's count already take a delta (see
         # tests, live_m1.check_one_step).
         self._reset_done = False
+        self._connection_lost = False
         self._collisions.clear()
         self._frames = FrameCollector(FRAME_KEYS)
         self._frame_steps = 0
@@ -215,8 +224,22 @@ class ProjectAirSimSimulator:
                 self._proc = None
 
     def _require_connected(self) -> None:
+        if self._connection_lost:
+            raise SimConnectionLostError(
+                "an earlier request timed out and projectairsim's client disconnected itself; relaunch this instance")
         if self._drone is None:
             raise RuntimeError("not connected; call launch() or connect() first")
+
+    def _typed_request_error(self, err: RuntimeError, what: str) -> RuntimeError:
+        """projectairsim raises a bare RuntimeError both for a server-side error reply and for a missing reply
+        (client.py:255-282, 387-404); tell them apart, so neither ends a long run untyped."""
+        message = str(err)
+        if message.startswith("Fatal Timeout"):
+            self._connection_lost = True
+            return SimRequestTimeoutError(f"{what}: {message} (the client has disconnected itself)")
+        if message.startswith("ERROR code"):
+            return ObjectPoseError(f"{what}: {message}")
+        return err
 
     def _pas_pose(self, pose: Pose):
         w, qx, qy, qz = yaw_to_quat(pose.yaw)
@@ -274,6 +297,40 @@ class ProjectAirSimSimulator:
         self._require_connected()
         if not self._world.destroy_object(name):
             raise ObjectNotFoundError(f"destroy_object({name!r}) found no such object")
+
+    def set_object_poses(self, poses: Mapping[str, Pose]) -> None:
+        self._require_connected()
+        refused = sorted(name for name in poses if name not in self._movable_objects)
+        if refused:
+            raise ObjectPoseError(f"set_object_poses: {refused} are not on this simulator's movable-object allow-list "
+                                  f"({len(self._movable_objects)} names); nothing was moved")
+        for name, pose in poses.items():
+            # teleport=True: SetActorLocationAndRotation without a sweep (WorldSimApi.cpp:745-791). A sweep would stop
+            # the pillar at its first blocking hit, which could be the drone.
+            try:
+                status = self._world.set_object_pose(name, self._pas_pose(pose), True)
+            except RuntimeError as err:
+                raise self._typed_request_error(err, f"set_object_pose({name!r})") from err
+            if not status:
+                raise ObjectPoseError(f"set_object_pose({name!r}, {pose}) returned status {status!r}")
+
+    def get_object_poses(self, names: list[str]) -> dict[str, Pose | None]:
+        """Where the named objects are, by one GetObjectPoses request; None for a name the server did not find (it
+        answers NaN). Backend-only: the mover probe reads back what set_object_poses did."""
+        self._require_connected()
+        try:
+            raw = self._world.get_object_poses(list(names))
+        except RuntimeError as err:
+            raise self._typed_request_error(err, "get_object_poses") from err
+        out: dict[str, Pose | None] = {}
+        for name, pose in zip(names, raw):
+            t = pose["translation"]
+            if any(math.isnan(float(t[k])) for k in ("x", "y", "z")):
+                out[name] = None
+                continue
+            r = pose.get("rotation") or {"w": 1.0, "x": 0.0, "y": 0.0, "z": 0.0}
+            out[name] = Pose(float(t["x"]), float(t["y"]), float(t["z"]), quat_to_yaw(r["w"], r["x"], r["y"], r["z"]))
+        return out
 
     def command_velocity(self, v_forward: float, yaw_rate: float, v_z: float) -> None:
         self._pending = (float(v_forward), float(yaw_rate), float(v_z))
@@ -382,10 +439,12 @@ class ProjectAirSimSimulator:
         return self._last_obs
 
 
-def scene_config_factory(scene_config: str):
+def scene_config_factory(scene_config: str, movable_objects: Iterable[str] = ()):
     """A zero-argument simulator factory (what AutoFlyEnv and make_vec_env take) for one scene config, e.g.
-    "scene_autofly_s01_fast.jsonc". A functools.partial, so it pickles into SubprocVecEnv workers."""
-    return functools.partial(ProjectAirSimSimulator, scene_config=scene_config)
+    "scene_autofly_s01_fast.jsonc", allowed to move `movable_objects` (a dynamic scene's candidate movers, spec §6.5).
+    A functools.partial, so it pickles into SubprocVecEnv workers."""
+    return functools.partial(ProjectAirSimSimulator, scene_config=scene_config,
+                             movable_objects=tuple(sorted(movable_objects)))
 
 
 def scene_config_record(scene_config: str, config_dir: Path = CONFIGS_DIR) -> dict:

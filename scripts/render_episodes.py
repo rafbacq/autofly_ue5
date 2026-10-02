@@ -73,11 +73,13 @@ OUTCOME_MARKER = {"success": ("*", "tab:green"), "collision": ("X", "tab:red"), 
 # Recording: what the camera saw at every step, and what the episode spawned.
 # --------------------------------------------------------------------------------------------------------
 class FrameRecorder:
-    """The latest observation any wrapped simulator returned, and what the current episode spawned."""
+    """The latest observation any wrapped simulator returned, what the current episode spawned, and where every moved
+    scene object (a dynamic scene's pillar, spec §6.5) was last put."""
 
     def __init__(self) -> None:
         self.last = None
         self.spawned: list[tuple[str, tuple[float, float, float]]] = []
+        self.object_poses: dict[str, tuple[float, float, float]] = {}
 
 
 class RecordingSimulator:
@@ -110,6 +112,11 @@ class RecordingSimulator:
         actual = self._inner.spawn(name, asset, pose, scale, material)
         self._recorder.spawned.append((name, (float(pose.x), float(pose.y), float(pose.z))))
         return actual
+
+    def set_object_poses(self, poses):
+        # Explicit, not left to __getattr__: that would forward the call and the recorder would never see a mover.
+        self._inner.set_object_poses(poses)
+        self._recorder.object_poses.update({name: (float(p.x), float(p.y), float(p.z)) for name, p in poses.items()})
 
 
 @dataclass

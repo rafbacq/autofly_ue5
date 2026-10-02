@@ -38,6 +38,28 @@ class StartCollisionError(RuntimeError):
     """An episode's first observation (right after reset and spawning) already reports a collision."""
 
 
+class CameraPoseError(RuntimeError):
+    """The camera pose stamped in the image disagrees with kinematics (Unreal actor left behind by a set_pose sweep).
+
+    Raised by the Project AirSim backend; defined here, beside the interface, so code that must tell it apart (the
+    env's mover-collision inference, spec §6.5) can catch it without importing a backend."""
+
+
+class ObjectPoseError(RuntimeError):
+    """set_object_poses() named an object that is not on the allow-list, that the server could not find or could not
+    move, or the server refused the request (WorldSimApi.cpp:745-791). Not recoverable: a wrong level or a bug."""
+
+
+class SimRequestTimeoutError(RuntimeError):
+    """A request got no reply within projectairsim's 300 s receive timeout. The client disconnects itself before
+    raising (client.py:255-282), so this connection is finished: see SimConnectionLostError."""
+
+
+class SimConnectionLostError(RuntimeError):
+    """A call on a connection that an earlier SimRequestTimeoutError ended. Only a relaunch recovers, so the resilient
+    wrapper treats it like a failed launch and relaunches at once rather than retrying reset() on a dead client."""
+
+
 @dataclass(frozen=True)
 class Pose:
     x: float

@@ -2,6 +2,7 @@
 
 import hashlib
 import math
+from typing import Mapping
 
 import numpy as np
 
@@ -10,6 +11,7 @@ from autofly_ue5.sim.types import (
     CONTROL_DT_S,
     CollisionEvent,
     ObjectNotFoundError,
+    ObjectPoseError,
     Observation,
     Pose,
     SessionNotResetError,
@@ -18,9 +20,13 @@ from autofly_ue5.sim.types import (
 
 
 class FakeSimulator:
+    """`obstacles`: fixed (x, y, radius) circles. `scene_objects`: named objects a built level carries, {name: (pose,
+    radius)} -- movable with set_object_poses and collided with wherever they are now, like s01's tagged pillars."""
+
     def __init__(self, obstacles: list[tuple[float, float, float]] | None = None, image_size: int = 256,
-                 reset_steps: int = 4) -> None:
+                 reset_steps: int = 4, scene_objects: Mapping[str, tuple[Pose, float]] | None = None) -> None:
         self._obstacles = list(obstacles or [])
+        self._scene_objects = {name: (pose, float(radius)) for name, (pose, radius) in (scene_objects or {}).items()}
         self._size = image_size
         self._reset_steps = reset_steps
         self._launched: tuple[str, int] | None = None
@@ -104,6 +110,19 @@ class FakeSimulator:
             raise ObjectNotFoundError(name)
         del self._objects[name]
 
+    def set_object_poses(self, poses: Mapping[str, Pose]) -> None:
+        # Name by name, like the real backend (one SetObjectPose request each): an unknown name raises after the
+        # names before it have moved, so a caller that assumes all-or-nothing fails here too.
+        self._require_launched()
+        for name, pose in poses.items():
+            if name not in self._scene_objects:
+                raise ObjectPoseError(f"SetObjectPose failed. No objects of name {name} were found in the world.")
+            self._scene_objects[name] = (pose, self._scene_objects[name][1])
+
+    def scene_object_poses(self) -> dict[str, Pose]:
+        """Where every scene object is now (tests only; the real backend's equivalent is get_object_poses)."""
+        return {name: pose for name, (pose, _radius) in self._scene_objects.items()}
+
     def command_velocity(self, v_forward: float, yaw_rate: float, v_z: float) -> None:
         self._pending = (float(v_forward), float(yaw_rate), float(v_z))
 
@@ -126,6 +145,10 @@ class FakeSimulator:
             CollisionEvent(self._t_ns, f"obstacle_{i}", (new.x, new.y, new.z), (0.0, 0.0, 0.0))
             for i, (ox, oy, radius) in enumerate(self._obstacles)
             if math.hypot(new.x - ox, new.y - oy) <= radius
+        ) + tuple(
+            CollisionEvent(self._t_ns, name, (new.x, new.y, new.z), (0.0, 0.0, 0.0))
+            for name, (pose, radius) in self._scene_objects.items()
+            if math.hypot(new.x - pose.x, new.y - pose.y) <= radius and pose.z < 0.0  # z >= 0: below the ground
         )
         self._pose, self._velocity, self._yaw_rate = new, (vx, vy, vz_ned), yaw_rate
         self._step_collisions = hits

@@ -103,6 +103,21 @@ def test_recording_simulator_keeps_the_latest_observation_and_this_episodes_spaw
     assert recorder.spawned == [], "a new episode starts with nothing spawned"
 
 
+def test_recording_simulator_forwards_and_records_every_scene_object_move():
+    # Without its own set_object_poses, __getattr__ would forward the call and the recorder would never know where
+    # the movers were (s01d, spec §6.5).
+    recorder = rv.FrameRecorder()
+    fake = FakeSimulator(scene_objects={"obs_0003": (Pose(4.0, 0.0, -5.0, 0.0), 0.5)})
+    sim = rv.RecordingSimulator(fake, recorder)
+    sim.launch("/Game/AutoFly/Maps/S01", 0)
+
+    sim.set_object_poses({"obs_0003": Pose(5.0, 1.0, -5.0, 0.0)})
+    assert fake.scene_object_poses()["obs_0003"] == Pose(5.0, 1.0, -5.0, 0.0)
+    assert recorder.object_poses == {"obs_0003": (5.0, 1.0, -5.0)}
+    sim.reset(Pose(0.0, 0.0, -2.0, 0.0))
+    assert recorder.object_poses == {"obs_0003": (5.0, 1.0, -5.0)}, "a reset does not move the level's objects"
+
+
 def test_capture_frame_refuses_an_observation_that_is_not_the_steps_own():
     recorder = rv.FrameRecorder()
     fake = FakeSimulator()

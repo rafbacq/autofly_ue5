@@ -1,6 +1,6 @@
 """The simulator interface every backend implements (spec §7)."""
 
-from typing import Protocol, runtime_checkable
+from typing import Mapping, Protocol, runtime_checkable
 
 from autofly_ue5.sim.types import CONTROL_DT_S, Observation, Pose
 
@@ -34,6 +34,14 @@ class Simulator(Protocol):
 
     def destroy(self, name: str) -> None:
         """Destroy a spawned object; raises ObjectNotFoundError if it does not exist."""
+
+    def set_object_poses(self, poses: Mapping[str, Pose]) -> None:
+        """Teleport named, already-placed movable scene objects (no sweep), one request per name in order (spec §6.5,
+        §7). Allowed any time after launch(), before the first reset() too.
+
+        Raises ObjectPoseError for a name the implementation does not allow or the server cannot find or move (not
+        recoverable), SimRequestTimeoutError when the server stops answering (the connection is then lost; later calls
+        raise SimConnectionLostError until a relaunch). A failure partway leaves the earlier names moved."""
 
     def command_velocity(self, v_forward: float, yaw_rate: float, v_z: float) -> None:
         """Set the command held for the next step: body forward m/s, yaw rate rad/s, vertical m/s (positive up)."""

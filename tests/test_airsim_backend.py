@@ -504,3 +504,107 @@ def test_a_refused_set_pose_is_a_typed_error():
     sim._drone.set_pose = lambda pose, reset_kinematics=True: False
     with pytest.raises(SetPoseError):
         sim.reset(Pose(-31.0, -25.0, -2.0, 0.0))
+
+
+# --------------------------------------------------------------------------------------------------------
+# set_object_poses (spec §6.5, §7.1): exact allow-list, one teleporting request per name, typed errors.
+# --------------------------------------------------------------------------------------------------------
+class MovableWorld(FakeWorld):
+    """FakeWorld plus the baked, tagged pillars of a built level and the server's SetObjectPose replies:
+    WorldSimApi.cpp:745-791 throws for an unknown or immovable object, which the client raises as
+    RuntimeError("ERROR code: ..."); a missing reply makes client.request() disconnect and raise
+    RuntimeError("Fatal Timeout ...")."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.objects = {"obs_0000": {"translation": {"x": 1.0, "y": 2.0, "z": -5.0}},
+                        "obs_0010": {"translation": {"x": 5.0, "y": 2.0, "z": -5.0}}}
+        self.set_pose_calls = []
+        self.fail_with = None
+        self.status = True
+
+    def set_object_pose(self, object_name, object_pose, teleport):
+        self.set_pose_calls.append((object_name, object_pose, teleport))
+        if self.fail_with is not None:
+            raise self.fail_with
+        if object_name not in self.objects and object_name not in self.spawned:
+            raise RuntimeError(f"ERROR code: -32603, message: SetObjectPose failed. No objects of name {object_name} "
+                               f"were found in the world.")
+        if self.status:
+            self.objects[object_name] = object_pose
+        return self.status
+
+    def get_object_poses(self, object_names):
+        nan = float("nan")
+        return [self.objects.get(n, {"translation": {"x": nan, "y": nan, "z": nan}}) for n in object_names]
+
+
+MOVABLE_API = PasApi(client_cls=FakeClient, world_cls=MovableWorld, drone_cls=FakeDrone, pose_cls=dict,
+                     yaw_mode_max_dof=0)
+
+
+def test_set_object_poses_teleports_each_allowed_name_in_order():
+    sim = make_sim(api=MOVABLE_API, movable_objects={"obs_0000", "obs_0010"})
+    sim.set_object_poses({"obs_0010": Pose(6.0, 3.0, -5.0, 0.0), "obs_0000": Pose(1.5, 2.5, -5.0, math.pi / 2)})
+    calls = sim._world.set_pose_calls
+    assert [c[0] for c in calls] == ["obs_0010", "obs_0000"] and all(c[2] is True for c in calls)
+    t = calls[1][1]["translation"]
+    assert (t["x"], t["y"], t["z"]) == (1.5, 2.5, -5.0)
+    r = calls[1][1]["rotation"]
+    assert quat_to_yaw(r["w"], r["x"], r["y"], r["z"]) == pytest.approx(math.pi / 2)
+
+
+def test_set_object_poses_refuses_a_name_off_the_allow_list_before_any_request():
+    from autofly_ue5.sim.types import ObjectPoseError
+
+    # The server's lookup also matches any actor whose name merely CONTAINS the string, or a spawned object
+    # ("target"): only an exact allow-list keeps a typo from moving the wrong actor.
+    sim = make_sim(api=MOVABLE_API, movable_objects={"obs_0000"})
+    for name in ("obs_0010", "target", "obs_000"):
+        with pytest.raises(ObjectPoseError, match="allow-list"):
+            sim.set_object_poses({"obs_0000": Pose(1.0, 1.0, -5.0, 0.0), name: Pose(0.0, 0.0, -5.0, 0.0)})
+    assert sim._world.set_pose_calls == []
+    with pytest.raises(ObjectPoseError, match="allow-list"):
+        make_sim(api=MOVABLE_API).set_object_poses({"obs_0000": Pose(1.0, 1.0, -5.0, 0.0)})  # default: nothing
+
+
+def test_set_object_poses_maps_server_errors_and_a_false_status_to_object_pose_error():
+    from autofly_ue5.sim.types import ObjectPoseError
+
+    sim = make_sim(api=MOVABLE_API, movable_objects={"obs_0000", "obs_0042"})
+    with pytest.raises(ObjectPoseError, match="No objects of name obs_0042"):
+        sim.set_object_poses({"obs_0042": Pose(0.0, 0.0, -5.0, 0.0)})
+    sim._world.status = False
+    with pytest.raises(ObjectPoseError, match="status"):
+        sim.set_object_poses({"obs_0000": Pose(0.0, 0.0, -5.0, 0.0)})
+
+
+def test_a_fatal_timeout_is_typed_and_every_later_call_asks_for_a_relaunch():
+    from autofly_ue5.sim.types import SimConnectionLostError, SimRequestTimeoutError
+
+    sim = make_sim(api=MOVABLE_API, movable_objects={"obs_0000"})
+    sim._world.fail_with = RuntimeError("Fatal Timeout ocurred while processing request for method: "
+                                        "/Sim/AutoFlyScene/SetObjectPose")
+    with pytest.raises(SimRequestTimeoutError, match="Fatal Timeout"):
+        sim.set_object_poses({"obs_0000": Pose(0.0, 0.0, -5.0, 0.0)})
+    # projectairsim's client disconnected itself: nothing on this connection can work any more.
+    for call in (lambda: sim.reset(Pose(0.0, 0.0, -2.0, 0.0)), lambda: sim.set_object_poses({}),
+                 lambda: sim.destroy("target"), lambda: sim.step()):
+        with pytest.raises(SimConnectionLostError):
+            call()
+    sim.connect(SimPorts(8989, 8990))  # a new connection (a relaunch) clears it
+    sim.set_object_poses({"obs_0000": Pose(0.0, 0.0, -5.0, 0.0)})
+
+
+def test_an_unrecognised_runtime_error_is_not_swallowed():
+    sim = make_sim(api=MOVABLE_API, movable_objects={"obs_0000"})
+    sim._world.fail_with = RuntimeError("something else entirely")
+    with pytest.raises(RuntimeError, match="something else entirely"):
+        sim.set_object_poses({"obs_0000": Pose(0.0, 0.0, -5.0, 0.0)})
+
+
+def test_get_object_poses_reads_back_baked_objects_and_reports_a_missing_one_as_none():
+    sim = make_sim(api=MOVABLE_API, movable_objects={"obs_0000"})
+    got = sim.get_object_poses(["obs_0000", "obs_0099"])
+    assert got["obs_0000"] == Pose(1.0, 2.0, -5.0, 0.0)
+    assert got["obs_0099"] is None  # the server answers NaN rather than raising
