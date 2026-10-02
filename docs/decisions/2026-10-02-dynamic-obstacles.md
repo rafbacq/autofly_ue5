@@ -177,8 +177,30 @@ The probe passes only if every check holds:
 
 It also records the latency of a 12-pose batch, sequential against `request_async`.
 
-If it fails on baked actors, the fallback is a rebuilt S01D level whose candidate movers are spawned at runtime, the
-spawn path M0 proved. `motion.py` is unchanged by that. If latency is too high, the options are fewer movers, or
+**Result (2026-10-02 16:39, `docs/gates/m2d_mover_probe.json`): PASS, every check.**
+
+| Check | Measured |
+|---|---|
+| a. Move | 2.8e-6 m error; neighbours drifted 0 |
+| b. Restore | 2.8e-6 m error |
+| c. Depth on the same step | 4.004 m against 4.0 m expected (23.1 m before the move) |
+| d1. Flying in | Collided at step 15, with the drone's centre 0.51 m from the surface |
+| d2. First step after the move | Collided. The last runway step was 0.364 m; the pillar was placed 0.18 m beyond the rotor tips |
+| e. Vacated home | Flew 4.63 m through the empty spot: no collision, no fault |
+| f. Park and restore | Within 3e-6 m |
+
+Latency:
+
+- A 12-pose batch takes 15.1 ms median sent one request at a time, and 3.5 ms through `request_async`.
+- A step takes 74.2 ms without moves and 87.1 ms with 10 moves, +17 %.
+
+That is under a third of a step, so the backend keeps its sequential requests.
+
+The physical collision in d1 registered at 0.51 m from the surface, slightly beyond the 0.48 m half-span the
+invariant assumes. The invariant still holds with margin: 0.76 m against 0.51 m.
+
+Had it failed, the fallback was a rebuilt S01D level whose candidate movers are spawned at runtime, the spawn path M0
+proved. `motion.py` is unchanged by that. If latency is too high, the options are fewer movers, or
 `request_async` with its disconnect-on-error wrapped. Either outcome gets its own decision record.
 
 ## Evidence safety

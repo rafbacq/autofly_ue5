@@ -1,0 +1,109 @@
+{
+  "description": "Live go/no-go for moving pillars (spec \u00a76.5, milestone M2d): can a *baked* s01 pillar be teleported at runtime,\nand does the simulator then render it and collide with it where it now stands?",
+  "scene": "s01",
+  "map": "/Game/AutoFly/Maps/S01",
+  "scene_config": {
+    "file": "scene_autofly_s01_fast.jsonc",
+    "sha256": "f3fe5ac8a23faefc58186b3fc8d6aa3134d01346431bd21c50b63d0b24b77c94"
+  },
+  "instance": 0,
+  "pass": true,
+  "started": "2026-10-02 16:38:57",
+  "victim": "obs_0000",
+  "victim_home": [
+    -23.2888,
+    -24.9404,
+    -5.1179
+  ],
+  "view_pose": [
+    -30.2252,
+    -24.9404,
+    -2.0,
+    0.0
+  ],
+  "neighbours": [
+    "obs_0001",
+    "obs_0009",
+    "obs_0010"
+  ],
+  "checks": {
+    "a_move": {
+      "pass": true,
+      "home_readback_error_m": 2.751757089464606e-06,
+      "moved_error_m": 2.751757089464606e-06,
+      "neighbour_drift_m": 0.0
+    },
+    "b_restore": {
+      "pass": true,
+      "restored_error_m": 2.751757089464606e-06
+    },
+    "c_depth_same_step": {
+      "pass": true,
+      "expected_m": 4.0,
+      "depth_after_move_m": 4.00390625,
+      "depth_before_move_m": 23.109375,
+      "pillar_at": [
+        -25.288800000000002,
+        -24.9404
+      ]
+    },
+    "d_collision": {
+      "pass": true,
+      "d1": {
+        "collided_at_step": 15,
+        "surface_gap_at_collision_m": 0.5121908996585298
+      },
+      "d2": {
+        "runway_start": [
+          -31.0,
+          -31.0,
+          0.0
+        ],
+        "last_runway_step_m": 0.3638267517089844,
+        "rotor_gap_at_move_m": 0.18191337585449213,
+        "collided_on_first_step": true
+      }
+    },
+    "e_vacated_home": {
+      "pass": true,
+      "pillar": "obs_0000",
+      "collided_at_step": null,
+      "raised": null,
+      "flown_m": 4.633414187622144,
+      "passed_home_spot": true
+    },
+    "f_park_and_restore": {
+      "pass": true,
+      "park_error_m": 2.8776458005066145e-06,
+      "restore_error_m": 2.751757089464606e-06
+    }
+  },
+  "latency": {
+    "batch_size": 12,
+    "sequential_batch_ms": {
+      "median": 15.1314815002479,
+      "p95": 19.063404000007722,
+      "max": 19.507845999214624,
+      "n": 20
+    },
+    "step_ms_without_moves": {
+      "median": 74.23887099957938,
+      "p95": 78.61689900073543,
+      "max": 80.07255299980898,
+      "n": 20
+    },
+    "step_ms_with_10_moves": {
+      "median": 87.13110700045945,
+      "p95": 93.28654100045242,
+      "max": 94.99888499976805,
+      "n": 20
+    },
+    "async_batch_ms": {
+      "median": 3.4944895000990073,
+      "p95": 3.928352000002633,
+      "max": 4.124959999899147,
+      "n": 20
+    }
+  },
+  "finished": "2026-10-02 16:39:12"
+}
