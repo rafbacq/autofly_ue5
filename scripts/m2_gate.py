@@ -63,9 +63,10 @@ from autofly_ue5.expert.faults import KNOWN_FAULT_NAMES  # noqa: E402
 from autofly_ue5.expert.resilient import ResilientAutoFlyEnv  # noqa: E402
 from autofly_ue5.expert.reward import REWARD_VERSION  # noqa: E402
 from autofly_ue5.expert.seeds import EVAL_SEED_BASE  # noqa: E402
-from autofly_ue5.expert.train import sha256_of, scene_and_layout as _scene_and_layout  # noqa: E402
+from autofly_ue5.expert.train import sha256_of  # noqa: E402
 from autofly_ue5.expert.vec import teardown  # noqa: E402
 from autofly_ue5.paths import ROOT, RUNS_DIR  # noqa: E402
+from autofly_ue5.scenes.resolve import resolve_scene  # noqa: E402
 from autofly_ue5.sim.airsim_backend import (  # noqa: E402
     ProjectAirSimSimulator,
     scene_config_factory,
@@ -146,8 +147,8 @@ def build_eval_env(scene: str, *, instance: int, sim_factory: Callable[[], Any],
                    sim_root: Path = SIM_RUN_DIR) -> ResilientAutoFlyEnv:
     # seed_base: every gate episode is an explicit reset(seed=...); the counter base only matters for a stray
     # seed=None reset, which then still draws from the gate's own range.
-    scene_file, layout = _scene_and_layout(scene)
-    map_path = f"/Game/AutoFly/Maps/{scene.upper()}"
+    resolved = resolve_scene(scene)
+    scene_file, layout, map_path = resolved.scene, resolved.layout, resolved.map_path
     route_client_log(instance_dir(instance, sim_root) / "client.log")
     base = AutoFlyEnv(scene_file, layout, sim_factory, map_path=map_path, instance=instance, seed_base=seed_base)
     return ResilientAutoFlyEnv(base, instance=instance, sim_root=sim_root)
@@ -353,13 +354,14 @@ def build_arg_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     args = build_arg_parser().parse_args(argv)
     model_paths = parse_model_args(args.model, args.scene, run_root=args.run_root)
-    scene_config = args.scene_config or f"scene_autofly_{args.scene}.jsonc"
+    resolved = resolve_scene(args.scene)
+    scene_config = args.scene_config or resolved.default_scene_config
     gate = run(
         scene=args.scene, model_paths=model_paths, conditions=list(args.conditions), n_episodes=args.episodes,
         seed_base=args.seed_base, instance=args.instance, out_path=args.out, device=args.device,
         max_steps_per_episode=args.max_steps_per_episode,
         max_fault_retries_per_episode=args.max_fault_retries_per_episode,
-        sim_factory=scene_config_factory(scene_config), scene_config=scene_config,
+        sim_factory=scene_config_factory(scene_config, resolved.movable_objects), scene_config=scene_config,
     )
     print(json.dumps(
         {"status": gate["status"], "pass": gate["pass"],

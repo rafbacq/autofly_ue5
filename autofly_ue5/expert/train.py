@@ -148,8 +148,9 @@ from autofly_ue5.expert.seeds import (  # noqa: F401  (EVAL_SEED_BASE etc. re-ex
     worker_seed_base,
 )
 from autofly_ue5.expert.vec import call_reset_with_timeout, collect_fault_summaries, make_vec_env, teardown  # noqa: F401
-from autofly_ue5.paths import ROOT, RUNS_DIR, SCENES_DIR
-from autofly_ue5.scenes.model import Bounds, Instance, Layout, SceneFile, load_scene_file
+from autofly_ue5.paths import ROOT, RUNS_DIR
+from autofly_ue5.scenes.model import Layout, SceneFile
+from autofly_ue5.scenes.resolve import resolve_scene
 from autofly_ue5.sim.airsim_backend import scene_config_factory, scene_config_record
 from autofly_ue5.sim.process import instance_dir, stop_instances, sweep_orphaned_instances
 from autofly_ue5.validate.engine_check import audit_engine_faults, boot_id, xid_count
@@ -173,22 +174,10 @@ DEFAULT_TOTAL_TIMESTEPS = 5_000_000  # an upper safety cap; D7 says the real bud
 
 
 def scene_and_layout(scene: str) -> tuple[SceneFile, Layout]:
-    """Load a scene's SceneFile + its built Layout by scene id, e.g. "s01".
-
-    Generalises `scripts/measure_instances.py`'s own scene_and_layout() (which hardcodes s01) so this
-    trainer works for whichever scene s01-s10 is asked for, once that scene's level has been built.
-    """
-    matches = sorted(SCENES_DIR.glob(f"{scene}_*.json"))
-    if not matches:
-        raise FileNotFoundError(f"no scene file matching scenes/{scene}_*.json for scene {scene!r}")
-    scene_file = load_scene_file(matches[0])
-    layout_path = RUNS_DIR / "levels" / f"{scene}.layout.json"
-    if not layout_path.is_file():
-        raise FileNotFoundError(f"{layout_path} does not exist -- build this scene's level before training")
-    raw = json.loads(layout_path.read_text())["layout"]
-    b = Bounds(**raw["bounds"])
-    inst = tuple(Instance(**i) for i in raw["instances"])
-    return scene_file, Layout(scene_id=raw["scene_id"], seed=raw["seed"], bounds=b, instances=inst)
+    """A scene's SceneFile and the Layout it flies, by scene id (e.g. "s01", or "s01d", which flies s01's layout).
+    Kept for its callers; `autofly_ue5.scenes.resolve.resolve_scene` also gives the map and default config."""
+    resolved = resolve_scene(scene)
+    return resolved.scene, resolved.layout
 
 
 
@@ -469,9 +458,9 @@ def build_arg_parser() -> argparse.ArgumentParser:
     p.add_argument("--resume", action="store_true")
     p.add_argument("--total-timesteps", type=int, default=DEFAULT_TOTAL_TIMESTEPS)
     p.add_argument("--out", type=Path, default=ROOT / "docs" / "gates" / "m2_train.json")
-    p.add_argument("--map-path", default=None, help='default: "/Game/AutoFly/Maps/<SCENE upper-cased>"')
+    p.add_argument("--map-path", default=None, help="default: the map of the level the scene flies (s01d: S01)")
     p.add_argument("--scene-config", default=None,
-                   help="Project AirSim scene config in configs/ (default scene_autofly_<scene>.jsonc); e.g. "
+                   help="Project AirSim scene config in configs/ (default scene_autofly_<level>.jsonc); e.g. "
                         "scene_autofly_s01_fast.jsonc for the 1 ms clock once M1 has passed on it")
     p.add_argument("--device", default="cuda")
     p.add_argument("--seed", type=int, default=0, help=f"0 <= seed < {SESSION_SEED_STRIDE - 64} (keeps SB3's explicit reset seeds out of every counter range)")
@@ -494,17 +483,18 @@ def main(argv: list[str] | None = None) -> int:
         print(f"--seed must be in [0, {SESSION_SEED_STRIDE - 64}); got {args.seed}", file=sys.stderr)
         return 2
     run_root = args.run_root or RUNS_DIR / "expert" / args.scene
-    map_path = args.map_path or f"/Game/AutoFly/Maps/{args.scene.upper()}"
-    scene_config = args.scene_config or f"scene_autofly_{args.scene}.jsonc"
     # Everything that can be checked without a simulator is checked before the run directory is claimed.
     try:
-        scene_file, layout = scene_and_layout(args.scene)
+        resolved = resolve_scene(args.scene)
+        scene_file, layout = resolved.scene, resolved.layout
+        map_path = args.map_path or resolved.map_path
+        scene_config = args.scene_config or resolved.default_scene_config
         scene_config_record(scene_config)  # the config file must exist; its hash goes in the record
         session = prepare_run_root(run_root, resume=args.resume, reward_version=REWARD_VERSION, seed=args.seed)
     except (FileNotFoundError, RuntimeError, ValueError) as err:
         print(f"refusing to start: {err}", file=sys.stderr)
         return 2
-    sim_factory = scene_config_factory(scene_config)
+    sim_factory = scene_config_factory(scene_config, resolved.movable_objects)
     checkpoints_dir = run_root / "checkpoints"
     best_dir = run_root / "best"
     tb_dir = run_root / "tensorboard"

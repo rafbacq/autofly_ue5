@@ -111,7 +111,7 @@ def run_probe(sim, probe, scene, layout, trials: int) -> dict:
 
 
 def main(argv: list[str] | None = None) -> int:
-    from autofly_ue5.expert.train import scene_and_layout
+    from autofly_ue5.scenes.resolve import resolve_scene
     from autofly_ue5.sim.airsim_backend import ProjectAirSimSimulator, scene_config_record
     from autofly_ue5.sim.process import instance_dir, route_client_log, sweep_orphaned_instances
 
@@ -123,7 +123,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--out", type=Path, default=RUNS_DIR / "m1" / "crash_reset_probe.json")
     args = parser.parse_args(argv)
 
-    scene, layout = scene_and_layout(args.scene)
+    resolved = resolve_scene(args.scene)
+    scene, layout = resolved.scene, resolved.layout
     layout_json = {"layout": layout.to_json()}
     b = layout_json["layout"]["bounds"]
     probe = choose_depth_probes(pillars_from_layout_json(layout_json), Bounds(b["x_min"], b["x_max"], b["y_min"], b["y_max"]))[1]
@@ -138,7 +139,7 @@ def main(argv: list[str] | None = None) -> int:
                     "instance": args.instance,
                     "started": time.strftime("%Y-%m-%d %H:%M:%S")}
     try:
-        sim.launch(f"/Game/AutoFly/Maps/{args.scene.upper()}", args.instance)
+        sim.launch(resolved.map_path, args.instance)
         report.update(run_probe(sim, probe, scene, layout, args.trials))
         status = 0
     except Exception as err:

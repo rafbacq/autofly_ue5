@@ -10,13 +10,16 @@ from pathlib import Path
 
 from autofly_ue5.scenes.generate import generate_layout
 from autofly_ue5.scenes.level_spec import layout_to_level_spec
-from autofly_ue5.scenes.model import load_registry, load_scene_file
+from autofly_ue5.scenes.model import SceneFileError, load_registry, load_scene_file
 from autofly_ue5.scenes.reachability import check_reachability
 
 
 def build_scene(scene_path: Path, out_dir: Path) -> dict:
     """Returns a JSON-able summary; the level spec is written only when the layout passes reachability."""
     scene = load_scene_file(scene_path)
+    if scene.level is not None:
+        raise SceneFileError(f"{scene_path}: scene {scene.id} reuses {scene.level}'s level (spec §6.1) and gets no level "
+                             f"of its own; build {scene.level} instead")
     registry = load_registry()
     layout = generate_layout(scene, registry)
     reach = check_reachability(layout, scene.start_band, scene.target_band)

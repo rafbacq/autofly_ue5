@@ -54,6 +54,7 @@ from autofly_ue5.expert.train import scene_and_layout, sha256_of  # noqa: E402
 from autofly_ue5.expert.vec import teardown  # noqa: E402
 from autofly_ue5.paths import ROOT  # noqa: E402
 from autofly_ue5.scenes.model import Bounds, Layout  # noqa: E402
+from autofly_ue5.scenes.resolve import resolve_scene  # noqa: E402
 from autofly_ue5.sim.airsim_backend import scene_config_factory, scene_config_record  # noqa: E402
 from autofly_ue5.sim.process import SIM_RUN_DIR, stop_instances, sweep_orphaned_instances  # noqa: E402
 from autofly_ue5.sim.types import CONTROL_DT_S  # noqa: E402
@@ -616,11 +617,12 @@ def checkpoint_path(args: argparse.Namespace) -> Path:
 
 def main(argv: list[str] | None = None) -> int:
     args = build_arg_parser().parse_args(argv)
-    scene_config = args.scene_config or f"scene_autofly_{args.scene}.jsonc"
+    resolved = resolve_scene(args.scene)
+    scene_config = args.scene_config or resolved.default_scene_config
     summary = run(scene=args.scene, checkpoint_name=args.checkpoint, checkpoint_path=checkpoint_path(args),
                   episodes=list(args.episodes), condition=args.condition, seed_base=args.seed_base,
                   instance=args.instance, out_dir=args.out_dir, gate_path=args.gate,
-                  sim_factory=scene_config_factory(scene_config),
+                  sim_factory=scene_config_factory(scene_config, resolved.movable_objects),
                   load_model=lambda path: default_sac_loader(path, device=args.device), scene_config=scene_config,
                   fps=args.fps, scale=args.scale, hold_s=args.hold_s)
     print(json.dumps({"status": summary["status"], "error": summary["error"], "out_dir": str(args.out_dir),

@@ -5,7 +5,8 @@
   "additionalProperties": false,
   "required": ["id", "split", "seed", "bounds", "ground", "obstacle_groups", "start_band", "target_band", "altitude_band", "instruction_obstacle"],
   "properties": {
-    "id": { "type": "string", "pattern": "^s[0-9]{2}r?$" },
+    "id": { "type": "string", "pattern": "^s[0-9]{2}[rd]?$" },
+    "level": { "type": "string", "pattern": "^s[0-9]{2}r?$" },
     "split": { "enum": ["train", "test_seen", "test_unseen"] },
     "seed": { "type": "integer", "minimum": 0 },
     "bounds": {
@@ -22,11 +23,36 @@
     "start_band": { "$ref": "#/$defs/range" },
     "target_band": { "$ref": "#/$defs/range" },
     "altitude_band": { "$ref": "#/$defs/range" },
-    "instruction_obstacle": { "type": "string", "minLength": 1 }
+    "instruction_obstacle": { "type": "string", "minLength": 1 },
+    "dynamic": { "$ref": "#/$defs/dynamic" }
   },
   "$defs": {
     "range": { "type": "array", "items": { "type": "number", "minimum": 0 }, "minItems": 2, "maxItems": 2 },
     "int_range": { "type": "array", "items": { "type": "integer", "minimum": 1 }, "minItems": 2, "maxItems": 2 },
+    "int_range0": { "type": "array", "items": { "type": "integer", "minimum": 0 }, "minItems": 2, "maxItems": 2 },
+    "positive_range": { "type": "array", "items": { "type": "number", "exclusiveMinimum": 0 }, "minItems": 2, "maxItems": 2 },
+    "dynamic": {
+      "type": "object", "additionalProperties": false,
+      "required": ["movers", "route_kinds", "speed_m_s", "pingpong_half_length_m", "orbit_radius_m", "min_gap_m", "contact_m",
+                   "yield_margin_m", "start_keepout_m", "target_keepout_m", "max_path_ratio"],
+      "properties": {
+        "movers": {
+          "type": "object", "additionalProperties": false, "required": ["source", "count", "path_movers", "path_corridor_m"],
+          "properties": { "source": { "const": "layout" }, "count": { "$ref": "#/$defs/int_range" },
+                          "path_movers": { "$ref": "#/$defs/int_range0" }, "path_corridor_m": { "type": "number", "exclusiveMinimum": 0 } }
+        },
+        "route_kinds": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "enum": ["pingpong", "orbit"] } },
+        "speed_m_s": { "$ref": "#/$defs/positive_range" },
+        "pingpong_half_length_m": { "$ref": "#/$defs/positive_range" },
+        "orbit_radius_m": { "$ref": "#/$defs/positive_range" },
+        "min_gap_m": { "type": "number", "minimum": 0 },
+        "contact_m": { "type": "number", "exclusiveMinimum": 0 },
+        "yield_margin_m": { "type": "number", "minimum": 0 },
+        "start_keepout_m": { "type": "number", "minimum": 0 },
+        "target_keepout_m": { "type": "number", "minimum": 0 },
+        "max_path_ratio": { "type": "number", "minimum": 1 }
+      }
+    },
     "group": {
       "type": "object",
       "additionalProperties": false,

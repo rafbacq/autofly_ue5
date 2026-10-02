@@ -10,8 +10,14 @@ from pathlib import Path
 import jsonschema
 
 from autofly_ue5.paths import ASSET_REGISTRY
+from autofly_ue5.sim.types import CONTROL_DT_S
 
 SCHEMA_PATH = Path(__file__).with_name("scene.schema.json")
+
+# How far the drone's rotor tips reach from its centre: props at +-0.253 m with radius 0.1143 m
+# (configs/robot_autofly_quadrotor.jsonc) give 0.472 m. A moving obstacle's contact distance must keep one teleport
+# (max speed x one step) short of this, so no mover is ever placed inside the drone (spec §6.5).
+DRONE_HALF_SPAN_M = 0.48
 
 
 class SceneFileError(ValueError):
@@ -45,6 +51,26 @@ class ObstacleGroup:
 
 
 @dataclass(frozen=True)
+class DynamicSpec:
+    """A scene's moving-obstacle block (spec §6.5): which of the layout's obstacles move, how, and the rules that keep
+    every episode fair. Ranges are (low, high); counts are inclusive."""
+    count: tuple[int, int]
+    path_movers: tuple[int, int]
+    path_corridor_m: float
+    route_kinds: tuple[str, ...]
+    speed_m_s: tuple[float, float]
+    pingpong_half_length_m: tuple[float, float]
+    orbit_radius_m: tuple[float, float]
+    min_gap_m: float
+    contact_m: float
+    yield_margin_m: float
+    start_keepout_m: float
+    target_keepout_m: float
+    max_path_ratio: float
+    source: str = "layout"
+
+
+@dataclass(frozen=True)
 class SceneFile:
     id: str
     split: str
@@ -58,6 +84,8 @@ class SceneFile:
     instruction_obstacle: str
     sha256: str
     path: str
+    level: str | None = None  # the scene whose built level this one reuses (spec §6.1); None: its own
+    dynamic: DynamicSpec | None = None  # spec §6.5; None: nothing moves
 
 
 @dataclass(frozen=True)
@@ -122,6 +150,43 @@ def _range(values: list, name: str) -> tuple[float, float]:
     return (low, high)
 
 
+def _int_range(values: list, name: str) -> tuple[int, int]:
+    low, high = int(values[0]), int(values[1])
+    if low > high:
+        raise SceneFileError(f"{name}: minimum {low} is greater than maximum {high}")
+    return (low, high)
+
+
+def _dynamic_spec(raw: dict, path: Path) -> DynamicSpec:
+    movers = raw["movers"]
+    spec = DynamicSpec(
+        count=_int_range(movers["count"], "dynamic.movers.count"),
+        path_movers=_int_range(movers["path_movers"], "dynamic.movers.path_movers"),
+        path_corridor_m=float(movers["path_corridor_m"]),
+        route_kinds=tuple(raw["route_kinds"]),
+        speed_m_s=_range(raw["speed_m_s"], "dynamic.speed_m_s"),
+        pingpong_half_length_m=_range(raw["pingpong_half_length_m"], "dynamic.pingpong_half_length_m"),
+        orbit_radius_m=_range(raw["orbit_radius_m"], "dynamic.orbit_radius_m"),
+        min_gap_m=float(raw["min_gap_m"]),
+        contact_m=float(raw["contact_m"]),
+        yield_margin_m=float(raw["yield_margin_m"]),
+        start_keepout_m=float(raw["start_keepout_m"]),
+        target_keepout_m=float(raw["target_keepout_m"]),
+        max_path_ratio=float(raw["max_path_ratio"]),
+        source=movers["source"],
+    )
+    if spec.path_movers[1] > spec.count[0]:
+        raise SceneFileError(f"{path}: dynamic.movers.path_movers {spec.path_movers} can exceed the smallest mover count "
+                             f"{spec.count[0]}")
+    reach = spec.contact_m - spec.speed_m_s[1] * CONTROL_DT_S
+    if reach <= DRONE_HALF_SPAN_M:
+        raise SceneFileError(
+            f"{path}: dynamic invariant contact_m - max_speed * dt > {DRONE_HALF_SPAN_M} m fails "
+            f"({spec.contact_m} - {spec.speed_m_s[1]} * {CONTROL_DT_S} = {reach:.3f} m): one teleport of the fastest "
+            f"mover could land inside the drone's rotor span (spec §6.5)")
+    return spec
+
+
 def load_scene_file(path: Path) -> SceneFile:
     raw = Path(path).read_bytes()
     data = json.loads(raw)
@@ -154,6 +219,8 @@ def load_scene_file(path: Path) -> SceneFile:
         altitude_band=_range(data["altitude_band"], "altitude_band"),
         instruction_obstacle=data["instruction_obstacle"],
         sha256=hashlib.sha256(raw).hexdigest(), path=str(path),
+        level=data.get("level"),
+        dynamic=_dynamic_spec(data["dynamic"], path) if "dynamic" in data else None,
     )
 
 

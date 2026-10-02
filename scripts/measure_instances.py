@@ -46,7 +46,8 @@ from autofly_ue5.expert.vec import (  # noqa: F401  (moved from this script; nam
 )
 from autofly_ue5.gpu import gpu_memory_mib
 from autofly_ue5.paths import ROOT, RUNS_DIR
-from autofly_ue5.scenes.model import Bounds, Instance, Layout, SceneFile, load_scene_file
+from autofly_ue5.scenes.model import Layout, SceneFile
+from autofly_ue5.scenes.resolve import resolve_scene
 from autofly_ue5.sim.airsim_backend import ProjectAirSimSimulator, scene_config_factory, scene_config_record
 from autofly_ue5.sim.process import SIM_RUN_DIR, instance_dir, sweep_orphaned_instances
 from autofly_ue5.validate.engine_check import audit_engine_faults, boot_id, xid_count
@@ -113,14 +114,9 @@ def choose_best_n(per_n: dict[str, dict]) -> int | None:
     return max(in_budget, key=lambda n: in_budget[n]["env_steps_per_s_total"])
 
 
-def scene_and_layout() -> tuple[SceneFile, Layout]:
-    """Mirrors tests/test_expert_episode.py's scene_and_layout() helper (not imported: that module is
-    reviewed/closed test code, this is a live driver script)."""
-    scene = load_scene_file(ROOT / "scenes" / "s01_white_pillars.json")
-    raw = json.loads((RUNS_DIR / "levels" / "s01.layout.json").read_text())["layout"]
-    b = Bounds(**raw["bounds"])
-    inst = tuple(Instance(**i) for i in raw["instances"])
-    return scene, Layout(scene_id=raw["scene_id"], seed=raw["seed"], bounds=b, instances=inst)
+def scene_and_layout(scene: str = "s01") -> tuple[SceneFile, Layout]:
+    resolved = resolve_scene(scene)
+    return resolved.scene, resolved.layout
 
 
 def wait_for_vram_drop(baseline_mib: int, margin_mib: int = VRAM_DRAIN_MARGIN_MIB, timeout_s: float = VRAM_DRAIN_TIMEOUT_S) -> int:

@@ -254,7 +254,7 @@ def sample_setup(
     instruction = template.format(target="target", obstacle=scene.instruction_obstacle)
 
     return EpisodeSetup(
-        scene_id=layout.scene_id,
+        scene_id=scene.id,  # s01d flies s01's layout but its episodes are s01d's
         seed=layout.seed,
         start=start,
         target_xy_z=target_xy_z,
