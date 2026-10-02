@@ -21,10 +21,11 @@ No copy of the release's `features.json` or `dataset_info.json` exists on this h
 still hosts the TFDS dataset, so those two small metadata files can be fetched from it. A scratch analysis (numpy
 only) found:
 
-1. **The file order is one fixed permutation, shared by both episodes.** Sorting by state[0] (distance to target,
-   decreasing) recovers time order: the median step is 0.35–0.41 m, against 13–18 m in file order. Sorted that way,
-   file row *i* lands on nearly the same time step in both episodes (75/74, 36/35, 3/3, 42/41, 51/50, 10/10, …), so
-   the true order is recoverable exactly, not just approximately.
+1. **The file order lists the time steps in one shared order.** Sorting by state[0] (distance to target,
+   decreasing) recovers time order: the median step is 0.35–0.41 m, against 13–18 m in file order. Setting aside
+   one step of the 96-step episode (step 21), **70 of 78 file rows land on the same time step in both episodes**, and
+   75 of 78 keep the same relative order. So the export sorted steps by some fixed key, and the exact order is
+   recoverable, not just approximately.
 2. **Spec §3.2's "first action is a turn in place" comes from file row 0, which is not the first step.** File row 0
    (forward 0.03 / 0.16 m/s, yaw rate 0.95 / 0.97) is time step 75 of 96 and 74 of 78, with speed state 1.86 / 1.84.
    In time order, **both episodes start flying forward at about 1.98 m/s**. So the evidence for the a0 rule of §9
@@ -58,7 +59,10 @@ These are preliminary, from a throwaway script. Task B1 makes them reproducible 
 
 - [ ] **B0. Seeds.** Add `COLLECTION_SEED_BASE` (400e6) and move the probes' 300e6 into `expert/seeds.py`, both
   under the disjointness test. Collection never reuses a gate or training seed.
-- [ ] **B1. `scripts/decode_state.py`.**
+- [x] **B1. `scripts/decode_state.py`** (done 2026-10-02 as analysis, ahead of the go-ahead because it decides U1).
+  Results on the real episodes: state[2] adopted (altitude, |r| 0.986 and 0.996); state[1], [4] and [5] not adopted
+  (best 0.92/0.88, 0.77/0.60, 0.54/0.76); a0 as in finding 2; the shared order as in finding 1. Still open: the
+  surface-or-centre question, and better yaw and velocity estimates for state[1], [4] and [5]. The original task:
   - Recover the exact step order: state[0] order, checked against the shared permutation of finding 1.
   - Test each hypothesis for state[1], [2], [4], [5]:
     - body-frame velocities;
