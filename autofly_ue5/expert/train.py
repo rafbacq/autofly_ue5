@@ -634,7 +634,7 @@ def main(argv: list[str] | None = None) -> int:
     except (FileNotFoundError, FileExistsError, RuntimeError, ValueError) as err:
         print(f"refusing to start: {err}", file=sys.stderr)
         return 2
-    sim_factory = scene_config_factory(scene_config, resolved.movable_objects)
+    sim_factory = scene_config_factory(scene_config, resolved.movable_objects, run_root=sim_root)
     checkpoints_dir = run_root / "checkpoints"
     best_dir = run_root / "best"
     tb_dir = run_root / "tensorboard"

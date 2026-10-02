@@ -439,12 +439,15 @@ class ProjectAirSimSimulator:
         return self._last_obs
 
 
-def scene_config_factory(scene_config: str, movable_objects: Iterable[str] = ()):
+def scene_config_factory(scene_config: str, movable_objects: Iterable[str] = (), run_root: Path | None = None):
     """A zero-argument simulator factory (what AutoFlyEnv and make_vec_env take) for one scene config, e.g.
     "scene_autofly_s01_fast.jsonc", allowed to move `movable_objects` (a dynamic scene's candidate movers, spec §6.5).
-    A functools.partial, so it pickles into SubprocVecEnv workers."""
+    `run_root`: where its simulators record themselves (pid.json, sim.log); it must be the same directory the caller
+    sweeps, stops and audits, or a hung slot cannot be stopped and the engine audit reads nothing. A
+    functools.partial, so it pickles into SubprocVecEnv workers."""
+    kwargs = {"run_root": Path(run_root)} if run_root is not None else {}
     return functools.partial(ProjectAirSimSimulator, scene_config=scene_config,
-                             movable_objects=tuple(sorted(movable_objects)))
+                             movable_objects=tuple(sorted(movable_objects)), **kwargs)
 
 
 def scene_config_record(scene_config: str, config_dir: Path = CONFIGS_DIR) -> dict:

@@ -179,7 +179,7 @@ def test_training_on_s01d_stacks_depth_records_its_identity_and_counts_mover_col
     from autofly_ue5.expert import train
 
     _no_launch(monkeypatch)
-    monkeypatch.setattr(train, "scene_config_factory", lambda config, movable=(): _dynamic_fake_factory())
+    monkeypatch.setattr(train, "scene_config_factory", lambda config, movable=(), **kw: _dynamic_fake_factory())
     out = tmp_path / "train.json"
     code = train.main(["--scene", "s01d", "--run-root", str(tmp_path / "run"), "--out", str(out), "--device", "cpu",
                        "--sim-root", str(tmp_path / "sim"), "--total-timesteps", "60", "--learning-starts", "20",
@@ -203,7 +203,7 @@ def test_the_depth_stack_can_be_set_on_the_command_line(tmp_path, monkeypatch):
     from autofly_ue5.expert import train
 
     _no_launch(monkeypatch)
-    monkeypatch.setattr(train, "scene_config_factory", lambda config, movable=(): _dynamic_fake_factory())
+    monkeypatch.setattr(train, "scene_config_factory", lambda config, movable=(), **kw: _dynamic_fake_factory())
     out = tmp_path / "train.json"
     train.main(["--scene", "s01d", "--depth-frames", "1", "--run-root", str(tmp_path / "run"), "--out", str(out),
                 "--device", "cpu", "--sim-root", str(tmp_path / "sim"), "--total-timesteps", "10",
@@ -435,3 +435,24 @@ def test_the_env_exposes_the_raw_observation_for_the_collector():
     assert raw.rgb.shape == (256, 256, 3) and raw.pose == env._last_pose
     env.step(np.zeros(3, dtype=np.float32))
     assert env.last_observation.sim_time_ns > raw.sim_time_ns
+
+
+def test_the_sim_root_reaches_the_simulators_themselves(tmp_path, monkeypatch):
+    # Review finding: --sim-root moved the sweeps, stops and the engine audit, but the simulators kept recording
+    # themselves under runs/sim/ -- an audit that read nothing, and a hung slot that could not be stopped.
+    from autofly_ue5.expert import train
+    from autofly_ue5.sim.airsim_backend import scene_config_factory
+
+    assert scene_config_factory("scene_autofly_s01.jsonc", (), run_root=tmp_path).keywords["run_root"] == tmp_path
+    seen = {}
+
+    def recording_factory(config, movable=(), **kw):
+        seen.update(kw)
+        return _dynamic_fake_factory()
+
+    monkeypatch.setattr(train, "scene_config_factory", recording_factory)
+    _no_launch(monkeypatch)
+    train.main(["--scene", "s01d", "--run-root", str(tmp_path / "run"), "--out", str(tmp_path / "out.json"),
+                "--device", "cpu", "--sim-root", str(tmp_path / "sim"), "--total-timesteps", "5",
+                "--learning-starts", "100", "--buffer-size", "100", "--eval-freq", "1000"])
+    assert seen.get("run_root") == tmp_path / "sim"
