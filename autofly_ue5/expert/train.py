@@ -675,6 +675,8 @@ def build_arg_parser() -> argparse.ArgumentParser:
     p.add_argument("--warm-start", type=Path, default=None,
                    help="a fresh run starts from this checkpoint's weights (expert.warmstart): same network, plus any new "
                         "input branch starting at zero; its warm-up acts with that policy. Not with --resume")
+    p.add_argument("--actor-freeze-updates", type=int, default=0,
+                   help="with --warm-start: gradient updates during which only the critic learns (expert.warmstart)")
     p.add_argument("--mover-slots", type=int, default=None,
                    help="nearby moving pillars the expert is told about (default: 4 on a dynamic scene, 0 on a static "
                         "one; 0 reproduces s01d_r1's observation)")
@@ -702,6 +704,8 @@ def main(argv: list[str] | None = None) -> int:
         scene_config_record(scene_config)  # the config file must exist; its hash goes in the record
         obs_config = observation_config(scene_file, depth_frames=args.depth_frames, mover_slots=args.mover_slots)
         warm_source = warm_start_source(args.warm_start, obs_config, resume=args.resume)
+        if args.actor_freeze_updates and warm_source is None:
+            raise ValueError("--actor-freeze-updates is a warm start's critic warm-up: it needs --warm-start")
         identity = run_identity(resolved, obs_config, scene_config)
         host = host_preflight(buffer_bytes=replay_buffer_bytes(args.buffer_size, obs_config), run_root=run_root)
         session = prepare_run_root(run_root, resume=args.resume, reward_version=REWARD_VERSION, seed=args.seed,
@@ -791,6 +795,7 @@ def main(argv: list[str] | None = None) -> int:
             )
             if warm_source is not None:
                 warm_record = {**warm_source, **warm_start(model, Path(warm_source["path"]))}
+                model.actor_freeze_updates = args.actor_freeze_updates
                 print(f"warm-started from {warm_source['path']}: {len(warm_record['widened'])} heads widened, "
                       f"{len(warm_record['fresh'])} new tensors, {warm_record['copied']} copied")
 
@@ -899,6 +904,7 @@ def main(argv: list[str] | None = None) -> int:
             "policy_kwargs": "autofly_ue5.expert.features.POLICY_KWARGS",
             "buffer_size": args.buffer_size,
             "learning_starts": args.learning_starts,
+            "actor_freeze_updates": args.actor_freeze_updates,
             "batch_size": args.batch_size,
             # What the model actually trained with, not what this file intends (a resumed model restores its own).
             "train_freq": str(model.train_freq) if model is not None else None,

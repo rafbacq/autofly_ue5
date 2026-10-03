@@ -32,10 +32,27 @@ NEW_BRANCH_MARKER = ".mover_mlp."
 
 
 class PolicyWarmupSAC(SAC):
-    """SAC whose warm-up steps act with its (warm-started) policy, not uniform random actions."""
+    """SAC whose warm-up steps act with its (warm-started) policy, not uniform random actions, and whose actor and
+    entropy coefficient may sit out the first `actor_freeze_updates` gradient updates (a critic warm-up).
+
+    Run 2 (2026-10-03) without one: within ~500 updates of a warm start, training success fell from ~0.8 to ~0.45 and
+    the entropy coefficient doubled. The actor was chasing a critic that was re-learning a changed reward on a small,
+    narrow buffer. With the actor frozen, r1's policy keeps flying (and filling the buffer) while the critic adapts.
+    The freeze sets the two learning rates to zero, so Adam keeps tracking their gradients and the actor resumes with
+    current moments."""
+
+    actor_freeze_updates: int = 0
 
     def _sample_action(self, learning_starts, action_noise=None, n_envs=1):
         return super()._sample_action(0, action_noise, n_envs)
+
+    def _update_learning_rate(self, optimizers) -> None:
+        super()._update_learning_rate(optimizers)
+        if self._n_updates < self.actor_freeze_updates:
+            for optimizer in (self.actor.optimizer, self.ent_coef_optimizer):
+                if optimizer is not None:
+                    for group in optimizer.param_groups:
+                        group["lr"] = 0.0
 
 
 def plan(new_shapes: dict[str, tuple], old: dict[str, torch.Tensor]) -> dict[str, str]:

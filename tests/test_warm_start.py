@@ -210,3 +210,44 @@ def test_a_warm_started_run_resumes_like_any_other(tmp_path, monkeypatch):
     record = json.loads(out2.read_text())
     assert code == 0 and record["status"] == "ok" and record["resume"] is True, record["error"]
     assert record["resumed_from"].endswith("_steps.zip") and record["warm_start"] is None
+
+
+def _params(module):
+    return {name: p.detach().clone() for name, p in module.named_parameters()}
+
+
+def test_a_critic_warm_up_freezes_the_actor_and_its_entropy_until_the_critic_has_caught_up():
+    # Run 2 (2026-10-03): within ~500 updates of a warm start, training success fell from ~0.8 to ~0.45 and the entropy
+    # coefficient doubled: the actor chased a critic re-learning a new reward on a small, narrow buffer. Freezing the
+    # actor (and alpha) for the first updates lets the critic adapt while r1's policy keeps flying.
+    from autofly_ue5.expert.warmstart import PolicyWarmupSAC
+
+    model = _model(NEW, algorithm=PolicyWarmupSAC, learning_starts=10)
+    model.actor_freeze_updates = 10_000
+    actor, critic, alpha = _params(model.actor), _params(model.critic), float(model.log_ent_coef.detach())
+    model.learn(total_timesteps=40)
+    assert model._n_updates > 0
+    assert all(torch.equal(p, actor[n]) for n, p in _params(model.actor).items()), "the actor is frozen"
+    assert float(model.log_ent_coef.detach()) == alpha, "and so is its entropy coefficient"
+    assert any(not torch.equal(p, critic[n]) for n, p in _params(model.critic).items()), "the critic learns"
+
+
+def test_the_actor_learns_once_the_warm_up_is_over():
+    from autofly_ue5.expert.warmstart import PolicyWarmupSAC
+
+    model = _model(NEW, algorithm=PolicyWarmupSAC, learning_starts=10)
+    model.actor_freeze_updates = 8
+    actor = _params(model.actor)
+    model.learn(total_timesteps=40)
+    assert model._n_updates > 8
+    assert any(not torch.equal(p, actor[n]) for n, p in _params(model.actor).items())
+    assert model.actor.optimizer.param_groups[0]["lr"] > 0.0
+
+
+def test_training_takes_the_warm_up_length_and_records_it(tmp_path, monkeypatch):
+    _old, path = _saved_source(tmp_path)
+    code, out = _train(tmp_path, monkeypatch, "--warm-start", str(path), "--actor-freeze-updates", "1000")
+    record = json.loads(out.read_text())
+    assert code == 0 and record["config"]["actor_freeze_updates"] == 1000, record["error"]
+    code, _ = _train(tmp_path / "x", monkeypatch, "--actor-freeze-updates", "1000")
+    assert code == 2, "a warm-up without a warm start is refused"
