@@ -64,7 +64,7 @@ These are preliminary, from a throwaway script. Task B1 makes them reproducible 
 
 ## Tasks
 
-- [ ] **B0. Seeds.** Add `COLLECTION_SEED_BASE` (400e6) and move the probes' 300e6 into `expert/seeds.py`, both
+- [x] **B0. Seeds.** (9e55b63) Add `COLLECTION_SEED_BASE` (400e6) and move the probes' 300e6 into `expert/seeds.py`, both
   under the disjointness test. Collection never reuses a gate or training seed.
 - [x] **B1. `scripts/decode_state.py`** (done 2026-10-02 as analysis, ahead of the go-ahead because it decides U1).
   Results on the real episodes: state[2] adopted (altitude, |r| 0.986 and 0.996); state[1], [4] and [5] not adopted
@@ -81,30 +81,35 @@ These are preliminary, from a throwaway script. Task B1 makes them reproducible 
   - Settle a0 (U1), and whether the ≈ 7.2 m final distance is measured to the target's surface or its centre
     (§13).
   - Output: `docs/gates/m3_state_decoding.json`.
-- [ ] **B2. `dataset/state.py`.** Compute state[9] from an `Observation` and the episode setup, with B1's
+- [x] **B2. `dataset/state.py`.** (c529654) Compute state[9] from an `Observation` and the episode setup, with B1's
   definitions, unit-tested against hand-computed poses.
-- [ ] **B3. `collect/`.** The collector flies `AutoFlyEnv` (resilient) with the stochastic `best_model`.
+- [x] **B3. `collect/`.** (c529654) The collector flies `AutoFlyEnv` (resilient) with the stochastic `best_model`.
   - Add `AutoFlyEnv.last_observation` for the RGB frame. It is never an expert input.
-  - a0 per U1. With movers, a0 goes through `env.step`, so they advance during it.
+  - a0 per U1: `reset(options={"a0": "sector8"})` sets the start yaw before anything is recorded. No step is taken,
+    so movers need no special handling. (Drafted as "a0 goes through `env.step`", before U1 settled on no recorded
+    turn.)
   - Keep success-only episodes. Every other episode goes to `data/rejects/` with its reason.
   - Backend faults replay the seed, as the gate does.
-- [ ] **B4. Raw store (`dataset/raw.py`).** Per episode: PNG frames, `steps.npz` (state, action, simulator time) and a
+- [x] **B4. Raw store (`dataset/raw.py`).** Per episode: PNG frames, `steps.npz` (state, action, simulator time) and a
   provenance JSON (spec §10.2: scene and sha, seed, setup including mover routes and per-step poses, checkpoint and
   sha, platform/engine/package hashes, termination reason). Plus `manifest.json` with splits and counts. This store
   is canonical; every export derives from it.
-- [ ] **B5. RLDS TFRecord exporter (`dataset/rlds.py`)**, mirroring `uavvlasplit_*_dataset/1.0.0`, without adding
+- [x] **B5. RLDS TFRecord exporter (`dataset/rlds.py`)**, mirroring `uavvlasplit_*_dataset/1.0.0`, without adding
   TensorFlow to the numpy-1.26.4 venv:
   - TFRecord framing with masked CRC32C; tensorboard's record writer, checked present in tensorboard 2.21 first;
   - a hand-written `tf.train.Example` protobuf encoder;
   - `features.json` and `dataset_info.json` copied in structure from the release (prerequisite above);
   - read back once with TensorFlow/TFDS in a throwaway venv, outside `.venv`.
-- [ ] **B6. `validate/dataset.py` (§11).**
+  - Done (ea6d3ca): the templates are TFDS 4.9's own output for the release's feature layout, and TFDS read a fake
+    5-episode export and the live 3-episode smoke back exactly (`docs/runbook-m3.md` step 1 has the venv).
+- [x] **B6. `validate/dataset.py` (§11).** (c529654; a7945cd let the start check allow float32 poses)
   - action and state ranges against §3.2;
   - speed and altitude distributions against the real episodes;
   - no NaN; images decode at 256×256;
   - time order, and exactly one 0.2 s simulator step per record;
   - episode lengths; per-scene and per-target counts; provenance complete.
-- [ ] **B7. Live pilot.** 100 s01 episodes → raw store → validator → RLDS export → `docs/gates/m3_gate.json`. About
+- [ ] **B7. Live pilot.** `scripts/collect_dataset.py` (100f5d4); procedure in `docs/runbook-m3.md`. A 3-episode live
+  smoke passed on 2026-10-03 once a7945cd was in, with TFDS read-back exact. Pending: the pilot itself. 100 s01 episodes → raw store → validator → RLDS export → `docs/gates/m3_gate.json`. About
   30 minutes of flying at N = 1, plus rejected episodes and resets: 100 × ~180 steps at the 11.5 steps/s that
   `docs/gates/m2_instances.json` measured for one instance. It can run beside M2d's training only if VRAM and the
   launch guard allow; otherwise after it.

@@ -12,10 +12,10 @@ the hard way; read both before changing anything.
 | What | Where |
 |---|---|
 | Design (binding) | `docs/superpowers/specs/2026-09-15-autofly-ue5-dataset-design.md`: milestones §12, risks §13 |
-| Plans | `docs/superpowers/plans/`: plan1 = M0/M1, plan2 = M2 (SAC expert), plan3 = M2d (moving pillars) |
+| Plans | `docs/superpowers/plans/`: plan1 = M0/M1, plan2 = M2 (SAC expert), plan3 = M2d (moving pillars), plan4 = M3 (collector and dataset) |
 | Evidence | `docs/gates/*.json`; superseded runs in `docs/gates/archive/` |
-| Decisions | `docs/decisions/`: rulings, the 2026-09-25 code-review findings, the 2026-10-02 M2 closeout, moving obstacles and the M4 asset survey |
-| Live procedures | `docs/runbook-m2.md` (M0/M1/M2, done); `docs/runbook-m2d.md` (M2d: probe, throughput, smoke, 12 h run with watchers, gate) |
+| Decisions | `docs/decisions/`: rulings, the 2026-09-25 code-review findings, the 2026-10-02 M2 closeout, moving obstacles and the M4 asset survey, the 2026-10-03 M3 a0 decision |
+| Live procedures | `docs/runbook-m2.md` (M0/M1/M2, done); `docs/runbook-m2d.md` (M2d: probe, throughput, smoke, 12 h run with watchers, gate); `docs/runbook-m3.md` (M3: TFDS venv, smoke, pilot) |
 
 Code (`autofly_ue5/`):
 
@@ -24,12 +24,15 @@ Code (`autofly_ue5/`):
 | `sim/` | The `Simulator` protocol (`protocol.py`) and the only code that imports `projectairsim` (`airsim_backend.py`). Also the in-memory `FakeSimulator`, process ownership (`process.py`) and typed errors (`types.py`) |
 | `scenes/` | Scene JSON → layout → reachability → level spec; the scene resolver (`resolve.py`: id → file, base level, layout, map, config, allow-list); moving-obstacle rules (`motion.py`, pure) |
 | `expert/` | `AutoFlyEnv` (`env.py`), reward, observation and depth stacking (`obs.py`), episode sampling, movers at runtime (`movers.py`), the resilient wrapper (`resilient.py`), fault classes (`faults.py`), seed ranges (`seeds.py`), vec envs (`vec.py`), the SAC trainer (`train.py`) and the evaluation harness (`evaluate.py`) |
+| `collect/` | The episode collector (`collector.py`): the expert flies with a0's aligned start, successes are stored, everything else goes to the rejects, faults replay the seed |
+| `dataset/` | AutoFly's state[9] (`state.py`), the canonical raw store (`raw.py`), and the RLDS/TFDS exporter (`rlds.py`, with TFDS-generated metadata templates in `rlds_templates/`) |
 | `evidence.py` | Per-scene default evidence paths, and the refusal to write over `docs/gates/` |
-| `validate/` | M0/M1 gate checks and the engine-fault audit (`engine_check.py`) |
+| `validate/` | M0/M1 gate checks, the engine-fault audit (`engine_check.py`) and the dataset validator (`dataset.py`, spec §11) |
 
 Elsewhere in the repo:
 - `scripts/`: shell and Python entry points (run_job, setup, launch/stop sim, throughput, the gate for any scene, audits,
-  the mover probe, renders, and `watch_training.py`, the live training dashboard).
+  the mover probe, renders, `watch_training.py` (the live training dashboard), and M3's `collect_dataset.py` and
+  `export_rlds.py`).
 - `configs/`: Project AirSim scene configs; `*_fast` means a 1 ms real-time update rate.
 - `scenes/`: scene JSONs. `s01d_moving_pillars.json` flies s01's level (`"level": "s01"`) with 8–12 moving pillars.
 - `tests/`: offline tests (the FakeSimulator plus fakes of the projectairsim API).
@@ -39,7 +42,8 @@ Git-ignored but present on the GPU host:
 - `platform/` (Project AirSim @4d878bf);
 - `ue_project/` (Blocks + plugin; packaged binary under `Packaged/`);
 - `.venv/`;
-- `runs/` (every run's output: `sim/`, `jobs/`, `levels/`, `expert/`, …).
+- `runs/` (every run's output: `sim/`, `jobs/`, `levels/`, `expert/`, …; `runs/tools/tfds_venv` reads RLDS exports back);
+- `data/` (collected datasets and their rejects).
 
 ## Status (update when it changes)
 
@@ -49,7 +53,7 @@ Git-ignored but present on the GPU host:
 | M1 | Passed 2026-09-16 (`docs/gates/m1_gate.json`) |
 | M2 | Passed 2026-09-26 (`docs/gates/m2_gate.json`, run 2): best_model 0.98 deterministic / 0.99 stochastic, final 0.96 / 0.95, over 200 held-out episodes. Run 1's failed gate is archived in `docs/gates/archive/2026-09-17-m2-run1/`. Closeout: `docs/decisions/2026-10-02-m2-closeout.md` (best_model flies M3, stochastically) |
 | M2d | **Open** (moving pillars, scene s01d; added 2026-10-02 at the user's request), on branch `feat/moving-pillars`. Probe passed (`docs/gates/m2d_mover_probe.json`), throughput recorded (`m2d_instances.json`, N = 4), smoke passed. The run `runs/expert/s01d_r1` started 2026-10-02 17:23. Session 0 ended at 22:51 (190k steps, best evaluation 0.85 at 175k) when Unreal refused a pillar move; that is now a recoverable fault (202a314), and session 1 resumed 2026-10-03 02:20 with the 6.5 h left. Next: `docs/runbook-m2d.md` step 6, the gate |
-| M3 | Not started. Its s01 pilot does not wait for M2d |
+| M3 | **Built** 2026-10-03 (Plan 4 B0–B6): the collector, the raw store, state[9], the validator and the RLDS exporter, with a0 as an unrecorded 8-sector start alignment (`docs/decisions/2026-10-03-m3-a0-and-collection.md`). A 3-episode live smoke passed the validator and the TFDS read-back. Next: the 100-episode s01 pilot, `docs/runbook-m3.md` step 3 |
 
 Each milestone stops for the user's go-ahead before the next starts. The user asked for M2d and M3 on 2026-10-02.
 
