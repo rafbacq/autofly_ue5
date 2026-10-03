@@ -125,6 +125,7 @@ from stable_baselines3.common.callbacks import BaseCallback, CallbackList, Check
 from stable_baselines3.common.vec_env import VecEnv
 
 from autofly_ue5.expert.env import AutoFlyEnv  # noqa: F401  (re-exported for callers of this module)
+from autofly_ue5.expert.env import action_space
 from autofly_ue5.expert.faults import (  # noqa: F401  (re-exported: moved from this module)
     FAULT_ERRORS_RESET,
     FAULT_ERRORS_STEP,
@@ -162,6 +163,7 @@ from autofly_ue5.expert.seeds import (  # noqa: F401  (EVAL_SEED_BASE etc. re-ex
 )
 from autofly_ue5.expert.vec import call_reset_with_timeout, collect_fault_summaries, make_vec_env, teardown  # noqa: F401
 from autofly_ue5.expert.warmstart import PolicyWarmupSAC, warm_start
+from autofly_ue5.expert.warmstart import plan as warm_plan
 from autofly_ue5.paths import RUNS_DIR
 from autofly_ue5.scenes.model import Layout, SceneFile
 from autofly_ue5.scenes.resolve import ResolvedScene, resolve_scene
@@ -405,11 +407,18 @@ def warm_start_source(path: Path | None, obs_config: ObsConfig, *, resume: bool)
         raise FileNotFoundError(f"--warm-start: no checkpoint at {path}")
     from stable_baselines3.common.save_util import load_from_zip_file
 
-    data, _params, _variables = load_from_zip_file(path, device="cpu", load_data=True)
+    from stable_baselines3.sac.policies import MultiInputPolicy
+
+    data, params, _variables = load_from_zip_file(path, device="cpu", load_data=True)
     source = obs_config_from_space(data["observation_space"])
-    if (source.depth_frames, source.depth_dtype) != (obs_config.depth_frames, obs_config.depth_dtype):
-        raise ValueError(f"--warm-start: {path} sees {source.to_json()}, this run {obs_config.to_json()}; the depth "
-                         f"stack must match")
+    # The new network, built offline on the CPU, against the same mapping warm_start() applies: any parameter it
+    # cannot take (another depth stack, slot count or network) is refused here, before a run root or a simulator.
+    policy = MultiInputPolicy(obs_config.space(), action_space(), lambda _progress: LEARNING_RATE, **POLICY_KWARGS)
+    try:
+        warm_plan({name: tuple(t.shape) for name, t in policy.state_dict().items()}, params["policy"])
+    except ValueError as err:
+        raise ValueError(f"--warm-start: {path} ({source.to_json()}) cannot seed this run ({obs_config.to_json()}): "
+                         f"{err}") from err
     return {"path": str(path), "sha256": sha256_of(Path(path)), "source_obs_config": source.to_json()}
 
 

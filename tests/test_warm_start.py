@@ -137,3 +137,76 @@ def test_a_warm_start_is_refused_with_resume_or_without_a_readable_source(tmp_pa
     _old, path = _saved_source(tmp_path)
     code, _out = _train(tmp_path, monkeypatch, "--warm-start", str(path), "--resume")
     assert code == 2 and "--warm-start" in capsys.readouterr().err
+
+
+def _trained_source(tmp_path):
+    """A source whose optimizers hold state, as a real checkpoint's do (s01d_r1: Adam at step 219,992)."""
+    old = _model(OLD, learning_starts=10)
+    old.learn(total_timesteps=30)
+    path = tmp_path / "trained_source.zip"
+    old.save(path)
+    return old, path
+
+
+def _fake_grads(module, seed, widen_from=None):
+    """Deterministic pseudo-gradients by parameter name; a widened head gets the source's columns first."""
+    grads = {}
+    for name, param in module.named_parameters():
+        gen = torch.Generator().manual_seed(seed + sum(map(ord, name)))
+        if widen_from is not None and name in widen_from and widen_from[name].shape != param.shape:
+            extra = torch.randn(param.shape[0], param.shape[1] - widen_from[name].shape[1], generator=gen)
+            grads[name] = torch.cat([widen_from[name], extra], dim=1)
+        else:
+            grads[name] = torch.randn(param.shape, generator=gen)
+    return grads
+
+
+def test_the_optimizer_state_comes_across_so_the_first_updates_match_the_source(tmp_path):
+    # A fresh Adam's first updates move every weight by the full learning rate: 10-180x the steady-state step of
+    # s01d_r1's own optimizer (the 2026-10-03 review measured its |m|/sqrt(v): median 0.023 actor, 0.0056 critic).
+    from autofly_ue5.expert.warmstart import warm_start
+
+    old, path = _trained_source(tmp_path)
+    new = _model(NEW)
+    report = warm_start(new, path)
+    assert report["optimizers"] == {"actor": "copied", "critic": "copied", "ent_coef": "copied"}
+    for net in ("actor", "critic"):
+        old_net, new_net = getattr(old, net), getattr(new, net)
+        g_old = _fake_grads(old_net, 7)
+        g_new = _fake_grads(new_net, 7, widen_from=g_old)
+        for name, param in old_net.named_parameters():
+            param.grad = g_old[name].clone()
+        for name, param in new_net.named_parameters():
+            param.grad = g_new[name].clone()
+        old_net.optimizer.step()
+        new_net.optimizer.step()
+        new_params = dict(new_net.named_parameters())
+        for name, param in old_net.named_parameters():
+            updated = new_params[name].detach()[:, :param.shape[1]] if name.endswith("head.0.weight") else new_params[name].detach()
+            torch.testing.assert_close(updated, param.detach(), atol=1e-7, rtol=0, msg=f"{net}: {name}")
+    for model in (old, new):
+        model.log_ent_coef.grad = torch.full_like(model.log_ent_coef, 0.3)
+        model.ent_coef_optimizer.step()
+    assert float(new.log_ent_coef) == pytest.approx(float(old.log_ent_coef), abs=1e-9)
+
+
+def test_a_source_the_new_network_cannot_take_is_refused_before_anything_is_claimed(tmp_path, monkeypatch, capsys):
+    six_slots = _model(ObsConfig(3, "float16", mover_slots=6))
+    path = tmp_path / "six_slots.zip"
+    six_slots.save(path)
+    code, _out = _train(tmp_path, monkeypatch, "--warm-start", str(path))
+    assert code == 2 and "mover_mlp" in capsys.readouterr().err
+    assert not (tmp_path / "run").exists() and not (tmp_path / "sim").exists(), "refused before the run root or a launch"
+
+
+def test_a_warm_started_run_resumes_like_any_other(tmp_path, monkeypatch):
+    from autofly_ue5.expert.warmstart import PolicyWarmupSAC  # noqa: F401  (its saves must load as plain SAC)
+
+    _old, path = _saved_source(tmp_path)
+    code, out = _train(tmp_path, monkeypatch, "--warm-start", str(path), "--checkpoint-freq", "10")
+    assert code == 0, json.loads(out.read_text())["error"]
+    out2 = tmp_path / "train_session1.json"
+    code, _ = _train(tmp_path, monkeypatch, "--resume", "--out", str(out2))
+    record = json.loads(out2.read_text())
+    assert code == 0 and record["status"] == "ok" and record["resume"] is True, record["error"]
+    assert record["resumed_from"].endswith("_steps.zip") and record["warm_start"] is None

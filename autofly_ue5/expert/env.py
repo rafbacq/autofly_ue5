@@ -36,6 +36,13 @@ from autofly_ue5.scenes.model import Layout, SceneFile
 from autofly_ue5.sim.protocol import Simulator
 from autofly_ue5.sim.types import CONTROL_DT_S, CameraPoseError, KinematicsJumpError, Observation, Pose, StartCollisionError
 
+def action_space() -> spaces.Box:
+    """Forward speed 0-2 m/s, yaw rate -1..1 rad/s, vertical speed -1..1 m/s (spec §8). A function, so a check that
+    needs the policy's shapes (expert.warmstart's pre-check) can build it without an env."""
+    return spaces.Box(low=np.array([0.0, -1.0, -1.0], dtype=np.float32),
+                      high=np.array([2.0, 1.0, 1.0], dtype=np.float32), dtype=np.float32)
+
+
 # Step faults that a moving pillar the drone was about to touch can cause (spec §6.5, "defensive inference").
 MOVER_INFERABLE_FAULTS = (CameraPoseError, KinematicsJumpError)
 
@@ -87,11 +94,7 @@ class AutoFlyEnv(gym.Env):
         self._obs_config = obs_config if obs_config is not None else obs_config_for_scene(scene)
         self.observation_space = self._obs_config.space()
         self._stacker = DepthStacker(self._obs_config)
-        self.action_space = spaces.Box(
-            low=np.array([0.0, -1.0, -1.0], dtype=np.float32),
-            high=np.array([2.0, 1.0, 1.0], dtype=np.float32),
-            dtype=np.float32,
-        )
+        self.action_space = action_space()
 
         self._sim: Simulator | None = None
         self._spawned: tuple[str, ...] = ()
