@@ -78,6 +78,7 @@ from autofly_ue5.sim.process import (  # noqa: E402
     SIM_RUN_DIR,
     instance_dir,
     route_client_log,
+    slot_busy,
     stop_instances,
     sweep_orphaned_instances,
 )
@@ -384,7 +385,10 @@ def build_arg_parser() -> argparse.ArgumentParser:
                         "expert was trained on")
     p.add_argument("--run-root", type=Path, default=None,
                    help="the training run whose best/best_model.zip and final.zip to gate (default runs/expert/<scene>)")
-    p.add_argument("--instance", type=int, default=0)
+    p.add_argument("--instance", type=int, default=0,
+                   help="the simulator slot; refused while another live run holds it (an --instances N training run "
+                        "holds 0..N)")
+    p.add_argument("--sim-root", type=Path, default=SIM_RUN_DIR, help=argparse.SUPPRESS)
     p.add_argument("--seed-base", type=int, default=EVAL_SEED_BASE)
     p.add_argument("--device", default="auto")
     p.add_argument("--max-steps-per-episode", type=int, default=DEFAULT_MAX_STEPS_PER_EPISODE)
@@ -398,6 +402,9 @@ def main(argv: list[str] | None = None) -> int:
         out_path = args.out if args.out is not None else default_evidence_path(args.scene, "gate")
         refuse_existing_evidence(out_path)
         resolved = resolve_scene(args.scene)
+        busy = slot_busy(args.instance, args.sim_root)
+        if busy:
+            raise ValueError(f"{busy}; pass a free --instance")
     except (FileNotFoundError, FileExistsError, ValueError) as err:
         print(f"refusing to start: {err}", file=sys.stderr)
         return 2
@@ -408,7 +415,8 @@ def main(argv: list[str] | None = None) -> int:
         seed_base=args.seed_base, instance=args.instance, out_path=out_path, device=args.device,
         max_steps_per_episode=args.max_steps_per_episode,
         max_fault_retries_per_episode=args.max_fault_retries_per_episode,
-        sim_factory=scene_config_factory(scene_config, resolved.movable_objects), scene_config=scene_config,
+        sim_factory=scene_config_factory(scene_config, resolved.movable_objects, run_root=args.sim_root),
+        scene_config=scene_config, sim_root=args.sim_root,
     )
     print(json.dumps(
         {"status": gate["status"], "pass": gate["pass"],

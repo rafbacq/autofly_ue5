@@ -195,3 +195,24 @@ def test_the_start_check_allows_float32_poses_but_not_a_recording_that_starts_a_
     data["state"][0, 6:8] = [0.0052, 0.0]  # where the live drone was one step later
     np.savez(path, **data)
     assert any("not at the start" in f for f in validate_dataset(root)["failures"])
+
+
+def test_the_pilot_cli_refuses_a_slot_another_live_run_holds(tmp_path, capsys):
+    from scripts.collect_dataset import main
+    from tests.test_process import _init_owner, _sleeper
+
+    from autofly_ue5.sim.process import instance_dir, stop
+
+    checkpoint = tmp_path / "model.zip"
+    checkpoint.write_bytes(b"x")
+    _sleeper(7, tmp_path / "sim", owner=_init_owner())
+    log = instance_dir(7, tmp_path / "sim") / "client.log"
+    log.write_text("the other run's log\n")
+    try:
+        assert main(["--model", str(checkpoint), "--scene-config", "scene_autofly_s01_fast.jsonc", "--name", "pilot",
+                     "--data-root", str(tmp_path / "data"), "--out", str(tmp_path / "m3.json"), "--instance", "7",
+                     "--sim-root", str(tmp_path / "sim")]) == 2
+    finally:
+        stop(7, grace_s=2.0, run_root=tmp_path / "sim")
+    assert "slot 7 holds simulator pid" in capsys.readouterr().err
+    assert log.read_text() == "the other run's log\n" and not (tmp_path / "data").exists()

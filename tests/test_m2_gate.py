@@ -336,3 +336,26 @@ def test_the_gate_runs_end_to_end_against_the_fake_and_records_what_it_measured(
     assert "kernel_journal_readable" in gate["engine_faults"]
     assert (tmp_path / "gate.json").is_file()
     assert (tmp_path / "sim" / "inst5" / "client.log").is_file(), "client logs go under the given sim_root"
+
+
+def test_the_gate_refuses_a_slot_another_live_run_holds_before_touching_it(tmp_path, capsys):
+    # e.g. slot 4 under a 4-worker training run is its evaluation simulator. Refused before the slot's client log is
+    # opened (route_client_log truncates it) or anything launches.
+    from scripts.m2_gate import main
+    from tests.test_process import _init_owner, _sleeper
+
+    from autofly_ue5.sim.process import instance_dir, is_alive, stop
+
+    checkpoint = tmp_path / "model.zip"
+    checkpoint.write_bytes(b"x")
+    foreign = _sleeper(7, tmp_path / "sim", owner=_init_owner())
+    log = instance_dir(7, tmp_path / "sim") / "client.log"
+    log.write_text("the other run's log\n")
+    try:
+        code = main(["--scene", "s01", "--model", f"m={checkpoint}", "--instance", "7", "--sim-root", str(tmp_path / "sim"),
+                     "--out", str(tmp_path / "gate.json")])
+        assert code == 2 and "slot 7 holds simulator pid" in capsys.readouterr().err
+        assert log.read_text() == "the other run's log\n" and not (tmp_path / "gate.json").exists()
+    finally:
+        stop(7, grace_s=2.0, run_root=tmp_path / "sim")
+    assert not is_alive(foreign.pid)

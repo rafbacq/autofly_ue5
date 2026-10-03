@@ -350,3 +350,22 @@ def test_a_half_written_pid_file_does_not_break_a_sweep(tmp_path):
     (d / "pid.json").write_text('{"pid": 12')
     assert own_running_instances(tmp_path) == []
     assert sweep_orphaned_instances(tmp_path) == []
+
+
+def test_slot_busy_names_a_slot_a_live_run_holds_and_frees_the_rest(tmp_path):
+    # A side job (gate, pilot, smoke) must not take a slot a live run holds: an --instances N training run also owns
+    # slot N, its evaluation simulator (2026-10-03). A dead run's slot is the startup sweep's to clear, not busy.
+    from autofly_ue5.sim.process import slot_busy
+
+    foreign = _sleeper(1, tmp_path, owner=_init_owner())
+    orphan = _sleeper(2, tmp_path, owner=_dead_owner())
+    mine = _sleeper(3, tmp_path)
+    try:
+        assert "pid" in slot_busy(1, tmp_path) and str(foreign.pid) in slot_busy(1, tmp_path)
+        assert slot_busy(2, tmp_path) is None, "a dead run's simulator is an orphan, not a reason to refuse"
+        assert slot_busy(3, tmp_path) is None, "this run's own slot"
+        assert slot_busy(4, tmp_path) is None, "an empty slot"
+    finally:
+        for instance in (1, 2, 3):
+            stop(instance, grace_s=2.0, run_root=tmp_path)
+    assert not any(is_alive(sp.pid) for sp in (foreign, orphan, mine))

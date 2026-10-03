@@ -368,6 +368,22 @@ def stop_instances(instances, run_root: Path = SIM_RUN_DIR, owner: RunOwner | No
     return [{"instance": i, "result": stop_instance(i, run_root, owner)} for i in instances]
 
 
+def slot_busy(instance: int, run_root: Path = SIM_RUN_DIR, owner: RunOwner | None = None) -> str | None:
+    """Why `instance` is not free for `owner` (default: this run), or None. Busy means its recorded simulator is alive
+    and owned by another live run. A side job checks this before it launches or opens the slot's client log: an
+    --instances N training run also owns slot N, its evaluation simulator (2026-10-03). A dead run's simulator is
+    not a reason to refuse; the startup sweep stops it."""
+    owner = owner if owner is not None else current_run_owner()
+    try:
+        sp = read_pid_file(instance_dir(instance, run_root) / "pid.json")
+    except (FileNotFoundError, json.JSONDecodeError, TypeError):
+        return None
+    recorded = _recorded_owner(sp)
+    if not is_alive(sp.pid) or recorded is None or recorded == owner or not recorded.is_alive():
+        return None
+    return f"slot {instance} holds simulator pid {sp.pid}, owned by the live run pid {recorded.pid}"
+
+
 def sweep_orphaned_instances(run_root: Path = SIM_RUN_DIR) -> list[dict]:
     """Stop every owned, running simulator whose run is gone (dead owner, or a record from before ownership) --
     what a crashed earlier run leaves holding VRAM. Simulators of a live run, including another concurrent one,

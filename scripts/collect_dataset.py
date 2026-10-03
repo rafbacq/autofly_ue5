@@ -44,7 +44,7 @@ from autofly_ue5.expert.vec import teardown  # noqa: E402
 from autofly_ue5.paths import PACKAGED_BINARY, ROOT, UE_PROJECT_DIR  # noqa: E402
 from autofly_ue5.scenes.resolve import resolve_scene  # noqa: E402
 from autofly_ue5.sim.airsim_backend import scene_config_factory, scene_config_record  # noqa: E402
-from autofly_ue5.sim.process import SIM_RUN_DIR, instance_dir, stop_instances, sweep_orphaned_instances  # noqa: E402
+from autofly_ue5.sim.process import SIM_RUN_DIR, instance_dir, slot_busy, stop_instances, sweep_orphaned_instances  # noqa: E402
 from autofly_ue5.validate.dataset import validate_dataset  # noqa: E402
 from autofly_ue5.validate.engine_check import audit_engine_faults, boot_id, xid_count  # noqa: E402
 from scripts.export_rlds import check_with_tfds  # noqa: E402
@@ -175,7 +175,10 @@ def build_arg_parser() -> argparse.ArgumentParser:
     p.add_argument("--name", required=True, help="the dataset's directory under --data-root; never written over")
     p.add_argument("--episodes", type=int, default=100, help="successful episodes to keep")
     p.add_argument("--max-attempts", type=int, default=None, help="seeds to fly at most (default 10 x --episodes)")
-    p.add_argument("--instance", type=int, default=0)
+    p.add_argument("--instance", type=int, default=0,
+                   help="the simulator slot; refused while another live run holds it (an --instances N training run "
+                        "holds 0..N)")
+    p.add_argument("--sim-root", type=Path, default=SIM_RUN_DIR, help=argparse.SUPPRESS)
     p.add_argument("--data-root", type=Path, default=ROOT / "data")
     p.add_argument("--out", type=Path, default=None, help="the gate record (default docs/gates/m3_gate.json)")
     p.add_argument("--target-name", default=DEFAULT_TARGET_NAME)
@@ -190,6 +193,9 @@ def main(argv: list[str] | None = None) -> int:
     out_path = args.out if args.out is not None else evidence.GATES_DIR / "m3_gate.json"
     try:
         evidence.refuse_existing_evidence(out_path)
+        busy = slot_busy(args.instance, args.sim_root)
+        if busy:
+            raise ValueError(f"{busy}; pass a free --instance")
         resolve_scene(args.scene)
         scene_config_record(args.scene_config)
         if not args.model.is_file():
@@ -203,7 +209,7 @@ def main(argv: list[str] | None = None) -> int:
     record = run(scene=args.scene, model_path=args.model, scene_config=args.scene_config, name=args.name,
                  n_episodes=args.episodes, instance=args.instance, out_path=out_path, data_root=args.data_root,
                  deterministic=args.deterministic, max_attempts=args.max_attempts, target_name=args.target_name,
-                 check_python=args.check_python, device=args.device)
+                 check_python=args.check_python, device=args.device, sim_root=args.sim_root)
     print(json.dumps({"status": record["status"], "pass": record["pass"], "error": record["error"],
                       "kept": (record["collection"] or {}).get("kept"),
                       "validator_pass": (record["validation"] or {}).get("pass")}, indent=2))
