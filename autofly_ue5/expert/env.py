@@ -21,7 +21,15 @@ from gymnasium import spaces
 
 from autofly_ue5.expert.episode import EpisodeSetup, a0_aligned, apply_setup, clear_setup, sample_setup
 from autofly_ue5.expert.movers import MoverController, home_poses, park_poses
-from autofly_ue5.expert.obs import DepthStacker, ObsConfig, encode_depth, encode_vector, obs_config_for_scene, target_geometry
+from autofly_ue5.expert.obs import (
+    MOVER_FEATURES,
+    DepthStacker,
+    ObsConfig,
+    encode_depth,
+    encode_vector,
+    obs_config_for_scene,
+    target_geometry,
+)
 from autofly_ue5.expert.reward import Outcome, RewardConfig, evaluate, oob_kind
 from autofly_ue5.frames import wrap_pi
 from autofly_ue5.scenes.model import Layout, SceneFile
@@ -200,7 +208,8 @@ class AutoFlyEnv(gym.Env):
         if movers is not None:
             info["mover_routes"] = [route.to_json() for route in setup.movers]
         self._last_obs = {"depth": self._stacker.reset(encode_depth(obs.depth)),
-                          "vector": encode_vector(obs.pose, obs.velocity_ned, obs.yaw_rate, setup.target_xy_z)}
+                          "vector": encode_vector(obs.pose, obs.velocity_ned, obs.yaw_rate, setup.target_xy_z),
+                          **self._mover_obs(obs.pose)}
         return self._last_obs, info
 
     def step(self, action: np.ndarray) -> tuple[dict[str, np.ndarray], float, bool, bool, dict]:
@@ -267,8 +276,18 @@ class AutoFlyEnv(gym.Env):
                           collision_source=source if result.outcome is Outcome.COLLISION else None, mover_in_view=seen,
                           mover_contact=mover_contact if result.outcome is Outcome.COLLISION else None)
         self._last_obs = {"depth": self._stacker.push(encode_depth(obs.depth)),
-                          "vector": encode_vector(obs.pose, obs.velocity_ned, obs.yaw_rate, self._setup.target_xy_z)}
+                          "vector": encode_vector(obs.pose, obs.velocity_ned, obs.yaw_rate, self._setup.target_xy_z),
+                          **self._mover_obs(obs.pose)}
         return self._last_obs, result.reward, result.terminated, result.truncated, info
+
+    def _mover_obs(self, pose: Pose) -> dict[str, np.ndarray]:
+        """The `movers` key when the observation has one (a dynamic scene's default since 2026-10-03), else nothing."""
+        slots = self._obs_config.mover_slots
+        if not slots:
+            return {}
+        if self._movers is None:
+            return {"movers": np.zeros(slots * MOVER_FEATURES, dtype=np.float32)}
+        return {"movers": self._movers.observation(pose, slots)}
 
     @property
     def setup(self) -> EpisodeSetup | None:

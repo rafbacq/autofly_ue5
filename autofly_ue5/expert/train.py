@@ -134,7 +134,14 @@ from autofly_ue5.expert.faults import (  # noqa: F401  (re-exported: moved from 
 from autofly_ue5.evidence import default_evidence_path, record_destination, refuse_existing_evidence
 from autofly_ue5.expert.evaluate import FaultAwareEvalCallback
 from autofly_ue5.expert.features import POLICY_KWARGS
-from autofly_ue5.expert.obs import DEPTH_SIZE, VECTOR_DIM, ObsConfig, obs_config_for_frames, obs_config_for_scene
+from autofly_ue5.expert.obs import (
+    DEPTH_SIZE,
+    MOVER_FEATURES,
+    VECTOR_DIM,
+    ObsConfig,
+    obs_config_for_frames,
+    obs_config_for_scene,
+)
 from autofly_ue5.expert.resilient import (  # noqa: F401  (re-exported: moved from this module)
     DEFAULT_CLOSE_TIMEOUT_S,
     DEFAULT_MAX_RELAUNCH_ATTEMPTS,
@@ -379,12 +386,28 @@ RAM_HEADROOM_BYTES = 16 * 2**30
 DISK_HEADROOM_BYTES = 10 * 2**30
 
 
+def observation_config(scene, *, depth_frames: int | None = None, mover_slots: int | None = None) -> ObsConfig:
+    """The scene's default observation (obs.obs_config_for_scene) with each command-line override applied to its own
+    field only. A static scene has no movers to report, so it refuses a mover input."""
+    config = obs_config_for_scene(scene)
+    if depth_frames is not None:
+        frames = obs_config_for_frames(depth_frames)
+        config = dataclasses.replace(config, depth_frames=frames.depth_frames, depth_dtype=frames.depth_dtype)
+    if mover_slots is not None:
+        if mover_slots and scene.dynamic is None:
+            raise ValueError(f"scene {scene.id} is static: it has no movers to report (--mover-slots {mover_slots})")
+        config = dataclasses.replace(config, mover_slots=mover_slots)
+    return config
+
+
 def replay_buffer_bytes(buffer_size: int, obs_config: ObsConfig) -> int:
-    """SB3's DictReplayBuffer for this observation: obs and next_obs (depth + vector) per transition, plus the action,
-    reward, done and timeout columns. 150k transitions: 8.47 GB for one float32 frame, 12.70 GB for three float16."""
+    """SB3's DictReplayBuffer for this observation: obs and next_obs (depth + vector + movers) per transition, plus the
+    action, reward, done and timeout columns. 150k transitions: 8.47 GB for one float32 frame, 12.70 GB for three
+    float16, and 29 MB more for s01d's mover input."""
     depth = obs_config.depth_frames * DEPTH_SIZE * DEPTH_SIZE * np.dtype(obs_config.depth_dtype).itemsize
     vector = VECTOR_DIM * 4
-    return int(buffer_size) * (2 * (depth + vector) + 3 * 4 + 4 + 4 + 4)
+    movers = obs_config.mover_slots * MOVER_FEATURES * 4
+    return int(buffer_size) * (2 * (depth + vector + movers) + 3 * 4 + 4 + 4 + 4)
 
 
 def available_ram_bytes() -> int:
@@ -613,6 +636,9 @@ def build_arg_parser() -> argparse.ArgumentParser:
     p.add_argument("--batch-size", type=int, default=BATCH_SIZE)
     p.add_argument("--depth-frames", type=int, default=None,
                    help="depth frames the expert sees (default: 1 for a static scene, 3 for a dynamic one; >1 is float16)")
+    p.add_argument("--mover-slots", type=int, default=None,
+                   help="nearby moving pillars the expert is told about (default: 4 on a dynamic scene, 0 on a static "
+                        "one; 0 reproduces s01d_r1's observation)")
     p.add_argument("--sim-root", type=Path, default=SIM_RUN_DIR,
                    help="where this run's simulators are recorded (tests point it at a scratch directory)")
     return p
@@ -635,8 +661,7 @@ def main(argv: list[str] | None = None) -> int:
         map_path = args.map_path or resolved.map_path
         scene_config = args.scene_config or resolved.default_scene_config
         scene_config_record(scene_config)  # the config file must exist; its hash goes in the record
-        obs_config = (obs_config_for_frames(args.depth_frames) if args.depth_frames is not None
-                      else obs_config_for_scene(scene_file))
+        obs_config = observation_config(scene_file, depth_frames=args.depth_frames, mover_slots=args.mover_slots)
         identity = run_identity(resolved, obs_config, scene_config)
         host = host_preflight(buffer_bytes=replay_buffer_bytes(args.buffer_size, obs_config), run_root=run_root)
         session = prepare_run_root(run_root, resume=args.resume, reward_version=REWARD_VERSION, seed=args.seed,

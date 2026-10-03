@@ -1,4 +1,5 @@
-"""Expert observation encoding (spec §8): depth image + privileged target vector. RGB is never an input."""
+"""Expert observation encoding (spec §8): depth image + privileged target vector, and on a dynamic scene the nearby
+moving pillars. RGB is never an input."""
 
 from __future__ import annotations
 
@@ -68,6 +69,48 @@ def encode_vector(pose: Pose, velocity_ned, yaw_rate: float, target_xy_z) -> np.
     ], dtype=np.float32)
 
 
+# --------------------------------------------------------------------------------------------------------
+# Privileged moving-pillar input (2026-10-03, after the s01d gate failed at 0.775). A mover that yields to the drone
+# stands still and looks exactly like a static pillar in depth (and in RGB: both are white), yet its contact rule fires
+# 1.0 m from its surface while a static pillar needs physical contact (~0.48 m). The expert is the data source, not the
+# student, so it may know which pillars move: the dataset records RGB and state[9] whatever the expert sees.
+# --------------------------------------------------------------------------------------------------------
+MOVER_FEATURES = 6               # present, forward, right, clearance, forward velocity, right velocity
+MOVER_RANGE_M = 10.0             # surface distance at which a mover is reported: ~3 s at the fastest closing speed
+MOVER_CLEARANCE_NORM_M = 5.0     # clearance to the contact boundary, normalised
+MOVER_SPEED_NORM_M_S = 2.0       # the drone's own speed limit; s01d's movers reach 1.2 m/s
+DYNAMIC_MOVER_SLOTS = 4          # s01d puts 8-12 movers among 80 pillars: rarely more than 3 within 10 m
+
+
+def encode_movers(pose: Pose, positions, previous_positions, radii, *, contact_m: float, dt: float,
+                  slots: int) -> np.ndarray:
+    """(slots * MOVER_FEATURES,) float32 in [-1, 1]: per mover whose surface is within MOVER_RANGE_M, nearest
+    clearance first -- present (1), body-frame forward and right offset of its centre, clearance to the contact
+    boundary (surface distance - contact_m; negative inside it), and body-frame velocity over the last step (zero while
+    it yields). Slots without a mover are all zero."""
+    cy, sy = math.cos(pose.yaw), math.sin(pose.yaw)
+    rows = []
+    for (x, y), (px, py), radius in zip(positions, previous_positions, radii):
+        dx, dy = x - pose.x, y - pose.y
+        surface = math.hypot(dx, dy) - radius
+        if surface > MOVER_RANGE_M:
+            continue
+        vx, vy = (x - px) / dt, (y - py) / dt
+        rows.append((surface - contact_m, [
+            1.0,
+            (dx * cy + dy * sy) / MOVER_RANGE_M,
+            (-dx * sy + dy * cy) / MOVER_RANGE_M,
+            (surface - contact_m) / MOVER_CLEARANCE_NORM_M,
+            (vx * cy + vy * sy) / MOVER_SPEED_NORM_M_S,
+            (-vx * sy + vy * cy) / MOVER_SPEED_NORM_M_S,
+        ]))
+    rows.sort(key=lambda row: row[0])
+    out = np.zeros((slots, MOVER_FEATURES), dtype=np.float32)
+    for i, (_clearance, features) in enumerate(rows[:slots]):
+        out[i] = features
+    return np.clip(out, -1.0, 1.0).reshape(-1)
+
+
 def encode(obs: Observation, target_xy_z) -> dict[str, np.ndarray]:
     return {"depth": encode_depth(obs.depth),
             "vector": encode_vector(obs.pose, obs.velocity_ned, obs.yaw_rate, target_xy_z)}
@@ -86,19 +129,25 @@ class ObsConfig:
     (three float32 frames would need 25 GB; docs/decisions/2026-10-02-dynamic-obstacles.md)."""
     depth_frames: int = 1
     depth_dtype: str = "float32"
+    mover_slots: int = 0  # 0: no movers key, the observation every checkpoint before 2026-10-03 was trained on
 
     def __post_init__(self) -> None:
-        if self.depth_frames < 1 or self.depth_dtype not in ("float32", "float16"):
+        if self.depth_frames < 1 or self.depth_dtype not in ("float32", "float16") or self.mover_slots < 0:
             raise ValueError(f"unsupported observation config {self}")
 
     def space(self) -> spaces.Dict:
-        return spaces.Dict({
+        keys = {
             "depth": spaces.Box(0.0, 1.0, (self.depth_frames, DEPTH_SIZE, DEPTH_SIZE), dtype=np.dtype(self.depth_dtype)),
             "vector": spaces.Box(-np.inf, np.inf, (VECTOR_DIM,), dtype=np.float32),
-        })
+        }
+        if self.mover_slots:
+            keys["movers"] = spaces.Box(-1.0, 1.0, (self.mover_slots * MOVER_FEATURES,), dtype=np.float32)
+        return spaces.Dict(keys)
 
     def to_json(self) -> dict:
-        return {"depth_frames": self.depth_frames, "depth_dtype": self.depth_dtype}
+        # mover_slots only when set, so every earlier record and run identity serialises exactly as before
+        return {"depth_frames": self.depth_frames, "depth_dtype": self.depth_dtype,
+                **({"mover_slots": self.mover_slots} if self.mover_slots else {})}
 
 
 def obs_config_for_frames(depth_frames: int) -> ObsConfig:
@@ -107,13 +156,17 @@ def obs_config_for_frames(depth_frames: int) -> ObsConfig:
 
 
 def obs_config_for_scene(scene) -> ObsConfig:
-    return obs_config_for_frames(DYNAMIC_DEPTH_FRAMES if scene.dynamic is not None else 1)
+    if scene.dynamic is None:
+        return ObsConfig()
+    return ObsConfig(DYNAMIC_DEPTH_FRAMES, "float16", mover_slots=DYNAMIC_MOVER_SLOTS)
 
 
 def obs_config_from_space(space: spaces.Dict) -> ObsConfig:
     """The config a checkpoint was trained with, read back from its saved observation space."""
     depth = space["depth"]
-    config = ObsConfig(int(depth.shape[0]), np.dtype(depth.dtype).name)
+    movers = space.spaces.get("movers")
+    config = ObsConfig(int(depth.shape[0]), np.dtype(depth.dtype).name,
+                       mover_slots=int(movers.shape[0]) // MOVER_FEATURES if movers is not None else 0)
     if config.space() != space:
         raise ValueError(f"{space} is not an AutoFly expert observation space (expected {config.space()})")
     return config

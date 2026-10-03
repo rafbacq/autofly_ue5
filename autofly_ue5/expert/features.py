@@ -22,9 +22,12 @@ from torch import nn
 
 
 class DepthVectorExtractor(BaseFeaturesExtractor):
-    """Strided CNN on `depth`, small MLP on `vector`, concatenated and projected to `features_dim`."""
+    """Strided CNN on `depth`, small MLP on `vector`, concatenated and projected to `features_dim`. With a `movers`
+    key (a dynamic scene's privileged moving-pillar input, `obs.encode_movers`) a second small MLP joins the
+    concatenation. Without one the module is exactly what every earlier checkpoint holds, so they all load unchanged."""
 
-    def __init__(self, observation_space: gym.spaces.Dict, features_dim: int = 256, vector_dim: int = 64):
+    def __init__(self, observation_space: gym.spaces.Dict, features_dim: int = 256, vector_dim: int = 64,
+                 mover_dim: int = 64):
         super().__init__(observation_space, features_dim)
         c, h, w = observation_space["depth"].shape
         self.cnn = nn.Sequential(
@@ -36,10 +39,17 @@ class DepthVectorExtractor(BaseFeaturesExtractor):
         with torch.no_grad():
             n_flat = self.cnn(torch.zeros(1, c, h, w)).shape[1]
         self.mlp = nn.Sequential(nn.Linear(observation_space["vector"].shape[0], vector_dim), nn.ReLU())
-        self.head = nn.Sequential(nn.Linear(n_flat + vector_dim, features_dim), nn.ReLU())
+        self.has_movers = "movers" in observation_space.spaces
+        if self.has_movers:
+            self.mover_mlp = nn.Sequential(nn.Linear(observation_space["movers"].shape[0], mover_dim), nn.ReLU())
+        self.head = nn.Sequential(nn.Linear(n_flat + vector_dim + (mover_dim if self.has_movers else 0), features_dim),
+                                  nn.ReLU())
 
     def forward(self, observations: dict[str, torch.Tensor]) -> torch.Tensor:
-        return self.head(torch.cat([self.cnn(observations["depth"]), self.mlp(observations["vector"])], dim=1))
+        parts = [self.cnn(observations["depth"]), self.mlp(observations["vector"])]
+        if self.has_movers:
+            parts.append(self.mover_mlp(observations["movers"]))
+        return self.head(torch.cat(parts, dim=1))
 
 
 POLICY_KWARGS = {

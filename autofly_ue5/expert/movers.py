@@ -10,6 +10,9 @@ from __future__ import annotations
 
 from collections import deque
 
+import numpy as np
+
+from autofly_ue5.expert.obs import encode_movers
 from autofly_ue5.scenes.model import Instance
 from autofly_ue5.scenes.motion import (
     VIEW_HISTORY_FRAMES,
@@ -48,6 +51,7 @@ class MoverController:
         self.inference_radius_m = contact_m + (FORWARD_SPEED_MAX_M_S + max_speed_m_s) * dt
         self.taus = [0.0] * len(routes)
         self.positions = [route.position(0.0) for route in routes]
+        self.previous_positions = list(self.positions)  # before the last advance(): the observation's velocity
         self.moving = [False] * len(routes)  # whether each mover's clock advanced on the last advance() (else it yielded)
         self._frames: deque = deque(maxlen=VIEW_HISTORY_FRAMES)
 
@@ -58,6 +62,7 @@ class MoverController:
         """Advance every clock that may advance (yield rule) and return the poses of the movers that moved."""
         new = yield_clocks(self.routes, self.taus, drone_xy, self.dt, yield_distance_m=self.yield_distance_m)
         self.moving = [tau != old for tau, old in zip(new, self.taus)]
+        self.previous_positions = list(self.positions)
         moved = {}
         for i, (route, old, tau) in enumerate(zip(self.routes, self.taus, new)):
             if tau != old:
@@ -72,6 +77,12 @@ class MoverController:
     def nearest_gap(self, xy: tuple[float, float]) -> float:
         gaps = surface_gaps(self.routes, self.positions, xy)
         return min(gaps) if gaps else float("inf")
+
+    def observation(self, pose: Pose, slots: int) -> np.ndarray:
+        """The expert's privileged mover input for a drone at `pose` (`obs.encode_movers`)."""
+        return encode_movers(pose, self.positions, self.previous_positions,
+                             [route.footprint.radius_m for route in self.routes], contact_m=self.contact_m, dt=self.dt,
+                             slots=slots)
 
     def record_frame(self, pose: Pose) -> None:
         """What one observation showed: the drone's pose and where every mover stood."""

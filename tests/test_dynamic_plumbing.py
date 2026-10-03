@@ -19,7 +19,8 @@ from tests.test_dynamic_env import dynamic_scene, make_dynamic_env, scene_object
 from tests.test_m2_gate import _StraightAtTargetModel
 
 STATIC_OBS = ObsConfig(1, "float32")
-STACKED_OBS = ObsConfig(3, "float16")
+STACKED_OBS = ObsConfig(3, "float16")  # s01d_r1's observation (explicit: gating its checkpoints must keep working)
+S01D_DEFAULT_OBS = ObsConfig(3, "float16", mover_slots=4)  # s01d's default since 2026-10-03: plus the mover input
 
 
 def _no_launch(monkeypatch):
@@ -159,6 +160,8 @@ def test_replay_buffer_arithmetic():
     # 150k transitions x (obs + next_obs): one float32 frame 8.47 GB, three float16 frames 12.70 GB.
     assert replay_buffer_bytes(150_000, STATIC_OBS) == pytest.approx(8.47e9, rel=0.005)
     assert replay_buffer_bytes(150_000, STACKED_OBS) == pytest.approx(12.70e9, rel=0.005)
+    # the mover input: 4 slots x 6 float32 features, in obs and next_obs
+    assert replay_buffer_bytes(150_000, S01D_DEFAULT_OBS) - replay_buffer_bytes(150_000, STACKED_OBS) == 150_000 * 2 * 24 * 4
     assert replay_buffer_bytes(150_000, ObsConfig(3, "float32")) == pytest.approx(25.4e9, rel=0.005)
 
 
@@ -188,7 +191,7 @@ def test_training_on_s01d_stacks_depth_records_its_identity_and_counts_mover_col
     record = json.loads(out.read_text())
     assert code == 0 and record["status"] == "ok", record["error"]
     assert record["scene"] == "s01d" and record["map"] == "/Game/AutoFly/Maps/S01"
-    assert record["obs_config"] == STACKED_OBS.to_json()
+    assert record["obs_config"] == S01D_DEFAULT_OBS.to_json()
     identity = record["identity"]
     assert identity["scene"] == "s01d" and identity["base_scene"] == "s01" and identity["dynamic"]["count"] == [8, 12]
     assert identity["scene_config"]["file"] == "scene_autofly_s01.jsonc" and len(identity["scene_config"]["sha256"]) == 64
@@ -206,10 +209,37 @@ def test_the_depth_stack_can_be_set_on_the_command_line(tmp_path, monkeypatch):
     _no_launch(monkeypatch)
     monkeypatch.setattr(train, "scene_config_factory", lambda config, movable=(), **kw: _dynamic_fake_factory())
     out = tmp_path / "train.json"
-    train.main(["--scene", "s01d", "--depth-frames", "1", "--run-root", str(tmp_path / "run"), "--out", str(out),
-                "--device", "cpu", "--sim-root", str(tmp_path / "sim"), "--total-timesteps", "10",
+    train.main(["--scene", "s01d", "--depth-frames", "1", "--mover-slots", "0", "--run-root", str(tmp_path / "run"),
+                "--out", str(out), "--device", "cpu", "--sim-root", str(tmp_path / "sim"), "--total-timesteps", "10",
                 "--learning-starts", "100", "--buffer-size", "100", "--eval-freq", "1000"])
     assert json.loads(out.read_text())["obs_config"] == STATIC_OBS.to_json()
+
+
+@pytest.mark.parametrize("flags, expected", [
+    (["--mover-slots", "0"], STACKED_OBS),                                   # s01d_r1's observation exactly
+    (["--mover-slots", "6"], ObsConfig(3, "float16", mover_slots=6)),
+    (["--depth-frames", "1"], ObsConfig(1, "float32", mover_slots=4)),       # each flag overrides only its own field
+])
+def test_each_observation_flag_overrides_only_its_own_field(tmp_path, monkeypatch, flags, expected):
+    from autofly_ue5.expert import train
+
+    _no_launch(monkeypatch)
+    monkeypatch.setattr(train, "scene_config_factory", lambda config, movable=(), **kw: _dynamic_fake_factory())
+    out = tmp_path / "train.json"
+    train.main(["--scene", "s01d", *flags, "--run-root", str(tmp_path / "run"), "--out", str(out), "--device", "cpu",
+                "--sim-root", str(tmp_path / "sim"), "--total-timesteps", "10", "--learning-starts", "100",
+                "--buffer-size", "100", "--eval-freq", "1000"])
+    assert json.loads(out.read_text())["obs_config"] == expected.to_json()
+
+
+def test_a_static_scene_refuses_a_mover_input(tmp_path, monkeypatch, capsys):
+    from autofly_ue5.expert import train
+
+    _no_launch(monkeypatch)
+    code = train.main(["--scene", "s01", "--mover-slots", "4", "--run-root", str(tmp_path / "run"),
+                       "--out", str(tmp_path / "train.json"), "--sim-root", str(tmp_path / "sim")])
+    assert code != 0 and "no movers" in capsys.readouterr().err
+    assert not (tmp_path / "run").exists(), "refused before claiming the run root"
 
 
 def test_vec_envs_take_the_observation_config(tmp_path):
@@ -233,7 +263,7 @@ def test_a_checkpoints_observation_config_is_read_from_its_zip(tmp_path):
 
     model = build_model(DummyVecEnv([make_dynamic_env]), device="cpu", buffer_size=50, learning_starts=100, verbose=0)
     model.save(tmp_path / "m.zip")
-    assert checkpoint_obs_config(tmp_path / "m.zip") == STACKED_OBS
+    assert checkpoint_obs_config(tmp_path / "m.zip") == S01D_DEFAULT_OBS
 
 
 def _gate(tmp_path, scene, model_paths, *, reader, sim_factory, n=2):
