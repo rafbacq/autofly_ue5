@@ -261,6 +261,11 @@ class AutoFlyEnv(gym.Env):
         return self._setup
 
     @property
+    def spawned(self) -> tuple[str, ...]:
+        """The current episode's spawned object names, target first (provenance, spec §10.2)."""
+        return self._spawned
+
+    @property
     def last_observation(self) -> Observation | None:
         """The simulator's full observation behind the last reset() or step() -- RGB included, which the expert never
         sees but M3's collector records (spec §9-§10)."""

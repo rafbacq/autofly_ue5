@@ -336,6 +336,23 @@ def _runtime_material_path(registry, name: str | None) -> str | None:
     return entry.ue_path if entry.kind in RUNTIME_SPAWNABLE_MATERIAL_KINDS else None
 
 
+def spawn_spec(setup: EpisodeSetup) -> dict:
+    """What apply_setup() spawns, by registry key: one asset for all, the target's material, and the distractors'
+    (None when the obstacle material cannot be applied at runtime, leaving the mesh's default; see below). The
+    collector records it as provenance (spec §10.2)."""
+    registry = load_registry()
+    if "orange" in registry.materials:
+        target_material_name: str | None = "orange"
+    else:
+        target_material_name = next((name for name in registry.materials if name != setup.obstacle_material), None)
+    return {
+        "asset": "cylinder",
+        "target_material": target_material_name,
+        "distractor_material": (setup.obstacle_material
+                                if _runtime_material_path(registry, setup.obstacle_material) is not None else None),
+    }
+
+
 def apply_setup(sim: Simulator, setup: EpisodeSetup) -> tuple[str, ...]:
     """Spawn the target then the distractors; return the actual (uniquified) names, target first.
 
@@ -366,13 +383,10 @@ def apply_setup(sim: Simulator, setup: EpisodeSetup) -> tuple[str, ...]:
     number of episodes would otherwise leak forever.
     """
     registry = load_registry()
-    if "orange" in registry.materials:
-        target_material_name: str | None = "orange"
-    else:
-        target_material_name = next((name for name in registry.materials if name != setup.obstacle_material), None)
-    target_material = _runtime_material_path(registry, target_material_name)
+    spec = spawn_spec(setup)
+    target_material = _runtime_material_path(registry, spec["target_material"])
     obstacle_material = _runtime_material_path(registry, setup.obstacle_material)
-    asset_name = _spawn_asset_name(registry.assets["cylinder"].ue_path)
+    asset_name = _spawn_asset_name(registry.assets[spec["asset"]].ue_path)
 
     names: list[str] = []
     try:

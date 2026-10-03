@@ -23,7 +23,7 @@ import numpy as np
 
 from autofly_ue5.dataset.raw import RawDatasetWriter
 from autofly_ue5.dataset.state import autofly_state
-from autofly_ue5.expert.episode import INSTRUCTION_TEMPLATES
+from autofly_ue5.expert.episode import INSTRUCTION_TEMPLATES, spawn_spec
 from autofly_ue5.scenes.model import SceneFile
 
 DEFAULT_MAX_STEPS = 1_000  # far above AutoFlyEnv's 300-step limit: a guard, not a target
@@ -47,6 +47,7 @@ def _fly(model, env, seed: int, *, deterministic: bool, max_steps: int) -> dict[
     obs, info = env.reset(seed=seed, options={"a0": "sector8"})
     base = env.unwrapped
     setup = base.setup
+    spawned = tuple(base.spawned)
     low, high = env.action_space.low, env.action_space.high
     raw = base.last_observation
     frames, states, actions, times, poses, movers = [], [], [], [], [], []
@@ -64,22 +65,29 @@ def _fly(model, env, seed: int, *, deterministic: bool, max_steps: int) -> dict[
             raise EpisodeFault(info["sim_fault"])
         raw = base.last_observation
         if terminated or truncated:
-            return {"setup": setup, "outcome": info["outcome"], "info": info, "frames": frames, "states": states,
+            return {"setup": setup, "spawned": spawned, "outcome": info["outcome"], "info": info, "frames": frames, "states": states,
                     "actions": actions, "times": times, "poses": poses, "movers": movers,
                     "final_pose": [raw.pose.x, raw.pose.y, raw.pose.z, raw.pose.yaw]}
-    return {"setup": setup, "outcome": "exceeded_max_steps", "info": info, "frames": frames, "states": states,
+    return {"setup": setup, "spawned": spawned, "outcome": "exceeded_max_steps", "info": info, "frames": frames, "states": states,
             "actions": actions, "times": times, "poses": poses, "movers": movers, "final_pose": poses[-1]}
 
 
-def _provenance(scene: SceneFile, layout_sha256: str | None, seed: int, flight: dict, *, deterministic: bool) -> dict:
+def _provenance(scene: SceneFile, layout_sha256: str | None, seed: int, flight: dict, *, deterministic: bool,
+                target_name: str, target_name_status: str | None) -> dict:
     setup = flight["setup"]
     info = flight["info"]
+    spec = spawn_spec(setup)
+    names = list(flight["spawned"]) + [None] * (1 + len(setup.distractors) - len(flight["spawned"]))
     return {
         "scene": {"id": scene.id, "file": scene.path, "sha256": scene.sha256},
         "layout_sha256": layout_sha256,
         "seed": seed,
-        "target": {"xyz": list(setup.target_xy_z), "scale": list(setup.target_scale)},
-        "distractors": [list(d) for d in setup.distractors],
+        "target": {"name": target_name, "name_status": target_name_status, "asset": spec["asset"],
+                   "material": spec["target_material"], "spawned_as": names[0], "xyz": list(setup.target_xy_z),
+                   "scale": list(setup.target_scale)},
+        "distractors": [{"asset": spec["asset"], "material": spec["distractor_material"] or "mesh_default",
+                         "spawned_as": names[1 + i], "xyz": list(d), "scale": list(setup.target_scale)}
+                        for i, d in enumerate(setup.distractors)],
         "start_pose": [setup.start.x, setup.start.y, setup.start.z, setup.start.yaw],
         "a0": {"mode": "sector8", "start_yaw_rad": setup.start.yaw},
         "movers": [r.to_json() for r in setup.movers],
@@ -99,7 +107,7 @@ def _provenance(scene: SceneFile, layout_sha256: str | None, seed: int, flight: 
 def collect(model, env, *, scene: SceneFile, writer: RawDatasetWriter, seed_base: int, n_keep: int, target_name: str,
             deterministic: bool = False, max_attempts: int | None = None, layout_sha256: str | None = None,
             max_steps: int = DEFAULT_MAX_STEPS, max_fault_retries: int = DEFAULT_MAX_FAULT_RETRIES,
-            progress: dict | None = None) -> dict:
+            progress: dict | None = None, target_name_status: str | None = None) -> dict:
     """Fly seeds seed_base, seed_base + 1, ... until `n_keep` episodes are kept or `max_attempts` seeds were flown.
 
     `progress` (returned, and updated after every episode) lets a caller that catches an exception still report what
@@ -125,7 +133,8 @@ def collect(model, env, *, scene: SceneFile, writer: RawDatasetWriter, seed_base
         summary["attempted"] += 1
         summary["outcomes"][outcome] = summary["outcomes"].get(outcome, 0) + 1
         episode_id = f"{scene.id}_{seed}"
-        provenance = _provenance(scene, layout_sha256, seed, flight, deterministic=deterministic)
+        provenance = _provenance(scene, layout_sha256, seed, flight, deterministic=deterministic, target_name=target_name,
+                                 target_name_status=target_name_status)
         if outcome == "success":
             writer.write_episode(
                 episode_id=episode_id, scene_id=scene.id, split=scene.split, seed=seed,

@@ -37,7 +37,8 @@ def _write_json_atomic(path: Path, data: dict) -> None:
 
 
 class RawDatasetWriter:
-    def __init__(self, data_root: Path, name: str, *, scene: SceneFile, provenance: dict, split: str | None = None) -> None:
+    def __init__(self, data_root: Path, name: str, *, scene: SceneFile, provenance: dict, split: str | None = None,
+                 card: dict | None = None) -> None:
         self.root = Path(data_root) / name
         self.rejects = Path(data_root) / "rejects" / name
         self._refuse_existing()
@@ -53,6 +54,7 @@ class RawDatasetWriter:
             "state_fields": list(STATE_FIELDS),
             "scenes": {scene.id: {"split": split or scene.split, "sha256": scene.sha256,
                                   "instruction_obstacle": scene.instruction_obstacle}},
+            "card": dict(card or {}),  # the dataset card's facts, e.g. which target names are placeholders
             "episodes": [],
             "counts": {"episodes": 0, "records": 0, "rejects": 0, "by_scene": {}, "by_target": {}},
         }

@@ -385,3 +385,21 @@ def test_the_validator_compares_provenance_with_the_record_by_value(tmp_path):
     assert any("seed" in f for f in validate_dataset(root)["failures"])
     _rewrite_json(prov, lambda p: p.update(seed=p["seed"] - 1, sim_time_ns=[t + 1 for t in p["sim_time_ns"]]))
     assert any("simulator times" in f for f in validate_dataset(root)["failures"])
+
+
+def test_provenance_names_the_target_and_distractors_and_the_card_marks_the_placeholder_name(tmp_path):
+    # Spec §10.2: target and distractor names; U3: "orange cylinder" is marked a placeholder until M4's pool.
+    record = _pilot(tmp_path, n_episodes=1)
+    root = tmp_path / "data" / "pilot"
+    manifest = json.loads((root / "manifest.json").read_text())
+    assert manifest["card"]["target_names"] == {"orange cylinder": "placeholder_until_M4"}
+    prov = json.loads((root / "provenance" / f"{manifest['episodes'][0]['id']}.json").read_text())
+    target = prov["target"]
+    assert target["name"] == "orange cylinder" and target["name_status"] == "placeholder_until_M4"
+    assert target["asset"] == "cylinder" and target["material"] == "orange" and target["spawned_as"].startswith("target")
+    assert len(target["xyz"]) == 3 and len(target["scale"]) == 3
+    assert len(prov["distractors"]) >= 3
+    for i, d in enumerate(prov["distractors"]):
+        assert d["asset"] == "cylinder" and d["material"] == "mesh_default" and d["spawned_as"].startswith(f"distractor_{i}")
+        assert len(d["xyz"]) == 3
+    assert record["pass"] == record["faults_ok"]

@@ -51,6 +51,7 @@ from scripts.export_rlds import check_with_tfds  # noqa: E402
 from scripts.m2_gate import build_eval_env, checkpoint_obs_config, default_sac_loader  # noqa: E402
 
 DEFAULT_TARGET_NAME = "orange cylinder"  # U3: s01's target until M4's pool exists
+TARGET_NAME_STATUS = "placeholder_until_M4"  # U3 (docs/decisions/2026-10-03-m3-a0-and-collection.md)
 PAK = UE_PROJECT_DIR / "Packaged" / "Development" / "Linux" / "Blocks" / "Content" / "Paks" / "Blocks-Linux.pak"
 
 
@@ -135,7 +136,8 @@ def run(*, scene: str, model_path: Path, scene_config: str, name: str, n_episode
     env = writer = None
     progress: dict[str, Any] = {}  # collect()'s live counts: they survive an exception partway (the M3 review)
     try:
-        writer = RawDatasetWriter(data_root, name, scene=resolved.scene, provenance=provenance)
+        writer = RawDatasetWriter(data_root, name, scene=resolved.scene, provenance=provenance,
+                                  card={"target_names": {target_name: TARGET_NAME_STATUS}})
         model = load_model(model_path)
         env = build_eval_env(scene, instance=instance, sim_factory=sim_factory, seed_base=seed_base, sim_root=sim_root,
                              obs_config=obs_config)
@@ -144,7 +146,7 @@ def run(*, scene: str, model_path: Path, scene_config: str, name: str, n_episode
         try:
             collect(model, env, scene=resolved.scene, writer=writer, seed_base=seed_base, n_keep=n_episodes,
                     target_name=target_name, deterministic=deterministic, max_attempts=max_attempts,
-                    layout_sha256=resolved.layout_sha256, progress=progress)
+                    layout_sha256=resolved.layout_sha256, progress=progress, target_name_status=TARGET_NAME_STATUS)
         finally:
             progress["wall_s"] = round(time.monotonic() - t0, 1)
             try:
