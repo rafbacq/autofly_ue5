@@ -79,6 +79,24 @@ def platform_provenance() -> dict:
     }
 
 
+def _write_exclusive(destination: Path, record: dict) -> Path:
+    """Write the record without ever replacing a file: main() refuses an existing record at startup, but another pilot
+    could write one while this one runs. A clash goes to a sibling `.conflict-<time>` file instead."""
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    stamp = time.strftime("%Y%m%d-%H%M%S")
+    for candidate in (destination, destination.with_name(f"{destination.stem}.conflict-{stamp}{destination.suffix}"),
+                      destination.with_name(f"{destination.stem}.conflict-{stamp}-{os.getpid()}{destination.suffix}")):
+        record["written_to"] = str(candidate)
+        try:
+            with open(candidate, "x") as handle:
+                handle.write(json.dumps(record, indent=2) + "\n")
+        except FileExistsError:
+            print(f"WARNING: {candidate} appeared while this pilot ran; not replacing it", file=sys.stderr)
+            continue
+        return candidate
+    raise FileExistsError(f"could not write the record next to {destination}")
+
+
 def run(*, scene: str, model_path: Path, scene_config: str, name: str, n_episodes: int, instance: int, out_path: Path,
         data_root: Path, deterministic: bool = False, max_attempts: int | None = None,
         target_name: str = DEFAULT_TARGET_NAME, seed_base: int = COLLECTION_SEED_BASE, check_python: Path | None = None,
@@ -115,6 +133,7 @@ def run(*, scene: str, model_path: Path, scene_config: str, name: str, n_episode
     if swept:
         print(f"swept orphaned instances before starting: {swept}", file=sys.stderr)
     env = writer = None
+    progress: dict[str, Any] = {}  # collect()'s live counts: they survive an exception partway (the M3 review)
     try:
         writer = RawDatasetWriter(data_root, name, scene=resolved.scene, provenance=provenance)
         model = load_model(model_path)
@@ -122,13 +141,17 @@ def run(*, scene: str, model_path: Path, scene_config: str, name: str, n_episode
                              obs_config=obs_config)
         t0 = time.monotonic()
         before = env.get_fault_summary()
-        summary = collect(model, env, scene=resolved.scene, writer=writer, seed_base=seed_base, n_keep=n_episodes,
-                          target_name=target_name, deterministic=deterministic, max_attempts=max_attempts,
-                          layout_sha256=resolved.layout_sha256)
-        summary["wall_s"] = round(time.monotonic() - t0, 1)
-        summary["backend_faults"] = {"before": before, "after": env.get_fault_summary()}
-        record["collection"] = summary
-        record["status"] = summary["status"]
+        try:
+            collect(model, env, scene=resolved.scene, writer=writer, seed_base=seed_base, n_keep=n_episodes,
+                    target_name=target_name, deterministic=deterministic, max_attempts=max_attempts,
+                    layout_sha256=resolved.layout_sha256, progress=progress)
+        finally:
+            progress["wall_s"] = round(time.monotonic() - t0, 1)
+            try:
+                progress["backend_faults"] = {"before": before, "after": env.get_fault_summary()}
+            except Exception as err:
+                progress["backend_faults"] = {"error": f"{type(err).__name__}: {err}"}
+        record["status"] = progress["status"]
     except Exception as err:
         record["error"] = f"{type(err).__name__}: {err}"
         print(f"collect_dataset failed: {record['error']}", file=sys.stderr)
@@ -141,11 +164,15 @@ def run(*, scene: str, model_path: Path, scene_config: str, name: str, n_episode
                 stop_instances([instance], sim_root)
         except Exception as err:
             print(f"WARNING: teardown raised {type(err).__name__}: {err}", file=sys.stderr)
+    record["collection"] = progress or None
+    kept, attempted = progress.get("kept", 0), progress.get("attempted", 0)
     root = Path(data_root) / name
-    kept = (record["collection"] or {}).get("kept", 0)
-    if writer is not None:  # only a store this run created: never report on someone else's dataset
-        record["validation"] = validate_dataset(root)
-        if kept:
+    if writer is not None and writer.claimed:  # only a store this run created: never report on someone else's dataset
+        try:
+            record["validation"] = validate_dataset(root)
+        except Exception as err:
+            record["validation"] = {"pass": False, "failures": [f"the validator raised {type(err).__name__}: {err}"]}
+        if writer.manifest["counts"]["episodes"]:  # whatever was kept is exported, even from a failed run
             try:
                 dataset = f"autofly_ue5_{name}"
                 record["rlds"] = export_rlds(root, root / "rlds", dataset)
@@ -153,17 +180,23 @@ def run(*, scene: str, model_path: Path, scene_config: str, name: str, n_episode
                     record["rlds"]["tfds_check"] = check_with_tfds(check_python, root / "rlds" / dataset / VERSION, root)
             except Exception as err:
                 record["rlds"] = {"error": f"{type(err).__name__}: {err}"}
-    engine_faults = audit_engine_faults(since=run_started, since_epoch=run_start_epoch, xid_before=xid_before,
-                                        boot_before=boot_before, log_dirs=[instance_dir(instance, sim_root)])
-    record["faults_ok"] = engine_faults.pop("ok")
+    try:
+        engine_faults = audit_engine_faults(since=run_started, since_epoch=run_start_epoch, xid_before=xid_before,
+                                            boot_before=boot_before, log_dirs=[instance_dir(instance, sim_root)])
+        record["faults_ok"] = engine_faults.pop("ok")
+    except Exception as err:
+        engine_faults = {"error": f"the audit raised {type(err).__name__}: {err}"}
+        record["faults_ok"] = False
     record["engine_faults"] = engine_faults
-    record["pass"] = bool(record["status"] == "ok" and kept >= n_episodes and record["validation"]
-                          and record["validation"]["pass"] and record["faults_ok"])
+    rlds = record["rlds"] or {}
+    record["pass"] = bool(record["status"] == "ok" and kept >= n_episodes and (record["validation"] or {}).get("pass")
+                          and record["faults_ok"] and rlds and "error" not in rlds
+                          and (check_python is None or (rlds.get("tfds_check") or {}).get("pass") is True))
     record["run_finished"] = time.strftime("%Y-%m-%d %H:%M:%S")
-    destination = evidence.record_destination(out_path, did_work=kept > 0)
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    destination.write_text(json.dumps(record, indent=2) + "\n")
-    print(f"record written to {destination}", file=sys.stderr)
+    # Evidence once any episode was flown, kept or not: an all-rejected pilot is a failed gate, not one never started.
+    destination = evidence.record_destination(out_path, did_work=attempted > 0)
+    written = _write_exclusive(destination, record)
+    print(f"record written to {written}", file=sys.stderr)
     return record
 
 

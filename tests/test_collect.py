@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import json
 import math
+from pathlib import Path
 
 import cv2
 import numpy as np
@@ -216,3 +217,126 @@ def test_the_pilot_cli_refuses_a_slot_another_live_run_holds(tmp_path, capsys):
         stop(7, grace_s=2.0, run_root=tmp_path / "sim")
     assert "slot 7 holds simulator pid" in capsys.readouterr().err
     assert log.read_text() == "the other run's log\n" and not (tmp_path / "data").exists()
+
+
+class _DiesAfter(_StraightAtTargetModel):
+    """A pilot that raises something unrecoverable after `calls` predictions: a crash partway through a pilot."""
+
+    def __init__(self, calls: int) -> None:
+        super().__init__()
+        self.left = calls
+
+    def predict(self, observation, state=None, episode_start=None, deterministic=False):
+        self.left -= 1
+        if self.left < 0:
+            raise RuntimeError("the pilot crashed")
+        return super().predict(observation, deterministic=deterministic)
+
+
+class _RefusedLaunch(FakeSimulator):
+    """A launch refused before anything starts (the GPU guard on a shared host)."""
+
+    def launch(self, map_path, instance):
+        raise RuntimeError("launch refused: a foreign GPU job holds 4.4 GB")
+
+
+def _pilot(tmp_path, *, model=None, sim_factory=FakeSimulator, n_episodes=2, name="pilot", out=None, **kwargs):
+    """The pilot as main() runs it, into the default record docs/gates/m3_gate.json (a scratch dir here, see conftest)."""
+    from autofly_ue5 import evidence
+    from autofly_ue5.expert.obs import ObsConfig
+    from scripts.collect_dataset import run
+
+    checkpoint = tmp_path / "model.zip"
+    checkpoint.write_bytes(b"not a real model; the fake loader ignores it")
+    return run(scene="s01", model_path=checkpoint, scene_config="scene_autofly_s01_fast.jsonc", name=name,
+               n_episodes=n_episodes, instance=5, out_path=out or evidence.GATES_DIR / "m3_gate.json",
+               data_root=tmp_path / "data",
+               sim_factory=sim_factory, load_model=lambda path: model or _StraightAtTargetModel(),
+               obs_config_reader=lambda path: ObsConfig(), sim_root=tmp_path / "sim", platform={"test": True}, **kwargs)
+
+
+def test_a_pilot_that_crashes_partway_is_recorded_as_a_failed_gate_with_its_counts(tmp_path):
+    from autofly_ue5 import evidence
+    from autofly_ue5.validate.dataset import validate_dataset
+
+    record = _pilot(tmp_path, model=_DiesAfter(400), n_episodes=5)
+    assert record["status"] == "failed" and "the pilot crashed" in record["error"] and record["pass"] is False
+    stored = json.loads((tmp_path / "data" / "pilot" / "manifest.json").read_text())["counts"]["episodes"]
+    assert stored >= 1 and record["collection"]["kept"] == stored, "the counts survive the crash"
+    assert record["collection"]["attempted"] == stored + record["collection"]["rejected"]
+    assert json.loads((evidence.GATES_DIR / "m3_gate.json").read_text())["status"] == "failed", "evidence, not 'never started'"
+    assert record["validation"]["pass"] and validate_dataset(tmp_path / "data" / "pilot")["pass"]
+    assert record["rlds"]["splits"] == {"train": stored}, "what was kept is still exported"
+
+
+def test_a_pilot_whose_every_episode_failed_is_recorded_as_a_failed_gate(tmp_path):
+    from autofly_ue5 import evidence
+
+    record = _pilot(tmp_path, model=_Crashes(), n_episodes=1, max_attempts=2)
+    assert record["status"] == "incomplete" and record["pass"] is False
+    assert record["collection"]["rejected"] == 2 and record["collection"]["kept"] == 0
+    assert (evidence.GATES_DIR / "m3_gate.json").is_file(), "two flown episodes are evidence, not a run that never started"
+    assert not (evidence.NOT_STARTED_DIR / "m3_gate.json").exists()
+
+
+def test_a_refused_launch_claims_nothing_so_the_same_name_can_be_retried(tmp_path):
+    from autofly_ue5 import evidence
+
+    record = _pilot(tmp_path, sim_factory=_RefusedLaunch)
+    assert record["status"] == "failed" and "launch refused" in record["error"]
+    assert not (tmp_path / "data" / "pilot").exists() and not (tmp_path / "data" / "rejects" / "pilot").exists()
+    assert not (evidence.GATES_DIR / "m3_gate.json").exists() and (evidence.NOT_STARTED_DIR / "m3_gate.json").is_file()
+    assert _pilot(tmp_path)["collection"]["kept"] == 2, "the retry under the same name works"
+
+
+def test_the_gate_needs_a_usable_rlds_export(tmp_path, monkeypatch):
+    import scripts.collect_dataset as cli
+
+    def broken_export(*args, **kwargs):
+        raise OSError("disk full")
+
+    monkeypatch.setattr(cli, "export_rlds", broken_export)
+    record = _pilot(tmp_path)
+    assert record["validation"]["pass"] and record["rlds"] == {"error": "OSError: disk full"}
+    assert record["pass"] is False
+
+
+def test_the_gate_needs_the_tfds_read_back_when_one_was_asked_for(tmp_path):
+    fake_python = tmp_path / "fake_tfds_python"
+    fake_python.write_text('#!/bin/sh\necho \'{"pass": false, "mismatches": ["frames differ"]}\'\nexit 1\n')
+    fake_python.chmod(0o755)
+    record = _pilot(tmp_path, check_python=fake_python)
+    assert record["rlds"]["tfds_check"]["pass"] is False and record["pass"] is False
+
+
+def test_a_validator_or_audit_that_raises_still_leaves_an_honest_record(tmp_path, monkeypatch):
+    import scripts.collect_dataset as cli
+
+    def boom(*args, **kwargs):
+        raise IndexError("validator bug")
+
+    monkeypatch.setattr(cli, "validate_dataset", boom)
+    monkeypatch.setattr(cli, "audit_engine_faults", boom)
+    record = _pilot(tmp_path)
+    assert record["validation"]["pass"] is False and "validator bug" in record["validation"]["failures"][0]
+    assert record["faults_ok"] is False and "validator bug" in record["engine_faults"]["error"]
+    assert record["pass"] is False and record["written_to"].endswith("m3_gate.json")
+
+
+def test_the_record_never_overwrites_one_that_appeared_while_the_pilot_ran(tmp_path):
+    out = tmp_path / "m3_gate.json"
+    out.write_text('{"another": "pilot"}\n')
+    record = _pilot(tmp_path, out=out)
+    assert json.loads(out.read_text()) == {"another": "pilot"}
+    conflict = Path(record["written_to"])
+    assert conflict != out and conflict.parent == out.parent and json.loads(conflict.read_text())["collection"]["kept"] == 2
+
+
+def test_a_dataset_name_with_leftover_rejects_is_refused(tmp_path):
+    from autofly_ue5.dataset.raw import RawDatasetWriter
+
+    scene, _env_ = _env(tmp_path)
+    (tmp_path / "data" / "rejects" / "pilot").mkdir(parents=True)
+    (tmp_path / "data" / "rejects" / "pilot" / "s01_400000000.json").write_text("{}")
+    with pytest.raises(FileExistsError):
+        RawDatasetWriter(tmp_path / "data", "pilot", scene=scene, provenance=PROVENANCE)

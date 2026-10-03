@@ -8,7 +8,9 @@
 
 The record itself holds AutoFly's fields only (spec §2): image, instruction, action[3], state[9]. An episode is written
 into a temporary directory and renamed into place, and the manifest is replaced atomically, so a crash never leaves a
-half-written episode listed. A store that already exists is never written over.
+half-written episode listed. A store that already exists, or a name with rejects left over, is never written into.
+Nothing is created until the first episode or reject: a launch the GPU guard refuses leaves the name free to retry
+(the M3 review, 2026-10-03). The manifest is then created exclusively, so two collectors cannot share a name.
 """
 
 from __future__ import annotations
@@ -37,11 +39,9 @@ def _write_json_atomic(path: Path, data: dict) -> None:
 class RawDatasetWriter:
     def __init__(self, data_root: Path, name: str, *, scene: SceneFile, provenance: dict, split: str | None = None) -> None:
         self.root = Path(data_root) / name
-        if (self.root / "manifest.json").exists():
-            raise FileExistsError(f"{self.root} already holds a dataset; collect into a new --name")
         self.rejects = Path(data_root) / "rejects" / name
-        for d in (self.root / "episodes", self.root / "provenance", self.rejects):
-            d.mkdir(parents=True, exist_ok=True)
+        self._refuse_existing()
+        self.claimed = False
         self.provenance = dict(provenance)
         self.manifest = {
             "name": name,
@@ -55,7 +55,23 @@ class RawDatasetWriter:
             "episodes": [],
             "counts": {"episodes": 0, "records": 0, "rejects": 0, "by_scene": {}, "by_target": {}},
         }
-        self._save_manifest()
+
+    def _refuse_existing(self) -> None:
+        if (self.root / "manifest.json").exists():
+            raise FileExistsError(f"{self.root} already holds a dataset; collect into a new --name")
+        if self.rejects.is_dir() and any(self.rejects.iterdir()):
+            raise FileExistsError(f"{self.rejects} holds another collection's rejects; collect into a new --name")
+
+    def _claim(self) -> None:
+        if self.claimed:
+            return
+        self._refuse_existing()
+        self.root.mkdir(parents=True, exist_ok=True)
+        with open(self.root / "manifest.json", "x") as handle:  # exclusive: the name is ours or this raises
+            handle.write(json.dumps(self.manifest, indent=2) + "\n")
+        for d in (self.root / "episodes", self.root / "provenance", self.rejects):
+            d.mkdir(parents=True, exist_ok=True)
+        self.claimed = True
 
     def _save_manifest(self) -> None:
         _write_json_atomic(self.root / "manifest.json", self.manifest)
@@ -67,6 +83,7 @@ class RawDatasetWriter:
         if not (n == len(states) == len(actions) == len(sim_time_ns)) or n == 0:
             raise ValueError(f"episode {episode_id}: {n} frames, {len(states)} states, {len(actions)} actions, "
                              f"{len(sim_time_ns)} times")
+        self._claim()
         final = self.root / "episodes" / episode_id
         if final.exists() or any(e["id"] == episode_id for e in self.manifest["episodes"]):
             raise FileExistsError(f"episode {episode_id} is already in {self.root}")
@@ -93,6 +110,7 @@ class RawDatasetWriter:
         self._save_manifest()
 
     def write_reject(self, *, episode_id: str, reason: str, provenance: dict) -> None:
+        self._claim()
         _write_json_atomic(self.rejects / f"{episode_id}.json",
                            {"id": episode_id, "reason": reason, "provenance": {**self.provenance, **provenance}})
         self.manifest["counts"]["rejects"] += 1

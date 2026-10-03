@@ -98,27 +98,32 @@ def _provenance(scene: SceneFile, layout_sha256: str | None, seed: int, flight: 
 
 def collect(model, env, *, scene: SceneFile, writer: RawDatasetWriter, seed_base: int, n_keep: int, target_name: str,
             deterministic: bool = False, max_attempts: int | None = None, layout_sha256: str | None = None,
-            max_steps: int = DEFAULT_MAX_STEPS, max_fault_retries: int = DEFAULT_MAX_FAULT_RETRIES) -> dict:
-    """Fly seeds seed_base, seed_base + 1, ... until `n_keep` episodes are kept or `max_attempts` seeds were flown."""
+            max_steps: int = DEFAULT_MAX_STEPS, max_fault_retries: int = DEFAULT_MAX_FAULT_RETRIES,
+            progress: dict | None = None) -> dict:
+    """Fly seeds seed_base, seed_base + 1, ... until `n_keep` episodes are kept or `max_attempts` seeds were flown.
+
+    `progress` (returned, and updated after every episode) lets a caller that catches an exception still report what
+    was flown: a crashed pilot's record must keep its counts (the M3 review, 2026-10-03)."""
     max_attempts = max_attempts if max_attempts is not None else 10 * n_keep
-    kept = rejected = fault_retries = 0
-    outcomes: dict[str, int] = {}
-    last_flown = None
+    summary = progress if progress is not None else {}
+    summary.update(status="running", kept=0, rejected=0, attempted=0, fault_retries=0, outcomes={},
+                   seeds_flown=[seed_base, None])
     for seed in range(seed_base, seed_base + max_attempts):
-        if kept >= n_keep:
+        if summary["kept"] >= n_keep:
             break
-        last_flown = seed
+        summary["seeds_flown"][1] = seed
         for retry in range(max_fault_retries + 1):
             try:
                 flight = _fly(model, env, seed, deterministic=deterministic, max_steps=max_steps)
                 break
             except EpisodeFault as fault:
-                fault_retries += 1
+                summary["fault_retries"] += 1
                 print(f"COLLECT seed {seed}: {fault} cut the attempt short; flying it again ({retry + 1})", file=sys.stderr)
         else:
             raise RuntimeError(f"seed {seed}: no uninterrupted flight in {max_fault_retries} retries -- a broken backend")
         outcome = flight["outcome"]
-        outcomes[outcome] = outcomes.get(outcome, 0) + 1
+        summary["attempted"] += 1
+        summary["outcomes"][outcome] = summary["outcomes"].get(outcome, 0) + 1
         episode_id = f"{scene.id}_{seed}"
         provenance = _provenance(scene, layout_sha256, seed, flight, deterministic=deterministic)
         if outcome == "success":
@@ -127,12 +132,11 @@ def collect(model, env, *, scene: SceneFile, writer: RawDatasetWriter, seed_base
                 instruction=dataset_instruction(scene, flight["setup"].instruction, target_name), target_name=target_name,
                 frames=flight["frames"], states=np.stack(flight["states"]), actions=np.stack(flight["actions"]),
                 sim_time_ns=np.asarray(flight["times"], dtype=np.int64), provenance=provenance)
-            kept += 1
+            summary["kept"] += 1
         else:
             writer.write_reject(episode_id=episode_id, reason=outcome, provenance=provenance)
-            rejected += 1
-        print(f"COLLECT seed {seed}: {outcome} after {len(flight['actions'])} records -- kept {kept}/{n_keep}, "
-              f"rejected {rejected}", file=sys.stderr, flush=True)
-    return {"status": "ok" if kept >= n_keep else "incomplete", "kept": kept, "rejected": rejected,
-            "attempted": rejected + kept, "fault_retries": fault_retries, "outcomes": outcomes,
-            "seeds_flown": [seed_base, last_flown]}
+            summary["rejected"] += 1
+        print(f"COLLECT seed {seed}: {outcome} after {len(flight['actions'])} records -- kept {summary['kept']}/{n_keep}, "
+              f"rejected {summary['rejected']}", file=sys.stderr, flush=True)
+    summary["status"] = "ok" if summary["kept"] >= n_keep else "incomplete"
+    return summary
