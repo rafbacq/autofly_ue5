@@ -1,0 +1,8 @@
+{
+  "description": "(filled in by export_rlds)",
+  "fileFormat": "tfrecord",
+  "moduleName": "autofly_ue5.dataset.rlds",
+  "name": "autofly_ue5_dataset",
+  "splits": [],
+  "version": "1.0.0"
+}
