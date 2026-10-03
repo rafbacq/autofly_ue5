@@ -10,6 +10,7 @@ range fly the same episodes. The ranges:
     [EVAL_SEED_BASE, +1e6)                    the M2 gate's evaluation episodes
     [EVAL_CALLBACK_SEED_BASE, +1e6)           training-time evaluation (model selection)
     [PROBE_SEED_BASE, +1e6)                   live probes (scripts/probe_crash_reset.py)
+    [SELECTION_SEED_BASE, +1e6)               checkpoint selection after training (validation; scripts/select_checkpoint.py)
     [COLLECTION_SEED_BASE, +1e8)              dataset collection (M3/M5): never a training, gate or probe episode,
                                               in 100 slices of 1e6, one per (scene, collection run):
                                               collection_seed_base(k). Slice 0 is s01's pilot; slice 99 is for
@@ -30,6 +31,10 @@ EVAL_SEED_BASE = 100_000_000  # the M2 gate's episodes: comfortably above worker
 # held out for every checkpoint -- in the 2026-09-17 run they were not (both drew from EVAL_SEED_BASE).
 EVAL_CALLBACK_SEED_BASE = 200_000_000
 PROBE_SEED_BASE = 300_000_000
+# Checkpoint selection after a run (2026-10-03): many checkpoints scored on held-out validation episodes, so the gate's
+# EVAL_SEED_BASE episodes stay untouched until the chosen one is gated. Training-time evaluation (20 episodes from
+# EVAL_CALLBACK_SEED_BASE) picked s01d_r1's best_model at 0.85; the gate then measured 0.775.
+SELECTION_SEED_BASE = 500_000_000
 # Dataset collection (spec §9-§10): its episodes must be none the experts trained or were gated on. 100 slices of 1e6,
 # one per (scene, collection run) as M5 needs them.
 COLLECTION_SEED_BASE = 400_000_000
