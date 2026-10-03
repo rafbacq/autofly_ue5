@@ -76,9 +76,7 @@ def test_rank_writes_the_ranking_and_says_when_a_part_is_missing(tmp_path, capsy
                  "--scene", "s01d", "--scene-config", "scene_autofly_s01_fast.jsonc"]) == 0
     plan = json.loads((root / "selection" / "stage1_plan.json").read_text())
     first = plan["parts"][0]
-    with open(first["out"], "w") as handle:
-        json.dump(_record({n: {"status": "ok", "n_episodes": 40, "success_rate": 0.9, "mean_return": 55.0}
-                           for n in first["names"]}), handle)
+    _fill(first, plan)
     assert main(["rank", "--run-root", str(root)]) == 1, "a part is missing"
     ranking = json.loads((root / "selection" / "stage1_ranking.json").read_text())
     assert ranking["missing_parts"] == [plan["parts"][1]["out"]] and len(ranking["ranking"]) == len(first["names"])
@@ -89,3 +87,76 @@ def test_a_plan_outside_the_validation_range_is_refused(tmp_path):
 
     assert main(["plan", "--run-root", str(_run(tmp_path)), "--slots", "0", "--episodes", "40", "--seed-offset",
                  "999990", "--scene", "s01d", "--scene-config", "scene_autofly_s01_fast.jsonc"]) == 2
+
+
+def _plan(root, *extra):
+    from scripts.select_checkpoint import main
+
+    return main(["plan", "--run-root", str(root), "--every", "20000", "--slots", "0", "1", "--episodes", "40",
+                 "--scene", "s01d", "--scene-config", "scene_autofly_s01_fast.jsonc", *extra])
+
+
+def test_every_planned_command_parses_with_the_gate_s_own_arguments(tmp_path):
+    import shlex
+
+    from scripts.m2_gate import build_arg_parser
+    from scripts.select_checkpoint import candidates, plan_commands
+
+    root = _run(tmp_path / "with space")
+    parts = plan_commands(root, candidates(root, every=10_000, min_steps=0), slots=[0, 1], episodes=40, scene="s01d",
+                          scene_config="scene_autofly_s01_fast.jsonc")
+    for part in parts:
+        argv = shlex.split(part["command"])
+        args = build_arg_parser().parse_args(argv[argv.index("scripts.m2_gate") + 1:])
+        assert args.seed_base == SELECTION_SEED_BASE and args.instance == part["slot"]
+        assert sorted(m.split("=", 1)[0] for m in args.model) == sorted(part["names"])
+        assert all(" " in m for m in args.model), "paths with spaces survive quoting"
+
+
+def test_a_stage_is_never_planned_twice_and_a_second_stage_must_say_so(tmp_path, capsys):
+    root = _run(tmp_path)
+    assert _plan(root) == 0
+    before = (root / "selection" / "stage1_plan.json").read_text()
+    assert _plan(root) == 2, "re-planning stage 1 would point new jobs at its result files"
+    assert _plan(root, "--names", "step_20000", "final") == 2, "a second stage needs an explicit --stage"
+    assert (root / "selection" / "stage1_plan.json").read_text() == before
+    assert _plan(root, "--names", "step_20000", "final", "--stage", "2") == 2, "stage 2 reusing stage 1's seeds"
+    assert _plan(root, "--names", "step_20000", "final", "--stage", "2", "--seed-offset", "1000") == 0
+    assert json.loads((root / "selection" / "stage2_plan.json").read_text())["seed_base"] == SELECTION_SEED_BASE + 1000
+
+
+def _fill(plan_part, plan, *, names=None, seed_base=None, status="ok"):
+    record = _record({n: {"status": status, "n_episodes": 40, "success_rate": 0.9, "mean_return": 55.0}
+                      for n in (names or plan_part["names"])})
+    record["eval_seed_base"] = plan["seed_base"] if seed_base is None else seed_base
+    with open(plan_part["out"], "w") as handle:
+        json.dump(record, handle)
+
+
+def test_rank_refuses_results_that_do_not_belong_to_the_plan(tmp_path):
+    from scripts.select_checkpoint import main
+
+    root = _run(tmp_path)
+    assert _plan(root) == 0
+    plan = json.loads((root / "selection" / "stage1_plan.json").read_text())
+    _fill(plan["parts"][0], plan)
+    _fill(plan["parts"][1], plan, seed_base=SELECTION_SEED_BASE + 1000)
+    assert main(["rank", "--run-root", str(root)]) == 1
+    ranking = json.loads((root / "selection" / "stage1_ranking.json").read_text())
+    assert any("eval_seed_base" in problem for problem in ranking["problems"])
+    _fill(plan["parts"][1], plan, names=["step_99999"])
+    assert main(["rank", "--run-root", str(root)]) == 1
+    assert any("names" in problem for problem in json.loads((root / "selection" / "stage1_ranking.json").read_text())["problems"])
+    _fill(plan["parts"][1], plan)
+    assert main(["rank", "--run-root", str(root)]) == 0
+
+
+def test_rank_fails_while_any_candidate_is_unfinished(tmp_path):
+    from scripts.select_checkpoint import main
+
+    root = _run(tmp_path)
+    assert _plan(root) == 0
+    plan = json.loads((root / "selection" / "stage1_plan.json").read_text())
+    _fill(plan["parts"][0], plan)
+    _fill(plan["parts"][1], plan, status="failed")
+    assert main(["rank", "--run-root", str(root)]) == 1
