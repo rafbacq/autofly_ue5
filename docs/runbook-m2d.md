@@ -168,6 +168,38 @@ choose:
 Read `collision_sources` and `mover_in_view` to see which lever fits. Many mover collisions with the mover in view
 point at learning; mover collisions out of view point at the observation.
 
+## 6b. Run 2 (2026-10-03): warm start, mover input, validation selection
+
+Run 1 failed its gate at 0.775 (`docs/decisions/2026-10-03-m2d-closeout.md`). Run 2's changes and their reasons:
+`docs/decisions/2026-10-03-s01d-r2-plan.md`. Its records carry `m2d_r2_` names, so pass every `--out` explicitly.
+
+```bash
+# training: 12 h, warm-started from run 1's best_model; evaluation every 50k (selection does not rely on it)
+$J start s01d_r2_train -- $PY -m autofly_ue5.expert.train --scene s01d --instances 4 --hours 12 --scene-config $CFG \
+    --run-root runs/expert/s01d_r2 --out docs/gates/m2d_r2_train.json \
+    --warm-start runs/expert/s01d_r1/best/best_model.zip --eval-freq 50000
+$J start s01d_r2_watch -- $PY scripts/watch_training.py --run-root runs/expert/s01d_r2 --job s01d_r2_train --interval 300 \
+    --png runs/expert/s01d_r2/progress.png
+$J start s01d_r2_tensorboard -- .venv/bin/tensorboard --logdir runs/expert/s01d_r2/tensorboard --host 127.0.0.1 --port 6006
+# a resume (more hours): the same command plus --resume, --hours <h>, and --out docs/gates/m2d_r2_train_session<k>.json
+
+# selection on validation seeds (SELECTION_SEED_BASE), four slots, after training has ended
+$PY scripts/select_checkpoint.py plan --run-root runs/expert/s01d_r2 --every 20000 --min-steps 60000 --slots 0 1 2 3 \
+    --episodes 40 --scene s01d --scene-config $CFG --launch
+$PY scripts/select_checkpoint.py rank --run-root runs/expert/s01d_r2          # exit 0 only when every part is in
+$PY scripts/select_checkpoint.py plan --run-root runs/expert/s01d_r2 --stage 2 --names <top 3> --seed-offset 1000 \
+    --slots 0 1 2 --episodes 100 --scene s01d --scene-config $CFG --launch
+$PY scripts/select_checkpoint.py rank --run-root runs/expert/s01d_r2 --stage 2
+
+# the gate: the stage-2 winner and final, on the gate's seeds
+$J start m2d_r2_gate -- $PY -m scripts.m2_gate --scene s01d --scene-config $CFG --episodes 200 \
+    --model selected=runs/expert/s01d_r2/<winner path> --model final=runs/expert/s01d_r2/final.zip \
+    --out docs/gates/m2d_r2_gate.json
+$PY scripts/audit_m2_gate.py --gate docs/gates/m2d_r2_gate.json --out docs/gates/m2d_r2_gate_audit.json
+```
+
+Each mover collision in a gate record now says how it happened (`mover_contact`: gap, bearing, moving or yielding).
+
 ## 7. Diagnostic: the s01 expert, zero-shot, on s01d
 
 ```bash
