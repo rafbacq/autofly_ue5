@@ -1,0 +1,240 @@
+{
+  "milestone": "M3",
+  "description": "M3 pilot: the SAC expert collects AutoFly-format episodes; the dataset validator (spec \u00a711) must pass. Pass = the requested episodes kept, validator pass, engine-fault audit clean.",
+  "scene": "s01",
+  "scene_config": {
+    "file": "scene_autofly_s01_fast.jsonc",
+    "sha256": "f3fe5ac8a23faefc58186b3fc8d6aa3134d01346431bd21c50b63d0b24b77c94"
+  },
+  "dataset": {
+    "name": "s01_pilot",
+    "path": "/home/nvidiasims/research_uav/autofly_ue5/data/s01_pilot"
+  },
+  "expert": {
+    "path": "runs/expert/s01_r2/best/best_model.zip",
+    "sha256": "8c2c7500041907a98d5d696b9007e30578731ff5136f63c384270c0f4fcbf8dc",
+    "deterministic": false,
+    "obs_config": {
+      "depth_frames": 1,
+      "depth_dtype": "float32"
+    }
+  },
+  "episodes_requested": 100,
+  "seed_base": 400000000,
+  "instance": 2,
+  "target_name": "orange cylinder",
+  "a0": "sector8",
+  "reward_version": "2-no-progress-inside-success-radius",
+  "collector_git_head": "44dd8c3d816a1892970bd7a273bc77ac7a0567bc",
+  "collector_tree_dirty": true,
+  "run_started": "2026-10-03 09:41:28",
+  "status": "ok",
+  "pass": true,
+  "error": null,
+  "collection": {
+    "status": "ok",
+    "kept": 100,
+    "rejected": 1,
+    "attempted": 101,
+    "fault_retries": 0,
+    "outcomes": {
+      "success": 100,
+      "collision": 1
+    },
+    "seeds_flown": [
+      400000000,
+      400000100
+    ],
+    "wall_s": 2698.4,
+    "backend_faults": {
+      "before": {
+        "instance": 2,
+        "fault_counts": {
+          "CameraPoseError": 0,
+          "StepTimingError": 0,
+          "StaleStateError": 0,
+          "CommandTimeoutError": 0,
+          "Timeout": 0,
+          "ConnectionReset": 0,
+          "KinematicsJumpError": 0,
+          "SimRequestTimeoutError": 0,
+          "ObjectMoveRefusedError": 0,
+          "ResetPoseError": 0,
+          "StartCollisionError": 0,
+          "SetPoseError": 0,
+          "EpisodeSetupError": 0,
+          "SimExitedError": 0,
+          "SimReadyTimeout": 0,
+          "SimConnectionLostError": 0
+        },
+        "recovered_counts": {
+          "CameraPoseError": 0,
+          "StepTimingError": 0,
+          "StaleStateError": 0,
+          "CommandTimeoutError": 0,
+          "Timeout": 0,
+          "ConnectionReset": 0,
+          "KinematicsJumpError": 0,
+          "SimRequestTimeoutError": 0,
+          "ObjectMoveRefusedError": 0,
+          "ResetPoseError": 0,
+          "StartCollisionError": 0,
+          "SetPoseError": 0,
+          "EpisodeSetupError": 0,
+          "SimExitedError": 0,
+          "SimReadyTimeout": 0,
+          "SimConnectionLostError": 0
+        },
+        "relaunch_count": 0
+      },
+      "after": {
+        "instance": 2,
+        "fault_counts": {
+          "CameraPoseError": 2,
+          "StepTimingError": 0,
+          "StaleStateError": 0,
+          "CommandTimeoutError": 0,
+          "Timeout": 0,
+          "ConnectionReset": 0,
+          "KinematicsJumpError": 0,
+          "SimRequestTimeoutError": 0,
+          "ObjectMoveRefusedError": 0,
+          "ResetPoseError": 0,
+          "StartCollisionError": 0,
+          "SetPoseError": 0,
+          "EpisodeSetupError": 0,
+          "SimExitedError": 0,
+          "SimReadyTimeout": 0,
+          "SimConnectionLostError": 0
+        },
+        "recovered_counts": {
+          "CameraPoseError": 2,
+          "StepTimingError": 0,
+          "StaleStateError": 0,
+          "CommandTimeoutError": 0,
+          "Timeout": 0,
+          "ConnectionReset": 0,
+          "KinematicsJumpError": 0,
+          "SimRequestTimeoutError": 0,
+          "ObjectMoveRefusedError": 0,
+          "ResetPoseError": 0,
+          "StartCollisionError": 0,
+          "SetPoseError": 0,
+          "EpisodeSetupError": 0,
+          "SimExitedError": 0,
+          "SimReadyTimeout": 0,
+          "SimConnectionLostError": 0
+        },
+        "relaunch_count": 0
+      }
+    }
+  },
+  "validation": {
+    "pass": true,
+    "failures": [],
+    "warnings": [],
+    "counts": {
+      "episodes": 100,
+      "records": 17738,
+      "rejects": 1,
+      "by_scene": {
+        "s01": 100
+      },
+      "by_target": {
+        "orange cylinder": 100
+      }
+    },
+    "distributions": {
+      "speed_m_s": {
+        "median": 1.9659274220466614,
+        "p5": 1.6349419355392456,
+        "p95": 2.1358929991722104,
+        "min": 0.0013868013629689813,
+        "max": 2.263577699661255
+      },
+      "altitude_m": {
+        "median": 1.9601637721061707,
+        "p5": 1.596473467350006,
+        "p95": 2.3441589713096613,
+        "min": 1.1986792087554932,
+        "max": 2.8505845069885254
+      },
+      "action_forward_m_s": {
+        "median": 1.9730254411697388,
+        "p5": 1.810320156812668,
+        "p95": 1.9955263614654541,
+        "min": 0.0004653334617614746,
+        "max": 1.9996320009231567
+      },
+      "episode_steps": {
+        "median": 172.0,
+        "p5": 157.95,
+        "p95": 213.0,
+        "min": 153.0,
+        "max": 254.0
+      }
+    },
+    "release_for_comparison": {
+      "speed_m_s_median": [
+        1.87,
+        1.96
+      ],
+      "altitude_m_range": [
+        1.17,
+        2.57
+      ],
+      "episode_steps": [
+        96,
+        78
+      ],
+      "action_forward_m_s_typical": [
+        1.97,
+        1.99
+      ]
+    }
+  },
+  "rlds": {
+    "path": "/home/nvidiasims/research_uav/autofly_ue5/data/s01_pilot/1.0.0",
+    "splits": {
+      "train": 100
+    },
+    "shards": 7,
+    "tfds_check": {
+      "tfds_episodes": 100,
+      "matched": 100,
+      "mismatches": [],
+      "splits": {
+        "train": 100
+      },
+      "pass": true
+    }
+  },
+  "platform": {
+    "projectairsim_client": "1.0.2",
+    "platform_git_head": "4d878bff556fad2d07da763babb2faa10b03922b",
+    "engine_build_version": {
+      "MajorVersion": 5,
+      "MinorVersion": 7,
+      "PatchVersion": 4,
+      "Changelist": 51494982,
+      "CompatibleChangelist": 47537391,
+      "IsLicenseeVersion": 0,
+      "IsPromotedBuild": 1,
+      "BranchName": "++UE5+Release-5.7"
+    },
+    "package_binary_sha256": "5c1863bf4b96159afa281b7f77f1b0034d068e2b1a4c335d938c289fea8c14e7",
+    "package_pak_sha256": "ff8f0bd15f6d66dc0d76ce9862e37f0983fa0a6cfdb333f45a1d9fa14383f73c"
+  },
+  "faults_ok": true,
+  "engine_faults": {
+    "xid_delta": 0,
+    "boot_changed": false,
+    "device_lost": {
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst2/sim.log": 0
+    },
+    "logs_scanned": 1,
+    "kernel_journal_readable": true
+  },
+  "run_finished": "2026-10-03 10:29:48",
+  "written_to": "/home/nvidiasims/research_uav/autofly_ue5/docs/gates/m3_gate.json"
+}
