@@ -141,6 +141,7 @@ from autofly_ue5.expert.obs import (
     ObsConfig,
     obs_config_for_frames,
     obs_config_for_scene,
+    obs_config_from_space,
 )
 from autofly_ue5.expert.resilient import (  # noqa: F401  (re-exported: moved from this module)
     DEFAULT_CLOSE_TIMEOUT_S,
@@ -160,6 +161,7 @@ from autofly_ue5.expert.seeds import (  # noqa: F401  (EVAL_SEED_BASE etc. re-ex
     worker_seed_base,
 )
 from autofly_ue5.expert.vec import call_reset_with_timeout, collect_fault_summaries, make_vec_env, teardown  # noqa: F401
+from autofly_ue5.expert.warmstart import PolicyWarmupSAC, warm_start
 from autofly_ue5.paths import RUNS_DIR
 from autofly_ue5.scenes.model import Layout, SceneFile
 from autofly_ue5.scenes.resolve import ResolvedScene, resolve_scene
@@ -209,8 +211,9 @@ def build_model(
     tensorboard_log: str | None = None,
     seed: int | None = None,
     verbose: int = 1,
+    algorithm: type[SAC] = SAC,
 ) -> SAC:
-    model = SAC(
+    model = algorithm(
         "MultiInputPolicy",
         env,
         policy_kwargs=POLICY_KWARGS,
@@ -311,7 +314,8 @@ def _identity_mismatch(recorded: dict | None, identity: dict) -> list[str]:
     return [k for k in sorted(set(recorded) | set(identity)) if recorded.get(k) != identity.get(k)]
 
 
-def prepare_run_root(run_root: Path, *, resume: bool, reward_version: str, seed: int, identity: dict | None = None) -> int:
+def prepare_run_root(run_root: Path, *, resume: bool, reward_version: str, seed: int, identity: dict | None = None,
+                     warm_start: dict | None = None) -> int:
     """Claim `run_root` for this training session and return the session index (0 for a fresh run).
 
     A fresh run refuses a directory that already holds a run's results: its old checkpoints would otherwise sit next
@@ -368,6 +372,8 @@ def prepare_run_root(run_root: Path, *, resume: bool, reward_version: str, seed:
              "reward_version": reward_version, "seed": seed}
     if identity is not None:
         entry["identity"] = identity
+    if warm_start is not None:
+        entry["warm_start"] = warm_start  # the checkpoint session 0 started from (expert.warmstart)
     sessions.append(entry)
     sessions_path.write_text(json.dumps({"sessions": sessions}, indent=2) + "\n")
     return session
@@ -386,6 +392,25 @@ def reseed_resumed_model(model: SAC, *, seed: int, session: int) -> None:
 # torch) and the trainer itself. Not measured per process; generous on a 61 GB host whose run 2 used an 8.5 GB buffer.
 RAM_HEADROOM_BYTES = 16 * 2**30
 DISK_HEADROOM_BYTES = 10 * 2**30
+
+
+def warm_start_source(path: Path | None, obs_config: ObsConfig, *, resume: bool) -> dict | None:
+    """Check a --warm-start checkpoint before anything is claimed: a fresh run only, a readable SB3 zip, and the same
+    depth stack as this run (its mover input may be absent: expert.warmstart adds the branch). Its path and sha256."""
+    if path is None:
+        return None
+    if resume:
+        raise ValueError("--warm-start starts a fresh run from a checkpoint; it cannot be combined with --resume")
+    if not Path(path).is_file():
+        raise FileNotFoundError(f"--warm-start: no checkpoint at {path}")
+    from stable_baselines3.common.save_util import load_from_zip_file
+
+    data, _params, _variables = load_from_zip_file(path, device="cpu", load_data=True)
+    source = obs_config_from_space(data["observation_space"])
+    if (source.depth_frames, source.depth_dtype) != (obs_config.depth_frames, obs_config.depth_dtype):
+        raise ValueError(f"--warm-start: {path} sees {source.to_json()}, this run {obs_config.to_json()}; the depth "
+                         f"stack must match")
+    return {"path": str(path), "sha256": sha256_of(Path(path)), "source_obs_config": source.to_json()}
 
 
 def observation_config(scene, *, depth_frames: int | None = None, mover_slots: int | None = None) -> ObsConfig:
@@ -638,6 +663,9 @@ def build_arg_parser() -> argparse.ArgumentParser:
     p.add_argument("--batch-size", type=int, default=BATCH_SIZE)
     p.add_argument("--depth-frames", type=int, default=None,
                    help="depth frames the expert sees (default: 1 for a static scene, 3 for a dynamic one; >1 is float16)")
+    p.add_argument("--warm-start", type=Path, default=None,
+                   help="a fresh run starts from this checkpoint's weights (expert.warmstart): same network, plus any new "
+                        "input branch starting at zero; its warm-up acts with that policy. Not with --resume")
     p.add_argument("--mover-slots", type=int, default=None,
                    help="nearby moving pillars the expert is told about (default: 4 on a dynamic scene, 0 on a static "
                         "one; 0 reproduces s01d_r1's observation)")
@@ -664,10 +692,11 @@ def main(argv: list[str] | None = None) -> int:
         scene_config = args.scene_config or resolved.default_scene_config
         scene_config_record(scene_config)  # the config file must exist; its hash goes in the record
         obs_config = observation_config(scene_file, depth_frames=args.depth_frames, mover_slots=args.mover_slots)
+        warm_source = warm_start_source(args.warm_start, obs_config, resume=args.resume)
         identity = run_identity(resolved, obs_config, scene_config)
         host = host_preflight(buffer_bytes=replay_buffer_bytes(args.buffer_size, obs_config), run_root=run_root)
         session = prepare_run_root(run_root, resume=args.resume, reward_version=REWARD_VERSION, seed=args.seed,
-                                   identity=identity)
+                                   identity=identity, warm_start=warm_source)
     except (FileNotFoundError, FileExistsError, RuntimeError, ValueError) as err:
         print(f"refusing to start: {err}", file=sys.stderr)
         return 2
@@ -695,6 +724,7 @@ def main(argv: list[str] | None = None) -> int:
     model: SAC | None = None
     num_timesteps_at_start = 0  # a resumed run's env_steps_per_s must reflect only steps taken THIS session
     resume_path: Path | None = None
+    warm_record: dict | None = None
     checkpoint_path: Path | None = None
     checkpoint_sha256: str | None = None
     outcome_cb = OutcomeHistogramCallback()
@@ -748,7 +778,12 @@ def main(argv: list[str] | None = None) -> int:
             model = build_model(
                 train_env, device=args.device, buffer_size=args.buffer_size, learning_starts=args.learning_starts,
                 batch_size=args.batch_size, tensorboard_log=str(tb_dir), seed=args.seed,
+                algorithm=PolicyWarmupSAC if warm_source is not None else SAC,
             )
+            if warm_source is not None:
+                warm_record = {**warm_source, **warm_start(model, Path(warm_source["path"]))}
+                print(f"warm-started from {warm_source['path']}: {len(warm_record['widened'])} heads widened, "
+                      f"{len(warm_record['fresh'])} new tensors, {warm_record['copied']} copied")
 
         checkpoint_save_freq = max(args.checkpoint_freq // args.instances, 1)
         checkpoint_cb = CheckpointCallback(
@@ -843,6 +878,7 @@ def main(argv: list[str] | None = None) -> int:
         "error": error_message,
         "resume": args.resume,
         "resumed_from": str(resume_path) if resume_path is not None else None,
+        "warm_start": warm_record,
         "run_root": str(run_root),
         "scene_config": scene_config_record(scene_config),
         "session": session,
