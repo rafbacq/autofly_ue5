@@ -405,8 +405,11 @@ Dataset collection runs on the 10 `train` scenes with seen targets. M6 reuses th
 3. Instruction: one template filled with `{target}` and `{obstacle}`. Templates are copied verbatim from the real
    episodes, including the original spelling: `go through and avoid the {obstacle} or other obstacles to reach the
    {target}` and `advance to {target} while avioding {obstacle} and other obstacles`.
-4. (Settled at M3 against the real episodes and §8.1's reported a0 description.) Step 0 records the coarse-direction action a0: zero forward speed, yaw rate toward the target's bearing quantised
-   to 8 sectors, clipped to ±1 rad/s, zero vertical speed (matches the turn-in-place first actions in §3.2).
+4. **a0 (settled 2026-10-03, `docs/decisions/2026-10-03-m3-a0-and-collection.md`).** a0 is an *unrecorded* coarse
+   alignment. Before recording, the start yaw is set to the target's bearing rounded to the nearest of 8 sectors
+   (45°), and the record starts with the expert's first action. In time order the real episodes have no turn in place
+   at the start: they fly forward at about 1.98 m/s from headings 21° and 4° off the target. §3.2's "first action"
+   was file row 0, which is time step 75 of 96 and 74 of 78.
 5. The SAC expert flies with stochastic actions until success, collision, bounds exit or 300 steps.
 6. Only successful, collision-free episodes enter the dataset; every other episode goes to `data/rejects/` with its
    reason.

@@ -1,6 +1,7 @@
 # M3 Collector and Dataset Plan (draft for the user's go-ahead)
 
-> **Status:** draft, written 2026-10-02 once Plan 3's offline work had landed. Nothing in it has been implemented.
+> **Status:** written 2026-10-02 once Plan 3's offline work had landed. U1–U3 were decided on 2026-10-03, and the user
+> asked for M3 to be built: `docs/decisions/2026-10-03-m3-a0-and-collection.md`.
 > Steps use checkbox (`- [ ]`) syntax; each task is test-first against `FakeSimulator`, like Plans 2 and 3.
 
 **Goal (spec §12, M3):** a collector, a dataset writer, a validator and the state[9] decoding. The gate is a
@@ -44,7 +45,13 @@ only) found:
 
 These are preliminary, from a throwaway script. Task B1 makes them reproducible and decides them by the spec's rule.
 
-## Decisions needed from the user before B3
+## Decisions (settled 2026-10-03; the record above)
+
+- **U1:** a0 is an unrecorded alignment of the start yaw to the target's 8-sector bearing.
+- **U2:** the real episodes stay out of git.
+- **U3:** the s01 pilot's target is named "orange cylinder".
+
+### As drafted
 
 - **U1: a0.** Options: (a) drop the a0 setup step: the time-ordered data shows none at the start; (b) keep §9
   step 4's turn-in-place a0; (c) record whatever B1's exact ordering shows. *Recommendation: decide after B1.*
