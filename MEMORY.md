@@ -6,6 +6,10 @@ stale "fact". Standing rules live in `CLAUDE.md`; this file is the reasoning and
 
 ## Traps: read these before touching the simulator path
 
+- **A `run_job.sh` job's recorded pid is its bash wrapper (2026-10-03).** A stall check that read that pid's CPU time saw
+  0 for every job and raised a false alarm. Sum CPU over the job's process group (`pgid` in `<job>.pid.json`) instead.
+  The gate and the pilot print nothing per episode, so silence alone never shows progress.
+
 - **Arm a failure alarm for the whole of every long run (2026-10-03).** M2d's session 0 crashed at 22:51 and went
   unnoticed for 2 h 21 min: the 2 h background alarm had expired at 20:23 and was not re-armed. Re-arm the alarm and
   the log Monitor every time either expires (`docs/decisions/2026-10-03-m2d-session0-crash.md`).
@@ -18,7 +22,9 @@ stale "fact". Standing rules live in `CLAUDE.md`; this file is the reasoning and
 - **Unreal can refuse a pillar move (2026-10-02 22:51, 5.5 h into M2d's run).** `SetObjectPose failed. Unable to move
   object obs_0047` ended the run, because `ObjectPoseError` was not recoverable. Now the pose is read back, the move is
   retried once, and then `ObjectMoveRefusedError` truncates the episode as a fault (202a314). The cause is unknown:
-  moves at float32 precision did not reproduce it. Count `MOVE-REFUSED` in the log.
+  moves at float32 precision did not reproduce it. Count `MOVE-REFUSED` in the log. Session 1 (6.5 h, 2026-10-03)
+  saw 2 refusals, and both pillars read back 1 µm from the requested pose and were accepted. So Unreal seems to refuse
+  a move that changes nothing, rather than one that is blocked.
 - **A dead worker's stale pipe reply cost the run its record (2026-10-02).** After the crash, collecting the fault
   summaries read a queued tuple and `combine_fault_summaries` crashed, so no `m2d_train.json` was written. Replies are
   now drained and validated, and the record is assembled under guards (075e3bb).
@@ -124,6 +130,10 @@ stale "fact". Standing rules live in `CLAUDE.md`; this file is the reasoning and
 
 ## Environment and tooling learnings
 
+- **Dataset size and pace (M3 pilot, 2026-10-03).** 100 episodes = 17,738 records = 1.77 GB of PNG frames, stored twice:
+  the raw store and the RLDS shards each hold the same PNGs. The paper's 13K episodes would need about 460 GB for
+  both (683 GB were free). Collection ran at 101 episodes in 45 min on one slot, beside two other simulators.
+
 - **TFDS for the RLDS read-back lives in its own venv (2026-10-03).** `.venv` cannot take TensorFlow (numpy 1.26.4).
   `runs/tools/tfds_venv` holds tensorflow-cpu 2.18 + tensorflow-datasets 4.9, and needs `tensorflow-metadata==1.16.1`:
   the newest is built for protobuf 6, which TF 2.18 refuses (`VersionError` at import). Recipe: `docs/runbook-m3.md`.
@@ -146,6 +156,8 @@ stale "fact". Standing rules live in `CLAUDE.md`; this file is the reasoning and
   from s01, fewer or slower movers, privileged mover state) are the user's call.
 
 Settled:
+- a0's aligned start costs the s01 expert nothing (2026-10-03, `docs/gates/m3_a0_probe.json`): 50/50 with a0, 49/50
+  without, over the same 50 seeds. The first smoke's 3 of 5 was chance.
 - Moving a baked pillar works live (2026-10-02, `docs/gates/m2d_mover_probe.json`): moves land within 3e-6 m, show in
   the same step's depth, and collide at once. 10 moves add 13 ms to a 74 ms step (+17 %), and at N = 4 nothing
   (13.49 against 13.37 steps/s). A hovering drone covers only centimetres in its first step (M0: 2.33 m in 10 steps
