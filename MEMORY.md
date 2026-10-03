@@ -84,6 +84,18 @@ stale "fact". Standing rules live in `CLAUDE.md`; this file is the reasoning and
 
 ## RL and evaluation learnings
 
+- **Never warm-start SAC with a fresh replay buffer (2026-10-03, run 2).** r1's best_model copied into run 2 flew at
+  ~0.8 during the policy warm-up, then collapsed within ~500 updates (its 20k checkpoint: 0.25 against r1's 0.85 on the
+  same 20 seeds). An offline replay on the real buffer showed r1's own network drifting the same way, so the mover
+  branch and the copy were not the cause: 88% of its deterministic actions moved by more than 0.25 after 1,000
+  updates. A third of the learning rate barely helped. A narrow new buffer makes the critic forget what the old one
+  taught, and the actor follows its errors. Train from scratch, or keep the old buffer
+  (`docs/decisions/2026-10-03-s01d-r2-stopped-r3-from-scratch.md`).
+- **On s01d, every mover "collision" of r1 was a near miss (2026-10-03, `docs/gates/m2d_r1_contact_probe_*.json`).**
+  All 24 contacts were 0.84–1.00 m from the surface: inside the 1 m contact rule, never physical. Mostly they were
+  beside the drone, past a mover that stood still while yielding. Depth alone cannot tell such a mover from a static
+  pillar, hence the privileged mover input.
+
 - **The s01d expert reached 0.775, not 0.95, in 12 h (2026-10-03, `docs/decisions/2026-10-03-m2d-closeout.md`).**
   Training on moving pillars took success from 0.36 (the s01 expert, zero-shot) to 0.775 (`best_model`, 225k).
   - 19 of its 35 mover collisions came with the mover out of the forward camera's view.
