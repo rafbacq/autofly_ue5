@@ -272,6 +272,15 @@ SESSIONS_FILE = "sessions.json"
 LEGACY_IDENTITY = {"obs_config": {"depth_frames": 1, "depth_dtype": "float32"}, "dynamic": None}
 
 
+def default_train_record(run_root: Path, scene: str, *, resume: bool) -> Path:
+    """The default --out: docs/gates/<milestone>_train.json for a run's first session, and
+    <milestone>_train_session<k>.json for resumed session k -- each session's record is evidence of its own, so a
+    resume must not need (or be refused for) the first session's file. Read-only: the session is claimed later."""
+    sessions_path = Path(run_root) / SESSIONS_FILE
+    session = len(json.loads(sessions_path.read_text())["sessions"]) if resume and sessions_path.is_file() else 0
+    return default_evidence_path(scene, "train" if session == 0 else f"train_session{session}")
+
+
 def run_identity(resolved: ResolvedScene, obs_config: ObsConfig, scene_config: str | None = None) -> dict:
     """What a run's replay buffer and checkpoints are tied to: resuming under anything else would mix two tasks, two
     observation shapes or two simulator clocks (the scene config holds the clock rate) in one buffer."""
@@ -619,7 +628,7 @@ def main(argv: list[str] | None = None) -> int:
     sim_root = Path(args.sim_root)
     # Everything that can be checked without a simulator is checked before the run directory is claimed.
     try:
-        out_path = args.out if args.out is not None else default_evidence_path(args.scene, "train")
+        out_path = args.out if args.out is not None else default_train_record(run_root, args.scene, resume=args.resume)
         refuse_existing_evidence(out_path)
         resolved = resolve_scene(args.scene)
         scene_file, layout = resolved.scene, resolved.layout
@@ -775,10 +784,25 @@ def main(argv: list[str] | None = None) -> int:
 
     # Every log each slot wrote during the run -- the live sim.log AND the sim-backup-*.log each relaunch rotated it
     # to (Task 8's record scanned only the final session's sim.log, missing 24 in-run logs) -- and a readable journal.
-    engine_faults = audit_engine_faults(since=run_started, since_epoch=run_start_epoch, xid_before=xid_before,
-                                        boot_before=boot_before,
-                                        log_dirs=[instance_dir(i, sim_root) for i in train_slots + [eval_slot]])
-    faults_ok = engine_faults.pop("ok")
+    # Every part of the record that reads something the run left behind is guarded: on 2026-10-03 a malformed fault
+    # summary crashed this assembly and s01d_r1's 5.5 h session left no record at all.
+    record_errors: dict[str, str] = {}
+
+    def guarded(key: str, compute, fallback):
+        try:
+            return compute()
+        except Exception as err:
+            record_errors[key] = f"{type(err).__name__}: {err}"
+            traceback.print_exc()
+            return fallback
+
+    engine_faults = guarded(
+        "engine_faults",
+        lambda: audit_engine_faults(since=run_started, since_epoch=run_start_epoch, xid_before=xid_before,
+                                    boot_before=boot_before,
+                                    log_dirs=[instance_dir(i, sim_root) for i in train_slots + [eval_slot]]),
+        {"ok": False})
+    faults_ok = engine_faults.pop("ok", False)
 
     gate = {
         "description": f"SAC training on scene {args.scene} (spec §8; Task 8 of plan 2, §6.5 for a dynamic scene).",
@@ -827,7 +851,7 @@ def main(argv: list[str] | None = None) -> int:
         # Steps taken THIS session only -- a resumed run's num_timesteps includes steps from a previous
         # session that took no wall-clock time in this one, which would otherwise inflate this figure.
         "env_steps_per_s": (num_timesteps_this_session / wall_s) if wall_s > 0 else None,
-        "eval": read_eval_results(run_root),
+        "eval": guarded("eval", lambda: read_eval_results(run_root), None),
         "outcome_histogram": dict(outcome_cb.histogram),
         "collision_sources": dict(outcome_cb.collision_sources),
         # Backend-fault transitions dropped from the replay buffer (C2); with n workers a dropped row costs n. Counted
@@ -835,7 +859,7 @@ def main(argv: list[str] | None = None) -> int:
         "dropped_fault_rows": int(getattr(getattr(model, "replay_buffer", None), "dropped_fault_rows", 0)),
         "dropped_fault_transitions": int(getattr(getattr(model, "replay_buffer", None), "dropped_transitions", 0)),
         "interrupted_evaluations": eval_cb.interrupted_evaluations if eval_cb is not None else 0,
-        "backend_faults": combine_fault_summaries(fault_summaries),
+        "backend_faults": guarded("backend_faults", lambda: combine_fault_summaries(fault_summaries), None),
         "backend_faults_missing_slots": fault_summaries_missing,
         "engine_faults": engine_faults,
         "faults_ok": faults_ok,
@@ -845,6 +869,7 @@ def main(argv: list[str] | None = None) -> int:
         },
         "run_started": run_started,
         "run_finished": time.strftime("%Y-%m-%d %H:%M:%S"),
+        "record_errors": record_errors,
     }
     destination = record_destination(out_path, did_work=num_timesteps_this_session > 0)
     if destination != out_path:

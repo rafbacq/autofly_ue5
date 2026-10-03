@@ -493,3 +493,42 @@ def test_a_gate_that_evaluated_nothing_leaves_its_record_outside_the_evidence(tm
     assert record_destination(protected, did_work=False) == evidence.NOT_STARTED_DIR / "m2d_gate.json"
     assert record_destination(protected, did_work=True) == protected
     assert record_destination(tmp_path / "x.json", did_work=False) == tmp_path / "x.json"
+
+
+# --------------------------------------------------------------------------------------------------------
+# The run record is always written, and a resumed session gets its own (2026-10-03, s01d_r1 session 0).
+# --------------------------------------------------------------------------------------------------------
+def test_the_run_record_is_written_even_if_assembling_it_fails(tmp_path, monkeypatch):
+    from autofly_ue5.expert import train
+
+    _no_launch(monkeypatch)
+    monkeypatch.setattr(train, "scene_config_factory", lambda config, movable=(), **kw: _dynamic_fake_factory())
+
+    def broken(summaries):
+        raise AttributeError("'tuple' object has no attribute 'get'")
+
+    monkeypatch.setattr(train, "combine_fault_summaries", broken)
+    out = tmp_path / "train.json"
+    train.main(["--scene", "s01d", "--run-root", str(tmp_path / "run"), "--out", str(out), "--device", "cpu",
+                "--sim-root", str(tmp_path / "sim"), "--total-timesteps", "5", "--learning-starts", "100",
+                "--buffer-size", "100", "--eval-freq", "1000"])
+    record = json.loads(out.read_text())
+    assert record["status"] == "ok" and record["num_timesteps"] >= 5
+    assert "AttributeError" in record["record_errors"]["backend_faults"]
+
+
+def test_a_resumed_session_writes_its_own_record_by_default(tmp_path, monkeypatch):
+    from autofly_ue5 import evidence
+    from autofly_ue5.expert import train
+
+    run_root = tmp_path / "run"
+    (run_root).mkdir()
+    (run_root / "sessions.json").write_text(json.dumps({"sessions": [{"index": 0, "reward_version": "x"}]}))
+    assert train.default_train_record(run_root, "s01d", resume=False) == evidence.GATES_DIR / "m2d_train.json"
+    assert train.default_train_record(run_root, "s01d", resume=True) == evidence.GATES_DIR / "m2d_train_session1.json"
+    (evidence.GATES_DIR / "m2d_train.json").write_text("{}")  # session 0's record must not block the resume
+    _no_launch(monkeypatch)
+    monkeypatch.setattr(train, "make_vec_env", lambda *a, **k: pytest.fail("got past the checks: fine, stop here"))
+    code = train.main(["--scene", "s01d", "--resume", "--run-root", str(run_root), "--device", "cpu",
+                       "--sim-root", str(tmp_path / "sim")])
+    assert code == 2, "refused for the reward version / missing checkpoint, not for the record path"

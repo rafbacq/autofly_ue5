@@ -61,6 +61,8 @@ def combine_fault_summaries(summaries: list[dict]) -> dict:
     recovered_counts: Counter[str] = Counter({name: 0 for name in KNOWN_FAULT_NAMES})
     relaunch_count = 0
     for s in summaries:
+        if not isinstance(s, dict):  # never let a malformed reply cost a run its record (2026-10-03)
+            continue
         fault_counts.update(s.get("fault_counts", {}))
         recovered_counts.update(s.get("recovered_counts", {}))
         relaunch_count += s.get("relaunch_count", 0)

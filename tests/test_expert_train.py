@@ -978,3 +978,22 @@ def test_an_evaluation_bug_is_not_mistaken_for_a_backend_failure(tmp_path):
                                 best_model_save_path=tmp_path / "best", log_path=tmp_path / "eval_logs")
     with pytest.raises(TypeError, match="a bug"):
         model.learn(total_timesteps=4, callback=cb)
+
+
+def test_fault_summaries_ignore_a_stale_reply_left_in_a_workers_pipe(tmp_path):
+    # 2026-10-02 (s01d_r1 session 0): a worker died mid-step, so another worker's reply to that step was never read.
+    # Asked for its fault summary next, that worker's pipe yielded the stale step tuple, and the record crashed.
+    from autofly_ue5.expert.faults import combine_fault_summaries
+    from autofly_ue5.expert.vec import collect_fault_summaries, make_vec_env
+
+    scene, layout = scene_and_layout()
+    vec = make_vec_env(scene, layout, 2, map_path="/x", monitor_dir=tmp_path / "mon", sim_factory=FakeSimulator,
+                       sim_root=tmp_path / "sim")
+    try:
+        vec.step_async(np.zeros((2, 3), dtype=np.float32))  # both workers reply; nobody reads the replies
+        summaries, missing = collect_fault_summaries(vec)
+        assert missing == [] and all(isinstance(s, dict) and "fault_counts" in s for s in summaries)
+        assert combine_fault_summaries(summaries + [("not", "a", "summary")])["relaunch_count"] == 0
+    finally:
+        vec.waiting = False  # the step's replies were consumed above; SB3's close() would wait for them forever
+        vec.close()

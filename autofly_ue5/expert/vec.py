@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import sys
 import threading
+import time
 from pathlib import Path
 from typing import Callable
 
@@ -159,27 +160,45 @@ def teardown(vec_env: SubprocVecEnv | None, instances, sim_root: Path = SIM_RUN_
     return stop_instances(list(instances), sim_root)
 
 
-def call_method_with_timeout(vec_env: SubprocVecEnv, index: int, method: str, timeout_s: float):
+def call_method_with_timeout(vec_env: SubprocVecEnv, index: int, method: str, timeout_s: float,
+                             accept: Callable[[object], bool] | None = None):
     """Like `vec_env.env_method(method, indices=[index])[0]`, but bounded.
 
     SB3's env_method() does an unbounded `remote.recv()`. That is safe only if a crashed worker always
     exits promptly; measured live, it does not (see LAUNCH_REPLY_TIMEOUT_S's comment), so this polls with a
     timeout instead, specifically so a hung worker cannot prevent the orchestrator from reaching its own
     teardown path.
+
+    `accept`: replies it rejects are discarded and the wait goes on (within `timeout_s`). A reply nobody read -- to the
+    step another worker died in -- otherwise arrives first and is taken for this call's (2026-10-03: a stale step tuple
+    read as a fault summary crashed s01d_r1's record). Replies already waiting are drained before the call.
     """
     remote = vec_env.remotes[index]
+    try:
+        while remote.poll(0):
+            remote.recv()
+    except (EOFError, OSError):
+        pass
     remote.send(("env_method", (method, (), {})))
-    if not remote.poll(timeout_s):
-        raise TimeoutError(
-            f"worker {index} did not reply to {method}() within {timeout_s}s -- it likely crashed without "
-            f"exiting (check the job log for a worker traceback) and must be torn down forcibly"
-        )
-    return remote.recv()
+    deadline = time.monotonic() + timeout_s
+    while True:
+        if not remote.poll(max(0.0, deadline - time.monotonic())):
+            raise TimeoutError(
+                f"worker {index} did not reply to {method}() within {timeout_s}s -- it likely crashed without "
+                f"exiting (check the job log for a worker traceback) and must be torn down forcibly"
+            )
+        reply = remote.recv()
+        if accept is None or accept(reply):
+            return reply
 
 
 def call_reset_with_timeout(vec_env: SubprocVecEnv, index: int, timeout_s: float = LAUNCH_REPLY_TIMEOUT_S) -> None:
     """A bounded `reset()` of one worker (its simulator launches lazily inside it)."""
     call_method_with_timeout(vec_env, index, "reset", timeout_s)
+
+
+def _is_fault_summary(reply) -> bool:
+    return isinstance(reply, dict) and "fault_counts" in reply
 
 
 def collect_fault_summaries(vec_env: VecEnv, timeout_s: float = VEC_ENV_CLOSE_TIMEOUT_S) -> tuple[list[dict], list[int]]:
@@ -191,9 +210,12 @@ def collect_fault_summaries(vec_env: VecEnv, timeout_s: float = VEC_ENV_CLOSE_TI
     for index in range(vec_env.num_envs):
         try:
             if isinstance(vec_env, SubprocVecEnv):
-                summaries.append(call_method_with_timeout(vec_env, index, "get_fault_summary", timeout_s))
+                summary = call_method_with_timeout(vec_env, index, "get_fault_summary", timeout_s, accept=_is_fault_summary)
             else:
-                summaries.append(vec_env.env_method("get_fault_summary", indices=[index])[0])
+                summary = vec_env.env_method("get_fault_summary", indices=[index])[0]
+            if not _is_fault_summary(summary):
+                raise TypeError(f"reply is a {type(summary).__name__}, not a fault summary")
+            summaries.append(summary)
         except Exception as err:
             print(f"WARNING: worker {index} gave no fault summary ({type(err).__name__}: {err})", file=sys.stderr)
             missing.append(index)
