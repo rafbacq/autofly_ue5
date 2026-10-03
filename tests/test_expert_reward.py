@@ -103,10 +103,13 @@ def test_evaluate_maps_outcomes_to_gymnasium_flags():
 # turning at the end out-earned an aligned success at 5 m -- final.zip's successes ended a median 2.35 m from the
 # target (best_model's 4.89 m), and 7 of its 16 real failures left the bounds within 5 m of the target.
 # ------------------------------------------------------------------------------------------------------
-def test_the_reward_version_names_the_clamp():
+def test_the_reward_version_names_the_latest_change():
+    # 2: the clamp above (C8). 3 (2026-10-03): a scene may set its own coefficients; s01d prices leaving the bounds
+    # like a collision. Static scenes' rewards are unchanged (tests/test_static_s01_golden.py), but records and
+    # resumes must not mix the two versions' s01d returns.
     from autofly_ue5.expert.reward import REWARD_VERSION
 
-    assert REWARD_VERSION == "2-no-progress-inside-success-radius"
+    assert REWARD_VERSION == "3-scene-reward-overrides"
 
 
 def test_moving_inside_the_success_radius_earns_no_progress():

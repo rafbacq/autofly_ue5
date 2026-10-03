@@ -9,7 +9,9 @@ from enum import Enum
 
 # Recorded with every training session and gate run. A replay buffer or checkpoint trained under one version must not
 # be resumed or compared under another (train.prepare_run_root refuses the resume).
-REWARD_VERSION = "2-no-progress-inside-success-radius"
+# 2: no progress credit inside the success radius (C8). 3 (2026-10-03): a scene may set its own coefficients
+# (reward_config_for_scene); s01d sets r_bounds = r_collision. Static scenes' rewards are unchanged.
+REWARD_VERSION = "3-scene-reward-overrides"
 
 
 class Outcome(Enum):
