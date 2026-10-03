@@ -31,7 +31,7 @@ env -u PYTHONPATH uv pip install --python $TFDS "tensorflow-cpu==2.18.*" "tensor
 
 ```bash
 $J start m3_smoke -- $PY scripts/collect_dataset.py --scene s01 --model $MODEL --scene-config $CFG --name smoke<k> \
-    --episodes 3 --max-attempts 6 --instance <slot> --data-root runs/m3_smoke/data \
+    --episodes 3 --max-attempts 6 --seed-slice 99 --instance <slot> --data-root runs/m3_smoke/data \
     --out runs/m3_smoke/m3_gate_smoke<k>.json --check-python $TFDS
 $J wait m3_smoke 420
 ```
@@ -42,7 +42,7 @@ Expect `kept: 3`, `validator_pass: true`, and `rlds.tfds_check.pass: true` in th
 
 ```bash
 $J start m3_pilot -- $PY scripts/collect_dataset.py --scene s01 --model $MODEL --scene-config $CFG --name s01_pilot \
-    --episodes 100 --instance <slot> --check-python $TFDS        # writes data/s01_pilot/ and docs/gates/m3_gate.json
+    --episodes 100 --seed-slice 0 --instance <slot> --check-python $TFDS   # data/s01_pilot/, docs/gates/m3_gate.json
 grep --line-buffered COLLECT runs/jobs/m3_pilot.log              # one line per episode: outcome, kept, rejected
 $J wait m3_pilot 540                                             # repeat until it finishes
 ```

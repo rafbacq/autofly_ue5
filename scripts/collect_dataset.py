@@ -7,7 +7,8 @@ is recorded as M3's gate.
 
 - Writes data/<name>/ (the raw store, spec §10) and data/rejects/<name>/; refuses a name that already holds a dataset.
 - `--scene-config` is required: collect on the clock the expert was trained and gated on (s01_r2: the 1 ms config).
-- Seeds come from `COLLECTION_SEED_BASE` (400e6), disjoint from training, evaluation, the gate and the probes.
+- Seeds come from `--seed-slice` k of the collection range (400e6 + k * 1e6), disjoint from training, evaluation, the
+  gate and the probes. One slice per (scene, collection run); 99 is for smokes and diagnostics.
 - Stochastic by default (spec §9 step 5; docs/decisions/2026-10-02-m2-closeout.md); `--deterministic` for comparison.
 - The gate record (default docs/gates/m3_gate.json, never written over) passes when the requested episodes were kept,
   the validator passes, and the engine-fault audit is clean. The TFDS read-back is recorded next to it.
@@ -38,7 +39,7 @@ from autofly_ue5.collect.collector import collect  # noqa: E402
 from autofly_ue5.dataset.raw import RawDatasetWriter  # noqa: E402
 from autofly_ue5.dataset.rlds import VERSION, export_rlds  # noqa: E402
 from autofly_ue5.expert.reward import REWARD_VERSION  # noqa: E402
-from autofly_ue5.expert.seeds import COLLECTION_SEED_BASE  # noqa: E402
+from autofly_ue5.expert.seeds import COLLECTION_SEED_BASE, collection_seed_base  # noqa: E402
 from autofly_ue5.expert.train import sha256_of  # noqa: E402
 from autofly_ue5.expert.vec import teardown  # noqa: E402
 from autofly_ue5.paths import PACKAGED_BINARY, ROOT, UE_PROJECT_DIR  # noqa: E402
@@ -209,6 +210,9 @@ def build_arg_parser() -> argparse.ArgumentParser:
     p.add_argument("--scene-config", required=True, help="the Project AirSim config the expert was trained and gated on")
     p.add_argument("--name", required=True, help="the dataset's directory under --data-root; never written over")
     p.add_argument("--episodes", type=int, default=100, help="successful episodes to keep")
+    p.add_argument("--seed-slice", type=int, default=0,
+                   help="this collection run's slice of the collection seeds (expert/seeds.py): one per (scene, run); "
+                        "0 = s01's pilot, 99 = smokes and diagnostics")
     p.add_argument("--max-attempts", type=int, default=None, help="seeds to fly at most (default 10 x --episodes)")
     p.add_argument("--instance", type=int, default=0,
                    help="the simulator slot; refused while another live run holds it (an --instances N training run "
@@ -228,6 +232,7 @@ def main(argv: list[str] | None = None) -> int:
     out_path = args.out if args.out is not None else evidence.GATES_DIR / "m3_gate.json"
     try:
         evidence.refuse_existing_evidence(out_path)
+        seed_base = collection_seed_base(args.seed_slice)
         busy = slot_busy(args.instance, args.sim_root)
         if busy:
             raise ValueError(f"{busy}; pass a free --instance")
@@ -244,7 +249,7 @@ def main(argv: list[str] | None = None) -> int:
     record = run(scene=args.scene, model_path=args.model, scene_config=args.scene_config, name=args.name,
                  n_episodes=args.episodes, instance=args.instance, out_path=out_path, data_root=args.data_root,
                  deterministic=args.deterministic, max_attempts=args.max_attempts, target_name=args.target_name,
-                 check_python=args.check_python, device=args.device, sim_root=args.sim_root)
+                 check_python=args.check_python, device=args.device, sim_root=args.sim_root, seed_base=seed_base)
     print(json.dumps({"status": record["status"], "pass": record["pass"], "error": record["error"],
                       "kept": (record["collection"] or {}).get("kept"),
                       "validator_pass": (record["validation"] or {}).get("pass")}, indent=2))

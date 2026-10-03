@@ -57,6 +57,27 @@ def test_every_seed_range_is_disjoint():
     assert ranges[0][0] >= 64
 
 
+def test_each_collection_run_gets_its_own_slice_of_the_collection_range():
+    # seeds.py promises one 1e6 slice per (scene, collection run): re-runs and s01 against s01d (same layout, same
+    # draw order) would otherwise fly identical setups (the M3 review, 2026-10-03).
+    from autofly_ue5.expert.seeds import COLLECTION_SEED_BASE, MAX_COLLECTION_SLICES, collection_seed_base
+
+    assert collection_seed_base(0) == COLLECTION_SEED_BASE
+    assert collection_seed_base(1) == COLLECTION_SEED_BASE + 1_000_000
+    assert collection_seed_base(MAX_COLLECTION_SLICES - 1) + 1_000_000 == COLLECTION_SEED_BASE + 100_000_000
+    for bad in (-1, MAX_COLLECTION_SLICES):
+        with pytest.raises(ValueError):
+            collection_seed_base(bad)
+
+
+def test_the_pilot_cli_takes_a_seed_slice():
+    from scripts.collect_dataset import build_arg_parser
+
+    common = ["--model", "m.zip", "--scene-config", "c.jsonc", "--name", "n"]
+    assert build_arg_parser().parse_args(common).seed_slice == 0
+    assert build_arg_parser().parse_args([*common, "--seed-slice", "3"]).seed_slice == 3
+
+
 def test_session_seed_base_refuses_to_overflow_into_the_next_worker():
     from autofly_ue5.expert.seeds import MAX_SESSIONS, session_seed_base
 
