@@ -139,3 +139,43 @@ def test_an_existing_dataset_is_never_overwritten(tmp_path):
     (tmp_path / "data" / "pilot" / "manifest.json").write_text("{}")
     with pytest.raises(FileExistsError):
         RawDatasetWriter(tmp_path / "data", "pilot", scene=scene, provenance=PROVENANCE)
+
+
+def test_the_pilot_cli_collects_validates_exports_and_records_the_gate(tmp_path):
+    from autofly_ue5.expert.obs import ObsConfig
+    from scripts.collect_dataset import run
+
+    checkpoint = tmp_path / "model.zip"
+    checkpoint.write_bytes(b"not a real model; the fake loader ignores it")
+    record = run(scene="s01", model_path=checkpoint, scene_config="scene_autofly_s01_fast.jsonc", name="pilot",
+                 n_episodes=2, instance=5, out_path=tmp_path / "m3_gate.json", data_root=tmp_path / "data",
+                 sim_factory=FakeSimulator, load_model=lambda path: _StraightAtTargetModel(),
+                 obs_config_reader=lambda path: ObsConfig(), sim_root=tmp_path / "sim", platform={"test": True})
+    assert record["status"] == "ok" and record["error"] is None, record["error"]
+    assert record["collection"]["kept"] == 2 and record["validation"]["pass"]
+    assert record["pass"] == record["faults_ok"], "with a clean audit, a kept and validated pilot passes"
+    assert record["seed_base"] == SEED_BASE and record["expert"]["deterministic"] is False
+    assert record["scene_config"]["file"] == "scene_autofly_s01_fast.jsonc" and record["a0"] == "sector8"
+    assert record["rlds"]["splits"] == {"train": 2}
+    assert json.loads((tmp_path / "m3_gate.json").read_text())["collection"]["kept"] == 2
+    prov = json.loads(next((tmp_path / "data" / "pilot" / "provenance").glob("*.json")).read_text())
+    assert prov["platform"] == {"test": True} and prov["expert"]["sha256"] == record["expert"]["sha256"]
+    assert not (tmp_path / "sim" / "inst5" / "pid.json").exists(), "its simulator slot is left empty"
+
+
+def test_the_pilot_cli_refuses_an_existing_dataset_or_record_before_launching_anything(tmp_path):
+    from autofly_ue5 import evidence
+    from scripts.collect_dataset import main
+
+    checkpoint = tmp_path / "model.zip"
+    checkpoint.write_bytes(b"x")
+    common = ["--model", str(checkpoint), "--scene-config", "scene_autofly_s01_fast.jsonc", "--name", "pilot",
+              "--data-root", str(tmp_path / "data")]
+    (tmp_path / "data" / "pilot").mkdir(parents=True)
+    (tmp_path / "data" / "pilot" / "manifest.json").write_text("{}")
+    assert main([*common, "--out", str(tmp_path / "m3.json")]) == 2, "an existing dataset"
+    assert main([*common, "--name", "other", "--out", str(tmp_path / "m3.json")]) == 2, "a checkpoint that is no zip"
+    assert main([*common, "--name", "other", "--out", str(tmp_path / "m3.json"), "--scene-config", "nope.jsonc"]) == 2
+    (evidence.GATES_DIR / "m3_gate.json").write_text("{}")  # the default record (a scratch dir, see conftest)
+    assert main([*common, "--name", "other"]) == 2, "an existing gate record"
+    assert not (tmp_path / "m3.json").exists() and not (tmp_path / "data" / "other").exists()

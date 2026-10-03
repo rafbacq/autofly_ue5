@@ -34,15 +34,24 @@ def main(argv: list[str] | None = None) -> int:
     print(json.dumps(result, indent=2))
     if args.check_python is None:
         return 0
+    report = check_with_tfds(args.check_python, args.raw / "rlds" / args.dataset / VERSION, args.raw)
+    print(json.dumps(report, indent=2))
+    return 0 if report.get("pass") else 1
+
+
+def check_with_tfds(python: Path, rlds_dir: Path, raw: Path) -> dict:
+    """Run scripts/check_rlds_with_tfds.py under `python` (a venv with TFDS, CPU only); its report, also saved next to
+    the export as tfds_check.json."""
     env = {k: v for k, v in os.environ.items() if k != "PYTHONPATH"}
     env.update(CUDA_VISIBLE_DEVICES="-1", TF_CPP_MIN_LOG_LEVEL="3")
-    done = subprocess.run([str(args.check_python), str(_ROOT / "scripts" / "check_rlds_with_tfds.py"),
-                           "--rlds", str(args.raw / "rlds" / args.dataset / VERSION), "--raw", str(args.raw)],
-                          capture_output=True, text=True, env=env)
-    out = done.stdout[done.stdout.find("{"):] if "{" in done.stdout else done.stdout
-    (args.raw / "rlds" / "tfds_check.json").write_text(out)
-    print(out or done.stderr[-2000:])
-    return done.returncode
+    done = subprocess.run([str(python), str(_ROOT / "scripts" / "check_rlds_with_tfds.py"), "--rlds", str(rlds_dir),
+                           "--raw", str(raw)], capture_output=True, text=True, env=env)
+    try:
+        report = json.loads(done.stdout[done.stdout.find("{"):])
+    except ValueError:
+        report = {"pass": False, "error": f"exit {done.returncode}: {(done.stderr or done.stdout)[-2000:]}"}
+    (Path(rlds_dir).parent.parent / "tfds_check.json").write_text(json.dumps(report, indent=2) + "\n")
+    return report
 
 
 if __name__ == "__main__":
