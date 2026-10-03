@@ -30,7 +30,7 @@ from autofly_ue5.expert.obs import (
     obs_config_for_scene,
     target_geometry,
 )
-from autofly_ue5.expert.reward import Outcome, RewardConfig, evaluate, oob_kind
+from autofly_ue5.expert.reward import Outcome, RewardConfig, evaluate, oob_kind, reward_config_for_scene
 from autofly_ue5.frames import wrap_pi
 from autofly_ue5.scenes.model import Layout, SceneFile
 from autofly_ue5.sim.protocol import Simulator
@@ -79,7 +79,7 @@ class AutoFlyEnv(gym.Env):
         # max_episode_steps is a separate knob from cfg.step_limit -- e.g. a shorter smoke-test episode
         # without hand-building a whole new RewardConfig just to change one field. Folding it into the
         # cfg actually used by evaluate() keeps classify()'s TIMEOUT check from disagreeing with it.
-        self._cfg = dataclasses.replace(cfg, step_limit=max_episode_steps)
+        self._cfg = dataclasses.replace(reward_config_for_scene(scene, cfg), step_limit=max_episode_steps)
         self._seed_base = seed_base
         self._max_episode_steps = max_episode_steps
 

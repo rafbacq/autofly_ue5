@@ -24,7 +24,15 @@
     "target_band": { "$ref": "#/$defs/range" },
     "altitude_band": { "$ref": "#/$defs/range" },
     "instruction_obstacle": { "type": "string", "minLength": 1 },
-    "dynamic": { "$ref": "#/$defs/dynamic" }
+    "dynamic": { "$ref": "#/$defs/dynamic" },
+    "reward": {
+      "type": "object", "additionalProperties": false, "minProperties": 1,
+      "properties": {
+        "k_p": { "type": "number", "minimum": 0 }, "k_h": { "type": "number", "minimum": 0 },
+        "k_t": { "type": "number", "minimum": 0 }, "r_success": { "type": "number", "minimum": 0 },
+        "r_collision": { "type": "number", "minimum": 0 }, "r_bounds": { "type": "number", "minimum": 0 }
+      }
+    }
   },
   "$defs": {
     "range": { "type": "array", "items": { "type": "number", "minimum": 0 }, "minItems": 2, "maxItems": 2 },

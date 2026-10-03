@@ -298,6 +298,7 @@ def test_the_s01d_gate_flies_the_checkpoints_observation_and_records_mover_outco
     gate = _gate(tmp_path, "s01d", _fake_checkpoints(tmp_path, "best_model"), reader=lambda p: STACKED_OBS,
                  sim_factory=_dynamic_fake_factory(), n=3)
     assert gate["status"] == "ok" and gate["scene"] == "s01d" and gate["obs_config"] == STACKED_OBS.to_json()
+    assert gate["reward_config"]["r_bounds"] == 10.0, "the gate records the reward its returns were scored with"
     det = gate["checkpoints"]["best_model"]["deterministic"]
     assert det["n_episodes"] == 3 and "collision_sources" in det
     for episode in det["per_episode"]:

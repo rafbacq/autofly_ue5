@@ -86,6 +86,9 @@ class SceneFile:
     path: str
     level: str | None = None  # the scene whose built level this one reuses (spec §6.1); None: its own
     dynamic: DynamicSpec | None = None  # spec §6.5; None: nothing moves
+    # Reward coefficients this scene sets for itself, as sorted (name, value) pairs; () keeps spec §8's defaults
+    # (expert.reward.reward_config_for_scene). s01d prices leaving the bounds like a collision (2026-10-03).
+    reward: tuple[tuple[str, float], ...] = ()
 
 
 @dataclass(frozen=True)
@@ -221,6 +224,7 @@ def load_scene_file(path: Path) -> SceneFile:
         sha256=hashlib.sha256(raw).hexdigest(), path=str(path),
         level=data.get("level"),
         dynamic=_dynamic_spec(data["dynamic"], path) if "dynamic" in data else None,
+        reward=tuple(sorted((name, float(value)) for name, value in data.get("reward", {}).items())),
     )
 
 

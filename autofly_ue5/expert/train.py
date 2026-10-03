@@ -150,7 +150,7 @@ from autofly_ue5.expert.resilient import (  # noqa: F401  (re-exported: moved fr
     ResilientAutoFlyEnv,
     _bounded_close,
 )
-from autofly_ue5.expert.reward import REWARD_VERSION
+from autofly_ue5.expert.reward import REWARD_VERSION, reward_config_for_scene
 from autofly_ue5.expert.seeds import (  # noqa: F401  (EVAL_SEED_BASE etc. re-exported for callers)
     EVAL_CALLBACK_SEED_BASE,
     EVAL_SEED_BASE,
@@ -300,6 +300,8 @@ def run_identity(resolved: ResolvedScene, obs_config: ObsConfig, scene_config: s
         "base_layout_sha256": resolved.layout_sha256,
         "obs_config": obs_config.to_json(),
         "dynamic": json.loads(json.dumps(dataclasses.asdict(dynamic))) if dynamic is not None else None,
+        # the coefficients the run trains on (spec §8's defaults plus the scene's own; JSON-normalised like the rest)
+        "reward_config": json.loads(json.dumps(dataclasses.asdict(reward_config_for_scene(resolved.scene)))),
     }
 
 

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import dataclasses
 import math
 from dataclasses import dataclass
 from enum import Enum
@@ -33,6 +34,13 @@ class RewardConfig:
     align_radius_m: float = 10.0
     step_limit: int = 300
     altitude_band_m: tuple[float, float] = (1.0, 3.0)   # hard operating bounds; leaving them ends the episode
+
+
+def reward_config_for_scene(scene, base: RewardConfig = RewardConfig()) -> RewardConfig:
+    """`base` with the coefficients the scene file sets for itself (its "reward" block, validated against the
+    schema). s01d sets r_bounds = r_collision: at 5 against 10, s01d_r1's late policy learned to dive out of the
+    altitude band whenever a collision looked likely (final.zip: 58 of its 62 out-of-bounds gate episodes, 2026-10-03)."""
+    return dataclasses.replace(base, **dict(scene.reward))
 
 
 @dataclass(frozen=True)

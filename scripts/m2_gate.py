@@ -45,6 +45,7 @@ if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
 import argparse  # noqa: E402
+import dataclasses  # noqa: E402
 import json  # noqa: E402
 import os  # noqa: E402
 import time  # noqa: E402
@@ -63,7 +64,7 @@ from autofly_ue5.expert.evaluate import (  # noqa: E402
 from autofly_ue5.expert.faults import KNOWN_FAULT_NAMES  # noqa: E402
 from autofly_ue5.expert.obs import ObsConfig, obs_config_from_space  # noqa: E402
 from autofly_ue5.expert.resilient import ResilientAutoFlyEnv  # noqa: E402
-from autofly_ue5.expert.reward import REWARD_VERSION  # noqa: E402
+from autofly_ue5.expert.reward import REWARD_VERSION, reward_config_for_scene  # noqa: E402
 from autofly_ue5.expert.seeds import EVAL_SEED_BASE  # noqa: E402
 from autofly_ue5.expert.train import sha256_of  # noqa: E402
 from autofly_ue5.expert.vec import teardown  # noqa: E402
@@ -209,6 +210,8 @@ def run(
     instances_path = instances_path if instances_path is not None else default_instances_path(scene)
     run_started = time.strftime("%Y-%m-%d %H:%M:%S")
     run_start_epoch = time.time()
+    # the coefficients mean_return is scored with (spec §8's, plus the scene's own since 2026-10-03)
+    reward_config = json.loads(json.dumps(dataclasses.asdict(reward_config_for_scene(resolve_scene(scene).scene))))
     xid_before = xid_count(run_started)
     boot_before = boot_id()
 
@@ -263,6 +266,7 @@ def run(
             "scene": scene,
             "obs_config": obs_config.to_json() if obs_config is not None else None,
             "reward_version": REWARD_VERSION,
+            "reward_config": reward_config,
             "scene_config": scene_config_record(scene_config) if scene_config else None,
             "eval_seed_base": seed_base,
             "episodes_requested_per_condition": n_episodes,
