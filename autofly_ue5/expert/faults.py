@@ -24,6 +24,7 @@ from autofly_ue5.sim.process import SimExitedError, SimReadyTimeout
 from autofly_ue5.sim.types import (
     CameraPoseError,
     KinematicsJumpError,
+    ObjectMoveRefusedError,
     ResetPoseError,
     SetPoseError,
     SimConnectionLostError,
@@ -33,8 +34,9 @@ from autofly_ue5.sim.types import (
 
 # SimRequestTimeoutError (2026-10-02, moving obstacles): a mover request got no reply. It ends the episode like any step
 # fault; its connection is gone, so the next reset() raises SimConnectionLostError and relaunches (below).
+# ObjectMoveRefusedError (2026-10-03): Unreal refused a movable pillar's move twice; the next reset re-places every mover.
 FAULT_ERRORS_STEP = (CameraPoseError, StepTimingError, StaleStateError, CommandTimeoutError, NngTimeout, NngConnectionReset,
-                     KinematicsJumpError, SimRequestTimeoutError)
+                     KinematicsJumpError, SimRequestTimeoutError, ObjectMoveRefusedError)
 # An episode that did not start where it should (C9): retried like any reset fault, so the gate replays the seed and
 # training never sees it. Raised only during reset(), so not step faults.
 FAULT_ERRORS_START = (ResetPoseError, StartCollisionError, SetPoseError)

@@ -7,6 +7,7 @@ import dataclasses
 import functools
 import hashlib
 import math
+import sys
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -36,6 +37,7 @@ from autofly_ue5.sim.types import (  # noqa: F401  (CameraPoseError re-exported:
     STEP_NS,
     CameraPoseError,
     KinematicsJumpError,
+    ObjectMoveRefusedError,
     ObjectNotFoundError,
     ObjectPoseError,
     Observation,
@@ -53,6 +55,9 @@ CAMERA = "FrontCamera"
 NO_EPISODE_NS = 2**62
 CAMERA_RECHECK_S = 0.2
 FRAME_KEYS = ("rgb", "depth")
+# A refused move is accepted when the object already sits this close to the requested pose (read back after the
+# refusal). The probe read moves back to within 3e-6 m (docs/gates/m2d_mover_probe.json).
+MOVE_READBACK_TOLERANCE_M = 1e-3
 
 
 @dataclass(frozen=True)
@@ -305,14 +310,35 @@ class ProjectAirSimSimulator:
             raise ObjectPoseError(f"set_object_poses: {refused} are not on this simulator's movable-object allow-list "
                                   f"({len(self._movable_objects)} names); nothing was moved")
         for name, pose in poses.items():
-            # teleport=True: SetActorLocationAndRotation without a sweep (WorldSimApi.cpp:745-791). A sweep would stop
-            # the pillar at its first blocking hit, which could be the drone.
+            self._set_object_pose(name, pose)
+
+    def _set_object_pose(self, name: str, pose: Pose) -> None:
+        # teleport=True: SetActorLocationAndRotation without a sweep (WorldSimApi.cpp:745-791). A sweep would stop the
+        # pillar at its first blocking hit, which could be the drone.
+        #
+        # "Unable to move object" means the server FOUND the object but Unreal's move returned false. On s01d_r1's
+        # first session that happened once in ~2 million moves of pillars that move fine (obs_0047, 2026-10-02) and,
+        # treated as fatal, ended a 12 h run after 5.5 h. Unreal reports a move it sees as no change as "not moved",
+        # so: read the pose back and accept it if the object is already where it was asked; otherwise try once more;
+        # otherwise raise a recoverable fault. "No objects of name" (a wrong level or a bug) stays fatal.
+        for attempt in (1, 2):
             try:
                 status = self._world.set_object_pose(name, self._pas_pose(pose), True)
             except RuntimeError as err:
-                raise self._typed_request_error(err, f"set_object_pose({name!r})") from err
+                if "Unable to move" not in str(err):
+                    raise self._typed_request_error(err, f"set_object_pose({name!r})") from err
+                got = self.get_object_poses([name]).get(name)
+                off = math.dist((got.x, got.y, got.z), (pose.x, pose.y, pose.z)) if got is not None else math.inf
+                print(f"MOVE-REFUSED {name} (attempt {attempt}/2): the server refused a move to {pose}; it reads back "
+                      f"{off:.6f} m from it -- {'accepted' if off <= MOVE_READBACK_TOLERANCE_M else 'retrying' if attempt == 1 else 'giving up'}",
+                      file=sys.stderr, flush=True)
+                if off <= MOVE_READBACK_TOLERANCE_M:
+                    return
+                continue
             if not status:
                 raise ObjectPoseError(f"set_object_pose({name!r}, {pose}) returned status {status!r}")
+            return
+        raise ObjectMoveRefusedError(f"set_object_pose({name!r}, {pose}): refused twice although the object exists")
 
     def get_object_poses(self, names: list[str]) -> dict[str, Pose | None]:
         """Where the named objects are, by one GetObjectPoses request; None for a name the server did not find (it

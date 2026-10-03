@@ -45,6 +45,7 @@ LOG_COUNTERS = {
     "faults": re.compile(r"^FAULT instance \d+: caught (\w+)"),
     "relaunches": re.compile(r"^RELAUNCH instance \d+: relaunching"),
     "mover_inferred": re.compile(r"^MOVER instance \d+:"),
+    "move_refused": re.compile(r"^MOVE-REFUSED "),
     "fatal": re.compile(r"^FATAL instance \d+:"),
     "skipped_evaluations": re.compile(r"^WARNING: evaluation at \d+ timesteps could not finish"),
 }
@@ -223,7 +224,8 @@ def render_text(summary: dict) -> str:
     counts = log["counts"]
     faults = ", ".join(f"{k} {v}" for k, v in sorted(log["fault_names"].items())) or "none"
     lines.append(f"faults: {faults}   relaunches {counts['relaunches']}   mover-inferred collisions {counts['mover_inferred']}"
-                 f"   FATAL {counts['fatal']}   skipped evaluations {counts['skipped_evaluations']}")
+                 f"   refused moves {counts['move_refused']}   FATAL {counts['fatal']}"
+                 f"   skipped evaluations {counts['skipped_evaluations']}")
     if log["finished"]:
         lines.append(log["finished"])
     host = summary["host"]

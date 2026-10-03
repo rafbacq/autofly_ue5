@@ -31,6 +31,7 @@ def _run(tmp_path):
         "FAULT instance 2: caught CameraPoseError during reset() (occurrence #1 ...)",
         "RELAUNCH instance 2: relaunching (this will be relaunch #1)",
         "MOVER instance 1: CameraPoseError: injected within 1.20 m of a mover: scored as a collision",
+        "MOVE-REFUSED obs_0047 (attempt 1/2): the server refused a move ...; it reads back 0.000001 m from it -- accepted",
     ]) + "\n")
     return root, log
 
@@ -46,6 +47,7 @@ def test_the_watcher_summarises_episodes_evaluations_faults_and_progress(tmp_pat
     assert [e["success"] for e in s["evaluations"]] == [0.5, 1.0]
     assert s["log"]["sb3"]["total_timesteps"] == 21234 and s["log"]["fault_names"] == {"CameraPoseError": 1}
     assert s["log"]["counts"]["relaunches"] == 1 and s["log"]["counts"]["mover_inferred"] == 1
+    assert s["log"]["counts"]["move_refused"] == 1
     text = render_text(s)
     assert "scene s01d" in text and "3xfloat16" in text and "21,234" in text and "mover 1" in text
     assert s["log"]["finished"] is None

@@ -608,3 +608,63 @@ def test_get_object_poses_reads_back_baked_objects_and_reports_a_missing_one_as_
     got = sim.get_object_poses(["obs_0000", "obs_0099"])
     assert got["obs_0000"] == Pose(1.0, 2.0, -5.0, 0.0)
     assert got["obs_0099"] is None  # the server answers NaN rather than raising
+
+
+# --------------------------------------------------------------------------------------------------------
+# A move Unreal refuses although the pillar is movable (2026-10-02, s01d_r1 session 0: "Unable to move obs_0047" once
+# in ~2 million moves, 5.5 h in, which ended the run). Read back; accept if it is already there; retry once; else a
+# recoverable fault -- never the end of a run.
+# --------------------------------------------------------------------------------------------------------
+class RefusingWorld(MovableWorld):
+    """Refuses the next `refusals` moves of a found object the way WorldSimApi.cpp:780-787 does; `move_anyway` puts the
+    object where it was asked before refusing (the no-op case: Unreal saw no change)."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.refusals = 0
+        self.move_anyway = False
+
+    def set_object_pose(self, object_name, object_pose, teleport):
+        if self.refusals > 0 and object_name in self.objects:
+            self.refusals -= 1
+            self.set_pose_calls.append((object_name, object_pose, teleport))
+            if self.move_anyway:
+                self.objects[object_name] = object_pose
+            raise RuntimeError(f"ERROR code: 1.0, message: SetObjectPose failed. Unable to move object {object_name}, "
+                               f"check if object state is movable!")
+        return super().set_object_pose(object_name, object_pose, teleport)
+
+
+REFUSING_API = PasApi(client_cls=FakeClient, world_cls=RefusingWorld, drone_cls=FakeDrone, pose_cls=dict,
+                      yaw_mode_max_dof=0)
+
+
+def test_a_refused_move_of_an_object_already_where_it_was_asked_is_accepted(capsys):
+    sim = make_sim(api=REFUSING_API, movable_objects={"obs_0000"})
+    sim._world.refusals, sim._world.move_anyway = 1, True
+    sim.set_object_poses({"obs_0000": Pose(1.5, 2.0, -5.0, 0.0)})
+    assert len(sim._world.set_pose_calls) == 1, "no retry needed: it is already there"
+    assert "MOVE-REFUSED" in capsys.readouterr().err
+
+
+def test_a_refused_move_is_retried_once_and_then_succeeds():
+    sim = make_sim(api=REFUSING_API, movable_objects={"obs_0000"})
+    sim._world.refusals = 1
+    sim.set_object_poses({"obs_0000": Pose(3.0, 2.0, -5.0, 0.0)})
+    assert len(sim._world.set_pose_calls) == 2
+    assert sim.get_object_poses(["obs_0000"])["obs_0000"] == Pose(3.0, 2.0, -5.0, 0.0)
+
+
+def test_a_move_refused_twice_is_a_recoverable_fault_not_the_end_of_the_run():
+    from autofly_ue5.expert.faults import FAULT_ERRORS_STEP
+    from autofly_ue5.sim.types import ObjectMoveRefusedError, ObjectPoseError
+
+    sim = make_sim(api=REFUSING_API, movable_objects={"obs_0000"})
+    sim._world.refusals = 2
+    with pytest.raises(ObjectMoveRefusedError, match="obs_0000"):
+        sim.set_object_poses({"obs_0000": Pose(3.0, 2.0, -5.0, 0.0)})
+    assert issubclass(ObjectMoveRefusedError, FAULT_ERRORS_STEP)
+    assert not issubclass(ObjectMoveRefusedError, ObjectPoseError), "ObjectPoseError stays fatal: a wrong level"
+    # An object the server cannot find at all is still a wrong level or a bug.
+    with pytest.raises(ObjectPoseError, match="No objects of name"):
+        make_sim(api=REFUSING_API, movable_objects={"obs_0042"}).set_object_poses({"obs_0042": Pose(0.0, 0.0, -5.0, 0.0)})

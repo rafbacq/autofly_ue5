@@ -50,6 +50,12 @@ class ObjectPoseError(RuntimeError):
     move, or the server refused the request (WorldSimApi.cpp:745-791). Not recoverable: a wrong level or a bug."""
 
 
+class ObjectMoveRefusedError(RuntimeError):
+    """The server found a movable object but refused to move it twice ("Unable to move object ..."), and it is not
+    already where it was asked to be. Recoverable: s01d_r1's first session died on one such refusal after ~2 million
+    successful moves of the same pillars (2026-10-02, 5.5 h in); the next reset parks and re-places every mover."""
+
+
 class SimRequestTimeoutError(RuntimeError):
     """A request got no reply within projectairsim's 300 s receive timeout. The client disconnects itself before
     raising (client.py:255-282), so this connection is finished: see SimConnectionLostError."""
