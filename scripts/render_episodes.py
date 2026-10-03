@@ -56,7 +56,7 @@ from autofly_ue5.paths import ROOT  # noqa: E402
 from autofly_ue5.scenes.model import Bounds, Layout  # noqa: E402
 from autofly_ue5.scenes.resolve import resolve_scene  # noqa: E402
 from autofly_ue5.sim.airsim_backend import scene_config_factory, scene_config_record  # noqa: E402
-from autofly_ue5.sim.process import SIM_RUN_DIR, stop_instances, sweep_orphaned_instances  # noqa: E402
+from autofly_ue5.sim.process import SIM_RUN_DIR, slot_busy, stop_instances, sweep_orphaned_instances  # noqa: E402
 from autofly_ue5.sim.types import CONTROL_DT_S  # noqa: E402
 from scripts.m2_gate import build_eval_env, checkpoint_obs_config, default_sac_loader, parse_model_args  # noqa: E402
 
@@ -663,7 +663,9 @@ def build_arg_parser() -> argparse.ArgumentParser:
     p.add_argument("--scene-config", default=None,
                    help="Project AirSim scene config in configs/ (default scene_autofly_<scene>.jsonc): fly on the "
                         "clock the expert was trained and gated on")
-    p.add_argument("--instance", type=int, default=0)
+    p.add_argument("--instance", type=int, default=0,
+                   help="the simulator slot; refused while another live run holds it (a gate, a pilot, training)")
+    p.add_argument("--sim-root", type=Path, default=SIM_RUN_DIR, help=argparse.SUPPRESS)
     p.add_argument("--seed-base", type=int, default=EVAL_SEED_BASE)
     p.add_argument("--device", default="auto")
     p.add_argument("--fps", type=float, default=1.0 / CONTROL_DT_S, help="default: real time (one step is 0.2 s)")
@@ -678,12 +680,17 @@ def checkpoint_path(args: argparse.Namespace) -> Path:
 
 def main(argv: list[str] | None = None) -> int:
     args = build_arg_parser().parse_args(argv)
+    busy = slot_busy(args.instance, args.sim_root)
+    if busy:
+        print(f"refusing to start: {busy}; pass a free --instance", file=sys.stderr)
+        return 2
     resolved = resolve_scene(args.scene)
     scene_config = args.scene_config or resolved.default_scene_config
     summary = run(scene=args.scene, checkpoint_name=args.checkpoint, checkpoint_path=checkpoint_path(args),
                   episodes=list(args.episodes), condition=args.condition, seed_base=args.seed_base,
                   instance=args.instance, out_dir=args.out_dir, gate_path=args.gate,
-                  sim_factory=scene_config_factory(scene_config, resolved.movable_objects),
+                  sim_factory=scene_config_factory(scene_config, resolved.movable_objects, run_root=args.sim_root),
+                  sim_root=args.sim_root,
                   load_model=lambda path: default_sac_loader(path, device=args.device), scene_config=scene_config,
                   fps=args.fps, scale=args.scale, hold_s=args.hold_s)
     print(json.dumps({"status": summary["status"], "error": summary["error"], "out_dir": str(args.out_dir),

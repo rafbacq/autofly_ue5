@@ -221,3 +221,21 @@ def test_cli_resolves_the_checkpoint_under_the_run_root():
     assert args.episodes == [1, 2] and args.condition == "deterministic"
     with pytest.raises(SystemExit):
         rv.build_arg_parser().parse_args(["--out-dir", "o"])
+
+
+def test_main_refuses_a_slot_another_live_run_holds(tmp_path, capsys):
+    from scripts.render_episodes import main
+    from tests.test_process import _init_owner, _sleeper
+
+    from autofly_ue5.sim.process import instance_dir, stop
+
+    _sleeper(7, tmp_path / "sim", owner=_init_owner())
+    log = instance_dir(7, tmp_path / "sim") / "client.log"
+    log.write_text("the other run's log\n")
+    try:
+        assert main(["--scene", "s01", "--episodes", "0", "--out-dir", str(tmp_path / "viz"), "--instance", "7",
+                     "--sim-root", str(tmp_path / "sim")]) == 2
+    finally:
+        stop(7, grace_s=2.0, run_root=tmp_path / "sim")
+    assert "slot 7 holds simulator pid" in capsys.readouterr().err
+    assert log.read_text() == "the other run's log\n" and not (tmp_path / "viz").exists()
