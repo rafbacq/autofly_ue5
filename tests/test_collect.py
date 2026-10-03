@@ -403,3 +403,25 @@ def test_provenance_names_the_target_and_distractors_and_the_card_marks_the_plac
         assert d["asset"] == "cylinder" and d["material"] == "mesh_default" and d["spawned_as"].startswith(f"distractor_{i}")
         assert len(d["xyz"]) == 3
     assert record["pass"] == record["faults_ok"]
+
+
+def test_the_rlds_shards_sit_where_spec_10_1_puts_them(tmp_path):
+    # data/<dataset_name>/1.0.0/, beside the same dataset's provenance/ and manifest.json; the read-back report beside it.
+    fake_python = tmp_path / "fake_tfds_python"
+    fake_python.write_text('#!/bin/sh\necho \'{"pass": true}\'\n')
+    fake_python.chmod(0o755)
+    record = _pilot(tmp_path, n_episodes=1, check_python=fake_python)
+    root = tmp_path / "data" / "pilot"
+    assert Path(record["rlds"]["path"]) == root / "1.0.0"
+    assert len(list((root / "1.0.0").glob("pilot-train.tfrecord-*"))) == 1
+    assert json.loads((root / "1.0.0" / "dataset_info.json").read_text())["name"] == "pilot"
+    assert json.loads((root / "tfds_check.json").read_text()) == {"pass": True} and record["pass"] == record["faults_ok"]
+
+
+def test_a_dataset_name_must_be_a_valid_tfds_name(tmp_path):
+    from autofly_ue5.dataset.raw import RawDatasetWriter
+
+    scene, _env_ = _env(tmp_path)
+    for bad in ("S01-Pilot", "1pilot", "pilot run", ""):
+        with pytest.raises(ValueError):
+            RawDatasetWriter(tmp_path / "data", bad, scene=scene, provenance=PROVENANCE)

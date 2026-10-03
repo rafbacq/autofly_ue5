@@ -177,10 +177,9 @@ def run(*, scene: str, model_path: Path, scene_config: str, name: str, n_episode
             record["validation"] = {"pass": False, "failures": [f"the validator raised {type(err).__name__}: {err}"]}
         if writer.manifest["counts"]["episodes"]:  # whatever was kept is exported, even from a failed run
             try:
-                dataset = f"autofly_ue5_{name}"
-                record["rlds"] = export_rlds(root, root / "rlds", dataset)
+                record["rlds"] = export_rlds(root, Path(data_root), name)  # spec §10.1: data/<dataset_name>/1.0.0/
                 if check_python is not None:
-                    record["rlds"]["tfds_check"] = check_with_tfds(check_python, root / "rlds" / dataset / VERSION, root)
+                    record["rlds"]["tfds_check"] = check_with_tfds(check_python, root / VERSION, root)
             except Exception as err:
                 record["rlds"] = {"error": f"{type(err).__name__}: {err}"}
     try:

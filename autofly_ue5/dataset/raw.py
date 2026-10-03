@@ -5,6 +5,7 @@
     data/<name>/episodes/<id>/steps.npz           state (T, 9) float32, action (T, 3) float32, sim_time_ns (T,) int64
     data/<name>/provenance/<id>.json              where the episode came from (spec §10.2), outside the record
     data/rejects/<name>/<id>.json                 every episode not kept, with its reason and provenance
+    data/<name>/1.0.0/                            the RLDS/TFDS export (dataset/rlds.py), derived from the above
 
 The record itself holds AutoFly's fields only (spec §2): image, instruction, action[3], state[9]. An episode is written
 into a temporary directory and renamed into place, and the manifest is replaced atomically, so a crash never leaves a
@@ -17,6 +18,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import shutil
 import time
 from pathlib import Path
@@ -28,6 +30,9 @@ from autofly_ue5.dataset.state import STATE_FIELDS
 from autofly_ue5.scenes.model import SceneFile
 
 FORMAT = "autofly_ue5_raw/1"
+# The store's name is also its TFDS dataset name (spec §10.1: data/<dataset_name>/1.0.0/), so it must be one TFDS
+# accepts: lowercase snake case starting with a letter.
+NAME_RE = re.compile(r"^[a-z][a-z0-9_]*$")
 
 
 def _write_json_atomic(path: Path, data: dict) -> None:
@@ -39,6 +44,8 @@ def _write_json_atomic(path: Path, data: dict) -> None:
 class RawDatasetWriter:
     def __init__(self, data_root: Path, name: str, *, scene: SceneFile, provenance: dict, split: str | None = None,
                  card: dict | None = None) -> None:
+        if not NAME_RE.match(name):
+            raise ValueError(f"dataset name {name!r} is not lowercase snake case starting with a letter (a TFDS name)")
         self.root = Path(data_root) / name
         self.rejects = Path(data_root) / "rejects" / name
         self._refuse_existing()
