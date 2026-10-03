@@ -8,7 +8,11 @@ Failures, any one of which fails the dataset:
 - a state that contradicts itself (state[2] is altitude - 1.47 m; the first record is at the start) or leaves the
   altitude band;
 - a kept episode that did not end at its target, or that is longer than the step limit;
-- an instruction that is not one of the release's templates; a provenance record missing a field spec §10.2 needs.
+- an instruction that is not one of the release's templates filled with the episode's own target name and its scene's
+  obstacle phrase (Plan 2's placeholder "the target" fails);
+- a provenance record missing a field spec §10.2 needs, or whose seed or simulator times differ from the record's.
+
+A malformed episode (wrong shapes) is reported and its remaining checks skipped, never a crash of the validator.
 
 The speed, altitude, action and length distributions are reported next to the real released episodes' (spec §3.2),
 and differences are warnings: they describe the data rather than break it.
@@ -17,7 +21,6 @@ and differences are warnings: they describe the data rather than break it.
 from __future__ import annotations
 
 import json
-import re
 from pathlib import Path
 
 import cv2
@@ -41,8 +44,6 @@ PROVENANCE_KEYS = ("scene", "seed", "start_pose", "target", "distractors", "sim_
 # The two real released episodes (spec §3.2), for comparison only.
 RELEASE = {"speed_m_s_median": [1.87, 1.96], "altitude_m_range": [1.17, 2.57], "episode_steps": [96, 78],
            "action_forward_m_s_typical": [1.97, 1.99]}
-TEMPLATE_RES = [re.compile("^" + re.escape(t).replace(re.escape("{target}"), "(.+)").replace(re.escape("{obstacle}"), "(.+)") + "$")
-                for t in INSTRUCTION_TEMPLATES]
 
 
 def _stats(values) -> dict:
@@ -89,6 +90,8 @@ def validate_dataset(root: Path, *, decode_every_frame: bool = True) -> dict:
             failures.append(f"{eid}: action is {action.dtype}{action.shape}, not float32 (T, 3)")
         if times.shape != (n,):
             failures.append(f"{eid}: sim_time_ns has shape {times.shape}")
+        if state.shape != (n, 9) or action.shape != (n, 3) or times.shape != (n,):
+            continue  # every check below indexes these shapes; the failure above already fails the dataset
         if not (np.all(np.isfinite(state)) and np.all(np.isfinite(action))):
             failures.append(f"{eid}: NaN or inf in state or action")  # and keep checking: report everything wrong
         if np.any(action < ACTION_LOW - 1e-6) or np.any(action > ACTION_HIGH + 1e-6):
@@ -105,8 +108,13 @@ def validate_dataset(root: Path, *, decode_every_frame: bool = True) -> dict:
             failures.append(f"{eid}: the first record is not at the start (state[6:8] = {state[0, 6:8].tolist()})")
         if state[-1, 0] > LAST_RECORD_MAX_DISTANCE_M:
             failures.append(f"{eid}: the last record is {state[-1, 0]:.2f} m from the target; a kept episode ends there")
-        if not any(r.match(entry.get("instruction", "")) for r in TEMPLATE_RES):
-            failures.append(f"{eid}: instruction {entry.get('instruction')!r} is not one of the release's templates")
+        obstacle = manifest.get("scenes", {}).get(entry["scene"], {}).get("instruction_obstacle")
+        if obstacle is None:
+            failures.append(f"{eid}: the manifest gives no instruction_obstacle for scene {entry['scene']}")
+        elif entry.get("instruction") not in {t.format(target=entry["target_name"], obstacle=obstacle)
+                                              for t in INSTRUCTION_TEMPLATES}:
+            failures.append(f"{eid}: instruction {entry.get('instruction')!r} is not a release template naming "
+                            f"{entry['target_name']!r} and {obstacle!r}")
         frames = sorted((ep / "frames").glob("*.png"))
         if len(frames) != n:
             failures.append(f"{eid}: {len(frames)} frames for {n} records")
@@ -123,8 +131,13 @@ def validate_dataset(root: Path, *, decode_every_frame: bool = True) -> dict:
             missing = [k for k in PROVENANCE_KEYS if k not in prov]
             if missing:
                 failures.append(f"{eid}: provenance lacks {missing}")
-            elif prov["termination"] != "success" or len(prov["sim_time_ns"]) != n:
-                failures.append(f"{eid}: provenance says {prov['termination']} with {len(prov['sim_time_ns'])} times")
+            elif prov["termination"] != "success":
+                failures.append(f"{eid}: provenance says {prov['termination']}")
+            else:
+                if prov["seed"] != entry["seed"]:
+                    failures.append(f"{eid}: provenance seed {prov['seed']} != the manifest's {entry['seed']}")
+                if [int(t) for t in prov["sim_time_ns"]] != times.tolist():
+                    failures.append(f"{eid}: provenance simulator times differ from steps.npz")
         speeds.extend(state[:, 3].tolist())
         altitudes.extend(state[:, 8].tolist())
         forwards.extend(action[:, 0].tolist())

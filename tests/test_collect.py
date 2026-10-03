@@ -340,3 +340,48 @@ def test_a_dataset_name_with_leftover_rejects_is_refused(tmp_path):
     (tmp_path / "data" / "rejects" / "pilot" / "s01_400000000.json").write_text("{}")
     with pytest.raises(FileExistsError):
         RawDatasetWriter(tmp_path / "data", "pilot", scene=scene, provenance=PROVENANCE)
+
+
+def _rewrite_json(path, edit):
+    data = json.loads(path.read_text())
+    edit(data)
+    path.write_text(json.dumps(data))
+
+
+def test_the_validator_reports_a_malformed_episode_instead_of_crashing_on_it(tmp_path):
+    from autofly_ue5.validate.dataset import validate_dataset
+
+    _summary, root = _collect(tmp_path, n_keep=1)
+    entry = json.loads((root / "manifest.json").read_text())["episodes"][0]
+    path = root / entry["path"] / "steps.npz"
+    data = dict(np.load(path))
+    data["state"] = data["state"][:, :8]
+    np.savez(path, **data)
+    report = validate_dataset(root)
+    assert not report["pass"] and any("state is float32" in f for f in report["failures"])
+
+
+def test_the_validator_checks_each_instruction_names_its_own_target_and_the_scene_s_obstacles(tmp_path):
+    from autofly_ue5.validate.dataset import validate_dataset
+
+    _summary, root = _collect(tmp_path, n_keep=1)
+    manifest = root / "manifest.json"
+    original = json.loads(manifest.read_text())["episodes"][0]["instruction"]
+    _rewrite_json(manifest, lambda m: m["episodes"][0].update(instruction=original.replace("orange cylinder", "target")))
+    assert any("instruction" in f for f in validate_dataset(root)["failures"]), "Plan 2's placeholder must not pass"
+    _rewrite_json(manifest, lambda m: m["episodes"][0].update(instruction=original.replace("white pillars", "trees")))
+    assert any("instruction" in f for f in validate_dataset(root)["failures"]), "another scene's obstacles"
+    _rewrite_json(manifest, lambda m: m["episodes"][0].update(instruction=original))
+    assert validate_dataset(root)["pass"]
+
+
+def test_the_validator_compares_provenance_with_the_record_by_value(tmp_path):
+    from autofly_ue5.validate.dataset import validate_dataset
+
+    _summary, root = _collect(tmp_path, n_keep=1)
+    entry = json.loads((root / "manifest.json").read_text())["episodes"][0]
+    prov = root / "provenance" / f"{entry['id']}.json"
+    _rewrite_json(prov, lambda p: p.update(seed=p["seed"] + 1))
+    assert any("seed" in f for f in validate_dataset(root)["failures"])
+    _rewrite_json(prov, lambda p: p.update(seed=p["seed"] - 1, sim_time_ns=[t + 1 for t in p["sim_time_ns"]]))
+    assert any("simulator times" in f for f in validate_dataset(root)["failures"])

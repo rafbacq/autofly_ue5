@@ -51,7 +51,8 @@ class RawDatasetWriter:
                               "action": "float32[3]: forward m/s, yaw rate rad/s, vertical m/s (up)",
                               "language_instruction": "string"},
             "state_fields": list(STATE_FIELDS),
-            "scenes": {scene.id: {"split": split or scene.split, "sha256": scene.sha256}},
+            "scenes": {scene.id: {"split": split or scene.split, "sha256": scene.sha256,
+                                  "instruction_obstacle": scene.instruction_obstacle}},
             "episodes": [],
             "counts": {"episodes": 0, "records": 0, "rejects": 0, "by_scene": {}, "by_target": {}},
         }
