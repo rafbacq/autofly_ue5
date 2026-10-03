@@ -55,13 +55,17 @@ print('PASS' if g['pass'] else 'FAIL', c['kept'], 'kept of', c['attempted'], c['
 print(v['failures'][:5], v['warnings']); print(v['distributions']); print(g['rlds'])"
 ```
 
-- `pass` needs 100 kept episodes, a validator pass and a clean engine audit.
+- `pass` needs 100 kept episodes, a validator pass, a clean engine audit, a usable RLDS export
+  (`data/s01_pilot/1.0.0/`, spec §10.1) and, with `--check-python`, a passing TFDS read-back.
+- A run that flew any episode writes its record as evidence, even if it failed or every episode was rejected. One that
+  never flew (a refused launch) goes to `runs/not_started/` and claims no dataset name, so it can simply be retried.
 - `collection.outcomes` is the stochastic expert's record on fresh seeds: its success rate should be near the M2
   gate's 0.99 stochastic. Rejected episodes are in `data/rejects/s01_pilot/`, each with its reason and provenance.
 - The validator's distributions sit next to the release's (spec §3.2): median speed ~1.9 m/s, forward action ~2 m/s.
 - `rlds.tfds_check` is TFDS reading every episode back and comparing it with the raw store.
 
-A failed pilot stays failed: record it, find the cause, and run a new `--name` with a new record only after a fix.
+A failed pilot stays failed: record it, find the cause, and run a new `--name` and `--seed-slice` with a new record
+only after a fix. Slot rule: `main()` refuses a slot another live run holds.
 
 ## 4. Closing M3
 

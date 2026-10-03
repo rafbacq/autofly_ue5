@@ -109,7 +109,9 @@ These are preliminary, from a throwaway script. Task B1 makes them reproducible 
   - time order, and exactly one 0.2 s simulator step per record;
   - episode lengths; per-scene and per-target counts; provenance complete.
 - [ ] **B7. Live pilot.** `scripts/collect_dataset.py` (100f5d4); procedure in `docs/runbook-m3.md`. A 3-episode live
-  smoke passed on 2026-10-03 once a7945cd was in, with TFDS read-back exact. Pending: the pilot itself. 100 s01 episodes → raw store → validator → RLDS export → `docs/gates/m3_gate.json`. About
+  smoke passed on 2026-10-03 once a7945cd was in, with TFDS read-back exact. A code review then hardened the failure
+  paths (`docs/decisions/2026-10-03-m3-review-findings.md`), and a second live smoke passed on the result. Pending:
+  the pilot itself. 100 s01 episodes → raw store → validator → RLDS export → `docs/gates/m3_gate.json`. About
   30 minutes of flying at N = 1, plus rejected episodes and resets: 100 × ~180 steps at the 11.5 steps/s that
   `docs/gates/m2_instances.json` measured for one instance. It can run beside M2d's training only if VRAM and the
   launch guard allow; otherwise after it.
