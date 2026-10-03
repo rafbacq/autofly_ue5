@@ -127,13 +127,17 @@ docs/runbook-m2d.md (A7)
 - [x] **A7.4** The s01d smoke (`runs/m2d/train_smoke.json`, `gate_smoke.json`, `runs/viz/s01d_smoke/`): status ok,
   3×float16, collisions by source, every gate field present, videos and maps drawing the movers. Reset faults hit
   23 % of resets, against 29 % in M2's own smoke.
-- [ ] **A7.5** 12 h training (`runs/expert/s01d_r1`, started 2026-10-02 17:23), with the watcher (`m2d_watch`), the
+- [x] **A7.5** 12 h training (`runs/expert/s01d_r1`, started 2026-10-02 17:23), with the watcher (`m2d_watch`), the
   progress plot (`runs/expert/s01d_r1/progress.png`) and TensorBoard (`m2d_tensorboard`, 127.0.0.1:6006) →
-  `docs/gates/m2d_train.json`.
-- [ ] **A7.6** The 200-episode gate and its audit → `docs/gates/m2d_gate.json`, `m2d_gate_audit.json`.
-- [ ] **A7.7** The zero-shot baseline of the s01 expert on s01d → `docs/gates/m2d_baseline_s01_expert.json`.
-- [ ] **A7.8** Render 6–10 s01d gate episodes.
-- [ ] **A7.9** Close M2d: commit the evidence, update CLAUDE.md, write the closeout decision record.
+  `docs/gates/m2d_train.json`. Session 0 crashed at 190k and lost its record
+  (`docs/decisions/2026-10-03-m2d-session0-crash.md`); session 1 finished at 412,828 steps →
+  `docs/gates/m2d_train_session1.json`.
+- [x] **A7.6** The 200-episode gate and its audit → `docs/gates/m2d_gate.json`, `m2d_gate_audit.json`. **Failed**:
+  best_model 0.775, final 0.535 deterministic; 0 flagged.
+- [x] **A7.7** The zero-shot baseline of the s01 expert on s01d → `docs/gates/m2d_baseline_s01_expert.json`: 0.36.
+- [x] **A7.8** Render 6–10 s01d gate episodes → `runs/viz/s01d_r1_best_model/` (8).
+- [x] **A7.9** Close M2d: commit the evidence, update CLAUDE.md, write the closeout decision record
+  (`docs/decisions/2026-10-03-m2d-closeout.md`). The next lever is the user's.
 
 ## After M2d
 

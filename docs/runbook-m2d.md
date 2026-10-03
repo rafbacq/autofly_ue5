@@ -156,7 +156,8 @@ $PY -c "import json; g=json.load(open('docs/gates/m2d_gate.json')); print('PASS'
 $PY scripts/audit_m2_gate.py --gate docs/gates/m2d_gate.json --out docs/gates/m2d_gate_audit.json   # expect n_flagged 0
 ```
 
-A failure stays failed: no lowered threshold, and no re-runs hunting for a lucky seed. The levers are the user's to
+A failure stays failed: no lowered threshold, and no re-runs hunting for a lucky seed. On s01d a single episode does
+not replay: 4 of 8 rendered gate episodes changed outcome (2026-10-03), so judge the 200-episode rate, never one seed. The levers are the user's to
 choose:
 
 - `--resume` for more hours;

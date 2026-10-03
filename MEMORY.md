@@ -84,6 +84,16 @@ stale "fact". Standing rules live in `CLAUDE.md`; this file is the reasoning and
 
 ## RL and evaluation learnings
 
+- **The s01d expert reached 0.775, not 0.95, in 12 h (2026-10-03, `docs/decisions/2026-10-03-m2d-closeout.md`).**
+  Training on moving pillars took success from 0.36 (the s01 expert, zero-shot) to 0.775 (`best_model`, 225k).
+  - 19 of its 35 mover collisions came with the mover out of the forward camera's view.
+  - Its late policy (`final`, 0.535) learned to dive below the 1 m floor. This showed in training as out-of-bounds
+    rising 0.09 → 0.43 while collisions fell, an hour before any evaluation reflected it.
+  - Watch the outcome mix, not just the success rate.
+- **One s01d gate episode does not replay (2026-10-03).** 4 of 8 rendered episodes changed outcome (s01: 1 of 12), and
+  successes drifted by up to 10 steps. Resets are history-free, so this is non-bit-exact physics amplified by movers
+  that yield to the drone. Judge the 200-episode rate.
+
 - **Run 2's stochastic training success plateaued near 0.8 while its deterministic evaluations reached 1.0
   (2026-09-26 data, read 2026-10-02 with `scripts/watch_training.py`).** Training-time evaluation is 20 episodes and
   noisy: 1.00 at 200k, 0.15 at 225k, 1.00 at 275k, 0.65 at 450k. Judge a run by the 200-episode gate, never by one
@@ -152,8 +162,9 @@ stale "fact". Standing rules live in `CLAUDE.md`; this file is the reasoning and
 
 ## Open questions
 
-- Can a depth-only expert with a 3-frame stack reach 0.95 on s01d in 12 h? If not, the levers (more hours, warm start
-  from s01, fewer or slower movers, privileged mover state) are the user's call.
+- Which lever gets s01d to 0.95? A depth-only expert with a 3-frame stack reached 0.775 in 12 h. The candidates are
+  privileged mover state, a warm start from s01, fewer or slower movers, more hours, or discouraging the dive; the
+  user chooses (`docs/decisions/2026-10-03-m2d-closeout.md`).
 
 Settled:
 - a0's aligned start costs the s01 expert nothing (2026-10-03, `docs/gates/m3_a0_probe.json`): 50/50 with a0, 49/50
