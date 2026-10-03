@@ -179,3 +179,19 @@ def test_the_pilot_cli_refuses_an_existing_dataset_or_record_before_launching_an
     (evidence.GATES_DIR / "m3_gate.json").write_text("{}")  # the default record (a scratch dir, see conftest)
     assert main([*common, "--name", "other"]) == 2, "an existing gate record"
     assert not (tmp_path / "m3.json").exists() and not (tmp_path / "data" / "other").exists()
+
+
+def test_the_start_check_allows_float32_poses_but_not_a_recording_that_starts_a_step_late(tmp_path):
+    # Live (2026-10-03 smoke): record 0 sat 1 um from the start (float32 poses), record 1 already 5-11 mm away.
+    from autofly_ue5.validate.dataset import validate_dataset
+
+    _summary, root = _collect(tmp_path, n_keep=1)
+    entry = json.loads((root / "manifest.json").read_text())["episodes"][0]
+    path = root / entry["path"] / "steps.npz"
+    data = dict(np.load(path))
+    data["state"][0, 6:8] = [-1.0e-7, 1.03e-6]  # the live smoke's own first record
+    np.savez(path, **data)
+    assert validate_dataset(root)["pass"]
+    data["state"][0, 6:8] = [0.0052, 0.0]  # where the live drone was one step later
+    np.savez(path, **data)
+    assert any("not at the start" in f for f in validate_dataset(root)["failures"])

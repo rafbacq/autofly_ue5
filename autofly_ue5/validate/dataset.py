@@ -30,6 +30,9 @@ from autofly_ue5.expert.episode import INSTRUCTION_TEMPLATES
 STEP_NS = 200_000_000
 STEP_LIMIT = 300
 ALTITUDE_BAND_M = (1.0, 3.0)
+# Live poses are float32: the first record sat 1 um from the start; one step later the drone was 5-11 mm away (the
+# 2026-10-03 smoke). 1 mm passes the first and fails a recording that starts a step late.
+START_TOLERANCE_M = 1e-3
 LAST_RECORD_MAX_DISTANCE_M = 5.0 + 0.5  # the success radius, plus at most one 0.2 s step at 2 m/s before success
 ACTION_LOW = np.array([0.0, -1.0, -1.0], dtype=np.float32)
 ACTION_HIGH = np.array([2.0, 1.0, 1.0], dtype=np.float32)
@@ -98,7 +101,7 @@ def validate_dataset(root: Path, *, decode_every_frame: bool = True) -> dict:
             failures.append(f"{eid}: state[2] is not altitude - {STATE2_OFFSET_M} m")
         if np.any(state[:, 8] < ALTITUDE_BAND_M[0] - 1e-6) or np.any(state[:, 8] > ALTITUDE_BAND_M[1] + 1e-6):
             failures.append(f"{eid}: an altitude outside the {ALTITUDE_BAND_M} m band")
-        if np.any(np.abs(state[0, 6:8]) > 1e-6):
+        if np.any(np.abs(state[0, 6:8]) > START_TOLERANCE_M):
             failures.append(f"{eid}: the first record is not at the start (state[6:8] = {state[0, 6:8].tolist()})")
         if state[-1, 0] > LAST_RECORD_MAX_DISTANCE_M:
             failures.append(f"{eid}: the last record is {state[-1, 0]:.2f} m from the target; a kept episode ends there")
