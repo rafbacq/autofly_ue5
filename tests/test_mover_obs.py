@@ -198,3 +198,34 @@ def test_a_checkpoint_without_the_mover_input_keeps_its_observation_on_s01d():
     env = make_dynamic_env(obs_config=ObsConfig(3, "float16"))
     obs, _info = env.reset(seed=1_000_050)
     assert set(obs) == {"depth", "vector"}
+
+
+def test_the_mover_input_is_the_controller_s_state_at_every_observation():
+    # Recomputed independently from the info stream: this observation's positions, the previous observation's, and the
+    # drone's pose. An ordering slip in step() (velocity from the wrong pair of frames, or the input computed before
+    # the movers advanced) would break this (the 2026-10-03 review checked it in a scratch script; now it stays).
+    from tests.test_dynamic_env import make_dynamic_env
+
+    from autofly_ue5.expert.obs import MOVER_FEATURES, encode_movers
+    from autofly_ue5.sim.types import CONTROL_DT_S
+
+    env = make_dynamic_env()
+    rng = np.random.default_rng(3)
+    checked = moving = 0
+    for seed in range(1_000_060, 1_000_066):
+        obs, info = env.reset(seed=seed)
+        controller = env.unwrapped._movers
+        radii = [route.footprint.radius_m for route in controller.routes]
+        previous = info["movers"]
+        for _ in range(120):
+            expected = encode_movers(Pose(*info["pose"]), info["movers"], previous, radii,
+                                     contact_m=controller.contact_m, dt=CONTROL_DT_S, slots=4)
+            np.testing.assert_array_equal(obs["movers"], expected)
+            checked += 1
+            moving += int(np.any(np.abs(obs["movers"].reshape(4, MOVER_FEATURES)[:, 4:]) > 0))
+            previous = info["movers"]
+            action = np.array([rng.uniform(0.5, 2.0), rng.uniform(-0.5, 0.5), 0.0], dtype=np.float32)
+            obs, _r, terminated, truncated, info = env.step(action)
+            if terminated or truncated:
+                break
+    assert checked > 200 and moving > 50, "the check must see movers in range and moving"
