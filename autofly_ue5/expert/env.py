@@ -23,6 +23,7 @@ from autofly_ue5.expert.episode import EpisodeSetup, a0_aligned, apply_setup, cl
 from autofly_ue5.expert.movers import MoverController, home_poses, park_poses
 from autofly_ue5.expert.obs import DepthStacker, ObsConfig, encode_depth, encode_vector, obs_config_for_scene, target_geometry
 from autofly_ue5.expert.reward import Outcome, RewardConfig, evaluate, oob_kind
+from autofly_ue5.frames import wrap_pi
 from autofly_ue5.scenes.model import Layout, SceneFile
 from autofly_ue5.sim.protocol import Simulator
 from autofly_ue5.sim.types import CONTROL_DT_S, CameraPoseError, KinematicsJumpError, Observation, Pose, StartCollisionError
@@ -231,6 +232,19 @@ class AutoFlyEnv(gym.Env):
         collided = obs.collided or contact is not None
         source = "mover" if contact is not None else ("sim" if obs.collided else None)
         seen = movers.seen_recently(contact[0]) if contact is not None else None  # the frames the policy flew on
+        mover_contact = None
+        if contact is not None:
+            # How the contact happened (the 2026-10-03 s01d gate could not say): the surface gap, where the mover
+            # stood relative to the heading the step began with, and whether it moved this step or yielded.
+            index, gap = contact
+            mx, my = movers.positions[index]
+            mover_contact = {
+                "gap_m": round(float(gap), 4),
+                "bearing_deg": round(math.degrees(wrap_pi(math.atan2(my - before.y, mx - before.x) - before.yaw)), 2),
+                "mover_moving": bool(movers.moving[index]),
+                "route_kind": movers.routes[index].kind,
+                "drone_forward_m_s": round(v_forward, 3),
+            }
         if movers is not None:
             movers.record_frame(obs.pose)
 
@@ -250,7 +264,8 @@ class AutoFlyEnv(gym.Env):
 
         kind = oob_kind(in_bounds=in_bounds, altitude_m=altitude, cfg=self._cfg) if result.outcome is Outcome.OUT_OF_BOUNDS else None
         info = self._info(result.outcome, dist, obs.pose, bearing, kind,
-                          collision_source=source if result.outcome is Outcome.COLLISION else None, mover_in_view=seen)
+                          collision_source=source if result.outcome is Outcome.COLLISION else None, mover_in_view=seen,
+                          mover_contact=mover_contact if result.outcome is Outcome.COLLISION else None)
         self._last_obs = {"depth": self._stacker.push(encode_depth(obs.depth)),
                           "vector": encode_vector(obs.pose, obs.velocity_ned, obs.yaw_rate, self._setup.target_xy_z)}
         return self._last_obs, result.reward, result.terminated, result.truncated, info
@@ -286,7 +301,8 @@ class AutoFlyEnv(gym.Env):
         return self._last_obs, result.reward, result.terminated, result.truncated, info
 
     def _info(self, outcome: Outcome, dist_m: float, pose, bearing_rad: float, oob: str | None, *,
-              collision_source: str | None = None, mover_in_view: bool | None = None) -> dict:
+              collision_source: str | None = None, mover_in_view: bool | None = None,
+              mover_contact: dict | None = None) -> dict:
         # pose/bearing_deg/oob_kind: where an episode ended and which bound it left, for the run record (the
         # 2026-09-17 gate could not say either). collision_source ("sim", "mover", "mover_inferred"), n_movers,
         # movers (each mover's x, y this step) and mover_in_view: spec §6.5; empty for a static scene.
@@ -302,6 +318,7 @@ class AutoFlyEnv(gym.Env):
             "n_movers": len(self._movers.routes) if self._movers is not None else 0,
             "movers": self._movers.info() if self._movers is not None else [],
             "mover_in_view": mover_in_view,
+            "mover_contact": mover_contact,
         }
 
     def close(self) -> None:

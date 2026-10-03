@@ -48,6 +48,7 @@ class MoverController:
         self.inference_radius_m = contact_m + (FORWARD_SPEED_MAX_M_S + max_speed_m_s) * dt
         self.taus = [0.0] * len(routes)
         self.positions = [route.position(0.0) for route in routes]
+        self.moving = [False] * len(routes)  # whether each mover's clock advanced on the last advance() (else it yielded)
         self._frames: deque = deque(maxlen=VIEW_HISTORY_FRAMES)
 
     def initial_poses(self) -> dict[str, Pose]:
@@ -56,6 +57,7 @@ class MoverController:
     def advance(self, drone_xy: tuple[float, float]) -> dict[str, Pose]:
         """Advance every clock that may advance (yield rule) and return the poses of the movers that moved."""
         new = yield_clocks(self.routes, self.taus, drone_xy, self.dt, yield_distance_m=self.yield_distance_m)
+        self.moving = [tau != old for tau, old in zip(new, self.taus)]
         moved = {}
         for i, (route, old, tau) in enumerate(zip(self.routes, self.taus, new)):
             if tau != old:

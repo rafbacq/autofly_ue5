@@ -157,6 +157,7 @@ def _run_one_episode(model, env, seed: int, *, deterministic: bool, max_steps: i
                 "collision_source": info.get("collision_source"),
                 "n_movers": info.get("n_movers", 0),
                 "mover_in_view": info.get("mover_in_view"),
+                "mover_contact": info.get("mover_contact"),  # gap, bearing, moving or yielding (2026-10-03)
                 **({"inferred_from": info["inferred_from"]} if info.get("inferred_from") else {}),
             }
     # AutoFlyEnv's own step_limit (default 300, spec Sec8) always truncates well before this bound;

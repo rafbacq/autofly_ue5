@@ -359,3 +359,24 @@ def test_the_gate_refuses_a_slot_another_live_run_holds_before_touching_it(tmp_p
     finally:
         stop(7, grace_s=2.0, run_root=tmp_path / "sim")
     assert not is_alive(foreign.pid)
+
+
+def test_an_episode_record_carries_the_mover_contact_details():
+    from autofly_ue5.expert.evaluate import evaluate_policy_episodes
+
+    contact = {"gap_m": 0.7, "bearing_deg": 71.0, "mover_moving": False, "route_kind": "orbit", "drone_forward_m_s": 2.0}
+
+    class _OneStepEnv:
+        def reset(self, seed=None, options=None):
+            return {}, {}
+
+        def step(self, action):
+            return {}, -10.0, True, False, {"outcome": "collision", "steps": 1, "collision_source": "mover",
+                                            "mover_in_view": False, "mover_contact": contact}
+
+    class _Model:
+        def predict(self, obs, deterministic=True):
+            return np.zeros(3, dtype=np.float32), None
+
+    report = evaluate_policy_episodes(_Model(), _OneStepEnv(), 1, 0)
+    assert report.per_episode[0]["mover_contact"] == contact

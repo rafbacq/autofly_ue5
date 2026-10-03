@@ -176,6 +176,40 @@ def test_flying_into_a_mover_is_a_mover_collision_seen_coming():
     assert hits >= 5
 
 
+def test_a_mover_contact_records_its_gap_bearing_and_whether_the_mover_was_moving():
+    # What the s01d gate could not say (2026-10-03): a mover "collision" is the drone's swept step coming within
+    # contact_m (1.0 m) of a mover's surface, and a mover within the yield distance stands still. Each contact now says
+    # how close, where the mover was relative to the heading, and whether it was moving.
+    env = make_dynamic_env()
+    contacts = []
+    for seed in range(1_000_020, 1_000_030):
+        _reward, info = _fly_at_nearest_mover(env, seed)
+        if info["collision_source"] == "mover":
+            contacts.append(info["mover_contact"])
+        else:
+            assert info["mover_contact"] is None
+    assert len(contacts) >= 5
+    for c in contacts:
+        assert set(c) == {"gap_m", "bearing_deg", "mover_moving", "route_kind", "drone_forward_m_s"}
+        assert -0.48 <= c["gap_m"] <= 1.0, "within contact_m of the surface (the rotor tips may overlap it)"
+        assert abs(c["bearing_deg"]) < 45.0, "it flew straight at it"
+        assert isinstance(c["mover_moving"], bool) and c["route_kind"] in ("pingpong", "orbit")
+        assert 0.0 <= c["drone_forward_m_s"] <= 2.0
+
+
+def test_a_static_scene_s_infos_carry_no_mover_contact():
+    from tests.test_expert_episode import scene_and_layout as static_scene
+
+    from autofly_ue5.expert.env import AutoFlyEnv
+
+    scene, layout = static_scene()
+    env = AutoFlyEnv(scene, layout, FakeSimulator, map_path="/Game/AutoFly/Maps/S01", instance=0)
+    _obs, info = env.reset(seed=5)
+    assert info.get("mover_contact") is None
+    _obs, _r, _te, _tr, info = env.step(ZERO)
+    assert info["mover_contact"] is None
+
+
 # --------------------------------------------------------------------------------------------------------
 # Resets never leave a pillar displaced, and keep the drone and the movers apart.
 # --------------------------------------------------------------------------------------------------------
