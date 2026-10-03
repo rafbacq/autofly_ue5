@@ -34,6 +34,17 @@ choice; a proportional turn that stops within ~25° would fit the data as well.
   golden record are unchanged.
 - The SAC experts were trained on random start yaws, so an aligned start is inside their training distribution.
 
+**Measured: a0 does not cost the expert anything** (`docs/gates/m3_a0_probe.json`, `scripts/probe_a0.py`, 2026-10-03).
+The first live collector smoke kept only 3 of 5 episodes, against 0.99 for the same checkpoint in the M2 gate. So 50
+seeds were each flown twice, back to back, with and without a0, by the stochastic s01_r2 `best_model`:
+
+| | a0 (aligned start) | random start yaw |
+|---|---|---|
+| Success | **50 / 50** | 49 / 50 (1 collision) |
+
+Of the 50 pairs, 49 succeeded both ways, 1 only with a0, and none only without it. The smoke's 3 of 5 was chance, flown
+while M2d training held the GPU at 96%. A later 3-episode smoke kept 3 of 3.
+
 **Cost if wrong.** Our dataset's episodes start slightly better aligned than AutoFly's. A re-collection with a recorded
 turn needs no change to the record format.
 
