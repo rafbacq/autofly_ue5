@@ -286,3 +286,19 @@ def test_step_info_carries_the_diagnostics_the_gate_records():
     assert len(info["pose"]) == 4 and all(isinstance(v, float) for v in info["pose"])
     assert -180.0 <= info["bearing_deg"] <= 180.0
     assert info["oob_kind"] is None
+
+
+def test_the_collector_s_a0_option_starts_the_episode_facing_the_target_s_sector():
+    import math
+
+    from autofly_ue5.expert.episode import a0_aligned
+
+    env = make_env()
+    _obs, plain = env.reset(seed=11)
+    plain_setup = env.setup
+    _obs, info = env.reset(seed=11, options={"a0": "sector8"})
+    assert env.setup == a0_aligned(plain_setup), "the same episode, only the start yaw aligned"
+    assert info["pose"][3] == pytest.approx(env.setup.start.yaw)
+    assert abs(math.remainder(env.setup.start.yaw, math.pi / 4)) < 1e-9
+    with pytest.raises(ValueError, match="a0"):
+        env.reset(seed=11, options={"a0": "sideways"})

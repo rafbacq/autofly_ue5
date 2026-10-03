@@ -15,6 +15,7 @@ forced to the opposite edge) and then a position along that specific edge's band
 
 from __future__ import annotations
 
+import dataclasses
 import math
 from dataclasses import dataclass
 
@@ -284,6 +285,20 @@ def sample_setup(
         movers=movers,
         mover_stats=mover_stats,
     )
+
+
+A0_SECTORS = 8
+
+
+def a0_aligned(setup: EpisodeSetup, sectors: int = A0_SECTORS) -> EpisodeSetup:
+    """The same episode, its start yaw set to the bearing of the target rounded to the nearest of `sectors` sector
+    centres: AutoFly's coarse directional guidance a0, applied before recording (docs/decisions/
+    2026-10-03-m3-a0-and-collection.md). Nothing else changes, so a seed still draws the same episode."""
+    tx, ty, _tz = setup.target_xy_z
+    bearing = math.atan2(ty - setup.start.y, tx - setup.start.x)
+    width = 2.0 * math.pi / sectors
+    yaw = math.remainder(round(bearing / width) * width, 2.0 * math.pi)
+    return dataclasses.replace(setup, start=Pose(setup.start.x, setup.start.y, setup.start.z, yaw))
 
 
 def _spawn_asset_name(ue_path: str) -> str:

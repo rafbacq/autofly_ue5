@@ -327,3 +327,21 @@ def test_a_color_instance_material_is_never_forwarded_to_a_runtime_spawn():
     assert forwarded[0] == "/Game/Geometry/Materials/M_Orange", "the target keeps the M1-proven base material"
     assert all(m is None for m in forwarded[1:]), "distractors must spawn unpainted, not with a color_instance"
     assert not (set(forwarded) & instance_paths)
+
+
+def test_a0_aligns_the_start_to_the_target_s_8_sector_bearing_and_nothing_else():
+    # M3's a0 (docs/decisions/2026-10-03-m3-a0-and-collection.md): the start yaw is the bearing to the target rounded
+    # to the nearest 45 degrees; everything the seed drew stays as it was.
+    import dataclasses
+
+    from autofly_ue5.expert.episode import a0_aligned, sample_setup
+
+    scene, layout = scene_and_layout()
+    for seed in range(40):
+        setup = sample_setup(scene, layout, np.random.default_rng(seed))
+        aligned = a0_aligned(setup)
+        bearing = math.atan2(setup.target_xy_z[1] - setup.start.y, setup.target_xy_z[0] - setup.start.x)
+        off = math.atan2(math.sin(bearing - aligned.start.yaw), math.cos(bearing - aligned.start.yaw))
+        assert abs(off) <= math.radians(22.5) + 1e-9
+        assert round(aligned.start.yaw / (math.pi / 4)) * (math.pi / 4) == pytest.approx(aligned.start.yaw)
+        assert dataclasses.replace(aligned, start=setup.start) == setup

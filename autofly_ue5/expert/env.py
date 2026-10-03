@@ -19,7 +19,7 @@ import gymnasium as gym
 import numpy as np
 from gymnasium import spaces
 
-from autofly_ue5.expert.episode import EpisodeSetup, apply_setup, clear_setup, sample_setup
+from autofly_ue5.expert.episode import EpisodeSetup, a0_aligned, apply_setup, clear_setup, sample_setup
 from autofly_ue5.expert.movers import MoverController, home_poses, park_poses
 from autofly_ue5.expert.obs import DepthStacker, ObsConfig, encode_depth, encode_vector, obs_config_for_scene, target_geometry
 from autofly_ue5.expert.reward import Outcome, RewardConfig, evaluate, oob_kind
@@ -142,6 +142,11 @@ class AutoFlyEnv(gym.Env):
             rng = np.random.default_rng(self._seed_base + self._episode_index)
             self._episode_index += 1
         setup = sample_setup(self._scene, self._layout, rng)
+        a0 = (options or {}).get("a0")
+        if a0 == "sector8":  # dataset collection only: AutoFly's coarse guidance, applied before recording (M3)
+            setup = a0_aligned(setup)
+        elif a0 is not None:
+            raise ValueError(f"unknown a0 option {a0!r} (supported: 'sector8')")
 
         obs = sim.reset(setup.start)  # before any step() -- frame 0 of a session is corrupt (spec 7.1)
         # Spawn the target/distractors AFTER the reset, not before: reset()'s settle sweep could
@@ -249,6 +254,11 @@ class AutoFlyEnv(gym.Env):
         self._last_obs = {"depth": self._stacker.push(encode_depth(obs.depth)),
                           "vector": encode_vector(obs.pose, obs.velocity_ned, obs.yaw_rate, self._setup.target_xy_z)}
         return self._last_obs, result.reward, result.terminated, result.truncated, info
+
+    @property
+    def setup(self) -> EpisodeSetup | None:
+        """The current episode's setup (M3's collector records it as provenance)."""
+        return self._setup
 
     @property
     def last_observation(self) -> Observation | None:

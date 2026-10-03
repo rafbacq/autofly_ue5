@@ -28,6 +28,7 @@ if str(_ROOT) not in sys.path:
 import numpy as np  # noqa: E402
 
 from autofly_ue5.expert.episode import sample_setup  # noqa: E402
+from autofly_ue5.expert.seeds import PROBE_SEED_BASE  # noqa: E402  (disjoint from every other range)
 from autofly_ue5.frames import wrap_pi  # noqa: E402
 from autofly_ue5.paths import RUNS_DIR  # noqa: E402
 from autofly_ue5.scenes.model import Bounds  # noqa: E402
@@ -38,7 +39,6 @@ DT = 0.2
 POSITION_TOLERANCE_M = 0.3  # the backend's ResetPoseError thresholds
 YAW_TOLERANCE_RAD = 0.1
 JUMP_M = 2.0  # 10 m/s x 0.2 s: the backend's KinematicsJumpError threshold
-PROBE_SEED_BASE = 300_000_000  # disjoint from every training/evaluation range (autofly_ue5.expert.seeds)
 
 
 def _attempt_reset(sim, pose: Pose) -> dict:

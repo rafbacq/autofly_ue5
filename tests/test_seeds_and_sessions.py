@@ -45,8 +45,12 @@ def test_every_seed_range_is_disjoint():
 
     ranges = [(session_seed_base(rank, s), session_seed_base(rank, s) + SESSION_SEED_STRIDE)
               for rank in range(64) for s in range(MAX_SESSIONS)]
+    from autofly_ue5.expert.seeds import COLLECTION_SEED_BASE, PROBE_SEED_BASE
+
     ranges += [(EVAL_SEED_BASE, EVAL_SEED_BASE + WORKER_SEED_STRIDE),
-               (EVAL_CALLBACK_SEED_BASE, EVAL_CALLBACK_SEED_BASE + WORKER_SEED_STRIDE)]
+               (EVAL_CALLBACK_SEED_BASE, EVAL_CALLBACK_SEED_BASE + WORKER_SEED_STRIDE),
+               (PROBE_SEED_BASE, PROBE_SEED_BASE + WORKER_SEED_STRIDE),
+               (COLLECTION_SEED_BASE, COLLECTION_SEED_BASE + 100 * WORKER_SEED_STRIDE)]  # M3/M5 collection
     ranges.sort()
     assert all(a_end <= b_start for (_, a_end), (b_start, _) in zip(ranges, ranges[1:]))
     # SB3 seeds a vec env's first reset explicitly with seed+rank (seed=0 here): those must not be any worker's.

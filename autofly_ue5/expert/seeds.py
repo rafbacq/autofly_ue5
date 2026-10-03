@@ -9,6 +9,8 @@ range fly the same episodes. The ranges:
     [(rank+1)*1e6, (rank+2)*1e6)              training worker `rank`, split into MAX_SESSIONS session slices
     [EVAL_SEED_BASE, +1e6)                    the M2 gate's evaluation episodes
     [EVAL_CALLBACK_SEED_BASE, +1e6)           training-time evaluation (model selection)
+    [PROBE_SEED_BASE, +1e6)                   live probes (scripts/probe_crash_reset.py)
+    [COLLECTION_SEED_BASE, +1e8)              dataset collection (M3/M5): never a training, gate or probe episode
 """
 
 from __future__ import annotations
@@ -24,6 +26,10 @@ EVAL_SEED_BASE = 100_000_000  # the M2 gate's episodes: comfortably above worker
 # Training-time evaluation (best_model.zip selection). Disjoint from EVAL_SEED_BASE so the gate's episodes stay
 # held out for every checkpoint -- in the 2026-09-17 run they were not (both drew from EVAL_SEED_BASE).
 EVAL_CALLBACK_SEED_BASE = 200_000_000
+PROBE_SEED_BASE = 300_000_000
+# Dataset collection (spec §9-§10): its episodes must be none the experts trained or were gated on. 100 slices of 1e6,
+# one per (scene, collection run) as M5 needs them.
+COLLECTION_SEED_BASE = 400_000_000
 
 
 def worker_seed_base(rank: int) -> int:
