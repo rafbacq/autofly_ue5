@@ -137,9 +137,15 @@ To watch it:
 
 When training ends, stop the viewers: `$J stop m2d_tensorboard`. The watch job ends by itself.
 
-If training dies partway, resume the same run with the same command plus `--resume`. A resume refuses a run recorded
-under another scene, observation or motion setting. If it died before its first checkpoint (10,000 steps), rerun the
-command without `--resume`; the run directory is reused.
+If training dies partway, resume the same run with the same command plus `--resume` and a shorter `--hours` (what is
+left of the budget). A resume refuses a run recorded under another scene, observation or motion setting, and it writes
+its own record, `docs/gates/m2d_train_session<k>.json`, so session 0's record is never overwritten. If it died before
+its first checkpoint (10,000 steps), rerun the command without `--resume`; the run directory is reused.
+
+**Slots while training runs.** An `--instances N` run owns slots 0 to N−1 for its workers *and slot N for its
+evaluation simulator*, which comes up at every evaluation (`runs/sim/inst<N>/pid.json`, `owner_pid` = the trainer).
+Anything run beside it (a smoke, a probe, a pilot) takes slot N+1 or higher. Never stop a slot whose `owner_pid` is
+alive and not yours.
 
 ## 6. The gate (~6 h): M2d's evidence
 

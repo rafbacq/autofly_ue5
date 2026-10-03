@@ -6,13 +6,29 @@ stale "fact". Standing rules live in `CLAUDE.md`; this file is the reasoning and
 
 ## Traps: read these before touching the simulator path
 
+- **Arm a failure alarm for the whole of every long run (2026-10-03).** M2d's session 0 crashed at 22:51 and went
+  unnoticed for 2 h 21 min: the 2 h background alarm had expired at 20:23 and was not re-armed. Re-arm the alarm and
+  the log Monitor every time either expires (`docs/decisions/2026-10-03-m2d-session0-crash.md`).
+- **An `--instances N` training run owns slot N too (2026-10-03).** Its evaluation simulator comes up in
+  `runs/sim/inst<N>/` at every evaluation, with the trainer as `owner_pid`. A side job (smoke, probe, pilot) takes slot
+  N+1 or higher. Seen live: a smoke planned for slot 4 beside a 4-worker run would have landed on the evaluator.
+- **Live poses are float32; the fake's are exact (2026-10-03).** The first live collector record sat 1 µm from the
+  start, and a validator check written against the fake at 1e-6 m failed it. One step later the drone is 5–11 mm
+  away, so the check is now 1 mm. Size tolerances on live numbers, not the fake's.
+- **Unreal can refuse a pillar move (2026-10-02 22:51, 5.5 h into M2d's run).** `SetObjectPose failed. Unable to move
+  object obs_0047` ended the run, because `ObjectPoseError` was not recoverable. Now the pose is read back, the move is
+  retried once, and then `ObjectMoveRefusedError` truncates the episode as a fault (202a314). The cause is unknown:
+  moves at float32 precision did not reproduce it. Count `MOVE-REFUSED` in the log.
+- **A dead worker's stale pipe reply cost the run its record (2026-10-02).** After the crash, collecting the fault
+  summaries read a queued tuple and `combine_fault_summaries` crashed, so no `m2d_train.json` was written. Replies are
+  now drained and validated, and the record is assembled under guards (075e3bb).
 - **A RED test of a refusal path ran the real path and wrote over committed evidence (2026-10-02).** A new test of
   `m2_gate.main()` refusing to overwrite `docs/gates/` ran, before the refusal existed, with the gate's old default
   `--out docs/gates/m2_gate.json`, and wrote a failed record over it (restored from git; sha256 3f9438f2…). The same
   run truncated `runs/sim/inst0/client.log` (`route_client_log` opens with mode "w"). `tests/conftest.py` now gives every
   test a scratch evidence directory and fails a test during which the real `docs/gates/` changed. Its first version also
-  restored a snapshot, which the review caught: that would have deleted a live run's record written mid-suite. Point such tests at a scratch directory and stub the work, so even
-  the RED run is harmless.
+  restored a snapshot, which the review caught: that would have deleted a live run's record written mid-suite. Point
+  such tests at a scratch directory and stub anything that launches, so the RED run is harmless.
 - **projectairsim's "Fatal Timeout" disconnects the client before it raises (2026-10-02, `client.py:255-282`).** A reset
   cannot recover; only a relaunch can. The mover path maps it to `SimRequestTimeoutError` → `SimConnectionLostError`
   (launch-class). The other backend requests (`set_pose`, kinematics, `world.step`) still raise it bare: 0 seen in run 2.
@@ -107,6 +123,10 @@ stale "fact". Standing rules live in `CLAUDE.md`; this file is the reasoning and
   attempt.
 
 ## Environment and tooling learnings
+
+- **TFDS for the RLDS read-back lives in its own venv (2026-10-03).** `.venv` cannot take TensorFlow (numpy 1.26.4).
+  `runs/tools/tfds_venv` holds tensorflow-cpu 2.18 + tensorflow-datasets 4.9, and needs `tensorflow-metadata==1.16.1`:
+  the newest is built for protobuf 6, which TF 2.18 refuses (`VersionError` at import). Recipe: `docs/runbook-m3.md`.
 
 - **`requirements.lock` drifted (2026-09-24).** It lacked torch/SB3/gymnasium/tensorboard (39 of 84 packages), and
   `setup_venv.sh` rewrote it on every run. The lock is now regenerated only by `--relock`. A clean install of the
