@@ -45,3 +45,39 @@ def _evidence_is_never_touched(tmp_path_factory, monkeypatch):
                          if before.get(p) != after.get(p))
         pytest.fail(f"{changed} changed under docs/gates/ while this test ran. If no live run wrote them, this test "
                     f"touched committed evidence: restore it with `git checkout -- docs/gates` and fix the test")
+
+
+# --------------------------------------------------------------------------------------------------------
+# Durable records (autofly_ue5/durable.py): the order in which a write reached the disk. ("fsync", path) names the file
+# or directory a synced descriptor points at; ("replace", src, dst) is a rename. Real paths, so tmp_path symlinks match.
+# --------------------------------------------------------------------------------------------------------
+import os  # noqa: E402
+
+
+class SyncEvents(list):
+    def wrote_durably(self, path) -> bool:
+        """`path` was renamed into place after its data was synced, and its directory was synced after the rename."""
+        final = os.path.realpath(path)
+        renames = [i for i, e in enumerate(self) if e[0] == "replace" and e[2] == final]
+        if not renames:
+            return False
+        at = renames[-1]
+        return ("fsync", self[at][1]) in self[:at] and ("fsync", os.path.dirname(final)) in self[at + 1:]
+
+
+@pytest.fixture
+def sync_events(monkeypatch) -> SyncEvents:
+    events = SyncEvents()
+    real_fsync, real_replace = os.fsync, os.replace
+
+    def fsync(fd):
+        events.append(("fsync", os.path.realpath(os.readlink(f"/proc/self/fd/{fd}"))))
+        real_fsync(fd)
+
+    def replace(src, dst):
+        events.append(("replace", os.path.realpath(src), os.path.realpath(dst)))
+        real_replace(src, dst)
+
+    monkeypatch.setattr(os, "fsync", fsync)
+    monkeypatch.setattr(os, "replace", replace)
+    return events

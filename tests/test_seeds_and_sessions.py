@@ -221,3 +221,13 @@ def test_a_checkpointed_run_resumes_with_its_filtering_buffer_gradient_steps_and
     resumed.learn(total_timesteps=4, reset_num_timesteps=False)
     assert resumed.num_timesteps == 10
     assert seen[0] == SESSION_SEED_STRIDE and seen[1] == session_seed_base(0, 1), seen
+
+
+def test_the_session_ledger_is_written_durably(tmp_path, sync_events):
+    # sessions.json is what a --resume checks first; the host freeze that emptied runs/sim/inst1/pid.json (2026-10-03)
+    # would have left an empty ledger had it landed just after a session started, and no resume would have been
+    # possible. Written like pid.json: data synced before the rename, the directory after it.
+    from autofly_ue5.expert.train import prepare_run_root
+    assert prepare_run_root(tmp_path, resume=False, reward_version="v2", seed=0) == 0
+    assert sync_events.wrote_durably(tmp_path / "sessions.json")
+    assert json.loads((tmp_path / "sessions.json").read_text())["sessions"][0]["index"] == 0

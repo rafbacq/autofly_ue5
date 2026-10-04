@@ -132,6 +132,7 @@ from autofly_ue5.expert.faults import (  # noqa: F401  (re-exported: moved from 
     KNOWN_FAULT_NAMES,
     combine_fault_summaries,
 )
+from autofly_ue5.durable import write_text_durably
 from autofly_ue5.evidence import default_evidence_path, record_destination, refuse_existing_evidence
 from autofly_ue5.expert.evaluate import FaultAwareEvalCallback
 from autofly_ue5.expert.features import POLICY_KWARGS
@@ -377,7 +378,9 @@ def prepare_run_root(run_root: Path, *, resume: bool, reward_version: str, seed:
     if warm_start is not None:
         entry["warm_start"] = warm_start  # the checkpoint session 0 started from (expert.warmstart)
     sessions.append(entry)
-    sessions_path.write_text(json.dumps({"sessions": sessions}, indent=2) + "\n")
+    # Durable: a --resume reads this first, and an empty ledger after a host crash would refuse every resume
+    # (durable.py).
+    write_text_durably(sessions_path, json.dumps({"sessions": sessions}, indent=2) + "\n")
     return session
 
 

@@ -369,3 +369,49 @@ def test_slot_busy_names_a_slot_a_live_run_holds_and_frees_the_rest(tmp_path):
         for instance in (1, 2, 3):
             stop(instance, grace_s=2.0, run_root=tmp_path)
     assert not any(is_alive(sp.pid) for sp in (foreign, orphan, mine))
+
+
+# A record no reader can parse: 0 bytes (what the 2026-10-03 17:38 host freeze left in runs/sim/inst1), cut off
+# mid-write, or missing fields.
+UNREADABLE_RECORDS = ["", '{"pid": 12', '{"pid": 12}']
+
+
+@pytest.mark.parametrize("content", UNREADABLE_RECORDS)
+def test_a_launch_sets_aside_a_record_a_host_crash_left_unreadable(tmp_path, content):
+    # The empty record made every later launch in its slot raise JSONDecodeError: in a SubprocVecEnv worker, the end
+    # of the run, after the trainer had already claimed its session. It names no process, so a launch sets it aside
+    # (kept for diagnosis); the port check after it still refuses a slot something is listening on.
+    from autofly_ue5.sim.process import read_pid_file
+
+    d = instance_dir(1, tmp_path)
+    d.mkdir(parents=True)
+    (d / "pid.json").write_text(content)
+    sp = _sleeper(1, tmp_path)
+    try:
+        assert read_pid_file(d / "pid.json").pid == sp.pid
+        assert (d / "pid.json.unreadable").read_text() == content
+    finally:
+        stop(1, grace_s=2.0, run_root=tmp_path)
+
+
+@pytest.mark.parametrize("content", UNREADABLE_RECORDS)
+def test_stop_and_stop_instance_signal_nothing_for_an_unreadable_record(tmp_path, content):
+    # A relaunch stops its slot first (resilient.py), and a closing backend stops it with expected_pid: both raised.
+    from autofly_ue5.sim.process import stop_instance
+
+    d = instance_dir(2, tmp_path)
+    d.mkdir(parents=True)
+    (d / "pid.json").write_text(content)
+    assert stop(2, run_root=tmp_path) == "unreadable_record"
+    assert stop(2, run_root=tmp_path, expected_pid=12) == "unreadable_record"
+    assert stop_instance(2, tmp_path) == "unreadable_record"
+    assert (d / "pid.json").read_text() == content, "left for the slot's next launch to set aside"
+
+
+def test_a_launch_record_reaches_the_disk_before_it_names_the_process(tmp_path, sync_events):
+    # The root cause of the empty record: the rename was durable before the data was.
+    _sleeper(1, tmp_path)
+    try:
+        assert sync_events.wrote_durably(instance_dir(1, tmp_path) / "pid.json")
+    finally:
+        stop(1, grace_s=2.0, run_root=tmp_path)

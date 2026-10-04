@@ -28,6 +28,7 @@ from contextlib import contextmanager
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
+from autofly_ue5.durable import write_text_durably
 from autofly_ue5.paths import PACKAGED_BINARY, RUNS_DIR, UE_CACHE_ENV, UNREAL_EDITOR, UPROJECT, ZEN_DATA_DIR
 
 SIM_RUN_DIR = RUNS_DIR / "sim"
@@ -175,6 +176,13 @@ def read_pid_file(path: Path) -> SimProcess:
     return SimProcess(**json.loads(Path(path).read_text()))
 
 
+# What read_pid_file raises for a record no reader can parse: empty or cut off (JSONDecodeError, a ValueError), not
+# UTF-8 (UnicodeDecodeError, a ValueError), or not a full record (TypeError). Records are written whole
+# (write_text_durably), so one only appears after a host crash or by hand, and it names no process anyone could
+# signal. The 2026-10-03 17:38 freeze left runs/sim/inst1/pid.json at 0 bytes.
+UNREADABLE_RECORD_ERRORS = (ValueError, TypeError)
+
+
 @contextmanager
 def _slot_lock(directory: Path):
     """Serialises every read-modify-write of one slot's pid.json (launch, stop): without it, a close() finishing
@@ -247,10 +255,19 @@ def launch_process(
     with _slot_lock(directory):
         pid_file = directory / "pid.json"
         if pid_file.exists():
-            existing = read_pid_file(pid_file)
-            if is_alive(existing.pid) and is_owned(existing):
-                raise RuntimeError(f"instance {instance} is already running with pid {existing.pid}")
-            pid_file.unlink()
+            try:
+                existing = read_pid_file(pid_file)
+            except UNREADABLE_RECORD_ERRORS as err:
+                # Names no process, so nothing here can be running on its account; the port check below still
+                # refuses a slot something is listening on. Kept beside the slot for diagnosis.
+                logging.getLogger(__name__).warning("instance %d: setting aside unreadable %s: %s",
+                                                    instance, pid_file, err)
+                os.replace(pid_file, directory / "pid.json.unreadable")
+                existing = None
+            if existing is not None:
+                if is_alive(existing.pid) and is_owned(existing):
+                    raise RuntimeError(f"instance {instance} is already running with pid {existing.pid}")
+                pid_file.unlink()
         for port in (ports.topics, ports.services):
             if listening_pids(port):
                 raise RuntimeError(f"port {port} is already in use")
@@ -268,10 +285,9 @@ def launch_process(
             services_port=ports.services, cmd=list(cmd), log_path=log_path, started_unix=time.time(),
             owner_pid=owner.pid, owner_start_ticks=owner.start_ticks,
         )
-        # Written whole or not at all: readers outside the lock (own_running_instances) never see half a record.
-        partial = pid_file.with_suffix(".json.tmp")
-        partial.write_text(json.dumps(asdict(sp), indent=2))
-        os.replace(partial, pid_file)
+        # Written whole or not at all, even across a host crash: readers outside the lock (own_running_instances) never
+        # see half a record, and a reboot never finds an empty one (durable.py).
+        write_text_durably(pid_file, json.dumps(asdict(sp), indent=2))
     return sp
 
 
@@ -297,7 +313,10 @@ def stop(instance: int, grace_s: float = 30.0, run_root: Path = SIM_RUN_DIR, exp
         pid_file = directory / "pid.json"
         if not pid_file.exists():
             return "no_pid_file"
-        sp = read_pid_file(pid_file)
+        try:
+            sp = read_pid_file(pid_file)
+        except UNREADABLE_RECORD_ERRORS:
+            return "unreadable_record"  # names no process to signal; the slot's next launch sets it aside
         if expected_pid is not None and sp.pid != expected_pid:
             return "superseded"
         if not is_alive(sp.pid):
@@ -332,7 +351,7 @@ def own_running_instances(run_root: Path = SIM_RUN_DIR) -> list[SimProcess]:
     for pid_file in sorted(Path(run_root).glob("inst*/pid.json")):
         try:
             sp = read_pid_file(pid_file)
-        except (FileNotFoundError, json.JSONDecodeError, TypeError) as err:  # removed or mid-write: not a record yet
+        except (FileNotFoundError, *UNREADABLE_RECORD_ERRORS) as err:  # removed, or left unreadable by a crash
             logging.getLogger(__name__).warning("skipping unreadable %s: %s", pid_file, err)
             continue
         if is_alive(sp.pid) and is_owned(sp):
@@ -353,6 +372,8 @@ def stop_instance(instance: int, run_root: Path = SIM_RUN_DIR, owner: RunOwner |
         sp = read_pid_file(pid_file)
     except FileNotFoundError:
         return "no_pid_file"
+    except UNREADABLE_RECORD_ERRORS:
+        return "unreadable_record"
     recorded = _recorded_owner(sp)
     if recorded is not None and recorded != owner and recorded.is_alive():
         return "owner_alive_elsewhere"
@@ -376,7 +397,7 @@ def slot_busy(instance: int, run_root: Path = SIM_RUN_DIR, owner: RunOwner | Non
     owner = owner if owner is not None else current_run_owner()
     try:
         sp = read_pid_file(instance_dir(instance, run_root) / "pid.json")
-    except (FileNotFoundError, json.JSONDecodeError, TypeError):
+    except (FileNotFoundError, *UNREADABLE_RECORD_ERRORS):
         return None
     recorded = _recorded_owner(sp)
     if not is_alive(sp.pid) or recorded is None or recorded == owner or not recorded.is_alive():
