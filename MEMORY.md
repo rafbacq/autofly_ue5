@@ -6,6 +6,15 @@ stale "fact". Standing rules live in `CLAUDE.md`; this file is the reasoning and
 
 ## Traps: read these before touching the simulator path
 
+- **The Wi-Fi driver freezes this host, and a freeze can leave a 0-byte record (2026-10-04).** Four boots between
+  2026-09-25 and 2026-10-03 ended in `mt7921e … driver own failed` with no shutdown sequence. The 2026-10-03 one froze
+  run 3 at 76k steps for 25 h. It also came mid-relaunch: `runs/sim/inst1/pid.json` came back empty, and any launch or
+  stop in that slot would have raised `JSONDecodeError` and ended the resume. Records are now written durably, and an
+  unreadable one is set aside (b7d02b3).
+  - After a freeze, check that display `:1` exists, then the resume point's contents
+    (`runs/m2d_diag/verify_resume_point.py`), before `--resume`.
+  - The user chose to leave the host unchanged (`docs/decisions/2026-10-04-r3-host-freeze-and-resume.md`).
+
 - **A `run_job.sh` job's recorded pid is its bash wrapper (2026-10-03).** A stall check that read that pid's CPU time saw
   0 for every job and raised a false alarm. Sum CPU over the job's process group (`pgid` in `<job>.pid.json`) instead.
   The gate and the pilot print nothing per episode, so silence alone never shows progress.
