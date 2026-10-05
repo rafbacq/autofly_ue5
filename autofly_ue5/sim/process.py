@@ -178,9 +178,13 @@ def read_pid_file(path: Path) -> SimProcess:
 
 # What read_pid_file raises for a record no reader can parse: empty or cut off (JSONDecodeError, a ValueError), not
 # UTF-8 (UnicodeDecodeError, a ValueError), or not a full record (TypeError). Records are written whole
-# (write_text_durably), so one only appears after a host crash or by hand, and it names no process anyone could
-# signal. The 2026-10-03 17:38 freeze left runs/sim/inst1/pid.json at 0 bytes.
+# (write_text_durably), so one only appears after a host crash or by hand. The 2026-10-03 17:38 freeze left
+# runs/sim/inst1/pid.json at 0 bytes.
 UNREADABLE_RECORD_ERRORS = (ValueError, TypeError)
+# The ones a crash can leave: content that does not decode at all, which names no process anyone could signal. Only
+# these are set aside by a launch. A record that decodes but does not fit SimProcess (a field from other code, say)
+# may name a live simulator whose ports are not open yet, so a launch stops there (review of b7d02b3, 2026-10-05).
+CORRUPT_RECORD_ERRORS = (ValueError,)
 
 
 @contextmanager
@@ -257,7 +261,7 @@ def launch_process(
         if pid_file.exists():
             try:
                 existing = read_pid_file(pid_file)
-            except UNREADABLE_RECORD_ERRORS as err:
+            except CORRUPT_RECORD_ERRORS as err:
                 # Names no process, so nothing here can be running on its account; the port check below still
                 # refuses a slot something is listening on. Kept beside the slot for diagnosis.
                 logging.getLogger(__name__).warning("instance %d: setting aside unreadable %s: %s",

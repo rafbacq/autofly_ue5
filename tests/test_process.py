@@ -372,8 +372,12 @@ def test_slot_busy_names_a_slot_a_live_run_holds_and_frees_the_rest(tmp_path):
 
 
 # A record no reader can parse: 0 bytes (what the 2026-10-03 17:38 host freeze left in runs/sim/inst1), cut off
-# mid-write, or missing fields.
-UNREADABLE_RECORDS = ["", '{"pid": 12', '{"pid": 12}']
+# mid-write, or not UTF-8. These are what a crash leaves.
+UNREADABLE_RECORDS = ["", '{"pid": 12', b"\xff\xfe\x00garbage"]
+
+
+def _write(path, content):
+    path.write_bytes(content) if isinstance(content, bytes) else path.write_text(content)
 
 
 @pytest.mark.parametrize("content", UNREADABLE_RECORDS)
@@ -385,11 +389,12 @@ def test_a_launch_sets_aside_a_record_a_host_crash_left_unreadable(tmp_path, con
 
     d = instance_dir(1, tmp_path)
     d.mkdir(parents=True)
-    (d / "pid.json").write_text(content)
+    _write(d / "pid.json", content)
     sp = _sleeper(1, tmp_path)
     try:
         assert read_pid_file(d / "pid.json").pid == sp.pid
-        assert (d / "pid.json.unreadable").read_text() == content
+        expected = content if isinstance(content, bytes) else content.encode()
+        assert (d / "pid.json.unreadable").read_bytes() == expected
     finally:
         stop(1, grace_s=2.0, run_root=tmp_path)
 
@@ -401,11 +406,12 @@ def test_stop_and_stop_instance_signal_nothing_for_an_unreadable_record(tmp_path
 
     d = instance_dir(2, tmp_path)
     d.mkdir(parents=True)
-    (d / "pid.json").write_text(content)
+    _write(d / "pid.json", content)
     assert stop(2, run_root=tmp_path) == "unreadable_record"
     assert stop(2, run_root=tmp_path, expected_pid=12) == "unreadable_record"
     assert stop_instance(2, tmp_path) == "unreadable_record"
-    assert (d / "pid.json").read_text() == content, "left for the slot's next launch to set aside"
+    expected = content if isinstance(content, bytes) else content.encode()
+    assert (d / "pid.json").read_bytes() == expected, "left for the slot's next launch to set aside"
 
 
 def test_a_launch_record_reaches_the_disk_before_it_names_the_process(tmp_path, sync_events):
@@ -415,3 +421,18 @@ def test_a_launch_record_reaches_the_disk_before_it_names_the_process(tmp_path, 
         assert sync_events.wrote_durably(instance_dir(1, tmp_path) / "pid.json")
     finally:
         stop(1, grace_s=2.0, run_root=tmp_path)
+
+
+def test_a_record_of_another_schema_is_not_set_aside_by_a_launch(tmp_path):
+    # Review of b7d02b3 (2026-10-05): a crash can only leave a record empty, cut off or garbled, which fails to decode.
+    # A record that decodes but does not fit SimProcess (an extra field from newer code, say) may name a live simulator
+    # whose ports are not open yet; setting it aside would orphan it. That stays an error, as before b7d02b3.
+    d = instance_dir(1, tmp_path)
+    d.mkdir(parents=True)
+    record = {"pid": 1, "pgid": 1, "instance": 1, "topics_port": 1, "services_port": 2, "cmd": ["x"],
+              "log_path": "x", "started_unix": 0.0, "field_from_newer_code": True}
+    (d / "pid.json").write_text(json.dumps(record))
+    with pytest.raises(TypeError):
+        _sleeper(1, tmp_path)
+    assert json.loads((d / "pid.json").read_text()) == record, "left exactly where it was"
+    assert not (d / "pid.json.unreadable").exists()

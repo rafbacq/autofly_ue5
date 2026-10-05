@@ -221,7 +221,8 @@ $J start s01d_r4_tensorboard -- .venv/bin/tensorboard --logdir runs/expert/s01d_
   watch, selection and the gate score the task's own reward, so their returns compare with every earlier run's.
 - **To end a session early and keep its record**, `touch runs/expert/s01d_r4/STOP`. Training stops within 25 steps,
   writes final.zip and the session record, and tears its simulators down. Remove the file before a resume: a session
-  refuses to start while a request is pending.
+  refuses to start while a request is pending. A resume continues from the newest periodic checkpoint and its replay
+  buffer, since final.zip carries no buffer, so it repeats up to 10k steps.
 - **Afterwards**, selection and the gate as in §6b with run 4's paths: `m2d_r4_gate.json`, `m2d_r4_gate_audit.json`.
 
 ## 7. Diagnostic: the s01 expert, zero-shot, on s01d
