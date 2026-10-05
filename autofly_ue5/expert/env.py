@@ -19,6 +19,7 @@ import gymnasium as gym
 import numpy as np
 from gymnasium import spaces
 
+from autofly_ue5.expert.altitude_margin import AltitudeMarginPenalty
 from autofly_ue5.expert.episode import EpisodeSetup, a0_aligned, apply_setup, clear_setup, sample_setup
 from autofly_ue5.expert.mover_clearance import MoverClearancePenalty, MoverClosingPenalty
 from autofly_ue5.expert.movers import MoverController, home_poses, park_poses
@@ -79,6 +80,7 @@ class AutoFlyEnv(gym.Env):
         obs_config: ObsConfig | None = None,
         mover_clearance: MoverClearancePenalty | None = None,
         mover_closing: MoverClosingPenalty | None = None,
+        altitude_margin: AltitudeMarginPenalty | None = None,
     ) -> None:
         super().__init__()
         if (mover_clearance is not None or mover_closing is not None) and scene.dynamic is None:
@@ -89,6 +91,7 @@ class AutoFlyEnv(gym.Env):
         self._mover_clearance = mover_clearance
         self._mover_closing = mover_closing
         self._closing_depths: list[float] | None = None  # each mover's depth inside the margin after the last step
+        self._altitude_margin = altitude_margin  # expert/altitude_margin.py: any scene, training only
         self._scene = scene
         self._layout = layout
         self._sim_factory = sim_factory
@@ -98,6 +101,8 @@ class AutoFlyEnv(gym.Env):
         # without hand-building a whole new RewardConfig just to change one field. Folding it into the
         # cfg actually used by evaluate() keeps classify()'s TIMEOUT check from disagreeing with it.
         self._cfg = dataclasses.replace(reward_config_for_scene(scene, cfg), step_limit=max_episode_steps)
+        if altitude_margin is not None:
+            altitude_margin.check_band(self._cfg.altitude_band_m)
         self._seed_base = seed_base
         self._max_episode_steps = max_episode_steps
 
@@ -293,28 +298,32 @@ class AutoFlyEnv(gym.Env):
         info = self._info(result.outcome, dist, obs.pose, bearing, kind,
                           collision_source=source if result.outcome is Outcome.COLLISION else None, mover_in_view=seen,
                           mover_contact=mover_contact if result.outcome is Outcome.COLLISION else None)
-        reward = self._with_mover_penalty(result.reward, obs.pose, info)
+        reward = self._with_penalties(result.reward, obs.pose, info)
         self._last_obs = {"depth": self._stacker.push(encode_depth(obs.depth)),
                           "vector": encode_vector(obs.pose, obs.velocity_ned, obs.yaw_rate, self._setup.target_xy_z),
                           **self._mover_obs(obs.pose)}
         return self._last_obs, reward, result.terminated, result.truncated, info
 
-    def _with_mover_penalty(self, reward: float, pose: Pose, info: dict) -> float:
-        """`reward` less the run's mover penalty for a step ending at `pose` (expert/mover_clearance.py), which `info`
-        then names. Without one both are left exactly as they were, so every earlier run's rewards and infos stand."""
-        if self._movers is None:
-            return reward
-        gaps = self._movers.gaps((pose.x, pose.y))
-        if self._mover_clearance is not None:
-            penalty = self._mover_clearance(gaps, contact_m=self._movers.contact_m)
-            info["mover_clearance_penalty"] = penalty
-            return reward - penalty
-        if self._mover_closing is not None:
-            depths = self._mover_closing.depths(gaps, contact_m=self._movers.contact_m)
-            penalty = self._mover_closing(self._closing_depths, depths) if self._closing_depths is not None else 0.0
-            self._closing_depths = depths
-            info["mover_closing_penalty"] = penalty
-            return reward - penalty
+    def _with_penalties(self, reward: float, pose: Pose, info: dict) -> float:
+        """`reward` less the run's training penalties for a step ending at `pose` (expert/mover_clearance.py,
+        expert/altitude_margin.py), each named in `info`. Without any, both are left exactly as they were, so every
+        earlier run's rewards and infos stand."""
+        if self._movers is not None and (self._mover_clearance is not None or self._mover_closing is not None):
+            gaps = self._movers.gaps((pose.x, pose.y))
+            if self._mover_clearance is not None:
+                penalty = self._mover_clearance(gaps, contact_m=self._movers.contact_m)
+                info["mover_clearance_penalty"] = penalty
+                reward -= penalty
+            if self._mover_closing is not None:
+                depths = self._mover_closing.depths(gaps, contact_m=self._movers.contact_m)
+                penalty = self._mover_closing(self._closing_depths, depths) if self._closing_depths is not None else 0.0
+                self._closing_depths = depths
+                info["mover_closing_penalty"] = penalty
+                reward -= penalty
+        if self._altitude_margin is not None:
+            penalty = self._altitude_margin(-pose.z, band_m=self._cfg.altitude_band_m)  # NED: altitude is -z
+            info["altitude_margin_penalty"] = penalty
+            reward -= penalty
         return reward
 
     def _mover_obs(self, pose: Pose) -> dict[str, np.ndarray]:
@@ -354,7 +363,7 @@ class AutoFlyEnv(gym.Env):
         info["inferred_from"] = f"{type(err).__name__}: {err}"
         print(f"MOVER instance {self._instance}: {info['inferred_from']} within "
               f"{self._movers.nearest_gap((pose.x, pose.y)):.2f} m of a mover: scored as a collision", file=sys.stderr)
-        reward = self._with_mover_penalty(result.reward, pose, info)
+        reward = self._with_penalties(result.reward, pose, info)
         return self._last_obs, reward, result.terminated, result.truncated, info
 
     def _info(self, outcome: Outcome, dist_m: float, pose, bearing_rad: float, oob: str | None, *,

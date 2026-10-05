@@ -14,6 +14,7 @@ import gymnasium as gym
 from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv, VecEnv
 
+from autofly_ue5.expert.altitude_margin import AltitudeMarginPenalty
 from autofly_ue5.expert.env import AutoFlyEnv
 from autofly_ue5.expert.mover_clearance import MoverClearancePenalty, MoverClosingPenalty
 from autofly_ue5.expert.obs import ObsConfig
@@ -63,6 +64,7 @@ def make_vec_env(
     obs_config: ObsConfig | None = None,
     mover_clearance: MoverClearancePenalty | None = None,
     mover_closing: MoverClosingPenalty | None = None,
+    altitude_margin: AltitudeMarginPenalty | None = None,
 ) -> VecEnv:
     """n `AutoFlyEnv`s, each `ResilientAutoFlyEnv(Monitor(AutoFlyEnv(...)))`, vectorised.
 
@@ -84,8 +86,8 @@ def make_vec_env(
     `launch=False` skips the staggered first reset, for a caller that launches the workers itself (the throughput
     measurement checks VRAM between launches). `obs_config`: the expert's observation (default: the scene's own, one
     depth frame for a static scene and a stack for a dynamic one; see `autofly_ue5.expert.obs.ObsConfig`).
-    `mover_clearance` / `mover_closing`: a training run's mover penalty, paid by every env
-    (`expert/mover_clearance.py`).
+    `mover_clearance` / `mover_closing` / `altitude_margin`: a training run's penalties, paid by every env
+    (`expert/mover_clearance.py`, `expert/altitude_margin.py`).
     """
     if n < 1:
         raise ValueError(f"n must be >= 1, got {n}")
@@ -99,7 +101,8 @@ def make_vec_env(
             set_run_owner(owner)
             route_client_log(instance_dir(instance, sim_root) / "client.log")
             base = AutoFlyEnv(scene, layout, sim_factory, map_path=map_path, instance=instance, seed_base=seed_base_fn(rank),
-                              obs_config=obs_config, mover_clearance=mover_clearance, mover_closing=mover_closing)
+                              obs_config=obs_config, mover_clearance=mover_clearance, mover_closing=mover_closing,
+                              altitude_margin=altitude_margin)
             # outcome and collision_source per episode, for scripts/watch_training.py (the info always carries both).
             monitored = Monitor(base, filename=str(monitor_dir / f"{instance}.monitor.csv"),
                                 info_keywords=("is_success", "outcome", "collision_source"))

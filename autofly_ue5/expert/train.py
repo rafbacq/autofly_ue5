@@ -133,6 +133,7 @@ from autofly_ue5.expert.faults import (  # noqa: F401  (re-exported: moved from 
     combine_fault_summaries,
 )
 from autofly_ue5.durable import write_text_durably
+from autofly_ue5.expert.altitude_margin import AltitudeMarginPenalty
 from autofly_ue5.evidence import default_evidence_path, record_destination, refuse_existing_evidence
 from autofly_ue5.expert.evaluate import FaultAwareEvalCallback
 from autofly_ue5.expert.features import POLICY_KWARGS
@@ -297,9 +298,10 @@ def default_train_record(run_root: Path, scene: str, *, resume: bool) -> Path:
 
 def run_identity(resolved: ResolvedScene, obs_config: ObsConfig, scene_config: str | None = None, *,
                  mover_clearance: MoverClearancePenalty | None = None,
-                 mover_closing: MoverClosingPenalty | None = None) -> dict:
+                 mover_closing: MoverClosingPenalty | None = None,
+                 altitude_margin: AltitudeMarginPenalty | None = None) -> dict:
     """What a run's replay buffer and checkpoints are tied to: resuming under anything else would mix two tasks, two
-    observation shapes or two simulator clocks (the scene config holds the clock rate) in one buffer. A mover
+    observation shapes or two simulator clocks (the scene config holds the clock rate) in one buffer. A training
     penalty is part of the reward the buffer holds, so a run that pays one names it; one that does not serialises
     exactly as every run before it."""
     dynamic = resolved.scene.dynamic
@@ -308,6 +310,8 @@ def run_identity(resolved: ResolvedScene, obs_config: ObsConfig, scene_config: s
         extra["mover_clearance_penalty"] = mover_clearance.to_json()
     if mover_closing is not None:
         extra["mover_closing_penalty"] = mover_closing.to_json()
+    if altitude_margin is not None:
+        extra["altitude_margin_penalty"] = altitude_margin.to_json()
     return {
         "scene_config": scene_config_record(scene_config) if scene_config is not None else None,
         "scene": resolved.scene.id,
@@ -589,8 +593,8 @@ class StopOnRequest(BaseCallback):
         return True
 
 
-# The info keys a mover penalty is reported under (AutoFlyEnv._with_mover_penalty); a run pays at most one.
-MOVER_PENALTY_KEYS = ("mover_clearance_penalty", "mover_closing_penalty")
+# The info keys a training penalty is reported under (AutoFlyEnv._with_penalties); a run may pay several.
+PENALTY_KEYS = ("mover_clearance_penalty", "mover_closing_penalty", "altitude_margin_penalty")
 
 
 class OutcomeHistogramCallback(BaseCallback):
@@ -613,11 +617,10 @@ class OutcomeHistogramCallback(BaseCallback):
         # The last OUTCOME_WINDOW real episodes, for TensorBoard's outcomes/* curves (watchers, runbook-m2d step 5).
         self._recent: deque[str] = deque(maxlen=self.OUTCOME_WINDOW)
         self._fault_episodes = 0
-        # A run that pays a mover penalty (expert/mover_clearance.py): each env's sum so far this episode, and the last
-        # OUTCOME_WINDOW real episodes' totals, for outcomes/<the info key>.
-        self._penalty_key: str | None = None
-        self._penalty_so_far: dict[int, float] = {}
-        self._penalties: deque[float] = deque(maxlen=self.OUTCOME_WINDOW)
+        # A run that pays training penalties (expert/mover_clearance.py, expert/altitude_margin.py): per info key,
+        # each env's sum so far this episode, and the last OUTCOME_WINDOW real episodes' totals, for outcomes/<key>.
+        self._penalty_so_far: dict[str, dict[int, float]] = {key: {} for key in PENALTY_KEYS}
+        self._penalties: dict[str, deque[float]] = {key: deque(maxlen=self.OUTCOME_WINDOW) for key in PENALTY_KEYS}
 
     OUTCOME_WINDOW = 100
 
@@ -625,13 +628,13 @@ class OutcomeHistogramCallback(BaseCallback):
         infos = self.locals.get("infos", [])
         dones = self.locals.get("dones", [])
         for i, (info, done) in enumerate(zip(infos, dones)):
-            for key in MOVER_PENALTY_KEYS:
+            for key in PENALTY_KEYS:
                 if key in info:
-                    self._penalty_key = key
-                    self._penalty_so_far[i] = self._penalty_so_far.get(i, 0.0) + info[key]
+                    self._penalty_so_far[key][i] = self._penalty_so_far[key].get(i, 0.0) + info[key]
             if not done:
                 continue
-            paid = self._penalty_so_far.pop(i, None)  # a faulted episode's goes with it
+            paid = {key: sums.pop(i) for key, sums in self._penalty_so_far.items() if i in sums}  # a faulted episode's
+            # sums go with it
             self.histogram[info.get("sim_fault") or info.get("outcome", "unknown")] += 1
             if info.get("sim_fault"):
                 self._fault_episodes += 1
@@ -644,8 +647,8 @@ class OutcomeHistogramCallback(BaseCallback):
                 self.collision_sources[source] += 1
                 label = f"collision_{source}"
             self._recent.append(label)
-            if paid is not None:
-                self._penalties.append(paid)
+            for key, total in paid.items():
+                self._penalties[key].append(total)
             if getattr(self, "model", None) is not None:  # SB3 attaches the model (and its logger) in init_callback
                 self._log()
         return True
@@ -659,8 +662,9 @@ class OutcomeHistogramCallback(BaseCallback):
         for source in ("sim", "mover", "mover_inferred"):
             self.logger.record(f"outcomes/collision_{source}", counts[f"collision_{source}"] / n)
         self.logger.record("outcomes/sim_fault_episodes", self._fault_episodes)
-        if self._penalties:
-            self.logger.record(f"outcomes/{self._penalty_key}", sum(self._penalties) / len(self._penalties))
+        for key, totals in self._penalties.items():
+            if totals:
+                self.logger.record(f"outcomes/{key}", sum(totals) / len(totals))
 
 
 def read_eval_results(run_root: Path) -> dict:
@@ -744,6 +748,9 @@ def build_arg_parser() -> argparse.ArgumentParser:
     p.add_argument("--mover-closing-penalty", type=float, nargs=2, default=None, metavar=("K", "MARGIN_M"),
                    help="training only, instead of --mover-clearance-penalty: K for closing in from MARGIN_M outside a "
                         "mover's contact boundary to the boundary, nothing for time spent near it")
+    p.add_argument("--altitude-margin-penalty", type=float, nargs=2, default=None, metavar=("K", "MARGIN_M"),
+                   help="training only, any scene: K per step at the altitude band's floor or ceiling, falling to 0 at "
+                        "MARGIN_M inside it (expert/altitude_margin.py); recorded in the run identity")
     p.add_argument("--sim-root", type=Path, default=SIM_RUN_DIR,
                    help="where this run's simulators are recorded (tests point it at a scratch directory)")
     return p
@@ -782,8 +789,12 @@ def main(argv: list[str] | None = None) -> int:
             if scene_file.dynamic is None:
                 raise ValueError(f"--mover-closing-penalty: scene {scene_file.id} has no moving pillars")
             mover_closing = MoverClosingPenalty(*args.mover_closing_penalty)
+        altitude_margin = None
+        if args.altitude_margin_penalty is not None:
+            altitude_margin = AltitudeMarginPenalty(*args.altitude_margin_penalty).check_band(
+                reward_config_for_scene(scene_file).altitude_band_m)
         identity = run_identity(resolved, obs_config, scene_config, mover_clearance=mover_clearance,
-                                mover_closing=mover_closing)
+                                mover_closing=mover_closing, altitude_margin=altitude_margin)
         if (run_root / STOP_REQUEST_FILE).exists():
             raise RuntimeError(f"{run_root / STOP_REQUEST_FILE} is a pending stop request; remove it to start or "
                                f"resume this run")
@@ -836,6 +847,7 @@ def main(argv: list[str] | None = None) -> int:
             scene_file, layout, args.instances, map_path=map_path, monitor_dir=monitor_dir,
             seed_base_fn=lambda rank: session_seed_base(rank, session), instance_offset=0, sim_factory=sim_factory,
             sim_root=sim_root, obs_config=obs_config, mover_clearance=mover_clearance, mover_closing=mover_closing,
+            altitude_margin=altitude_margin,
         )
         # A separate simulator instance (own ports), one slot past the training workers, so evaluation
         # can run concurrently with training without colliding on ports with any training worker. Its own seed
@@ -844,7 +856,7 @@ def main(argv: list[str] | None = None) -> int:
         eval_env = make_vec_env(
             scene_file, layout, 1, map_path=map_path, monitor_dir=eval_monitor_dir,
             seed_base_fn=lambda _rank: EVAL_CALLBACK_SEED_BASE, instance_offset=args.instances, sim_factory=sim_factory,
-            sim_root=sim_root, obs_config=obs_config, mover_clearance=None, mover_closing=None,
+            sim_root=sim_root, obs_config=obs_config, mover_clearance=None, mover_closing=None, altitude_margin=None,
         )
 
         if args.resume:
@@ -989,6 +1001,7 @@ def main(argv: list[str] | None = None) -> int:
             "actor_freeze_updates": args.actor_freeze_updates,
             "mover_clearance_penalty": mover_clearance.to_json() if mover_clearance is not None else None,
             "mover_closing_penalty": mover_closing.to_json() if mover_closing is not None else None,
+            "altitude_margin_penalty": altitude_margin.to_json() if altitude_margin is not None else None,
             "batch_size": args.batch_size,
             # What the model actually trained with, not what this file intends (a resumed model restores its own).
             "train_freq": str(model.train_freq) if model is not None else None,
