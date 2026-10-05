@@ -16,6 +16,7 @@ from pynng.exceptions import Timeout as NngTimeout
 
 from autofly_ue5.sim.airsim_backend import CameraPoseError, CommandTimeoutError, StaleStateError, StepTimingError
 from autofly_ue5.sim.fake import FakeSimulator
+from autofly_ue5.sim.sync import FrameTimeoutError, FrameTimestampError
 from autofly_ue5.sim.types import CONTROL_DT_S
 from tests.test_expert_episode import scene_and_layout
 
@@ -32,8 +33,11 @@ from autofly_ue5.sim.types import (
     StartCollisionError,
 )
 
+# FrameTimeoutError: 2026-10-05 08:15, run 5's instance 0 got no rgb/depth frame within 5 s of a step. It was not a
+# known fault, so its worker exited and the 12-hour run ended at 25k steps. FrameTimestampError is the same wait's other
+# failure.
 ALL_STEP_FAULTS = [CameraPoseError, StepTimingError, StaleStateError, CommandTimeoutError, NngTimeout, NngConnectionReset,
-                   KinematicsJumpError, SimRequestTimeoutError]
+                   KinematicsJumpError, SimRequestTimeoutError, FrameTimeoutError, FrameTimestampError]
 # Raised only while an episode is being set up (C9): a wrong start pose, a start in contact, a refused teleport.
 RESET_ONLY_FAULTS = [ResetPoseError, StartCollisionError, SetPoseError]
 # pynng's own errno for each exception it raises (pynng.exceptions.EXCEPTION_MAP).
@@ -342,6 +346,14 @@ def test_resilient_env_relaunches_after_exhausting_in_place_retries():
     assert env.relaunch_count == 1
     assert env.fault_counts["CameraPoseError"] == 2, "both in-place attempts against the broken connection must be counted"
     assert env.recovered_counts["CameraPoseError"] == 2, "the eventual success recovers every prior fault, not just the last"
+
+
+def test_a_frame_sync_failure_is_a_known_step_fault():
+    from autofly_ue5.expert.faults import FAULT_ERRORS_LAUNCH, FAULT_ERRORS_STEP, KNOWN_FAULT_NAMES
+
+    for error in (FrameTimeoutError, FrameTimestampError):
+        assert issubclass(error, FAULT_ERRORS_STEP) and not issubclass(error, FAULT_ERRORS_LAUNCH)
+        assert error.__name__ in KNOWN_FAULT_NAMES, "counted (as 0 when it never fires) in every run record"
 
 
 def test_the_mover_request_errors_are_classified():

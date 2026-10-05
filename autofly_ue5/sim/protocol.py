@@ -53,7 +53,9 @@ class Simulator(Protocol):
         corrupt (spec §7.1) and reset()'s own steps are the only thing allowed to consume it.
 
         Raises KinematicsJumpError if the vehicle moved farther than it can fly in dt since the previous observation
-        (a teleport, not flight) -- checked on collision steps too. The episode cannot continue; reset."""
+        (a teleport, not flight) -- checked on collision steps too. The episode cannot continue; reset. A backend may
+        also raise FrameTimeoutError when the step's camera frames do not arrive (sim/sync.py; seen once, 2026-10-05),
+        or FrameTimestampError when they arrive stamped at another time: both are recoverable step faults."""
 
     def observe(self) -> Observation:
         """Observation at the end of the last step or reset. Also requires reset() to have already run

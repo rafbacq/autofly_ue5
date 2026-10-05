@@ -21,6 +21,7 @@ from pynng.exceptions import ConnectionReset as NngConnectionReset
 from autofly_ue5.expert.episode import EpisodeSetupError
 from autofly_ue5.sim.airsim_backend import CommandTimeoutError, StaleStateError, StepTimingError
 from autofly_ue5.sim.process import SimExitedError, SimReadyTimeout
+from autofly_ue5.sim.sync import FrameTimeoutError, FrameTimestampError
 from autofly_ue5.sim.types import (
     CameraPoseError,
     KinematicsJumpError,
@@ -35,8 +36,13 @@ from autofly_ue5.sim.types import (
 # SimRequestTimeoutError (2026-10-02, moving obstacles): a mover request got no reply. It ends the episode like any step
 # fault; its connection is gone, so the next reset() raises SimConnectionLostError and relaunches (below).
 # ObjectMoveRefusedError (2026-10-03): Unreal refused a movable pillar's move twice; the next reset re-places every mover.
+# FrameTimeoutError (2026-10-05 08:15, run 5): a step's clock and command both succeeded, but no rgb/depth frame for it
+# arrived within 5 s. Never seen before in any run, and unknown, so it ended a 12-hour run at 25k steps. Like a stuck
+# camera, the next reset retries in place and then relaunches. FrameTimestampError is the same wait's other failure (a
+# frame stamped at another time), not yet seen.
 FAULT_ERRORS_STEP = (CameraPoseError, StepTimingError, StaleStateError, CommandTimeoutError, NngTimeout, NngConnectionReset,
-                     KinematicsJumpError, SimRequestTimeoutError, ObjectMoveRefusedError)
+                     KinematicsJumpError, SimRequestTimeoutError, ObjectMoveRefusedError, FrameTimeoutError,
+                     FrameTimestampError)
 # An episode that did not start where it should (C9): retried like any reset fault, so the gate replays the seed and
 # training never sees it. Raised only during reset(), so not step faults.
 FAULT_ERRORS_START = (ResetPoseError, StartCollisionError, SetPoseError)

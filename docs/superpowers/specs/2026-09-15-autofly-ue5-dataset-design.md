@@ -284,7 +284,9 @@ R5–R9.
   one-step "collisions" whose drone was ≥ 4 m from its start, all on a reset right after a collision episode (15 of 73
   such resets, 0 of 723 others); the camera check could not see them because it is skipped on collision steps. A
   faulted step ends its episode on the last real observation; training drops that transition and evaluation replays
-  the episode (`autofly_ue5/expert/resilient.py`, `evaluate.py`).
+  the episode (`autofly_ue5/expert/resilient.py`, `evaluate.py`). Added 2026-10-05: a step whose rgb/depth frames do
+  not arrive within 5 s (`FrameTimeoutError`, first seen ending run 5 at 25k steps), or arrive stamped at another time
+  (`FrameTimestampError`), is a step fault too.
 - **Lock-step holds exactly at 5 Hz.** 55/55 records had simulator time, image timestamps and kinematics timestamps
   equal to the step target; camera-to-state pose error stayed at 2.4e-7 m. The velocity command's duration is
   `dt − 2·step-ns = 0.19 s`, sent before the step, with the reply awaited after it.
