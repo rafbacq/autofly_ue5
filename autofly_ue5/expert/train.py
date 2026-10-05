@@ -604,15 +604,22 @@ class OutcomeHistogramCallback(BaseCallback):
         # The last OUTCOME_WINDOW real episodes, for TensorBoard's outcomes/* curves (watchers, runbook-m2d step 5).
         self._recent: deque[str] = deque(maxlen=self.OUTCOME_WINDOW)
         self._fault_episodes = 0
+        # A run that pays a mover clearance penalty (expert/mover_clearance.py): each env's sum so far this episode,
+        # and the last OUTCOME_WINDOW real episodes' totals, for outcomes/mover_clearance_penalty.
+        self._penalty_so_far: dict[int, float] = {}
+        self._penalties: deque[float] = deque(maxlen=self.OUTCOME_WINDOW)
 
     OUTCOME_WINDOW = 100
 
     def _on_step(self) -> bool:
         infos = self.locals.get("infos", [])
         dones = self.locals.get("dones", [])
-        for info, done in zip(infos, dones):
+        for i, (info, done) in enumerate(zip(infos, dones)):
+            if "mover_clearance_penalty" in info:
+                self._penalty_so_far[i] = self._penalty_so_far.get(i, 0.0) + info["mover_clearance_penalty"]
             if not done:
                 continue
+            paid = self._penalty_so_far.pop(i, None)  # a faulted episode's goes with it
             self.histogram[info.get("sim_fault") or info.get("outcome", "unknown")] += 1
             if info.get("sim_fault"):
                 self._fault_episodes += 1
@@ -625,6 +632,8 @@ class OutcomeHistogramCallback(BaseCallback):
                 self.collision_sources[source] += 1
                 label = f"collision_{source}"
             self._recent.append(label)
+            if paid is not None:
+                self._penalties.append(paid)
             if getattr(self, "model", None) is not None:  # SB3 attaches the model (and its logger) in init_callback
                 self._log()
         return True
@@ -638,6 +647,8 @@ class OutcomeHistogramCallback(BaseCallback):
         for source in ("sim", "mover", "mover_inferred"):
             self.logger.record(f"outcomes/collision_{source}", counts[f"collision_{source}"] / n)
         self.logger.record("outcomes/sim_fault_episodes", self._fault_episodes)
+        if self._penalties:
+            self.logger.record("outcomes/mover_clearance_penalty", sum(self._penalties) / len(self._penalties))
 
 
 def read_eval_results(run_root: Path) -> dict:

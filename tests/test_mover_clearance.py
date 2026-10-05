@@ -214,3 +214,56 @@ def test_a_penalty_that_cannot_apply_is_refused_before_the_run_root_is_claimed(t
     code, _out, seen = _train(tmp_path, monkeypatch, "--mover-clearance-penalty", *values, scene=scene)
     assert code == 2 and why in capsys.readouterr().err
     assert not (tmp_path / "run").exists() and seen == []
+
+
+# --------------------------------------------------------------------------------------------------------
+# The training log shows what the penalty costs per episode (TensorBoard: outcomes/mover_clearance_penalty).
+# --------------------------------------------------------------------------------------------------------
+class _Logger:
+    def __init__(self):
+        self.records = {}
+
+    def record(self, key, value, exclude=None):
+        self.records[key] = value
+
+
+def _outcomes():
+    from types import SimpleNamespace
+
+    from autofly_ue5.expert.train import OutcomeHistogramCallback
+
+    cb = OutcomeHistogramCallback()
+    cb.model = SimpleNamespace(logger=_Logger())  # what SB3's init_callback attaches
+
+    def step(infos, dones):
+        cb.locals = {"infos": infos, "dones": dones}
+        cb._on_step()
+
+    return cb, step
+
+
+def test_the_outcome_log_carries_the_penalty_each_episode_paid():
+    cb, step = _outcomes()
+    step([{"outcome": "running", "mover_clearance_penalty": 0.25},
+          {"outcome": "running", "mover_clearance_penalty": 0.0}], [False, False])
+    step([{"outcome": "collision", "collision_source": "mover", "mover_clearance_penalty": 0.5},
+          {"outcome": "running", "mover_clearance_penalty": 0.1}], [True, False])
+    assert cb.model.logger.records["outcomes/mover_clearance_penalty"] == pytest.approx(0.75)
+    step([{"outcome": "running", "mover_clearance_penalty": 0.0},
+          {"outcome": "success", "mover_clearance_penalty": 0.0}], [False, True])
+    assert cb.model.logger.records["outcomes/mover_clearance_penalty"] == pytest.approx((0.75 + 0.1) / 2)
+
+
+def test_a_faulted_episode_s_penalty_is_dropped_with_the_episode():
+    cb, step = _outcomes()
+    step([{"outcome": "running", "mover_clearance_penalty": 0.4}], [False])
+    step([{"outcome": "running", "sim_fault": "CameraPoseError"}], [True])
+    step([{"outcome": "success", "mover_clearance_penalty": 0.0}], [True])
+    assert cb.model.logger.records["outcomes/mover_clearance_penalty"] == 0.0
+
+
+def test_a_run_without_the_penalty_logs_nothing_about_it():
+    cb, step = _outcomes()
+    step([{"outcome": "success"}], [True])
+    assert "outcomes/success" in cb.model.logger.records
+    assert "outcomes/mover_clearance_penalty" not in cb.model.logger.records
