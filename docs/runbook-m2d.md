@@ -200,6 +200,30 @@ $PY scripts/audit_m2_gate.py --gate docs/gates/m2d_r2_gate.json --out docs/gates
 
 Each mover collision in a gate record now says how it happened (`mover_contact`: gap, bearing, moving or yielding).
 
+## 6c. Run 4 (2026-10-04): run 3 plus a mover clearance penalty
+
+Why: `docs/decisions/2026-10-04-s01d-r4-clearance-penalty.md`. Run 4 is run 3's command plus one flag, so the two
+differ in nothing else (the same seeds fly the same episodes):
+
+```bash
+$J start s01d_r4_train -- $PY -m autofly_ue5.expert.train --scene s01d --instances 4 --hours 12 --scene-config $CFG \
+    --run-root runs/expert/s01d_r4 --out docs/gates/m2d_r4_train.json --eval-freq 1000000000 --buffer-size 250000 \
+    --mover-clearance-penalty 0.5 1.0
+$J start s01d_r4_watch -- $PY scripts/watch_training.py --run-root runs/expert/s01d_r4 --job s01d_r4_train \
+    --interval 300 --png runs/expert/s01d_r4/progress.png
+$J start s01d_r4_evalwatch -- env -u PYTHONPATH DISPLAY=:1 SDL_VIDEODRIVER=x11 .venv/bin/python scripts/eval_watch.py \
+    --run-root runs/expert/s01d_r4 --job s01d_r4_train --every 50000 --instance 4 --scene s01d --scene-config $CFG
+$J start s01d_r4_tensorboard -- .venv/bin/tensorboard --logdir runs/expert/s01d_r4/tensorboard --host 127.0.0.1 \
+    --port 6006
+```
+
+- **Training returns include the penalty:** Monitor's `r`, `rollout/ep_rew_mean` and the dashboard's return. The eval
+  watch, selection and the gate score the task's own reward, so their returns compare with every earlier run's.
+- **To end a session early and keep its record**, `touch runs/expert/s01d_r4/STOP`. Training stops within 25 steps,
+  writes final.zip and the session record, and tears its simulators down. Remove the file before a resume: a session
+  refuses to start while a request is pending.
+- **Afterwards**, selection and the gate as in §6b with run 4's paths: `m2d_r4_gate.json`, `m2d_r4_gate_audit.json`.
+
 ## 7. Diagnostic: the s01 expert, zero-shot, on s01d
 
 ```bash
