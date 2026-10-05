@@ -225,6 +225,35 @@ $J start s01d_r4_tensorboard -- .venv/bin/tensorboard --logdir runs/expert/s01d_
   buffer, since final.zip carries no buffer, so it repeats up to 10k steps.
 - **Afterwards**, selection and the gate as in §6b with run 4's paths: `m2d_r4_gate.json`, `m2d_r4_gate_audit.json`.
 
+## 6d. Run 5 (2026-10-05): run 4 plus a training contact margin and an altitude margin
+
+Why: `docs/decisions/2026-10-05-s01d-r5-margins.md`. Run 5 is run 4's command, the best so far, with two training-only
+changes, each aimed at a failure run 4's best checkpoints still showed:
+
+- **`--mover-contact-margin 0.3`.** A mover contact ends a training episode at 1.3 m from the mover's surface instead
+  of the task's 1.0 m. The expert still observes, and the gate still scores, the 1.0 m rule.
+- **`--altitude-margin-penalty 0.1 0.5`.** This charges 0.1 per step at the band's floor or ceiling, falling to 0 at
+  0.5 m inside it.
+
+```bash
+$J start s01d_r5_train -- $PY -m autofly_ue5.expert.train --scene s01d --instances 4 --hours 12 --scene-config $CFG \
+    --run-root runs/expert/s01d_r5 --out docs/gates/m2d_r5_train.json --eval-freq 1000000000 --buffer-size 250000 \
+    --mover-clearance-penalty 0.5 1.0 --mover-contact-margin 0.3 --altitude-margin-penalty 0.1 0.5
+$J start s01d_r5_watch -- $PY scripts/watch_training.py --run-root runs/expert/s01d_r5 --job s01d_r5_train \
+    --interval 300 --png runs/expert/s01d_r5/progress.png
+$J start s01d_r5_evalwatch -- env -u PYTHONPATH DISPLAY=:1 SDL_VIDEODRIVER=x11 .venv/bin/python scripts/eval_watch.py \
+    --run-root runs/expert/s01d_r5 --job s01d_r5_train --every 50000 --instance 4 --scene s01d --scene-config $CFG
+```
+
+**Training numbers read differently.**
+- **Mover collisions count at 1.3 m**, so they include contacts the task would not score. Per-contact `gap_m`
+  values between 1.0 and 1.3 are the margin at work.
+- **Returns include both penalties.**
+- **The eval watch, selection and the gate use the task's own rule and reward**, so their numbers compare directly
+  with runs 1–4.
+
+**Afterwards:** selection and the gate as in §6b, with run 5's paths: `m2d_r5_gate.json`, `m2d_r5_gate_audit.json`.
+
 ## 7. Diagnostic: the s01 expert, zero-shot, on s01d
 
 ```bash
