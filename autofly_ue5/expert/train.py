@@ -558,6 +558,32 @@ class StopOnWallClock(BaseCallback):
         return True
 
 
+# <run root>/STOP asks a running session to end cleanly (StopOnRequest). A session refuses to start while
+# one is pending.
+STOP_REQUEST_FILE = "STOP"
+
+
+class StopOnRequest(BaseCallback):
+    """Ends training cleanly once `path` exists: learn() returns, final.zip and the session's record are written and
+    its simulators torn down, exactly as when the wall-clock budget runs out. Killing the job instead leaves no record:
+    run 2 was stopped that way on 2026-10-03, and the trainer has no other way to be paused on purpose. The disk is
+    looked at every `every` env steps."""
+
+    def __init__(self, path: Path, every: int = 25, verbose: int = 1) -> None:
+        super().__init__(verbose)
+        self._path = Path(path)
+        self._every = max(int(every), 1)
+        self.requested = False
+
+    def _on_step(self) -> bool:
+        if self.n_calls % self._every == 0 and self._path.exists():
+            self.requested = True
+            if self.verbose:
+                print(f"StopOnRequest: {self._path} found at {self.num_timesteps} timesteps; stopping")
+            return False
+        return True
+
+
 class OutcomeHistogramCallback(BaseCallback):
     """Tallies the outcome at every completed episode (terminated or truncated), across training --
     "if success_rate is flat at ~0 after 100k steps ... check the outcome histogram" (brief).
@@ -724,6 +750,9 @@ def main(argv: list[str] | None = None) -> int:
                 raise ValueError(f"--mover-clearance-penalty: scene {scene_file.id} has no moving pillars")
             mover_clearance = MoverClearancePenalty(*args.mover_clearance_penalty)
         identity = run_identity(resolved, obs_config, scene_config, mover_clearance=mover_clearance)
+        if (run_root / STOP_REQUEST_FILE).exists():
+            raise RuntimeError(f"{run_root / STOP_REQUEST_FILE} is a pending stop request; remove it to start or "
+                               f"resume this run")
         host = host_preflight(buffer_bytes=replay_buffer_bytes(args.buffer_size, obs_config), run_root=run_root)
         session = prepare_run_root(run_root, resume=args.resume, reward_version=REWARD_VERSION, seed=args.seed,
                                    identity=identity, warm_start=warm_source)
@@ -758,6 +787,7 @@ def main(argv: list[str] | None = None) -> int:
     checkpoint_path: Path | None = None
     checkpoint_sha256: str | None = None
     outcome_cb = OutcomeHistogramCallback()
+    stop_cb = StopOnRequest(run_root / STOP_REQUEST_FILE)
     eval_cb: FaultAwareEvalCallback | None = None
     status = "failed"
     error_message: str | None = None
@@ -833,7 +863,7 @@ def main(argv: list[str] | None = None) -> int:
             seed_base=EVAL_CALLBACK_SEED_BASE, best_model_save_path=best_dir, log_path=run_root / "eval_logs",
             deterministic=True, verbose=1,
         )
-        callbacks: list[BaseCallback] = [checkpoint_cb, prune_cb, eval_cb, outcome_cb]
+        callbacks: list[BaseCallback] = [checkpoint_cb, prune_cb, eval_cb, outcome_cb, stop_cb]
         if args.hours is not None:
             callbacks.append(StopOnWallClock(args.hours))
 
@@ -956,6 +986,7 @@ def main(argv: list[str] | None = None) -> int:
         "dropped_fault_rows": int(getattr(getattr(model, "replay_buffer", None), "dropped_fault_rows", 0)),
         "dropped_fault_transitions": int(getattr(getattr(model, "replay_buffer", None), "dropped_transitions", 0)),
         "interrupted_evaluations": eval_cb.interrupted_evaluations if eval_cb is not None else 0,
+        "stopped_on_request": stop_cb.requested,
         "backend_faults": guarded("backend_faults", lambda: combine_fault_summaries(fault_summaries), None),
         "backend_faults_missing_slots": fault_summaries_missing,
         "engine_faults": engine_faults,
