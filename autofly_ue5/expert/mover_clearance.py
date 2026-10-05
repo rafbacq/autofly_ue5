@@ -42,3 +42,34 @@ class MoverClearancePenalty:
 
     def to_json(self) -> dict:
         return {"k": self.k, "margin_m": self.margin_m}
+
+
+@dataclass(frozen=True)
+class MoverClosingPenalty:
+    """The same margin, charged for closing in rather than for time spent (2026-10-05).
+
+    MoverClearancePenalty charges every step inside the margin, so a slow pass beside a mover costs more than rushing
+    past at full speed, and braking or waiting beside a mover that stopped in the way is taxed. Those are the escapes:
+    the drone has no sideways control, and at 2 m/s with a 1 rad/s yaw limit it cannot swerve far in the few steps a
+    yielding mover leaves it. Run 4, which paid that penalty at k = 0.5, kept making the same near misses at 150k steps.
+
+    This charges k times each increase in a mover's depth inside the margin (1 at the contact boundary, 0 at
+    `margin_m` outside it) and nothing otherwise. A pass then costs k times the depth of its closest approach, at any
+    speed, and holding position costs nothing."""
+
+    k: float          # for closing all the way from the margin to the contact boundary
+    margin_m: float
+
+    def __post_init__(self) -> None:
+        MoverClearancePenalty(self.k, self.margin_m)  # the same validation
+
+    def depths(self, surface_gaps_m: Iterable[float], *, contact_m: float) -> list[float]:
+        """Each mover's depth inside the margin: 0 at `margin_m` outside the contact boundary or farther, 1 on it."""
+        return [min(1.0, max(0.0, 1.0 - (gap - contact_m) / self.margin_m)) for gap in surface_gaps_m]
+
+    def __call__(self, before: list[float], after: list[float]) -> float:
+        """The cost of one step that took the movers' depths from `before` to `after` (the same movers, in order)."""
+        return self.k * sum(max(0.0, b - a) for a, b in zip(before, after))
+
+    def to_json(self) -> dict:
+        return {"k": self.k, "margin_m": self.margin_m}
