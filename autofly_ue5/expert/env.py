@@ -221,8 +221,11 @@ class AutoFlyEnv(gym.Env):
         if obs.collided:
             # An episode that starts in contact is lost before its first action (C9): not a policy outcome.
             raise StartCollisionError(f"the episode's first observation already reports a collision at {obs.pose}")
-        if movers is not None and movers.nearest_gap((obs.pose.x, obs.pose.y)) <= movers.contact_m:
-            raise StartCollisionError(f"the episode's first observation is within {movers.contact_m} m of a mover")
+        # termination_m: where a contact ends this env's episodes (the task's rule, or a training run's wider one). A
+        # start inside it would lose its first step to an unavoidable collision, so it is retried like a start in
+        # contact.
+        if movers is not None and movers.nearest_gap((obs.pose.x, obs.pose.y)) <= movers.termination_m:
+            raise StartCollisionError(f"the episode's first observation is within {movers.termination_m} m of a mover")
         self._displaced = new
         self._movers = movers
         if movers is not None:

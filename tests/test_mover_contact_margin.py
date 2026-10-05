@@ -187,3 +187,16 @@ def test_run_5_s_exact_combination_trains_and_records_all_three(tmp_path, monkey
     assert identity["altitude_margin_penalty"] == AltitudeMarginPenalty(0.1, 0.5).to_json()
     assert identity["mover_contact_margin_m"] == 0.3
     assert seen == [0.3, 0.0]
+
+
+def test_a_start_inside_the_training_boundary_is_retried_not_charged(monkeypatch):
+    # Review of 7fcb8a8 (2026-10-05): the start check used the task's 1.0 m, so in training a start 1.0-1.3 m from a
+    # mover would lose its first step to an unavoidable -10. s01d keeps starts 6 m from every mover, so it cannot happen
+    # there; but the start check belongs with where a contact ends the episode.
+    from autofly_ue5.expert.movers import MoverController
+    from autofly_ue5.sim.types import StartCollisionError
+
+    monkeypatch.setattr(MoverController, "nearest_gap", lambda self, xy: 1.15)
+    with pytest.raises(StartCollisionError):
+        make_dynamic_env(mover_contact_margin_m=0.3).reset(seed=1_000_070)
+    make_dynamic_env().reset(seed=1_000_070)  # outside the task's 1.0 m: a valid start
