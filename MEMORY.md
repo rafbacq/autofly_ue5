@@ -93,6 +93,19 @@ stale "fact". Standing rules live in `CLAUDE.md`; this file is the reasoning and
 
 ## RL and evaluation learnings
 
+- **Never decide a run's fate on 20-episode scores (2026-10-05, run 4).**
+  - Run 4 was stopped at 360k on an eval-watch slide: 0.85, 0.70, 0.65, 0.40 at 200k-350k.
+  - On 40 validation episodes, its late checkpoints were its best (0.80-0.825). The 200k checkpoint that read 0.85
+    scored 0.55.
+  - Stage 2 (100 episodes) put the top three at 0.75-0.78.
+  - Use the eval watch to see a run is alive. Use the selection stages to compare checkpoints or runs
+    (`docs/decisions/2026-10-05-s01d-r5-margins.md`).
+- **s01d experts fly to the boundary they train on (2026-10-05).**
+  - Mover-contact gaps cluster just inside the 1.0 m rule in every run: medians 0.94 (r1), 0.96 (r3), 0.93-0.98
+    (r4).
+  - Run 4's per-step clearance penalty (k 0.5) did not move the cluster, nor the ~20% of episodes it fails.
+  - Run 5 trains on a 1.3 m boundary instead (`--mover-contact-margin`).
+
 - **Never warm-start SAC with a fresh replay buffer (2026-10-03, run 2).** r1's best_model copied into run 2 flew at
   ~0.8 during the policy warm-up, then collapsed within ~500 updates (its 20k checkpoint: 0.25 against r1's 0.85 on the
   same 20 seeds). An offline replay on the real buffer showed r1's own network drifting the same way, so the mover
