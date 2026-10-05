@@ -40,15 +40,18 @@ def park_poses(instances: dict[str, Instance], tags) -> dict[str, Pose]:
 
 class MoverController:
     def __init__(self, routes: tuple[MoverRoute, ...], *, contact_m: float, yield_margin_m: float, max_speed_m_s: float,
-                 dt: float) -> None:
+                 dt: float, termination_margin_m: float = 0.0) -> None:
         self.routes = routes
-        self.contact_m = contact_m
+        self.contact_m = contact_m  # the task's rule: what the expert observes and the gate scores
+        # Where a contact ends the episode: the task's rule, or wider by a training run's safety margin (the env's
+        # mover_contact_margin_m). Everything else, the observation and the yield rule included, keeps the task's.
+        self.termination_m = contact_m + termination_margin_m
         self.yield_distance_m = contact_m + yield_margin_m
         self.dt = dt
         # The farthest a mover's surface can be before a step for the contact rule to fire during it: the drone flies
         # at most FORWARD_SPEED_MAX_M_S and the mover at most max_speed_m_s for one dt. A backend fault this close is
         # scored as a mover collision (spec §6.5, "defensive inference").
-        self.inference_radius_m = contact_m + (FORWARD_SPEED_MAX_M_S + max_speed_m_s) * dt
+        self.inference_radius_m = self.termination_m + (FORWARD_SPEED_MAX_M_S + max_speed_m_s) * dt
         self.taus = [0.0] * len(routes)
         self.positions = [route.position(0.0) for route in routes]
         self.previous_positions = list(self.positions)  # before the last advance(): the observation's velocity
@@ -72,7 +75,7 @@ class MoverController:
         return moved
 
     def contact(self, before_xy: tuple[float, float], after_xy: tuple[float, float]) -> tuple[int, float] | None:
-        return first_contact(self.routes, self.positions, before_xy, after_xy, self.contact_m)
+        return first_contact(self.routes, self.positions, before_xy, after_xy, self.termination_m)
 
     def gaps(self, xy: tuple[float, float]) -> list[float]:
         """Every mover's surface distance from a drone at `xy`."""

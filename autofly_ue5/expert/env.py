@@ -81,8 +81,17 @@ class AutoFlyEnv(gym.Env):
         mover_clearance: MoverClearancePenalty | None = None,
         mover_closing: MoverClosingPenalty | None = None,
         altitude_margin: AltitudeMarginPenalty | None = None,
+        mover_contact_margin_m: float = 0.0,
     ) -> None:
         super().__init__()
+        if not (math.isfinite(mover_contact_margin_m) and mover_contact_margin_m >= 0):
+            raise ValueError(f"mover contact margin must be a non-negative number of metres, "
+                             f"got {mover_contact_margin_m}")
+        if mover_contact_margin_m and scene.dynamic is None:
+            raise ValueError(f"scene {scene.id} has no moving pillars, so a mover contact margin cannot apply")
+        # Training only: a mover contact ends the episode this much outside the task's rule (MoverController). The
+        # expert observes, and the gate scores, the task's rule.
+        self._mover_contact_margin_m = float(mover_contact_margin_m)
         if (mover_clearance is not None or mover_closing is not None) and scene.dynamic is None:
             raise ValueError(f"scene {scene.id} has no moving pillars, so a mover penalty cannot apply")
         if mover_clearance is not None and mover_closing is not None:
@@ -194,7 +203,8 @@ class AutoFlyEnv(gym.Env):
             if setup.movers:
                 d = self._scene.dynamic
                 movers = MoverController(setup.movers, contact_m=d.contact_m, yield_margin_m=d.yield_margin_m,
-                                         max_speed_m_s=d.speed_m_s[1], dt=CONTROL_DT_S)
+                                         max_speed_m_s=d.speed_m_s[1], dt=CONTROL_DT_S,
+                                         termination_margin_m=self._mover_contact_margin_m)
                 batch.update(movers.initial_poses())
             sim.set_object_poses(batch)
 

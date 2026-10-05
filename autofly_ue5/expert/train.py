@@ -110,6 +110,7 @@ import argparse
 import dataclasses
 import hashlib
 import json
+import math
 import os
 import re
 import shutil
@@ -299,7 +300,8 @@ def default_train_record(run_root: Path, scene: str, *, resume: bool) -> Path:
 def run_identity(resolved: ResolvedScene, obs_config: ObsConfig, scene_config: str | None = None, *,
                  mover_clearance: MoverClearancePenalty | None = None,
                  mover_closing: MoverClosingPenalty | None = None,
-                 altitude_margin: AltitudeMarginPenalty | None = None) -> dict:
+                 altitude_margin: AltitudeMarginPenalty | None = None,
+                 mover_contact_margin_m: float = 0.0) -> dict:
     """What a run's replay buffer and checkpoints are tied to: resuming under anything else would mix two tasks, two
     observation shapes or two simulator clocks (the scene config holds the clock rate) in one buffer. A training
     penalty is part of the reward the buffer holds, so a run that pays one names it; one that does not serialises
@@ -312,6 +314,8 @@ def run_identity(resolved: ResolvedScene, obs_config: ObsConfig, scene_config: s
         extra["mover_closing_penalty"] = mover_closing.to_json()
     if altitude_margin is not None:
         extra["altitude_margin_penalty"] = altitude_margin.to_json()
+    if mover_contact_margin_m:
+        extra["mover_contact_margin_m"] = mover_contact_margin_m  # where a mover contact ends a training episode
     return {
         "scene_config": scene_config_record(scene_config) if scene_config is not None else None,
         "scene": resolved.scene.id,
@@ -751,6 +755,9 @@ def build_arg_parser() -> argparse.ArgumentParser:
     p.add_argument("--altitude-margin-penalty", type=float, nargs=2, default=None, metavar=("K", "MARGIN_M"),
                    help="training only, any scene: K per step at the altitude band's floor or ceiling, falling to 0 at "
                         "MARGIN_M inside it (expert/altitude_margin.py); recorded in the run identity")
+    p.add_argument("--mover-contact-margin", type=float, default=0.0, metavar="M",
+                   help="training only, on a scene with moving pillars: a mover contact ends the episode M metres "
+                        "outside the task's rule; the expert observes, and the gate scores, the task's own rule")
     p.add_argument("--sim-root", type=Path, default=SIM_RUN_DIR,
                    help="where this run's simulators are recorded (tests point it at a scratch directory)")
     return p
@@ -789,12 +796,18 @@ def main(argv: list[str] | None = None) -> int:
             if scene_file.dynamic is None:
                 raise ValueError(f"--mover-closing-penalty: scene {scene_file.id} has no moving pillars")
             mover_closing = MoverClosingPenalty(*args.mover_closing_penalty)
+        if not (math.isfinite(args.mover_contact_margin) and args.mover_contact_margin >= 0):
+            raise ValueError(f"--mover-contact-margin must be a non-negative number of metres, got "
+                             f"{args.mover_contact_margin}")
+        if args.mover_contact_margin and scene_file.dynamic is None:
+            raise ValueError(f"--mover-contact-margin: scene {scene_file.id} has no moving pillars")
         altitude_margin = None
         if args.altitude_margin_penalty is not None:
             altitude_margin = AltitudeMarginPenalty(*args.altitude_margin_penalty).check_band(
                 reward_config_for_scene(scene_file).altitude_band_m)
         identity = run_identity(resolved, obs_config, scene_config, mover_clearance=mover_clearance,
-                                mover_closing=mover_closing, altitude_margin=altitude_margin)
+                                mover_closing=mover_closing, altitude_margin=altitude_margin,
+                                mover_contact_margin_m=args.mover_contact_margin)
         if (run_root / STOP_REQUEST_FILE).exists():
             raise RuntimeError(f"{run_root / STOP_REQUEST_FILE} is a pending stop request; remove it to start or "
                                f"resume this run")
@@ -847,7 +860,7 @@ def main(argv: list[str] | None = None) -> int:
             scene_file, layout, args.instances, map_path=map_path, monitor_dir=monitor_dir,
             seed_base_fn=lambda rank: session_seed_base(rank, session), instance_offset=0, sim_factory=sim_factory,
             sim_root=sim_root, obs_config=obs_config, mover_clearance=mover_clearance, mover_closing=mover_closing,
-            altitude_margin=altitude_margin,
+            altitude_margin=altitude_margin, mover_contact_margin_m=args.mover_contact_margin,
         )
         # A separate simulator instance (own ports), one slot past the training workers, so evaluation
         # can run concurrently with training without colliding on ports with any training worker. Its own seed
@@ -857,6 +870,7 @@ def main(argv: list[str] | None = None) -> int:
             scene_file, layout, 1, map_path=map_path, monitor_dir=eval_monitor_dir,
             seed_base_fn=lambda _rank: EVAL_CALLBACK_SEED_BASE, instance_offset=args.instances, sim_factory=sim_factory,
             sim_root=sim_root, obs_config=obs_config, mover_clearance=None, mover_closing=None, altitude_margin=None,
+            mover_contact_margin_m=0.0,
         )
 
         if args.resume:
@@ -1002,6 +1016,7 @@ def main(argv: list[str] | None = None) -> int:
             "mover_clearance_penalty": mover_clearance.to_json() if mover_clearance is not None else None,
             "mover_closing_penalty": mover_closing.to_json() if mover_closing is not None else None,
             "altitude_margin_penalty": altitude_margin.to_json() if altitude_margin is not None else None,
+            "mover_contact_margin_m": args.mover_contact_margin,
             "batch_size": args.batch_size,
             # What the model actually trained with, not what this file intends (a resumed model restores its own).
             "train_freq": str(model.train_freq) if model is not None else None,
