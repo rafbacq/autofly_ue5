@@ -82,3 +82,12 @@ At equal steps run 3 is ahead of run 1, from the monitor CSVs (rolling 200 train
 Run 3 also leaves the bounds far less often: 0.21 of training episodes at 75k, against r1's 0.43. Its main failure is
 now mover collisions. Run 1 plateaued near 0.55 training success, with evaluations swinging between 0.10 and 0.85.
 Whether run 3 clears that plateau is the question for the rest of the run.
+
+## Follow-up, not done here
+
+The raw dataset store (`dataset/raw.py`) has the same window for files it renames into a new name: a renamed episode
+directory and its provenance file. Its manifest is safe, because it replaces an existing file, and ext4's
+`auto_da_alloc` (on: the root is mounted `ext4 rw,relatime`) flushes the new data first. But the manifest can then list
+an episode whose frames had not reached the disk, for up to the 30 s dirty-expiry time. A collector cannot resume into
+an existing store anyway, so a crash costs that collection's name. Make the store durable and resumable before the
+full M3 collection, which would run for days on this host.
