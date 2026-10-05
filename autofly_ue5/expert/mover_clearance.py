@@ -55,7 +55,8 @@ class MoverClosingPenalty:
 
     This charges k times each increase in a mover's depth inside the margin (1 at the contact boundary, 0 at
     `margin_m` outside it) and nothing otherwise. A pass then costs k times the depth of its closest approach, at any
-    speed, and holding position costs nothing."""
+    speed. Holding position costs nothing in the fake. Live, a hover drifts by millimetres and each drift inward is
+    charged, about 0.01 per step at k = 3 and a 1 m margin: small against a pass, but not zero (review, 2026-10-05)."""
 
     k: float          # for closing all the way from the margin to the contact boundary
     margin_m: float
