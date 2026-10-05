@@ -171,3 +171,19 @@ def test_a_margin_that_cannot_apply_is_refused_before_the_run_root_is_claimed(tm
     code, _out, seen = _train(tmp_path, monkeypatch, "--mover-contact-margin", value, scene=scene)
     assert code == 2 and why in capsys.readouterr().err
     assert not (tmp_path / "run").exists() and seen == []
+
+
+def test_run_5_s_exact_combination_trains_and_records_all_three(tmp_path, monkeypatch):
+    # docs/runbook-m2d.md 6d: run 4's per-step clearance penalty plus both margins, in one command.
+    from autofly_ue5.expert.altitude_margin import AltitudeMarginPenalty
+    from autofly_ue5.expert.mover_clearance import MoverClearancePenalty
+
+    code, out, seen = _train(tmp_path, monkeypatch, "--mover-clearance-penalty", "0.5", "1.0",
+                             "--mover-contact-margin", "0.3", "--altitude-margin-penalty", "0.1", "0.5")
+    record = json.loads(out.read_text())
+    assert code == 0 and record["status"] == "ok", record["error"]
+    identity = record["identity"]
+    assert identity["mover_clearance_penalty"] == MoverClearancePenalty(0.5, 1.0).to_json()
+    assert identity["altitude_margin_penalty"] == AltitudeMarginPenalty(0.1, 0.5).to_json()
+    assert identity["mover_contact_margin_m"] == 0.3
+    assert seen == [0.3, 0.0]
