@@ -6,6 +6,12 @@ stale "fact". Standing rules live in `CLAUDE.md`; this file is the reasoning and
 
 ## Traps: read these before touching the simulator path
 
+- **A step's camera frames can fail to arrive (2026-10-05).** 33 minutes into run 5, instance 0 completed a step's clock
+  and command, but no rgb/depth frame came within 5 s (`FrameTimeoutError`, `sim/sync.py`). It had never happened in
+  any earlier run. It was not a known fault, so the worker exited and the run ended at 25k steps. It is now a step
+  fault, recovered like a stuck camera (fa7ef7b). Any newly typed backend error that is not in
+  `expert/faults.py` ends a run the first time it fires: check new ones against that list.
+
 - **The Wi-Fi driver freezes this host, and a freeze can leave a 0-byte record (2026-10-04).** Four boots between
   2026-09-25 and 2026-10-03 ended in `mt7921e … driver own failed` with no shutdown sequence. The 2026-10-03 one froze
   run 3 at 76k steps for 25 h. It also came mid-relaunch: `runs/sim/inst1/pid.json` came back empty, and any launch or
