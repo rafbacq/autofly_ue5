@@ -15,6 +15,7 @@ from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv, VecEnv
 
 from autofly_ue5.expert.env import AutoFlyEnv
+from autofly_ue5.expert.mover_clearance import MoverClearancePenalty
 from autofly_ue5.expert.obs import ObsConfig
 from autofly_ue5.expert.resilient import ResilientAutoFlyEnv
 from autofly_ue5.expert.seeds import worker_seed_base
@@ -60,6 +61,7 @@ def make_vec_env(
     owner: RunOwner | None = None,
     launch: bool = True,
     obs_config: ObsConfig | None = None,
+    mover_clearance: MoverClearancePenalty | None = None,
 ) -> VecEnv:
     """n `AutoFlyEnv`s, each `ResilientAutoFlyEnv(Monitor(AutoFlyEnv(...)))`, vectorised.
 
@@ -81,6 +83,7 @@ def make_vec_env(
     `launch=False` skips the staggered first reset, for a caller that launches the workers itself (the throughput
     measurement checks VRAM between launches). `obs_config`: the expert's observation (default: the scene's own, one
     depth frame for a static scene and a stack for a dynamic one; see `autofly_ue5.expert.obs.ObsConfig`).
+    `mover_clearance`: a training run's mover clearance penalty, paid by every env (`expert/mover_clearance.py`).
     """
     if n < 1:
         raise ValueError(f"n must be >= 1, got {n}")
@@ -94,7 +97,7 @@ def make_vec_env(
             set_run_owner(owner)
             route_client_log(instance_dir(instance, sim_root) / "client.log")
             base = AutoFlyEnv(scene, layout, sim_factory, map_path=map_path, instance=instance, seed_base=seed_base_fn(rank),
-                              obs_config=obs_config)
+                              obs_config=obs_config, mover_clearance=mover_clearance)
             # outcome and collision_source per episode, for scripts/watch_training.py (the info always carries both).
             monitored = Monitor(base, filename=str(monitor_dir / f"{instance}.monitor.csv"),
                                 info_keywords=("is_success", "outcome", "collision_source"))

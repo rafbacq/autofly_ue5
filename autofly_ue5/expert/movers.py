@@ -74,8 +74,12 @@ class MoverController:
     def contact(self, before_xy: tuple[float, float], after_xy: tuple[float, float]) -> tuple[int, float] | None:
         return first_contact(self.routes, self.positions, before_xy, after_xy, self.contact_m)
 
+    def gaps(self, xy: tuple[float, float]) -> list[float]:
+        """Every mover's surface distance from a drone at `xy`."""
+        return surface_gaps(self.routes, self.positions, xy)
+
     def nearest_gap(self, xy: tuple[float, float]) -> float:
-        gaps = surface_gaps(self.routes, self.positions, xy)
+        gaps = self.gaps(xy)
         return min(gaps) if gaps else float("inf")
 
     def observation(self, pose: Pose, slots: int) -> np.ndarray:

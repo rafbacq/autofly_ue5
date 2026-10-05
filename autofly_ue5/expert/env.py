@@ -20,6 +20,7 @@ import numpy as np
 from gymnasium import spaces
 
 from autofly_ue5.expert.episode import EpisodeSetup, a0_aligned, apply_setup, clear_setup, sample_setup
+from autofly_ue5.expert.mover_clearance import MoverClearancePenalty
 from autofly_ue5.expert.movers import MoverController, home_poses, park_poses
 from autofly_ue5.expert.obs import (
     MOVER_FEATURES,
@@ -76,8 +77,13 @@ class AutoFlyEnv(gym.Env):
         seed_base: int = 0,
         max_episode_steps: int = 300,
         obs_config: ObsConfig | None = None,
+        mover_clearance: MoverClearancePenalty | None = None,
     ) -> None:
         super().__init__()
+        if mover_clearance is not None and scene.dynamic is None:
+            raise ValueError(f"scene {scene.id} has no moving pillars, so a mover clearance penalty cannot apply")
+        # Training only (expert/mover_clearance.py): a run that asks for it pays it on every step, the gate never.
+        self._mover_clearance = mover_clearance
         self._scene = scene
         self._layout = layout
         self._sim_factory = sim_factory
@@ -278,10 +284,20 @@ class AutoFlyEnv(gym.Env):
         info = self._info(result.outcome, dist, obs.pose, bearing, kind,
                           collision_source=source if result.outcome is Outcome.COLLISION else None, mover_in_view=seen,
                           mover_contact=mover_contact if result.outcome is Outcome.COLLISION else None)
+        reward = self._with_mover_clearance(result.reward, obs.pose, info)
         self._last_obs = {"depth": self._stacker.push(encode_depth(obs.depth)),
                           "vector": encode_vector(obs.pose, obs.velocity_ned, obs.yaw_rate, self._setup.target_xy_z),
                           **self._mover_obs(obs.pose)}
-        return self._last_obs, result.reward, result.terminated, result.truncated, info
+        return self._last_obs, reward, result.terminated, result.truncated, info
+
+    def _with_mover_clearance(self, reward: float, pose: Pose, info: dict) -> float:
+        """`reward` less the run's mover clearance penalty at `pose` (expert/mover_clearance.py), which `info` then
+        names. Without a penalty both are left exactly as they were, so every earlier run's rewards and infos stand."""
+        if self._mover_clearance is None or self._movers is None:
+            return reward
+        penalty = self._mover_clearance(self._movers.gaps((pose.x, pose.y)), contact_m=self._movers.contact_m)
+        info["mover_clearance_penalty"] = penalty
+        return reward - penalty
 
     def _mover_obs(self, pose: Pose) -> dict[str, np.ndarray]:
         """The `movers` key when the observation has one (a dynamic scene's default since 2026-10-03), else nothing."""
@@ -320,7 +336,8 @@ class AutoFlyEnv(gym.Env):
         info["inferred_from"] = f"{type(err).__name__}: {err}"
         print(f"MOVER instance {self._instance}: {info['inferred_from']} within "
               f"{self._movers.nearest_gap((pose.x, pose.y)):.2f} m of a mover: scored as a collision", file=sys.stderr)
-        return self._last_obs, result.reward, result.terminated, result.truncated, info
+        reward = self._with_mover_clearance(result.reward, pose, info)
+        return self._last_obs, reward, result.terminated, result.truncated, info
 
     def _info(self, outcome: Outcome, dist_m: float, pose, bearing_rad: float, oob: str | None, *,
               collision_source: str | None = None, mover_in_view: bool | None = None,
