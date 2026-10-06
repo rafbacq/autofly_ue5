@@ -113,8 +113,16 @@ stale "fact". Standing rules live in `CLAUDE.md`; this file is the reasoning and
   - Run 5 trained on a 1.3 m boundary (`--mover-contact-margin 0.3`) and observed the task's rule. Gate mover
     collisions fell 35 → 7 on the same 200 episodes; success went 0.775 → 0.885 (McNemar p = 0.0046,
     `m2d_r5_gate.json`).
-  - Static collisions (10) are now the largest failure. A static pillar's boundary is physical contact (~0.47 m), the
-    same pattern.
+  - Static collisions (10) are now the largest failure, and the same pattern: a static pillar's only boundary was
+    physical contact. Run 5's static collisions ended 0.52-0.63 m from the surface, measured drone centre to pillar
+    surface (more than the 0.37-0.47 m rotor reach).
+  - Replayed flights passed static pillars at 0.51-0.91 m and movers at 1.28-1.50 m: right at each boundary
+    (`runs/m2d_diag/clearances.py` on a render's summary.json).
+  - The deterministic tail reaches about 0.3 m inside the training boundary (movers: 1.3 m trained, 0.97 m at the
+    gate). Run 6 trains on 0.5 m against each failure line (`2026-10-06-s01d-r6-plan.md`).
+- **A training margin costs little training success (2026-10-06).** Run 5's 0.3 m mover margin trained at 0.63-0.70
+  late, against run 4's 0.61-0.68 without one. Run 5's own training success was flat from 320k to 561k, so more hours
+  of the same settings would not have reached 0.95.
 - **The deterministic policy drifts out of the altitude band; the stochastic one rarely does (2026-10-05).**
   - Run 5's training out-of-bounds was 0.04-0.14, yet deterministic checkpoints lost up to 10 of 40 episodes to slow
     climbs and dives (r4's 160k: 38 of 40).
@@ -143,6 +151,9 @@ stale "fact". Standing rules live in `CLAUDE.md`; this file is the reasoning and
 - **One s01d gate episode does not replay (2026-10-03).** 4 of 8 rendered episodes changed outcome (s01: 1 of 12), and
   successes drifted by up to 10 steps. Resets are history-free, so this is non-bit-exact physics amplified by movers
   that yield to the drone. Judge the 200-episode rate.
+  - Run 5's final (2026-10-06): 8 of 15 replays changed outcome, with the same config, checkpoint hash and
+    observation as its gate (`runs/viz/s01d_r5_final/summary.json`). None of its 3 static collisions happened again.
+  - An expert that flies close to obstacles makes outcomes chance. Don't diagnose one episode from one run.
 
 - **Run 2's stochastic training success plateaued near 0.8 while its deterministic evaluations reached 1.0
   (2026-09-26 data, read 2026-10-02 with `scripts/watch_training.py`).** Training-time evaluation is 20 episodes and
