@@ -106,11 +106,21 @@ stale "fact". Standing rules live in `CLAUDE.md`; this file is the reasoning and
   - Stage 2 (100 episodes) put the top three at 0.75-0.78.
   - Use the eval watch to see a run is alive. Use the selection stages to compare checkpoints or runs
     (`docs/decisions/2026-10-05-s01d-r5-margins.md`).
-- **s01d experts fly to the boundary they train on (2026-10-05).**
+- **s01d experts fly to the boundary they train on, so move the boundary (2026-10-05).**
   - Mover-contact gaps cluster just inside the 1.0 m rule in every run: medians 0.94 (r1), 0.96 (r3), 0.93-0.98
     (r4).
   - Run 4's per-step clearance penalty (k 0.5) did not move the cluster, nor the ~20% of episodes it fails.
-  - Run 5 trains on a 1.3 m boundary instead (`--mover-contact-margin`).
+  - Run 5 trained on a 1.3 m boundary (`--mover-contact-margin 0.3`) and observed the task's rule. Gate mover
+    collisions fell 35 → 7 on the same 200 episodes; success went 0.775 → 0.885 (McNemar p = 0.0046,
+    `m2d_r5_gate.json`).
+  - Static collisions (10) are now the largest failure. A static pillar's boundary is physical contact (~0.47 m), the
+    same pattern.
+- **The deterministic policy drifts out of the altitude band; the stochastic one rarely does (2026-10-05).**
+  - Run 5's training out-of-bounds was 0.04-0.14, yet deterministic checkpoints lost up to 10 of 40 episodes to slow
+    climbs and dives (r4's 160k: 38 of 40).
+  - Likely cause: SAC parks its entropy in the vertical channel, which nothing in the band shapes.
+  - Selection filters such checkpoints, but the drift varies sharply between neighbours. A V-shaped altitude cost
+    (`--altitude-margin-penalty 0.2 1.0`) shapes the whole band; run 5's 0.1 / 0.5 m shaped only its edges.
 
 - **Never warm-start SAC with a fresh replay buffer (2026-10-03, run 2).** r1's best_model copied into run 2 flew at
   ~0.8 during the policy warm-up, then collapsed within ~500 updates (its 20k checkpoint: 0.25 against r1's 0.85 on the
@@ -202,9 +212,10 @@ stale "fact". Standing rules live in `CLAUDE.md`; this file is the reasoning and
 
 ## Open questions
 
-- Which lever gets s01d to 0.95? A depth-only expert with a 3-frame stack reached 0.775 in 12 h. The candidates are
-  privileged mover state, a warm start from s01, fewer or slower movers, more hours, or discouraging the dive; the
-  user chooses (`docs/decisions/2026-10-03-m2d-closeout.md`).
+- What gets s01d from 0.885 to 0.95? Run 5 (mover input, r_bounds 10, a 0.3 m training contact margin, an altitude
+  margin) gated 0.885. Its 23 failures were 10 static, 7 mover, 5 altitude and 1 lateral. The next candidates are a
+  static clearance margin and a V-shaped altitude cost; the user chooses
+  (`docs/decisions/2026-10-05-s01d-r5-margins.md`).
 
 Settled:
 - a0's aligned start costs the s01 expert nothing (2026-10-03, `docs/gates/m3_a0_probe.json`): 50/50 with a0, 49/50
