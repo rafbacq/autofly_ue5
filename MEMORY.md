@@ -128,6 +128,17 @@ stale "fact". Standing rules live in `CLAUDE.md`; this file is the reasoning and
   (a foreign GPU job, a failed launch) leave a directory you can neither restart nor resume. Found by the 2026-09-25
   final review.
 
+## Scene learnings
+
+- **s01 is permeable everywhere (2026-10-06).** `scenes/paths.py:crossing_detours` at the sampler's 1.4 m inflation:
+  1.00-1.02 on every edge (a 6 m pillar grid inflated to 2 m leaves 2 m gaps). The §6.2 rule alone accepts a sealed
+  field whose outer lane is open; the detour metric is what rejects it. The pilot's expert flew s01 at PER 0.96-0.99
+  (`scripts/dataset_stats.py`), so s01 is an easy scene by the paper's own metric; expect lower on tree and rock fields.
+- **An 8-connected grid path overestimates a straight line by up to 8 %, a 4-connected one by up to 41 %.** motion.py's
+  BFS compares two lengths on the same metric (the bias cancels); anything compared with a flown trajectory or a
+  straight line uses `paths.dijkstra_path_m`. L_opt from a grid is therefore an upper bound on the paper's PER; the
+  straight line is a lower bound. Report the interval.
+
 ## Throughput learnings
 
 - **The 1 ms real-time update rate gave 18.0 steps/s against 7.4 at 3 ms** (M0 smoke, lock-step intact, only 50

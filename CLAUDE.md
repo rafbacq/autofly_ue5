@@ -12,7 +12,7 @@ the hard way; read both before changing anything.
 | What | Where |
 |---|---|
 | Design (binding) | `docs/superpowers/specs/2026-09-15-autofly-ue5-dataset-design.md`: milestones §12, risks §13 |
-| Plans | `docs/superpowers/plans/`: plan1 = M0/M1, plan2 = M2 (SAC expert), plan3 = M2d (moving pillars), plan4 = M3 (collector and dataset) |
+| Plans | `docs/superpowers/plans/`: plan1 = M0/M1, plan2 = M2 (SAC expert), plan3 = M2d (moving pillars), plan4 = M3 (collector and dataset), plan5 = M4 (scenes and assets; draft, decisions U1-U4 open) |
 | Evidence | `docs/gates/*.json`; superseded runs in `docs/gates/archive/` |
 | Decisions | `docs/decisions/`: rulings, the 2026-09-25 code-review findings, the 2026-10-02 M2 closeout, moving obstacles and the M4 asset survey, the 2026-10-03 M3 a0 decision, the 2026-10-06 dataset rebalancing |
 | Live procedures | `docs/runbook-m2.md` (M0/M1/M2, done); `docs/runbook-m2d.md` (M2d: probe, throughput, smoke, 12 h run with watchers, gate); `docs/runbook-m3.md` (M3: TFDS venv, smoke, pilot); `docs/runbook-rebalance.md` (spec §10.3: detector venv, scoring, weights) |
@@ -22,7 +22,7 @@ Code (`autofly_ue5/`):
 | Package | Contents |
 |---|---|
 | `sim/` | The `Simulator` protocol (`protocol.py`) and the only code that imports `projectairsim` (`airsim_backend.py`). Also the in-memory `FakeSimulator`, process ownership (`process.py`) and typed errors (`types.py`) |
-| `scenes/` | Scene JSON → layout → reachability → level spec; the scene resolver (`resolve.py`: id → file, base level, layout, map, config, allow-list); moving-obstacle rules (`motion.py`, pure) |
+| `scenes/` | Scene JSON → layout (`generate.py`: jittered_grid, poisson, clusters, stacks) → reachability → level spec; grid paths (`paths.py`: crossing detours for spec §13, L_opt for the paper's PER); the scene resolver (`resolve.py`: id → file, base level, layout, map, config, allow-list); moving-obstacle rules (`motion.py`, pure) |
 | `expert/` | `AutoFlyEnv` (`env.py`), reward, observation and depth stacking (`obs.py`), episode sampling, movers at runtime (`movers.py`), the resilient wrapper (`resilient.py`), fault classes (`faults.py`), seed ranges (`seeds.py`), vec envs (`vec.py`), the SAC trainer (`train.py`) and the evaluation harness (`evaluate.py`) |
 | `collect/` | The episode collector (`collector.py`): the expert flies with a0's aligned start, successes are stored, everything else goes to the rejects, faults replay the seed |
 | `dataset/` | AutoFly's state[9] (`state.py`), the canonical raw store (`raw.py`), the RLDS/TFDS exporter (`rlds.py`, with TFDS-generated metadata templates in `rlds_templates/`), and the phase rebalancing (`rebalance.py`, spec §10.3: pure; the detector runs in `scripts/detect_targets.py`) |
@@ -32,8 +32,8 @@ Code (`autofly_ue5/`):
 Elsewhere in the repo:
 - `scripts/`: shell and Python entry points (run_job, setup, launch/stop sim, throughput, the gate for any scene, audits,
   the mover probe, renders, `watch_training.py` (the live training dashboard), M3's `collect_dataset.py` and
-  `export_rlds.py`, and the rebalancing's `detect_targets.py` (Grounding DINO, in `runs/tools/gdino_venv`) and
-  `rebalance_dataset.py`).
+  `export_rlds.py`, the rebalancing's `detect_targets.py` (Grounding DINO, in `runs/tools/gdino_venv`) and
+  `rebalance_dataset.py`, and `dataset_stats.py` (a store's path lengths and PER)).
 - `configs/`: Project AirSim scene configs; `*_fast` means a 1 ms real-time update rate.
 - `scenes/`: scene JSONs. `s01d_moving_pillars.json` flies s01's level (`"level": "s01"`) with 8–12 moving pillars.
 - `tests/`: offline tests (the FakeSimulator plus fakes of the projectairsim API).
@@ -59,7 +59,9 @@ Git-ignored but present on the GPU host:
 
 Each milestone stops for the user's go-ahead before the next starts. The user asked for M2d and M3 on 2026-10-02.
 Ahead of M5, the rebalancing stage of spec §10.3 is built and probed on ten pilot episodes
-(`docs/decisions/2026-10-06-dataset-rebalancing.md`); the pilot's full `rebalance.json` waits for GPU time or 12 CPU hours of scoring.
+(`docs/decisions/2026-10-06-dataset-rebalancing.md`); the pilot's remaining 90 episodes are being scored on the CPU
+(job `detect_s01_pilot`, 2026-10-06 19:17, ~13 h). M4's offline groundwork is done (plan 5, C0-C1: every placement type,
+the detour metric); its editor and asset work waits for decisions U1-U4 and a window with no live simulator.
 
 ## Hard rules on this host
 
