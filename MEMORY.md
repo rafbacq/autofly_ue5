@@ -140,6 +140,15 @@ stale "fact". Standing rules live in `CLAUDE.md`; this file is the reasoning and
 
 ## Environment and tooling learnings
 
+- **Grounding DINO runs on this host's CPU at 0.34-0.37 frames/s (2026-10-06, tiny, 8 threads, the default 800 px input).**
+  `.venv` cannot take `transformers` (numpy 1.26.4), so `runs/tools/gdino_venv` holds a CPU-only torch 2.14.1 +
+  transformers 5.19.0, and the model is cached under `runs/tools/hf_home` (recipe: `docs/runbook-rebalance.md`). The
+  100-episode pilot is a 13-14 h CPU job (the GPU would be far faster; unmeasured), but a torch process on the GPU is a foreign job to
+  the simulator launch guard: a live run's relaunch would be refused while it holds more than 2 GB. Score on the CPU
+  beside live runs (niced; the simulators kept their 190 % CPU each), on the GPU only when nothing may need to launch.
+  Its confidence for the pilot's orange cylinder rises with approach (0.29 at 66 m, 0.67 at 36 m, 0.76 at 20 m, 0.88
+  at 5 m), so the paper's 0.7 lands mid-episode; the box sits where the target's bearing predicts.
+
 - **Dataset size and pace (M3 pilot, 2026-10-03).** 100 episodes = 17,738 records = 1.77 GB of PNG frames, stored twice:
   the raw store and the RLDS shards each hold the same PNGs. The paper's 13K episodes would need about 460 GB for
   both (683 GB were free). Collection ran at 101 episodes in 45 min on one slot, beside two other simulators.

@@ -14,8 +14,8 @@ the hard way; read both before changing anything.
 | Design (binding) | `docs/superpowers/specs/2026-09-15-autofly-ue5-dataset-design.md`: milestones §12, risks §13 |
 | Plans | `docs/superpowers/plans/`: plan1 = M0/M1, plan2 = M2 (SAC expert), plan3 = M2d (moving pillars), plan4 = M3 (collector and dataset) |
 | Evidence | `docs/gates/*.json`; superseded runs in `docs/gates/archive/` |
-| Decisions | `docs/decisions/`: rulings, the 2026-09-25 code-review findings, the 2026-10-02 M2 closeout, moving obstacles and the M4 asset survey, the 2026-10-03 M3 a0 decision |
-| Live procedures | `docs/runbook-m2.md` (M0/M1/M2, done); `docs/runbook-m2d.md` (M2d: probe, throughput, smoke, 12 h run with watchers, gate); `docs/runbook-m3.md` (M3: TFDS venv, smoke, pilot) |
+| Decisions | `docs/decisions/`: rulings, the 2026-09-25 code-review findings, the 2026-10-02 M2 closeout, moving obstacles and the M4 asset survey, the 2026-10-03 M3 a0 decision, the 2026-10-06 dataset rebalancing |
+| Live procedures | `docs/runbook-m2.md` (M0/M1/M2, done); `docs/runbook-m2d.md` (M2d: probe, throughput, smoke, 12 h run with watchers, gate); `docs/runbook-m3.md` (M3: TFDS venv, smoke, pilot); `docs/runbook-rebalance.md` (spec §10.3: detector venv, scoring, weights) |
 
 Code (`autofly_ue5/`):
 
@@ -25,14 +25,15 @@ Code (`autofly_ue5/`):
 | `scenes/` | Scene JSON → layout → reachability → level spec; the scene resolver (`resolve.py`: id → file, base level, layout, map, config, allow-list); moving-obstacle rules (`motion.py`, pure) |
 | `expert/` | `AutoFlyEnv` (`env.py`), reward, observation and depth stacking (`obs.py`), episode sampling, movers at runtime (`movers.py`), the resilient wrapper (`resilient.py`), fault classes (`faults.py`), seed ranges (`seeds.py`), vec envs (`vec.py`), the SAC trainer (`train.py`) and the evaluation harness (`evaluate.py`) |
 | `collect/` | The episode collector (`collector.py`): the expert flies with a0's aligned start, successes are stored, everything else goes to the rejects, faults replay the seed |
-| `dataset/` | AutoFly's state[9] (`state.py`), the canonical raw store (`raw.py`), and the RLDS/TFDS exporter (`rlds.py`, with TFDS-generated metadata templates in `rlds_templates/`) |
+| `dataset/` | AutoFly's state[9] (`state.py`), the canonical raw store (`raw.py`), the RLDS/TFDS exporter (`rlds.py`, with TFDS-generated metadata templates in `rlds_templates/`), and the phase rebalancing (`rebalance.py`, spec §10.3: pure; the detector runs in `scripts/detect_targets.py`) |
 | `evidence.py` | Per-scene default evidence paths, and the refusal to write over `docs/gates/` |
 | `validate/` | M0/M1 gate checks, the engine-fault audit (`engine_check.py`) and the dataset validator (`dataset.py`, spec §11) |
 
 Elsewhere in the repo:
 - `scripts/`: shell and Python entry points (run_job, setup, launch/stop sim, throughput, the gate for any scene, audits,
-  the mover probe, renders, `watch_training.py` (the live training dashboard), and M3's `collect_dataset.py` and
-  `export_rlds.py`).
+  the mover probe, renders, `watch_training.py` (the live training dashboard), M3's `collect_dataset.py` and
+  `export_rlds.py`, and the rebalancing's `detect_targets.py` (Grounding DINO, in `runs/tools/gdino_venv`) and
+  `rebalance_dataset.py`).
 - `configs/`: Project AirSim scene configs; `*_fast` means a 1 ms real-time update rate.
 - `scenes/`: scene JSONs. `s01d_moving_pillars.json` flies s01's level (`"level": "s01"`) with 8–12 moving pillars.
 - `tests/`: offline tests (the FakeSimulator plus fakes of the projectairsim API).
@@ -42,7 +43,8 @@ Git-ignored but present on the GPU host:
 - `platform/` (Project AirSim @4d878bf);
 - `ue_project/` (Blocks + plugin; packaged binary under `Packaged/`);
 - `.venv/`;
-- `runs/` (every run's output: `sim/`, `jobs/`, `levels/`, `expert/`, …; `runs/tools/tfds_venv` reads RLDS exports back);
+- `runs/` (every run's output: `sim/`, `jobs/`, `levels/`, `expert/`, …; `runs/tools/tfds_venv` reads RLDS exports back,
+  `runs/tools/gdino_venv` + `runs/tools/hf_home` run the rebalancing's detector);
 - `data/` (collected datasets and their rejects).
 
 ## Status (update when it changes)
@@ -56,6 +58,8 @@ Git-ignored but present on the GPU host:
 | M3 | **Passed** 2026-10-03 (`docs/gates/m3_gate.json`): the 100-episode s01 pilot kept 100 of 101 (stochastic s01_r2 best_model, a0 = sector8), the validator passed over 17,738 records, and TFDS read every episode back exactly from `data/s01_pilot/1.0.0/`. a0 costs the expert nothing (`docs/gates/m3_a0_probe.json`: 50/50 with, 49/50 without). Decisions: `docs/decisions/2026-10-03-m3-a0-and-collection.md`, review: `2026-10-03-m3-review-findings.md` |
 
 Each milestone stops for the user's go-ahead before the next starts. The user asked for M2d and M3 on 2026-10-02.
+Ahead of M5, the rebalancing stage of spec §10.3 is built and probed on ten pilot episodes
+(`docs/decisions/2026-10-06-dataset-rebalancing.md`); the pilot's full `rebalance.json` waits for GPU time or 12 CPU hours of scoring.
 
 ## Hard rules on this host
 
