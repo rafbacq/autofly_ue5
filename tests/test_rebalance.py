@@ -133,6 +133,94 @@ def test_a_crash_mid_run_leaves_a_valid_file_holding_the_finished_episodes(tmp_p
     assert list(saved["episodes"]) == [manifest["episodes"][0]["id"]] and saved["complete"] is False
 
 
+def test_a_stored_episode_whose_length_disagrees_with_the_manifest_is_refused_on_resume(tmp_path):
+    from scripts.detect_targets import run
+
+    _summary, root = _collect(tmp_path, n_keep=2)
+    out = tmp_path / "detections.json"
+    run(root, out, _MeanPixelDetector(), episodes=1)
+    doc = json.loads(out.read_text())
+    (eid,) = doc["episodes"]
+    doc["episodes"][eid]["scores"].pop()
+    out.write_text(json.dumps(doc))
+    with pytest.raises(ValueError, match=eid):
+        run(root, out, _MeanPixelDetector())
+
+
+def test_a_second_scorer_of_the_same_file_is_refused_while_the_first_is_alive(tmp_path):
+    import os
+
+    from scripts.detect_targets import run
+
+    _summary, root = _collect(tmp_path, n_keep=1)
+    out = tmp_path / "detections.json"
+    lock = out.with_suffix(out.suffix + ".lock")
+    lock.write_text(f"{os.getpid()}\n")  # a live scorer: this very process
+    with pytest.raises(FileExistsError, match="lock"):
+        run(root, out, _MeanPixelDetector())
+    lock.write_text("999999999\n")  # a scorer that died with the host: its lock is stale and taken over
+    doc = run(root, out, _MeanPixelDetector())
+    assert doc["complete"] is True and not lock.exists(), "the lock is released when the run ends"
+
+
+def test_bad_arguments_are_refused_before_anything_is_written(tmp_path):
+    from scripts.detect_targets import run
+
+    _summary, root = _collect(tmp_path, n_keep=1)
+    out = tmp_path / "detections.json"
+    for kwargs in ({"batch": 0}, {"batch": -1}, {"episodes": -1}):
+        with pytest.raises(ValueError):
+            run(root, out, _MeanPixelDetector(), **kwargs)
+    assert not out.exists()
+
+    class _Short(_MeanPixelDetector):
+        def detect(self, images, prompt):
+            return super().detect(images, prompt)[:-1]
+
+    with pytest.raises(ValueError, match="results"):
+        run(root, out, _Short())
+
+
+def test_a_frame_that_is_not_the_store_s_size_is_refused(tmp_path):
+    from scripts.detect_targets import run
+
+    _summary, root = _collect(tmp_path, n_keep=1)
+    entry = json.loads((root / "manifest.json").read_text())["episodes"][0]
+    frame = sorted((root / entry["path"] / "frames").glob("*.png"))[3]
+    Image.new("RGB", (128, 256)).save(frame)
+    with pytest.raises(ValueError, match=frame.name):
+        run(root, tmp_path / "detections.json", _MeanPixelDetector())
+
+
+def test_the_header_follows_the_manifest_on_resume(tmp_path):
+    from scripts.detect_targets import run
+
+    _summary, root = _collect(tmp_path, n_keep=2)
+    out = tmp_path / "detections.json"
+    run(root, out, _MeanPixelDetector(), episodes=1)
+    manifest = json.loads((root / "manifest.json").read_text())
+    manifest["episodes"] = manifest["episodes"][:1]  # as if the first run had seen a store still being collected
+    (root / "manifest.json").write_text(json.dumps(manifest))
+    assert run(root, out, _MeanPixelDetector())["episodes_total"] == 1
+
+
+def test_the_score_is_the_best_query_s_confidence_for_the_phrase_and_its_box():
+    torch = pytest.importorskip("torch")
+    from scripts.detect_targets import reduce_outputs
+
+    logits = torch.full((2, 3, 5), -torch.inf)  # (batch, queries, text positions); padded positions are -inf
+    logits[0, 0, :3] = torch.tensor([-2.0, 0.5, -1.0])
+    logits[0, 1, :3] = torch.tensor([-1.0, -1.0, 2.0])   # the best query of image 0 (sigmoid(2.0) = 0.8808)
+    logits[0, 2, :3] = torch.tensor([0.0, 0.0, 0.0])
+    logits[1, 0, :3] = torch.tensor([-3.0, -3.0, -3.0])  # image 1: nothing confident anywhere
+    logits[1, 1, :3] = torch.tensor([-4.0, -2.5, -4.0])
+    logits[1, 2, :3] = torch.tensor([-5.0, -5.0, -5.0])
+    boxes = torch.arange(2 * 3 * 4, dtype=torch.float32).reshape(2, 3, 4) / 100.0
+    out = reduce_outputs(logits, boxes)
+    assert out[0][0] == pytest.approx(torch.sigmoid(torch.tensor(2.0)).item()) and out[0][1] == pytest.approx(boxes[0, 1].tolist())
+    assert out[1][0] == pytest.approx(torch.sigmoid(torch.tensor(-2.5)).item()) and out[1][1] == pytest.approx(boxes[1, 1].tolist())
+
+
 def test_a_store_whose_frames_do_not_match_its_manifest_is_refused(tmp_path):
     from scripts.detect_targets import run
 
@@ -221,7 +309,7 @@ def test_a_box_is_on_target_when_it_covers_the_target_s_image_column():
     # boxes are Grounding DINO's own on pilot frames 83 (the target at 36 m) and 0 (something at the image edge).
     assert box_on_target([0.39, 0.517, 0.021, 0.033], bearing_rad=math.radians(-11.5)) is True
     assert box_on_target([0.985, 0.441, 0.03, 0.325], bearing_rad=math.radians(-15.4)) is False
-    assert box_on_target([0.5, 0.5, 0.05, 0.1], bearing_rad=math.radians(50)) is None, "outside the camera's view"
+    assert box_on_target([0.5, 0.5, 0.05, 0.1], bearing_rad=math.radians(50)) is False, "the target is not in the image at all"
 
 
 def _manifest(steps: tuple[int, ...]) -> dict:
@@ -281,7 +369,11 @@ def test_build_rebalance_adds_the_privileged_checks_when_given_the_states():
     assert e0["first_detection_distance_m"] == pytest.approx(36.0) and e0["first_detection_on_target"] is True
     assert e1["first_detection_distance_m"] == pytest.approx(60.0) and e1["first_detection_on_target"] is False
     assert result["first_detection"] == {"distance_m_median": pytest.approx(48.0), "on_target": 1, "off_target": 1,
-                                         "target_out_of_view": 0}
+                                         "off_target_out_of_view": 0}
+    states["e1"][0, 1] = math.radians(60)  # e1's first "detection" came with the target behind the camera's edge
+    result = build_rebalance(manifest, detections, threshold=0.7, alpha=0.0, states=states)
+    assert result["episodes"][1]["first_detection_on_target"] is False
+    assert result["first_detection"]["off_target"] == 1 and result["first_detection"]["off_target_out_of_view"] == 1
 
 
 def test_build_rebalance_refuses_detections_that_do_not_match_the_store():
@@ -308,6 +400,19 @@ def test_build_rebalance_refuses_detections_that_do_not_match_the_store():
     stale = _detections(manifest, {"e0": good["e0"], "e1": good["e1"], "e9": [0.1]})
     with pytest.raises(ValueError, match="e9"):
         build_rebalance(manifest, stale, threshold=0.7, alpha=0.0)
+    short_boxes = _detections(manifest, good)
+    short_boxes["episodes"]["e0"]["boxes"] = short_boxes["episodes"]["e0"]["boxes"][:2]
+    with pytest.raises(ValueError, match="boxes"):
+        build_rebalance(manifest, short_boxes, threshold=0.7, alpha=0.0)
+    with pytest.raises(ValueError, match="e0.*rows"):
+        build_rebalance(manifest, _detections(manifest, good), threshold=0.7, alpha=0.0,
+                        states={"e0": np.zeros((2, 9), np.float32), "e1": np.zeros((3, 9), np.float32)})
+    nan = _detections(manifest, {**good, "e1": [0.1, float("nan"), 0.1]})
+    with pytest.raises(ValueError, match="e1"):
+        build_rebalance(manifest, nan, threshold=0.7, alpha=0.0)
+    for bad in (1.0, 70.0, -0.1, float("nan")):
+        with pytest.raises(ValueError, match="threshold"):
+            build_rebalance(manifest, _detections(manifest, good), threshold=bad, alpha=0.0)
 
 
 def test_a_degenerate_store_is_reported_not_crashed_and_the_writer_refuses_to_overwrite(tmp_path):
@@ -322,11 +427,57 @@ def test_a_degenerate_store_is_reported_not_crashed_and_the_writer_refuses_to_ov
     assert json.loads(out.read_text()) == result
     with pytest.raises(FileExistsError):
         write_rebalance(out, result)
+    assert json.loads(out.read_text()) == result, "a refused write leaves the file as it was"
+    assert sorted(p.name for p in tmp_path.iterdir()) == ["rebalance.json"], "no temporary file is left behind"
+
+
+def test_the_writer_puts_the_whole_document_in_place_in_one_step(tmp_path, monkeypatch):
+    """The order in which the write reached the disk: data synced in a private file, then linked to its name, then the
+    directory synced -- so a crash leaves either no file or the whole one, never a truncated rebalance.json."""
+    import os
+
+    from autofly_ue5.dataset.rebalance import write_rebalance
+
+    events = []
+    real_fsync, real_link = os.fsync, os.link
+    monkeypatch.setattr(os, "fsync", lambda fd: (events.append(("fsync", os.path.realpath(os.readlink(f"/proc/self/fd/{fd}")))),
+                                                  real_fsync(fd)))
+    monkeypatch.setattr(os, "link", lambda src, dst: (events.append(("link", os.path.realpath(src), os.path.realpath(dst))),
+                                                       real_link(src, dst)))
+    out = tmp_path / "rebalance.json"
+    write_rebalance(out, {"a": 1})
+    final = os.path.realpath(out)
+    (link_at,) = [i for i, e in enumerate(events) if e[0] == "link" and e[2] == final]
+    tmp_name = events[link_at][1]
+    assert tmp_name.startswith(final + ".tmp.") and ("fsync", tmp_name) in events[:link_at], "the data is synced before the name appears"
+    assert ("fsync", os.path.dirname(final)) in events[link_at + 1:], "the directory entry is synced after"
+    assert json.loads(out.read_text()) == {"a": 1} and sorted(p.name for p in tmp_path.iterdir()) == ["rebalance.json"]
+
+
+def test_the_two_stages_agree_on_the_detections_format():
+    from autofly_ue5.dataset.rebalance import DETECTIONS_FORMAT
+    from scripts.detect_targets import FORMAT
+
+    assert FORMAT == DETECTIONS_FORMAT
 
 
 # ------------------------------------------------------------------------------------------------------------------
 # scripts/rebalance_dataset.py
 # ------------------------------------------------------------------------------------------------------------------
+
+
+def test_a_degenerate_result_is_refused_at_the_store_s_own_path_but_can_be_inspected_elsewhere(tmp_path):
+    from scripts.detect_targets import run
+    from scripts.rebalance_dataset import main
+
+    _summary, root = _collect(tmp_path, n_keep=2)
+    run(root, root / "detections.json", _MeanPixelDetector())  # noise frames score about 0.5: never above 0.7
+    assert main(["--raw", str(root)]) != 0 and not (root / "rebalance.json").exists()
+    out = tmp_path / "look" / "rebalance.json"
+    assert main(["--raw", str(root), "--out", str(out)]) == 0
+    result = json.loads(out.read_text())
+    assert result["degenerate"] is True and result["counts"]["episodes_never_detected"] == 2
+    assert main(["--raw", str(root), "--threshold", "70"]) != 0, "a percentage is not a confidence"
 
 
 def _rising_detections(root: Path) -> Path:
@@ -349,7 +500,7 @@ def _rising_detections(root: Path) -> Path:
 
 
 def test_the_cli_writes_rebalance_json_into_the_store_and_refuses_a_second_time(tmp_path, capsys):
-    from autofly_ue5.dataset.rebalance import FORMAT
+    from autofly_ue5.dataset.rebalance import FORMAT, box_on_target
     from scripts.rebalance_dataset import main
 
     _summary, root = _collect(tmp_path, n_keep=3)
@@ -361,10 +512,29 @@ def test_the_cli_writes_rebalance_json_into_the_store_and_refuses_a_second_time(
     for entry, ep in zip(manifest["episodes"], result["episodes"]):
         n = entry["steps"]
         assert ep["id"] == entry["id"] and ep["first_detection"] == next(i for i in range(n) if i / (n - 1) > 0.7)
-        assert ep["first_detection_distance_m"] is not None and ep["first_detection_on_target"] in (True, False, None)
-    assert 0.6 < result["p0"][0] < 0.8 and result["detections"]["sha256"]
+        state = np.load(root / entry["path"] / "steps.npz")["state"]
+        assert ep["first_detection_distance_m"] == pytest.approx(float(state[ep["first_detection"], 0]))
+        box = json.loads((root / "detections.json").read_text())["episodes"][entry["id"]]["boxes"][ep["first_detection"]]
+        assert ep["first_detection_on_target"] is box_on_target(box, float(state[ep["first_detection"], 1]))
+    assert 0.6 < result["p0"][0] < 0.8
+    import hashlib
+    assert result["detections"]["sha256"] == hashlib.sha256((root / "detections.json").read_bytes()).hexdigest()
     assert "weights" in capsys.readouterr().out
     assert main(["--raw", str(root)]) != 0, "rebalance.json exists: refused, never replaced"
+
+
+def test_detections_written_by_stage_one_feed_stage_two_end_to_end(tmp_path):
+    from scripts.detect_targets import run
+    from scripts.rebalance_dataset import main
+
+    _summary, root = _collect(tmp_path, n_keep=2)
+    run(root, root / "detections.json", _MeanPixelDetector())
+    out = tmp_path / "e2e" / "rebalance.json"  # noise frames average about 0.5: at 0.49 every episode is detected at
+    assert main(["--raw", str(root), "--threshold", "0.49", "--out", str(out)]) == 0  # once, a degenerate split
+    result = json.loads(out.read_text())
+    assert result["coverage"]["partial"] is False and result["counts"]["episodes_detected_at_first_record"] == 2
+    assert result["detector"]["model"] == "fake/mean-pixel" and result["p0"] == [0.0, 1.0] and result["degenerate"] is True
+    assert result["detection_persistence"] == 1.0 and result["first_detection"]["on_target"] + result["first_detection"]["off_target"] == 2
 
 
 def test_the_cli_takes_partial_detections_only_with_the_flag_and_only_outside_the_store(tmp_path):
@@ -381,6 +551,9 @@ def test_the_cli_takes_partial_detections_only_with_the_flag_and_only_outside_th
     assert not (root / "rebalance.json").exists()
     assert main(["--raw", str(root), "--allow-partial"]) != 0, "a partial result must not pose as the store's own"
     assert not (root / "rebalance.json").exists()
+    assert main(["--raw", str(root), "--allow-partial", "--out", str(root / "rebalance.json")]) != 0
+    assert main(["--raw", str(root), "--allow-partial", "--out", str(root / "probe" / "rebalance.json")]) != 0
+    assert not (root / "rebalance.json").exists() and not (root / "probe").exists()
     out = tmp_path / "probe" / "rebalance.json"
     assert main(["--raw", str(root), "--allow-partial", "--out", str(out), "--threshold", "0.5"]) == 0
     result = json.loads(out.read_text())

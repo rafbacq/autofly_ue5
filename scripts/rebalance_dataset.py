@@ -20,11 +20,12 @@ if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
 import argparse  # noqa: E402
+import hashlib  # noqa: E402
 import json  # noqa: E402
 
 import numpy as np  # noqa: E402
 
-from autofly_ue5.dataset.rebalance import DEFAULT_THRESHOLD, build_rebalance, sha256_of, write_rebalance  # noqa: E402
+from autofly_ue5.dataset.rebalance import DEFAULT_THRESHOLD, build_rebalance, write_rebalance  # noqa: E402
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -39,20 +40,27 @@ def main(argv: list[str] | None = None) -> int:
     raw = args.raw.resolve()
     detections_path = args.detections if args.detections is not None else raw / "detections.json"
     out = args.out if args.out is not None else raw / "rebalance.json"
-    if args.allow_partial and args.out is None:
-        print("--allow-partial needs an --out outside the store: a partial result must not become its rebalance.json",
+    if args.allow_partial and (args.out is None or out.resolve().is_relative_to(raw)):
+        print("--allow-partial needs an --out outside the store: a partial result must not pose as its rebalance.json",
               file=sys.stderr)
         return 2
     try:
         manifest = json.loads((raw / "manifest.json").read_text())
-        detections = json.loads(Path(detections_path).read_text())
+        blob = Path(detections_path).read_bytes()  # hashed and parsed from the same bytes: the file may be mid-rewrite
+        detections = json.loads(blob)
         states = {entry["id"]: np.load(raw / entry["path"] / "steps.npz")["state"]
                   for entry in manifest["episodes"] if entry["id"] in detections.get("episodes", {})}
         result = build_rebalance(manifest, detections, threshold=args.threshold, alpha=args.alpha,
                                  allow_partial=args.allow_partial, states=states)
-        result["detections"] = {"path": str(detections_path), "sha256": sha256_of(detections_path)}
+        result["detections"] = {"path": str(detections_path), "sha256": hashlib.sha256(blob).hexdigest()}
+        if result["degenerate"] and args.out is None:
+            # A whole phase is empty: the detector never fired (or the threshold is wrong), and no weight can rebalance
+            # that. A finding to inspect (--out elsewhere), not the store's weights.
+            raise ValueError(f"degenerate result (weights {result['weights']}, {result['counts']['episodes_never_detected']} "
+                             f"of {result['coverage']['episodes']} episodes never detected): not written as the store's "
+                             f"rebalance.json; pass --out to inspect it")
         write_rebalance(out, result)
-    except (ValueError, FileExistsError, FileNotFoundError, KeyError) as err:
+    except (ValueError, FileExistsError, FileNotFoundError, KeyError, IndexError) as err:
         print(f"refused: {type(err).__name__}: {err}", file=sys.stderr)
         return 2
     coverage = result["coverage"]

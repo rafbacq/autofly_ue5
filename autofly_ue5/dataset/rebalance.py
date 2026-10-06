@@ -20,9 +20,9 @@ weights, or `stratified_resample` draws the paper's rebalanced set from them.
 
 from __future__ import annotations
 
-import hashlib
 import json
 import math
+import os
 from pathlib import Path
 from typing import Sequence
 
@@ -117,11 +117,16 @@ def stratified_resample(groups: Sequence[Sequence], weights: Sequence[float | No
     return tuple(drawn)
 
 
-def box_on_target(box: Sequence[float], bearing_rad: float, *, margin: float = ON_TARGET_MARGIN) -> bool | None:
-    """Whether a normalised (cx, cy, w, h) box covers the image column the target's bearing projects to; None when the
-    target is outside the camera's horizontal field of view, where no detection of it is possible."""
-    if abs(bearing_rad) >= IMAGE_HFOV_RAD / 2.0:
-        return None
+def target_in_view(bearing_rad: float) -> bool:
+    """Whether the target's bearing falls inside the camera's horizontal field of view at all."""
+    return abs(bearing_rad) < IMAGE_HFOV_RAD / 2.0
+
+
+def box_on_target(box: Sequence[float], bearing_rad: float, *, margin: float = ON_TARGET_MARGIN) -> bool:
+    """Whether a normalised (cx, cy, w, h) box covers the image column the target's bearing projects to. A target
+    outside the field of view is in no box: such a detection is of something else."""
+    if not target_in_view(bearing_rad):
+        return False
     column = 0.5 + 0.5 * math.tan(bearing_rad) / math.tan(IMAGE_HFOV_RAD / 2.0)
     cx, _cy, w, _h = (float(v) for v in box)
     return bool(abs(column - cx) <= w / 2.0 + margin)
@@ -150,6 +155,8 @@ def _check_detections(manifest: dict, detections: dict, *, allow_partial: bool) 
             continue
         if len(ep["scores"]) != entry["steps"]:
             raise ValueError(f"episode {entry['id']}: {len(ep['scores'])} scores for {entry['steps']} records")
+        if len(ep.get("boxes", ())) != entry["steps"]:
+            raise ValueError(f"episode {entry['id']}: {len(ep.get('boxes', ()))} boxes for {entry['steps']} records")
         if ep.get("query") != entry["target_name"]:
             raise ValueError(f"episode {entry['id']}: scored for query {ep.get('query')!r}, its target is {entry['target_name']!r}")
         covered.append(entry)
@@ -164,17 +171,26 @@ def build_rebalance(manifest: dict, detections: dict, *, threshold: float = DEFA
     each transition: the distance to the target (state[0]) and whether the detected box sat on the target's bearing
     (state[1]), so a detector that fires on a distractor or a pillar is caught rather than trusted.
     """
+    if not (isinstance(threshold, (int, float)) and math.isfinite(threshold) and 0.0 <= threshold < 1.0):
+        raise ValueError(f"threshold must be a confidence in [0, 1), got {threshold!r}")
     covered = _check_detections(manifest, detections, allow_partial=allow_partial)
+    for entry in covered:
+        if states is not None and len(np.asarray(states[entry["id"]])) != entry["steps"]:
+            raise ValueError(f"episode {entry['id']}: states has {len(np.asarray(states[entry['id']]))} rows for "
+                             f"{entry['steps']} records")
     episodes = []
     records = [0, 0]
     sub_trajectories = [0, 0]
     persistence_hits = persistence_total = 0
     records_above = 0  # the paper's other wording, "2 if detected, otherwise 1", counted per record for comparison
     transition_distances: list[float] = []
-    on_target = {"on_target": 0, "off_target": 0, "target_out_of_view": 0}
+    on_target = {"on_target": 0, "off_target": 0, "off_target_out_of_view": 0}
     for entry in covered:
         scores = detections["episodes"][entry["id"]]["scores"]
-        first = first_detection(scores, threshold)
+        try:
+            first = first_detection(scores, threshold)
+        except ValueError as err:
+            raise ValueError(f"episode {entry['id']}: {err}") from err
         records_above += int((np.asarray(scores, dtype=float) > threshold).sum())
         split = phase_records(entry["steps"], first)
         for k in range(2):
@@ -190,7 +206,9 @@ def build_rebalance(manifest: dict, detections: dict, *, threshold: float = DEFA
             distance, bearing = float(state[first, 0]), float(state[first, 1])
             verdict = box_on_target(detections["episodes"][entry["id"]]["boxes"][first], bearing)
             transition_distances.append(distance)
-            on_target["on_target" if verdict else "target_out_of_view" if verdict is None else "off_target"] += 1
+            on_target["on_target" if verdict else "off_target"] += 1
+            if not target_in_view(bearing):
+                on_target["off_target_out_of_view"] += 1  # a sub-count of off_target: the target was not even in the image
             episode.update(first_detection_distance_m=distance, first_detection_on_target=verdict)
         elif states is not None:
             episode.update(first_detection_distance_m=None, first_detection_on_target=None)
@@ -227,12 +245,23 @@ def build_rebalance(manifest: dict, detections: dict, *, threshold: float = DEFA
 
 
 def write_rebalance(path: Path, result: dict) -> None:
-    """Write the document exclusively: an existing rebalance.json is never replaced (rerun into another --out)."""
+    """Write the document exclusively, whole and durably: an existing rebalance.json is never replaced (rerun into
+    another --out), and a crash mid-write leaves no file at all rather than a truncated one that every later run would
+    refuse to replace (this host freezes, MEMORY.md). The data is synced in a private temporary file, then linked into
+    place -- `os.link` fails on an existing name -- and the directory is synced."""
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    with open(path, "x") as handle:
-        handle.write(json.dumps(result, indent=2) + "\n")
-
-
-def sha256_of(path: Path) -> str:
-    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+    tmp = path.with_name(f"{path.name}.tmp.{os.getpid()}")
+    try:
+        with open(tmp, "w") as handle:
+            handle.write(json.dumps(result, indent=2) + "\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.link(tmp, path)
+    finally:
+        tmp.unlink(missing_ok=True)
+    fd = os.open(path.parent, os.O_RDONLY)
+    try:
+        os.fsync(fd)
+    finally:
+        os.close(fd)
