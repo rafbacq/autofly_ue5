@@ -224,9 +224,9 @@ stale "fact". Standing rules live in `CLAUDE.md`; this file is the reasoning and
 ## Open questions
 
 - What gets s01d from 0.885 to 0.95? Run 5 (mover input, r_bounds 10, a 0.3 m training contact margin, an altitude
-  margin) gated 0.885. Its 23 failures were 10 static, 7 mover, 5 altitude and 1 lateral. The next candidates are a
-  static clearance margin and a V-shaped altitude cost; the user chooses
-  (`docs/decisions/2026-10-05-s01d-r5-margins.md`).
+  margin) gated 0.885. Its 23 failures were 10 static, 7 mover, 5 altitude and 1 lateral. Run 6 (2026-10-06) trains
+  each boundary 0.5 m outside the task's failure line: a 1.1 m static boundary, a 1.5 m mover boundary, and a V-shaped
+  altitude cost (`docs/decisions/2026-10-06-s01d-r6-plan.md`).
 
 Settled:
 - a0's aligned start costs the s01 expert nothing (2026-10-03, `docs/gates/m3_a0_probe.json`): 50/50 with a0, 49/50
