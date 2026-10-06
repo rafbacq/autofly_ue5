@@ -338,13 +338,17 @@ class AutoFlyEnv(gym.Env):
             # without a boundary keeps its infos exactly.
             tag, gap = static
             pillar = self._instances[tag]
-            info["static_contact"] = {
+            contact_info = info["static_contact"] = {
                 "tag": tag,
                 "gap_m": round(gap, 4),
                 "bearing_deg": round(math.degrees(wrap_pi(math.atan2(pillar.y - before.y, pillar.x - before.x)
                                                           - before.yaw)), 2),
                 "drone_forward_m_s": round(v_forward, 3),
             }
+            # Training records keep only counts, so the log keeps each ending: in view of the forward camera or not.
+            print(f"STATIC-MARGIN instance {self._instance}: {tag} at {contact_info['gap_m']:.2f} m, bearing "
+                  f"{contact_info['bearing_deg']:+.0f} deg, forward {contact_info['drone_forward_m_s']:.2f} m/s",
+                  file=sys.stderr)
         reward = self._with_penalties(result.reward, obs.pose, info)
         self._last_obs = {"depth": self._stacker.push(encode_depth(obs.depth)),
                           "vector": encode_vector(obs.pose, obs.velocity_ned, obs.yaw_rate, self._setup.target_xy_z),

@@ -172,7 +172,7 @@ from autofly_ue5.expert.warmstart import plan as warm_plan
 from autofly_ue5.paths import RUNS_DIR
 from autofly_ue5.scenes.model import Layout, SceneFile
 from autofly_ue5.scenes.resolve import ResolvedScene, resolve_scene
-from autofly_ue5.sim.airsim_backend import scene_config_factory, scene_config_record
+from autofly_ue5.sim.airsim_backend import RESET_POSITION_TOLERANCE_M, scene_config_factory, scene_config_record
 from autofly_ue5.sim.process import SIM_RUN_DIR, instance_dir, stop_instances, sweep_orphaned_instances
 from autofly_ue5.validate.engine_check import audit_engine_faults, boot_id, xid_count
 
@@ -618,9 +618,9 @@ class OutcomeHistogramCallback(BaseCallback):
     def __init__(self, verbose: int = 0) -> None:
         super().__init__(verbose)
         self.histogram: Counter[str] = Counter()
-        # What each collision hit (spec §6.5): "sim" (a static pillar, or physical contact), "mover" (the d_col rule),
-        # "mover_inferred" (a backend fault right next to a mover, scored as a collision), "static_margin" (a training
-        # run's static pillar boundary, expert/static_contact.py).
+        # What each collision hit (spec §6.5): "sim" (physical contact: a static pillar, or with a static boundary on,
+        # anything it does not cover), "mover" (the d_col rule), "mover_inferred" (a backend fault right next to a mover,
+        # scored as a collision), "static_margin" (a training run's static pillar boundary, expert/static_contact.py).
         self.collision_sources: Counter[str] = Counter()
         # The last OUTCOME_WINDOW real episodes, for TensorBoard's outcomes/* curves (watchers, runbook-m2d step 5).
         self._recent: deque[str] = deque(maxlen=self.OUTCOME_WINDOW)
@@ -811,11 +811,14 @@ def main(argv: list[str] | None = None) -> int:
             raise ValueError(f"--mover-contact-margin: scene {scene_file.id} has no moving pillars")
         if not (math.isfinite(args.static_contact_m) and args.static_contact_m >= 0):
             raise ValueError(f"--static-contact-m must be a non-negative number of metres, got {args.static_contact_m}")
-        if args.static_contact_m >= spawn_clearance_m():
-            # Every start keeps this far from a pillar's surface (episode.spawn_clearance_m), so a boundary reaching it
-            # would start episodes inside it: each such start is retried as a fault, and every start at once at worst.
-            raise ValueError(f"--static-contact-m {args.static_contact_m} m reaches the {spawn_clearance_m():g} m "
-                             f"every start keeps from a pillar")
+        # A start keeps spawn_clearance_m() from every pillar's surface, and a reset may land up to the backend's
+        # tolerance off it (review of 3a0c3b7). A boundary beyond what is left could put a legitimate start inside it:
+        # a seeded first reset replays its seed until the worker gives up, and that ends the run.
+        start_floor_m = round(spawn_clearance_m() - RESET_POSITION_TOLERANCE_M, 6)
+        if args.static_contact_m > start_floor_m:
+            raise ValueError(f"--static-contact-m {args.static_contact_m} m is beyond the {start_floor_m:g} m a start "
+                             f"can be from a pillar (starts keep {spawn_clearance_m():g} m; a reset may land "
+                             f"{RESET_POSITION_TOLERANCE_M:g} m off)")
         altitude_margin = None
         if args.altitude_margin_penalty is not None:
             altitude_margin = AltitudeMarginPenalty(*args.altitude_margin_penalty).check_band(

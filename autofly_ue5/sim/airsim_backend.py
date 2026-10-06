@@ -58,6 +58,9 @@ FRAME_KEYS = ("rgb", "depth")
 # A refused move is accepted when the object already sits this close to the requested pose (read back after the
 # refusal). The probe read moves back to within 3e-6 m (docs/gates/m2d_mover_probe.json).
 MOVE_READBACK_TOLERANCE_M = 1e-3
+# How far from its requested start a reset may land and still count (M1 measured millimetres; the phantoms of C9
+# were >= 4 m off). Anything a check makes of the start pose must allow this much (train.py: --static-contact-m).
+RESET_POSITION_TOLERANCE_M = 0.3
 
 
 @dataclass(frozen=True)
@@ -107,7 +110,7 @@ class ProjectAirSimSimulator:
         command_timeout_s: float = 10.0,
         camera_offset_m: float = 0.40,
         camera_pose_tolerance_m: float = 0.10,
-        reset_position_tolerance_m: float = 0.3,  # M1 measured millimetres after a reset; the phantoms were >= 4 m off
+        reset_position_tolerance_m: float = RESET_POSITION_TOLERANCE_M,
         reset_yaw_tolerance_rad: float = 0.1,
         max_speed_m_s: float = 10.0,  # 5x the 2 m/s command limit: legitimate gate steps stayed under 0.4 m
         movable_objects: Iterable[str] = (),

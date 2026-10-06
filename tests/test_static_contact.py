@@ -117,6 +117,7 @@ def test_flying_at_a_static_pillar_ends_at_the_boundary_and_sees_the_same_on_the
         for o_a, o_b in zip(obs_a[:len(b)], obs_b[:len(b)]):  # what the expert saw on the way: the same flight
             assert all(np.array_equal(o_a[k], o_b[k]) for k in o_a)
         if end_b["collision_source"] != "static_margin":
+            assert a == b, "a flight the boundary never ended is the plain flight, step for step"
             continue
         boundary_hits += 1
         contact = end_b["static_contact"]
@@ -128,6 +129,98 @@ def test_flying_at_a_static_pillar_ends_at_the_boundary_and_sees_the_same_on_the
             "without the boundary the same flight hits the pillar"
         assert "static_contact" not in end_a
     assert boundary_hits >= 5, "flying straight at a pillar must end at the boundary"
+
+
+def test_each_step_checks_the_path_it_flew_not_only_where_it_ended(monkeypatch):
+    # Review of 3a0c3b7: the env must pass the swept segment (a full-speed step covers 0.4 m), not the end point alone.
+    from autofly_ue5.expert.static_contact import StaticContactBoundary
+
+    real = StaticContactBoundary.contact
+    for seed in SEEDS:
+        calls = []
+
+        def spy(self, a_xy, b_xy):
+            calls.append((tuple(a_xy), tuple(b_xy)))
+            return real(self, a_xy, b_xy)
+
+        monkeypatch.setattr(StaticContactBoundary, "contact", spy)
+        steps, _ = _fly_at_a_static_pillar(make_dynamic_env(static_contact_m=1.1), seed)
+        if steps[-1][1]["collision_source"] != "static_margin":
+            continue  # a mover or the bounds ended it: the boundary was not consulted on its last step
+        ends = [tuple(info["pose"][:2]) for _reward, info in steps]
+        assert len(calls) == len(steps)
+        for (_a, b), end in zip(calls, ends):
+            assert b == pytest.approx(end), "each call ends where its step ended"
+        for (a, _b), previous_end in zip(calls[1:], ends[:-1]):
+            assert a == pytest.approx(previous_end), "and starts where the step before it ended"
+        assert sum(math.dist(a, b) > 0.3 for a, b in calls) >= 3, "full-speed steps are checked as segments"
+        return
+    raise AssertionError("no flight ended at the boundary")
+
+
+def test_a_mover_contact_takes_precedence_and_carries_no_static_detail(monkeypatch):
+    # The boundary is consulted only when nothing else ended the step: a stray static_contact on a mover step would
+    # misreport what ended it.
+    from autofly_ue5.expert.movers import MoverController
+    from autofly_ue5.expert.static_contact import StaticContactBoundary
+    from tests.test_mover_contact_margin import _fly_recording
+
+    hit = {"now": False}
+    real_mover = MoverController.contact
+
+    def mover_spy(self, before_xy, after_xy):
+        result = real_mover(self, before_xy, after_xy)
+        hit["now"] = result is not None
+        return result
+
+    monkeypatch.setattr(MoverController, "contact", mover_spy)
+    monkeypatch.setattr(StaticContactBoundary, "contact",
+                        lambda self, a, b: (self.tags[0], 0.5) if hit["now"] else None)  # fires only with a mover
+    ended_on_mover = 0
+    for seed in SEEDS:
+        steps, _ = _fly_recording(make_dynamic_env(static_contact_m=1.1), seed)
+        end = steps[-1][1]
+        if end["collision_source"] == "mover":
+            ended_on_mover += 1
+            assert "static_contact" not in end
+    assert ended_on_mover > 0
+
+
+def test_a_physical_contact_takes_precedence_and_carries_no_static_detail(monkeypatch):
+    from autofly_ue5.expert.static_contact import StaticContactBoundary
+
+    from tests.test_dynamic_env import ROTOR  # where the fake's pillars collide
+
+    real = StaticContactBoundary.contact
+
+    def physical_only(self, a, b):  # the boundary fires only where the simulator also reports contact
+        result = real(self, a, b)
+        return result if result is not None and result[1] <= ROTOR else None
+
+    monkeypatch.setattr(StaticContactBoundary, "contact", physical_only)
+    sim_ends = 0
+    for seed in SEEDS:
+        steps, _ = _fly_at_a_static_pillar(make_dynamic_env(static_contact_m=1.1), seed)
+        end = steps[-1][1]
+        if end["collision_source"] == "sim":
+            sim_ends += 1
+            assert "static_contact" not in end
+    assert sim_ends > 0
+
+
+def test_each_boundary_ending_is_logged_with_where_it_happened(capsys):
+    # Training records keep counts only; the log keeps each ending's pillar, gap and bearing (in view of the forward
+    # camera or not), so a run can be read for where its static contacts happen.
+    env = make_dynamic_env(static_contact_m=1.1)
+    for seed in SEEDS:
+        steps, _ = _fly_at_a_static_pillar(env, seed)
+        if steps[-1][1]["collision_source"] == "static_margin":
+            contact = steps[-1][1]["static_contact"]
+            line = [ln for ln in capsys.readouterr().err.splitlines() if ln.startswith("STATIC-MARGIN")]
+            assert line == [f"STATIC-MARGIN instance 0: {contact['tag']} at {contact['gap_m']:.2f} m, bearing "
+                            f"{contact['bearing_deg']:+.0f} deg, forward {contact['drone_forward_m_s']:.2f} m/s"]
+            return
+    raise AssertionError("no flight ended at the boundary")
 
 
 def test_without_a_boundary_nothing_changes():
@@ -251,8 +344,8 @@ def test_a_training_run_takes_it_from_the_command_line_and_records_it(tmp_path, 
     assert seen == [(1.1, 0.0), (0.0, 0.0)], "training ends episodes at the boundary; evaluation keeps contact"
 
 
-@pytest.mark.parametrize("value, why", [("-0.2", "non-negative"), ("nan", "non-negative"), ("1.4", "1.4 m"),
-                                        ("2.0", "1.4 m")])
+@pytest.mark.parametrize("value, why", [("-0.2", "non-negative"), ("nan", "non-negative"), ("1.2", "1.1 m"),
+                                        ("1.4", "1.1 m"), ("2.0", "1.1 m")])
 def test_a_boundary_that_cannot_apply_is_refused_before_the_run_root_is_claimed(tmp_path, monkeypatch, capsys,
                                                                                 value, why):
     code, _out, seen = _train(tmp_path, monkeypatch, "--static-contact-m", value)
