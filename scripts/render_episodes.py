@@ -653,7 +653,10 @@ def build_arg_parser() -> argparse.ArgumentParser:
     p.add_argument("--scene", default="s01")
     p.add_argument("--run-root", type=Path, default=None,
                    help="the training run whose checkpoint to fly (default runs/expert/<scene>)")
-    p.add_argument("--checkpoint", choices=("best_model", "final"), default="best_model")
+    which = p.add_mutually_exclusive_group()
+    which.add_argument("--checkpoint", choices=("best_model", "final"), default="best_model")
+    which.add_argument("--model", type=_model_spec, default=None, metavar="NAME=PATH",
+                       help="any checkpoint instead, e.g. an averaged one (scripts/average_checkpoints.py)")
     p.add_argument("--condition", choices=("deterministic", "stochastic"), default="deterministic")
     p.add_argument("--episodes", type=int, nargs="+", required=True,
                    help="gate episode indices i; each flies seed --seed-base + i")
@@ -674,8 +677,22 @@ def build_arg_parser() -> argparse.ArgumentParser:
     return p
 
 
+def _model_spec(spec: str) -> tuple[str, Path]:
+    name, sep, path = spec.partition("=")
+    if not (sep and name and path):
+        raise argparse.ArgumentTypeError(f"expected NAME=PATH, got {spec!r}")
+    return name, Path(path)
+
+
+def checkpoint_choice(args: argparse.Namespace) -> tuple[str, Path]:
+    """(name, path) of the checkpoint to fly: --model's, or the run's --checkpoint."""
+    if args.model is not None:
+        return args.model
+    return args.checkpoint, parse_model_args(None, args.scene, run_root=args.run_root)[args.checkpoint]
+
+
 def checkpoint_path(args: argparse.Namespace) -> Path:
-    return parse_model_args(None, args.scene, run_root=args.run_root)[args.checkpoint]
+    return checkpoint_choice(args)[1]
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -686,7 +703,8 @@ def main(argv: list[str] | None = None) -> int:
         return 2
     resolved = resolve_scene(args.scene)
     scene_config = args.scene_config or resolved.default_scene_config
-    summary = run(scene=args.scene, checkpoint_name=args.checkpoint, checkpoint_path=checkpoint_path(args),
+    name, path = checkpoint_choice(args)
+    summary = run(scene=args.scene, checkpoint_name=name, checkpoint_path=path,
                   episodes=list(args.episodes), condition=args.condition, seed_base=args.seed_base,
                   instance=args.instance, out_dir=args.out_dir, gate_path=args.gate,
                   sim_factory=scene_config_factory(scene_config, resolved.movable_objects, run_root=args.sim_root),

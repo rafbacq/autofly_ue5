@@ -223,6 +223,30 @@ def test_cli_resolves_the_checkpoint_under_the_run_root():
         rv.build_arg_parser().parse_args(["--out-dir", "o"])
 
 
+def test_cli_flies_any_checkpoint_given_by_name_and_path():
+    # 2026-10-06: the averaged run 6 expert (scripts/average_checkpoints.py) is neither a run's best_model nor its final.
+    args = rv.build_arg_parser().parse_args(
+        ["--model", "avg_250k_550k=runs/expert/x/averaged/avg.zip", "--episodes", "3", "--out-dir", "o"])
+    assert rv.checkpoint_choice(args) == ("avg_250k_550k", Path("runs/expert/x/averaged/avg.zip"))
+    args = rv.build_arg_parser().parse_args(["--run-root", "runs/expert/x", "--episodes", "3", "--out-dir", "o"])
+    assert rv.checkpoint_choice(args) == ("best_model", Path("runs/expert/x/best/best_model.zip"))
+    for bad in ("avg.zip", "=avg.zip", "avg="):
+        with pytest.raises(SystemExit):
+            rv.build_arg_parser().parse_args(["--model", bad, "--episodes", "3", "--out-dir", "o"])
+    with pytest.raises(SystemExit):  # one model or the other, never both
+        rv.build_arg_parser().parse_args(["--model", "a=b.zip", "--checkpoint", "final", "--episodes", "3",
+                                          "--out-dir", "o"])
+
+
+def test_main_flies_the_model_it_was_given(tmp_path, monkeypatch):
+    seen = {}
+    monkeypatch.setattr(rv, "run", lambda **kw: seen.update(kw) or {"status": "ok", "error": None, "n_compared": 0,
+                                                                     "n_matching_gate": 0})
+    assert rv.main(["--scene", "s01", "--model", "avg=some/avg.zip", "--episodes", "0", "--out-dir",
+                    str(tmp_path / "viz"), "--sim-root", str(tmp_path / "sim")]) == 0
+    assert seen["checkpoint_name"] == "avg" and seen["checkpoint_path"] == Path("some/avg.zip")
+
+
 def test_main_refuses_a_slot_another_live_run_holds(tmp_path, capsys):
     from scripts.render_episodes import main
     from tests.test_process import _init_owner, _sleeper
