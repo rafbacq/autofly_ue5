@@ -1,0 +1,36 @@
+{
+  "description": "C9 audit: gate episodes that could not have been flown from their start (see the rule).",
+  "source": "docs/gates/m2d_r6_gate.json",
+  "source_sha256": "2d1f48b798dbe2d266d4409f7f833e3b896a47893c564a06c1205c80489aff93",
+  "source_last_commit": null,
+  "rule": "|final_distance - start_distance| > 0.4 m x steps + 0.5 m",
+  "flagged": [],
+  "n_flagged": 0,
+  "worst_legitimate_ratio": 0.939,
+  "success_rate_excluding_flagged": {
+    "step_240000": {
+      "deterministic": {
+        "successes": 184,
+        "episodes": 200,
+        "rate": 0.92
+      },
+      "stochastic": {
+        "successes": 0,
+        "episodes": 0,
+        "rate": null
+      }
+    }
+  },
+  "after_a_collision": {
+    "step_240000:deterministic": {
+      "flagged": 0,
+      "resets": 5
+    }
+  },
+  "after_other_outcomes": {
+    "step_240000:deterministic": {
+      "flagged": 0,
+      "resets": 194
+    }
+  }
+}
