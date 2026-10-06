@@ -254,6 +254,36 @@ $J start s01d_r5_evalwatch -- env -u PYTHONPATH DISPLAY=:1 SDL_VIDEODRIVER=x11 .
 
 **Afterwards:** selection and the gate as in §6b, with run 5's paths: `m2d_r5_gate.json`, `m2d_r5_gate_audit.json`.
 
+## 6e. Run 6 (2026-10-06): run 5 plus a static pillar boundary, a wider mover margin and a V-shaped altitude cost
+
+Why: `docs/decisions/2026-10-06-s01d-r6-plan.md`. Run 6 is run 5's command with three training-only changes:
+
+- **`--static-contact-m 1.1`** ends a training episode when the drone's path passes within 1.1 m of a static pillar's
+  surface (collision source `static_margin`). Physical contact happens near 0.6 m.
+- **`--mover-contact-margin 0.5`** (run 5: 0.3) ends it at 1.5 m from a mover's surface.
+- **`--altitude-margin-penalty 0.2 1.0`** (run 5: 0.1 0.5) is a V: no cost at 2.0 m, 0.2 per step at the band's edges.
+
+```bash
+$J start s01d_r6_train -- $PY -m autofly_ue5.expert.train --scene s01d --instances 4 --hours 12 --scene-config $CFG \
+    --run-root runs/expert/s01d_r6 --out docs/gates/m2d_r6_train.json --eval-freq 1000000000 --buffer-size 250000 \
+    --mover-clearance-penalty 0.5 1.0 --mover-contact-margin 0.5 --static-contact-m 1.1 \
+    --altitude-margin-penalty 0.2 1.0
+$J start s01d_r6_watch -- $PY scripts/watch_training.py --run-root runs/expert/s01d_r6 --job s01d_r6_train \
+    --interval 300 --png runs/expert/s01d_r6/progress.png
+$J start s01d_r6_evalwatch -- env -u PYTHONPATH DISPLAY=:1 SDL_VIDEODRIVER=x11 .venv/bin/python scripts/eval_watch.py \
+    --run-root runs/expert/s01d_r6 --job s01d_r6_train --every 50000 --instance 4 --scene s01d --scene-config $CFG
+```
+
+**Training numbers read differently:**
+- Collisions include `static_margin` contacts at 1.1 m and mover contacts at 1.5 m. Neither would be scored by the
+  task.
+- Returns include the penalties.
+- The eval watch, selection and the gate use the task's own rules and reward, so they compare directly with runs 1–5.
+
+**Afterwards:** selection and the gate as in §6b, with run 6's paths (`m2d_r6_gate.json`, `m2d_r6_gate_audit.json`).
+Then the paired comparison with run 5 on the gate's episodes: `runs/m2d_diag/paired_compare.py
+docs/gates/m2d_r5_gate.json final docs/gates/m2d_r6_gate.json <checkpoint>`.
+
 ## 7. Diagnostic: the s01 expert, zero-shot, on s01d
 
 ```bash
