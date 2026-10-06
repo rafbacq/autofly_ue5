@@ -127,6 +127,7 @@ from stable_baselines3.common.vec_env import VecEnv
 
 from autofly_ue5.expert.env import AutoFlyEnv  # noqa: F401  (re-exported for callers of this module)
 from autofly_ue5.expert.env import action_space
+from autofly_ue5.expert.episode import spawn_clearance_m
 from autofly_ue5.expert.faults import (  # noqa: F401  (re-exported: moved from this module)
     FAULT_ERRORS_RESET,
     FAULT_ERRORS_STEP,
@@ -301,7 +302,7 @@ def run_identity(resolved: ResolvedScene, obs_config: ObsConfig, scene_config: s
                  mover_clearance: MoverClearancePenalty | None = None,
                  mover_closing: MoverClosingPenalty | None = None,
                  altitude_margin: AltitudeMarginPenalty | None = None,
-                 mover_contact_margin_m: float = 0.0) -> dict:
+                 mover_contact_margin_m: float = 0.0, static_contact_m: float = 0.0) -> dict:
     """What a run's replay buffer and checkpoints are tied to: resuming under anything else would mix two tasks, two
     observation shapes or two simulator clocks (the scene config holds the clock rate) in one buffer. A training
     penalty is part of the reward the buffer holds, so a run that pays one names it; one that does not serialises
@@ -316,6 +317,8 @@ def run_identity(resolved: ResolvedScene, obs_config: ObsConfig, scene_config: s
         extra["altitude_margin_penalty"] = altitude_margin.to_json()
     if mover_contact_margin_m:
         extra["mover_contact_margin_m"] = mover_contact_margin_m  # where a mover contact ends a training episode
+    if static_contact_m:
+        extra["static_contact_m"] = static_contact_m  # where a static pillar ends a training episode
     return {
         "scene_config": scene_config_record(scene_config) if scene_config is not None else None,
         "scene": resolved.scene.id,
@@ -616,7 +619,8 @@ class OutcomeHistogramCallback(BaseCallback):
         super().__init__(verbose)
         self.histogram: Counter[str] = Counter()
         # What each collision hit (spec §6.5): "sim" (a static pillar, or physical contact), "mover" (the d_col rule),
-        # "mover_inferred" (a backend fault right next to a mover, scored as a collision).
+        # "mover_inferred" (a backend fault right next to a mover, scored as a collision), "static_margin" (a training
+        # run's static pillar boundary, expert/static_contact.py).
         self.collision_sources: Counter[str] = Counter()
         # The last OUTCOME_WINDOW real episodes, for TensorBoard's outcomes/* curves (watchers, runbook-m2d step 5).
         self._recent: deque[str] = deque(maxlen=self.OUTCOME_WINDOW)
@@ -663,7 +667,7 @@ class OutcomeHistogramCallback(BaseCallback):
         for outcome in ("success", "out_of_bounds", "timeout"):
             self.logger.record(f"outcomes/{outcome}", counts[outcome] / n)
         self.logger.record("outcomes/collision", sum(v for k, v in counts.items() if k.startswith("collision_")) / n)
-        for source in ("sim", "mover", "mover_inferred"):
+        for source in ("sim", "mover", "mover_inferred", "static_margin"):
             self.logger.record(f"outcomes/collision_{source}", counts[f"collision_{source}"] / n)
         self.logger.record("outcomes/sim_fault_episodes", self._fault_episodes)
         for key, totals in self._penalties.items():
@@ -758,6 +762,10 @@ def build_arg_parser() -> argparse.ArgumentParser:
     p.add_argument("--mover-contact-margin", type=float, default=0.0, metavar="M",
                    help="training only, on a scene with moving pillars: a mover contact ends the episode M metres "
                         "outside the task's rule; the expert observes, and the gate scores, the task's own rule")
+    p.add_argument("--static-contact-m", type=float, default=0.0, metavar="M",
+                   help="training only: a step whose path passes within M metres of a static pillar's surface ends the "
+                        "episode as a collision (expert/static_contact.py); the expert observes, and the gate scores, "
+                        "physical contact only. 0 (default): physical contact only")
     p.add_argument("--sim-root", type=Path, default=SIM_RUN_DIR,
                    help="where this run's simulators are recorded (tests point it at a scratch directory)")
     return p
@@ -801,13 +809,21 @@ def main(argv: list[str] | None = None) -> int:
                              f"{args.mover_contact_margin}")
         if args.mover_contact_margin and scene_file.dynamic is None:
             raise ValueError(f"--mover-contact-margin: scene {scene_file.id} has no moving pillars")
+        if not (math.isfinite(args.static_contact_m) and args.static_contact_m >= 0):
+            raise ValueError(f"--static-contact-m must be a non-negative number of metres, got {args.static_contact_m}")
+        if args.static_contact_m >= spawn_clearance_m():
+            # Every start keeps this far from a pillar's surface (episode.spawn_clearance_m), so a boundary reaching it
+            # would start episodes inside it: each such start is retried as a fault, and every start at once at worst.
+            raise ValueError(f"--static-contact-m {args.static_contact_m} m reaches the {spawn_clearance_m():g} m "
+                             f"every start keeps from a pillar")
         altitude_margin = None
         if args.altitude_margin_penalty is not None:
             altitude_margin = AltitudeMarginPenalty(*args.altitude_margin_penalty).check_band(
                 reward_config_for_scene(scene_file).altitude_band_m)
         identity = run_identity(resolved, obs_config, scene_config, mover_clearance=mover_clearance,
                                 mover_closing=mover_closing, altitude_margin=altitude_margin,
-                                mover_contact_margin_m=args.mover_contact_margin)
+                                mover_contact_margin_m=args.mover_contact_margin,
+                                static_contact_m=args.static_contact_m)
         if (run_root / STOP_REQUEST_FILE).exists():
             raise RuntimeError(f"{run_root / STOP_REQUEST_FILE} is a pending stop request; remove it to start or "
                                f"resume this run")
@@ -861,16 +877,17 @@ def main(argv: list[str] | None = None) -> int:
             seed_base_fn=lambda rank: session_seed_base(rank, session), instance_offset=0, sim_factory=sim_factory,
             sim_root=sim_root, obs_config=obs_config, mover_clearance=mover_clearance, mover_closing=mover_closing,
             altitude_margin=altitude_margin, mover_contact_margin_m=args.mover_contact_margin,
+            static_contact_m=args.static_contact_m,
         )
         # A separate simulator instance (own ports), one slot past the training workers, so evaluation
         # can run concurrently with training without colliding on ports with any training worker. Its own seed
-        # range, disjoint from the M2 gate's EVAL_SEED_BASE episodes. It scores the task's own reward: no mover
-        # clearance penalty, like the gate.
+        # range, disjoint from the M2 gate's EVAL_SEED_BASE episodes. It scores the task's own reward and contact rules:
+        # no training penalty or boundary, like the gate.
         eval_env = make_vec_env(
             scene_file, layout, 1, map_path=map_path, monitor_dir=eval_monitor_dir,
             seed_base_fn=lambda _rank: EVAL_CALLBACK_SEED_BASE, instance_offset=args.instances, sim_factory=sim_factory,
             sim_root=sim_root, obs_config=obs_config, mover_clearance=None, mover_closing=None, altitude_margin=None,
-            mover_contact_margin_m=0.0,
+            mover_contact_margin_m=0.0, static_contact_m=0.0,
         )
 
         if args.resume:
@@ -1017,6 +1034,7 @@ def main(argv: list[str] | None = None) -> int:
             "mover_closing_penalty": mover_closing.to_json() if mover_closing is not None else None,
             "altitude_margin_penalty": altitude_margin.to_json() if altitude_margin is not None else None,
             "mover_contact_margin_m": args.mover_contact_margin,
+            "static_contact_m": args.static_contact_m,
             "batch_size": args.batch_size,
             # What the model actually trained with, not what this file intends (a resumed model restores its own).
             "train_freq": str(model.train_freq) if model is not None else None,

@@ -33,6 +33,7 @@ from autofly_ue5.expert.obs import (
     target_geometry,
 )
 from autofly_ue5.expert.reward import Outcome, RewardConfig, evaluate, oob_kind, reward_config_for_scene
+from autofly_ue5.expert.static_contact import StaticContactBoundary
 from autofly_ue5.frames import wrap_pi
 from autofly_ue5.scenes.model import Layout, SceneFile
 from autofly_ue5.sim.protocol import Simulator
@@ -82,8 +83,16 @@ class AutoFlyEnv(gym.Env):
         mover_closing: MoverClosingPenalty | None = None,
         altitude_margin: AltitudeMarginPenalty | None = None,
         mover_contact_margin_m: float = 0.0,
+        static_contact_m: float = 0.0,
     ) -> None:
         super().__init__()
+        if not (math.isfinite(static_contact_m) and static_contact_m >= 0):
+            raise ValueError(f"a static contact boundary must be a non-negative number of metres (0: physical contact "
+                             f"only), got {static_contact_m}")
+        # Training only (expert/static_contact.py): a step whose path passes this close to a static pillar's surface
+        # ends the episode as a collision. 0 leaves physical contact, which the gate scores, as the only rule.
+        self._static_contact_m = float(static_contact_m)
+        self._static: StaticContactBoundary | None = None
         if not (math.isfinite(mover_contact_margin_m) and mover_contact_margin_m >= 0):
             raise ValueError(f"mover contact margin must be a non-negative number of metres, "
                              f"got {mover_contact_margin_m}")
@@ -168,6 +177,7 @@ class AutoFlyEnv(gym.Env):
         clear_setup(sim, self._spawned)  # previous episode's objects, destroyed before the next is sampled
         self._spawned = ()
         self._movers = None
+        self._static = None
         if self._displaced:
             # Out of the way of the reset's up-across-down sequence: the drone may have ended on a vacated home spot,
             # and sending a pillar home there would put it inside the drone.
@@ -226,8 +236,14 @@ class AutoFlyEnv(gym.Env):
         # contact.
         if movers is not None and movers.nearest_gap((obs.pose.x, obs.pose.y)) <= movers.termination_m:
             raise StartCollisionError(f"the episode's first observation is within {movers.termination_m} m of a mover")
+        static = (StaticContactBoundary.for_episode(self._layout.instances, new, self._static_contact_m)
+                  if self._static_contact_m else None)
+        if static is not None and static.nearest_gap((obs.pose.x, obs.pose.y)) <= static.boundary_m:
+            raise StartCollisionError(f"the episode's first observation is within {static.boundary_m} m of a static "
+                                      f"pillar")
         self._displaced = new
         self._movers = movers
+        self._static = static
         if movers is not None:
             movers.record_frame(obs.pose)
         self._closing_depths = None
@@ -274,8 +290,14 @@ class AutoFlyEnv(gym.Env):
         obs = self._sim.observe()
 
         contact = movers.contact((before.x, before.y), (obs.pose.x, obs.pose.y)) if movers is not None else None
-        collided = obs.collided or contact is not None
-        source = "mover" if contact is not None else ("sim" if obs.collided else None)
+        # A training run's static boundary, unless something else already ended the step: a physical contact is
+        # scored as the contact it is.
+        static = (self._static.contact((before.x, before.y), (obs.pose.x, obs.pose.y))
+                  if self._static is not None and contact is None and not obs.collided else None)
+        collided = obs.collided or contact is not None or static is not None
+        source = ("mover" if contact is not None else
+                  "sim" if obs.collided else
+                  "static_margin" if static is not None else None)
         seen = movers.seen_recently(contact[0]) if contact is not None else None  # the frames the policy flew on
         mover_contact = None
         if contact is not None:
@@ -311,6 +333,18 @@ class AutoFlyEnv(gym.Env):
         info = self._info(result.outcome, dist, obs.pose, bearing, kind,
                           collision_source=source if result.outcome is Outcome.COLLISION else None, mover_in_view=seen,
                           mover_contact=mover_contact if result.outcome is Outcome.COLLISION else None)
+        if static is not None:
+            # Where the boundary was crossed, as for a mover contact; the key exists only on such a step, so every run
+            # without a boundary keeps its infos exactly.
+            tag, gap = static
+            pillar = self._instances[tag]
+            info["static_contact"] = {
+                "tag": tag,
+                "gap_m": round(gap, 4),
+                "bearing_deg": round(math.degrees(wrap_pi(math.atan2(pillar.y - before.y, pillar.x - before.x)
+                                                          - before.yaw)), 2),
+                "drone_forward_m_s": round(v_forward, 3),
+            }
         reward = self._with_penalties(result.reward, obs.pose, info)
         self._last_obs = {"depth": self._stacker.push(encode_depth(obs.depth)),
                           "vector": encode_vector(obs.pose, obs.velocity_ned, obs.yaw_rate, self._setup.target_xy_z),
@@ -383,7 +417,8 @@ class AutoFlyEnv(gym.Env):
               collision_source: str | None = None, mover_in_view: bool | None = None,
               mover_contact: dict | None = None) -> dict:
         # pose/bearing_deg/oob_kind: where an episode ended and which bound it left, for the run record (the
-        # 2026-09-17 gate could not say either). collision_source ("sim", "mover", "mover_inferred"), n_movers,
+        # 2026-09-17 gate could not say either). collision_source ("sim", "mover", "mover_inferred", and in training
+        # "static_margin"), n_movers,
         # movers (each mover's x, y this step) and mover_in_view: spec §6.5; empty for a static scene.
         return {
             "outcome": outcome.value,

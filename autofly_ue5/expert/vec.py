@@ -66,6 +66,7 @@ def make_vec_env(
     mover_closing: MoverClosingPenalty | None = None,
     altitude_margin: AltitudeMarginPenalty | None = None,
     mover_contact_margin_m: float = 0.0,
+    static_contact_m: float = 0.0,
 ) -> VecEnv:
     """n `AutoFlyEnv`s, each `ResilientAutoFlyEnv(Monitor(AutoFlyEnv(...)))`, vectorised.
 
@@ -89,7 +90,8 @@ def make_vec_env(
     depth frame for a static scene and a stack for a dynamic one; see `autofly_ue5.expert.obs.ObsConfig`).
     `mover_clearance` / `mover_closing` / `altitude_margin`: a training run's penalties, paid by every env
     (`expert/mover_clearance.py`, `expert/altitude_margin.py`); `mover_contact_margin_m`: a training run's safety
-    margin outside the task's mover contact rule.
+    margin outside the task's mover contact rule; `static_contact_m`: a training run's static pillar boundary
+    (`expert/static_contact.py`).
     """
     if n < 1:
         raise ValueError(f"n must be >= 1, got {n}")
@@ -104,7 +106,8 @@ def make_vec_env(
             route_client_log(instance_dir(instance, sim_root) / "client.log")
             base = AutoFlyEnv(scene, layout, sim_factory, map_path=map_path, instance=instance, seed_base=seed_base_fn(rank),
                               obs_config=obs_config, mover_clearance=mover_clearance, mover_closing=mover_closing,
-                              altitude_margin=altitude_margin, mover_contact_margin_m=mover_contact_margin_m)
+                              altitude_margin=altitude_margin, mover_contact_margin_m=mover_contact_margin_m,
+                              static_contact_m=static_contact_m)
             # outcome and collision_source per episode, for scripts/watch_training.py (the info always carries both).
             monitored = Monitor(base, filename=str(monitor_dir / f"{instance}.monitor.csv"),
                                 info_keywords=("is_success", "outcome", "collision_source"))
