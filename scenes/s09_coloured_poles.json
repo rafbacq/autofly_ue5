@@ -1,0 +1,53 @@
+{
+  "id": "s09",
+  "split": "train",
+  "seed": 1009,
+  "bounds": {
+    "x_min": -35.0,
+    "x_max": 35.0,
+    "y_min": -35.0,
+    "y_max": 35.0
+  },
+  "ground": "paving",
+  "obstacle_groups": [
+    {
+      "asset": "cylinder",
+      "count": 70,
+      "scale_range": {
+        "xy": [
+          0.5,
+          0.9
+        ],
+        "z": [
+          6.0,
+          10.0
+        ]
+      },
+      "palette": [
+        "red",
+        "blue",
+        "yellow",
+        "green",
+        "white"
+      ],
+      "placement": {
+        "type": "jittered_grid",
+        "margin_m": 8.0,
+        "jitter_m": 1.5
+      }
+    }
+  ],
+  "start_band": [
+    2.0,
+    6.0
+  ],
+  "target_band": [
+    0.0,
+    3.0
+  ],
+  "altitude_band": [
+    1.0,
+    3.0
+  ],
+  "instruction_obstacle": "coloured poles"
+}

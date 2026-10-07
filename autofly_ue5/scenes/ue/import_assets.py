@@ -29,8 +29,10 @@ def enum_name(value):
 INPUTS = {
     "color": ("RGB", unreal.MaterialProperty.MP_BASE_COLOR, unreal.MaterialSamplerType.SAMPLERTYPE_COLOR),
     "normal": ("RGB", unreal.MaterialProperty.MP_NORMAL, unreal.MaterialSamplerType.SAMPLERTYPE_NORMAL),
-    "roughness": ("R", unreal.MaterialProperty.MP_ROUGHNESS, unreal.MaterialSamplerType.SAMPLERTYPE_LINEAR_COLOR),
-    "ao": ("R", unreal.MaterialProperty.MP_AMBIENT_OCCLUSION, unreal.MaterialSamplerType.SAMPLERTYPE_LINEAR_COLOR),
+    # TC_MASKS textures must be sampled as Masks: with Linear Color the material fails to compile for Vulkan and UE
+    # silently renders the default grid material instead (seen on all six grounds, 2026-10-07)
+    "roughness": ("R", unreal.MaterialProperty.MP_ROUGHNESS, unreal.MaterialSamplerType.SAMPLERTYPE_MASKS),
+    "ao": ("R", unreal.MaterialProperty.MP_AMBIENT_OCCLUSION, unreal.MaterialSamplerType.SAMPLERTYPE_MASKS),
 }
 
 
@@ -82,6 +84,20 @@ def import_file(filename, destination, pipeline=None):
     reported = [str(p) for p in (task.get_editor_property("imported_object_paths") or [])]
     listed = [str(p) for p in unreal.EditorAssetLibrary.list_assets(destination, recursive=True, include_folder=False)]
     return reported, listed
+
+
+def keep_resident(paths):
+    """Every Texture2D under `paths` set to never stream: the drone's cameras are scene captures, which do not drive
+    texture streaming, so near the drone a streamed texture stays at the coarse mips chosen for the distant player camera
+    (blocky grounds in the 2026-10-07 snapshots). Returns how many textures were set."""
+    n = 0
+    for path in paths:
+        asset = unreal.load_asset(path.split(".")[0])
+        if isinstance(asset, unreal.Texture2D):
+            asset.set_editor_property("never_stream", True)
+            check(unreal.EditorAssetLibrary.save_loaded_asset(asset, False), "save " + asset.get_path_name())
+            n += 1
+    return n
 
 
 def static_meshes_under(paths):
@@ -142,6 +158,7 @@ def import_model(model):
         check(unreal.EditorAssetLibrary.delete_directory(model["destination"]), "delete the old " + model["destination"])
     reported, listed = import_file(model["gltf"], model["destination"], model_pipeline())
     entry["imported_paths"] = listed
+    entry["textures_kept_resident"] = keep_resident(listed)
     meshes = static_meshes_under(listed)
     check(meshes, "no static mesh came out of " + model["gltf"] + " (imported: " + str(reported) + ")")
     for mesh in meshes:
@@ -189,6 +206,7 @@ def import_texture(path, destination, kind):
         texture.set_editor_property("srgb", False)
     else:
         texture.set_editor_property("srgb", True)
+    texture.set_editor_property("never_stream", True)  # see keep_resident
     check(unreal.EditorAssetLibrary.save_loaded_asset(texture, False), "save " + texture.get_path_name())
     return texture
 
@@ -197,14 +215,16 @@ def build_material(spec):
     entry = {"id": spec["id"], "name": spec["name"], "path": None, "textures": {}, "connected": [], "tiling": spec["tiling"]}
     REPORT["materials"].append(entry)
     tools = unreal.AssetToolsHelpers.get_asset_tools()
-    texture_folder = spec["destination"] + "/Textures/" + spec["id"]
-    textures = {}
-    for kind, path in spec["textures"].items():
-        textures[kind] = import_texture(path, texture_folder, kind)
-        entry["textures"][kind] = textures[kind].get_path_name().split(".")[0]
     path = spec["destination"] + "/" + spec["name"]
     if unreal.EditorAssetLibrary.does_asset_exist(path):
+        # Before the textures are re-imported: a texture change recompiles every material using it, and an earlier run's
+        # material would log its compile failure under this run's name (2026-10-07).
         check(unreal.EditorAssetLibrary.delete_asset(path), "delete the old " + path)
+    texture_folder = spec["destination"] + "/Textures/" + spec["id"]
+    textures = {}
+    for kind, path_on_disk in spec["textures"].items():
+        textures[kind] = import_texture(path_on_disk, texture_folder, kind)
+        entry["textures"][kind] = textures[kind].get_path_name().split(".")[0]
     material = tools.create_asset(spec["name"], spec["destination"], unreal.Material, unreal.MaterialFactoryNew())
     check(material is not None, "create " + path)
     mel = unreal.MaterialEditingLibrary

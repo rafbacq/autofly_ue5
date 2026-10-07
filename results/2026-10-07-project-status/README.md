@@ -100,6 +100,15 @@ downloaded assets and will be built first; the rest need CC0 trees, rocks and gr
 vehicles and buildings, Fab assets under their licence. The plan with its decisions is
 `docs/superpowers/plans/2026-10-06-autofly-ue5-plan5-scenes-and-assets.md`.
 
+## 4. The first new scenes, seen through the drone's cameras (M4, 2026-10-07)
+
+`scenes/`: for s01 and the three scenes built today -- s09 coloured poles on cobbles, s07 stacked boxes on sand, s02
+sparse young trees (Poly Haven, CC0) on grass -- the RGB and depth frames from each edge's start and from close-ups of
+three obstacles (`scripts/scene_snapshots.py`), with per-pose brightness and depth-at-surface numbers in the JSON. The
+poles' depth lands 2 mm from the geometry; boxes and trees are farther than their footprint circles say, never closer.
+
+![s02](scenes/s02_snapshots.png)
+
 ## Numbers worth knowing
 
 - Simulation runs at 1 ms real-time update rate in lock-step at 5 Hz; four simulators plus an evaluator share one

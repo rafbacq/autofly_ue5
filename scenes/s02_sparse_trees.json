@@ -1,0 +1,159 @@
+{
+  "id": "s02",
+  "split": "train",
+  "seed": 1002,
+  "bounds": {
+    "x_min": -35.0,
+    "x_max": 35.0,
+    "y_min": -35.0,
+    "y_max": 35.0
+  },
+  "ground": "grass",
+  "obstacle_groups": [
+    {
+      "asset": "island_tree_02",
+      "count": 4,
+      "scale_range": {
+        "xy": [
+          0.9,
+          1.1
+        ],
+        "z": [
+          0.9,
+          1.1
+        ]
+      },
+      "palette": [
+        "mesh"
+      ],
+      "placement": {
+        "type": "poisson",
+        "margin_m": 8.0,
+        "min_distance_m": 12.0
+      }
+    },
+    {
+      "asset": "island_tree_03",
+      "count": 4,
+      "scale_range": {
+        "xy": [
+          0.9,
+          1.1
+        ],
+        "z": [
+          0.9,
+          1.1
+        ]
+      },
+      "palette": [
+        "mesh"
+      ],
+      "placement": {
+        "type": "poisson",
+        "margin_m": 8.0,
+        "min_distance_m": 10.0
+      }
+    },
+    {
+      "asset": "tree_small_02",
+      "count": 5,
+      "scale_range": {
+        "xy": [
+          0.9,
+          1.1
+        ],
+        "z": [
+          0.9,
+          1.1
+        ]
+      },
+      "palette": [
+        "mesh"
+      ],
+      "placement": {
+        "type": "poisson",
+        "margin_m": 8.0,
+        "min_distance_m": 10.0
+      }
+    },
+    {
+      "asset": "searsia_lucida_a",
+      "count": 4,
+      "scale_range": {
+        "xy": [
+          0.9,
+          1.1
+        ],
+        "z": [
+          0.9,
+          1.1
+        ]
+      },
+      "palette": [
+        "mesh"
+      ],
+      "placement": {
+        "type": "poisson",
+        "margin_m": 8.0,
+        "min_distance_m": 8.0
+      }
+    },
+    {
+      "asset": "searsia_lucida_b",
+      "count": 4,
+      "scale_range": {
+        "xy": [
+          0.9,
+          1.1
+        ],
+        "z": [
+          0.9,
+          1.1
+        ]
+      },
+      "palette": [
+        "mesh"
+      ],
+      "placement": {
+        "type": "poisson",
+        "margin_m": 8.0,
+        "min_distance_m": 8.0
+      }
+    },
+    {
+      "asset": "quiver_tree_01",
+      "count": 6,
+      "scale_range": {
+        "xy": [
+          0.9,
+          1.1
+        ],
+        "z": [
+          0.9,
+          1.1
+        ]
+      },
+      "palette": [
+        "mesh"
+      ],
+      "placement": {
+        "type": "poisson",
+        "margin_m": 8.0,
+        "min_distance_m": 7.0
+      }
+    }
+  ],
+  "start_band": [
+    2.0,
+    6.0
+  ],
+  "target_band": [
+    0.0,
+    3.0
+  ],
+  "altitude_band": [
+    1.0,
+    3.0
+  ],
+  "instruction_obstacle": "trees"
+}

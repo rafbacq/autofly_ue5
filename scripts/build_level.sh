@@ -45,6 +45,13 @@ run_script() {  # $1 script, $2 log name, $3 report json path, remaining: env as
   # information only: the full editor's exit code doesn't reflect a raised check() failure (the script
   # calls quit_editor() from its own finally block either way); gate on the JSON report instead.
   echo "$log exit code: $code (information), Error lines: $(grep -c "Error:" "$LEVELS/$log" || true)"
+  # A material that fails to compile is only a warning to the editor, which renders the default grid in its place: six
+  # textured grounds reached a packaged build that way (2026-10-07). Refuse the level instead.
+  if grep -q "Failed to compile Material" "$LEVELS/$log"; then
+    echo "a material failed to compile (the level would render the default grid material):"
+    grep "Failed to compile Material" "$LEVELS/$log" | head -5
+    exit 1
+  fi
   if [ ! -f "$report" ] || ! jq -e '.pass == true' "$report" > /dev/null 2>&1; then
     echo "report $report missing or pass != true"
     grep "AUTOFLY CHECK FAILED" "$LEVELS/$log" | head -5 || true

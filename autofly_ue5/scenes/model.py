@@ -108,6 +108,7 @@ class AssetEntry:
     profile_step_m: float | None = None
     radius_profile_m: tuple[float | None, ...] | None = None
     ground_radius_m: float | None = None
+    bounds_origin_cm: tuple[float, float, float] | None = None  # the mesh's local bounds centre (UE cm); (0, 0, 0) for primitives
 
 
 @dataclass(frozen=True)
@@ -250,6 +251,7 @@ def load_registry(path: Path = ASSET_REGISTRY) -> AssetRegistry:
             radius_profile_m=(tuple(None if v is None else float(v) for v in a["radius_profile_m"])
                               if a.get("radius_profile_m") is not None else None),
             ground_radius_m=float(a["ground_radius_m"]) if a.get("ground_radius_m") is not None else None,
+            bounds_origin_cm=(tuple(float(v) for v in a["bounds_origin_cm"]) if a.get("bounds_origin_cm") is not None else None),
         )
         for name, a in data["assets"].items()
     }

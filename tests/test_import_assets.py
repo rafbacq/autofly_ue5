@@ -94,6 +94,7 @@ def test_registry_entries_carry_the_profile_the_base_pivot_and_the_ue_bounds(tmp
     assert assets["tree_x_b"]["ue_path"] == "/Game/AutoFly/Assets/tree_x/Cube_071", "matched through the glTF mesh name when not renamed"
     assert a["base_size_m"] == [2.8, 2.6, 3.5] and a["measured_extent_cm_at_unit_scale"] == [140.0, 130.0, 175.0]
     assert a["radius_profile_m"] == [0.15] * 5 + [1.4] * 9 and a["profile_step_m"] == 0.25 and a["ground_radius_m"] == 1.4
+    assert a["bounds_origin_cm"] == [0.0, 5.0, 87.5], "the mesh's local bounds origin, for the builder's check"
     assert assets["tree_x_b"]["triangles"] == 200, "the glTF's triangles (the measurements), not the Nanite fallback's"
     assert a["role"] == "obstacle" and a["category"] == "nature" and a["seen"] is None
     assert a["source"] == {"source": "polyhaven", "id": "tree_x", "node": "tree_x_a_LOD0", "licence": "CC0-1.0", "authors": {"A": "modeling"}}
@@ -109,6 +110,8 @@ def test_registry_entries_carry_the_profile_the_base_pivot_and_the_ue_bounds(tmp
     changed = {**assets, "tree_x_a": {**assets["tree_x_a"], "ground_radius_m": 9.9}}
     with pytest.raises(ValueError, match="tree_x_a"):
         update_registry(registry_path, changed, materials)  # a different entry under an existing name is refused
+    update_registry(registry_path, changed, materials, replace=True)
+    assert json.loads(registry_path.read_text())["assets"]["tree_x_a"]["ground_radius_m"] == 9.9
 
 
 def test_a_one_node_model_s_mesh_is_accepted_whatever_the_importer_named_it(tmp_path):
@@ -123,6 +126,19 @@ def test_a_one_node_model_s_mesh_is_accepted_whatever_the_importer_named_it(tmp_
     assets, _materials = registry_entries(spec, sources, measurements, report)
     assert set(assets) == {"tree_x"} and assets["tree_x"]["ue_path"] == "/Game/AutoFly/Assets/tree_x/tree_x_2k"
     assert assets["tree_x"]["source"]["node"] == "tree_x_a_LOD0"
+
+
+def test_a_material_that_failed_to_compile_in_the_editor_fails_the_check(tmp_path):
+    from scripts.import_assets import check_editor_log
+
+    log = tmp_path / "import_editor.log"
+    log.write_text("LogMaterial: Warning: [AssetLog] /x/ue_project/Content/AutoFly/Materials/Ground/M_Grass004.uasset: Failed to compile "
+                   "Material for platform SF_VULKAN_SM5, Default Material will be used \n[AssetLog] /Game/AutoFly/Materials/Ground/M_Grass004: other\n")
+    (problem,) = check_editor_log(log)
+    assert "M_Grass004" in problem and "default grid" in problem
+    log.write_text("LogPython: AUTOFLY build material M_Grass004\n")
+    assert check_editor_log(log) == []
+    assert check_editor_log(tmp_path / "missing.log") == ["editor log %s missing" % (tmp_path / "missing.log")]
 
 
 def test_the_material_key_for_a_ground_is_its_purpose_when_the_list_knows_one(tmp_path):

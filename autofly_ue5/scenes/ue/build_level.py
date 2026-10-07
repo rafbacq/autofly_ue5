@@ -21,6 +21,8 @@ def check(ok, what):
 
 
 def make_material(entry, ass):
+    if entry["kind"] == "mesh_default":  # an imported model keeps the materials its import gave it
+        return None
     if entry["kind"] in ("engine", "textured"):  # textured: a Material asset scripts/import_assets.py built from an ambientCG set
         material = unreal.load_asset(entry["ue_path"])
         check(material is not None, entry["kind"] + " material " + entry["ue_path"])
@@ -113,18 +115,31 @@ def spawn_mesh(a, eas, materials):
     component = actor.get_editor_property("static_mesh_component")
     component.set_mobility(unreal.ComponentMobility.MOVABLE)
     component.set_collision_profile_name("BlockAll")
-    component.set_material(0, materials[a["material"]])
+    if materials[a["material"]] is not None:
+        component.set_material(0, materials[a["material"]])
     actor.set_actor_label(a["tag"])
     actor.set_editor_property("tags", [a["tag"]])
-    origin, extent = actor.get_actor_bounds(False)
-    got_origin = [origin.x, origin.y, origin.z]
-    got_extent = [extent.x, extent.y, extent.z]
-    origin_err = max(abs(g - w) for g, w in zip(got_origin, a["location_cm"]))
-    extent_err = max(abs(g - w) for g, w in zip(got_extent, a["expected_extent_cm"]))
-    REPORT["actors"].append({"tag": a["tag"], "origin_cm": got_origin, "extent_cm": got_extent,
-                             "origin_err_cm": origin_err, "extent_err_cm": extent_err})
-    check(origin_err <= TOL_CM, "%s bounds origin %s != %s (mesh pivot not centred?)" % (a["tag"], got_origin, a["location_cm"]))
-    check(extent_err <= TOL_CM, "%s bounds extent %s != %s (base size not 1 m?)" % (a["tag"], got_extent, a["expected_extent_cm"]))
+    # The mesh's own bounds, read off the component without its transform: pivot- and yaw-independent, so an imported
+    # base-pivot tree at a random yaw is checked as strictly as s01's centred cylinders (which the old world-AABB check
+    # could only do at yaw 0). Then the transform itself, so the actor is where and as large as the spec says.
+    lo, hi = component.get_local_bounds()
+    got_origin = [(lo.x + hi.x) / 2.0, (lo.y + hi.y) / 2.0, (lo.z + hi.z) / 2.0]
+    got_extent = [(hi.x - lo.x) / 2.0, (hi.y - lo.y) / 2.0, (hi.z - lo.z) / 2.0]
+    want = a["expected_local_bounds_cm"]
+    origin_err = max(abs(g - w) for g, w in zip(got_origin, want["origin"]))
+    extent_err = max(abs(g - w) for g, w in zip(got_extent, want["extent"]))
+    location = actor.get_actor_location()
+    scale = actor.get_actor_scale3d()
+    location_err = max(abs(g - w) for g, w in zip([location.x, location.y, location.z], a["location_cm"]))
+    scale_err = max(abs(g - w) for g, w in zip([scale.x, scale.y, scale.z], a["scale"]))
+    yaw_err = abs(((actor.get_actor_rotation().yaw - a["yaw_deg"]) + 180.0) % 360.0 - 180.0)
+    REPORT["actors"].append({"tag": a["tag"], "local_origin_cm": got_origin, "local_extent_cm": got_extent,
+                             "origin_err_cm": origin_err, "extent_err_cm": extent_err, "location_err_cm": location_err,
+                             "scale_err": scale_err, "yaw_err_deg": yaw_err})
+    check(origin_err <= TOL_CM, "%s local bounds origin %s != %s (pivot not where the registry says?)" % (a["tag"], got_origin, want["origin"]))
+    check(extent_err <= TOL_CM, "%s local bounds extent %s != %s (base size wrong?)" % (a["tag"], got_extent, want["extent"]))
+    check(location_err <= TOL_CM, "%s placed at %s, not %s" % (a["tag"], [location.x, location.y, location.z], a["location_cm"]))
+    check(scale_err <= 1e-3 and yaw_err <= 0.01, "%s transform scale/yaw off (%s, %s deg)" % (a["tag"], scale_err, yaw_err))
     return actor
 
 

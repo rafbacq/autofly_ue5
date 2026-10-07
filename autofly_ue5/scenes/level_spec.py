@@ -37,6 +37,13 @@ def _extent_cm(base_size_m: tuple[float, float, float], scale: tuple[float, floa
     return [round(b * s * 50.0, 4) for b, s in zip(base_size_m, scale)]
 
 
+def _local_bounds_cm(asset) -> dict:
+    """The mesh's own bounds at unit scale, which the builder reads from the component (pivot- and yaw-independent):
+    the centre is the origin an import recorded (scripts/import_assets.py), (0, 0, 0) for engine primitives."""
+    origin = asset.bounds_origin_cm if asset.bounds_origin_cm is not None else (0.0, 0.0, 0.0)
+    return {"origin": [round(float(v), 4) for v in origin], "extent": _extent_cm(asset.base_size_m, (1.0, 1.0, 1.0))}
+
+
 def layout_to_level_spec(layout: Layout, scene: SceneFile, registry: AssetRegistry) -> dict:
     cube = registry.assets["cube"]
     ground_scale = (GROUND_SIZE_M / cube.base_size_m[0], GROUND_SIZE_M / cube.base_size_m[1], GROUND_THICKNESS_M / cube.base_size_m[2])
@@ -48,6 +55,7 @@ def layout_to_level_spec(layout: Layout, scene: SceneFile, registry: AssetRegist
         "scale": list(ground_scale),
         "material": scene.ground,
         "expected_extent_cm": _extent_cm(cube.base_size_m, ground_scale),
+        "expected_local_bounds_cm": _local_bounds_cm(cube),
     }
     actors = []
     for inst in layout.instances:
@@ -60,6 +68,7 @@ def layout_to_level_spec(layout: Layout, scene: SceneFile, registry: AssetRegist
             "scale": list(inst.scale),
             "material": inst.material,
             "expected_extent_cm": _extent_cm(asset.base_size_m, inst.scale),
+            "expected_local_bounds_cm": _local_bounds_cm(asset),
         })
     used = sorted({scene.ground} | {inst.material for inst in layout.instances})
     materials = []

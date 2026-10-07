@@ -81,12 +81,18 @@ reachability and the live checks of §11. Then M5 trains one expert per train sc
   (git-ignored), recorded in `assets/sources.json`. Nothing is imported here.
 - [x] **C3a. Measure the models offline** (`autofly_ue5/scenes/gltf.py`, `scripts/measure_assets.py`, 2026-10-07):
   height, extents and the 1–3 m flight-band footprint of every glTF node, from the buffers (fact 10).
-- [ ] **C3b. Import in the editor** (`scenes/ue/import_assets.py`): import each glTF node as its own static mesh with
-  Nanite and a convex collision, build one material per ambientCG set, read each mesh's bounds back against
-  `measurements.json`, and write the registry entries (`ue_path`, `base_size_m`, `pivot` = base, `footprint` circle of
-  `band_radius_m`, `category`, `role`, `seen`). Add `+DirectoriesToAlwaysCook` for spawnable targets.
+- [x] **C3b. Import in the editor** (`scripts/import_assets.py plan|run|apply` around `scenes/ue/import_assets.py`,
+  2026-10-07): each glTF node its own static mesh in its own frame, named after its registry key, Nanite with a 10 %
+  fallback, complex-as-simple collision; one Material per ambientCG set (Masks sampler for roughness and AO, textures
+  never streamed); bounds checked against `measurements.json`; registry entries with the radius profile and the
+  bounds origin. Five editor runs taught the pipeline-stack override, the mesh naming, the fallback size, the sampler
+  type and the delete-before-reimport order (the decision record has them).
 - [ ] **C4. Scene files** `scenes/s02_*.json` ... `s12_*.json`, `s05r`, `s06r`: groups, placements, bands, ground,
   `instruction_obstacle`; each passes schema, generation, reachability and the detour bound offline before any build.
+  Done 2026-10-07: `s09_coloured_poles` (70 poles, 5 colours, paving; detour 1.04), `s07_stacked_boxes` (18 stacks
+  of 2-5 engine cubes, sand; 1.045), `s02_sparse_trees` (27 trees of 6 kinds, grass; 1.11), all three built, verified
+  (local-bounds check to 0.002 cm), packaged with S01, and looked at through the drone's cameras
+  (`scripts/scene_snapshots.py`, `results/2026-10-07-project-status/scenes/`). `scenes/build.py` applies U4.
 - [ ] **C5. Target pool** (`assets/targets.json`, spec §6.4): 60 instances, 50 seen / 10 unseen, the Fig. 3c category
   mix, a name for instructions each. The sampler draws the target and 3-5 distractors from the split's pool *after*
   every existing draw, and the instruction names the target; s01's pool stays the orange cylinder so its golden setups
@@ -96,10 +102,16 @@ reachability and the live checks of §11. Then M5 trains one expert per train sc
   (fact 9); `_spawn_asset_name` checked against `world.list_assets()` for every target (spec §7.1: short names, base
   `UMaterial` only).
 - [ ] **C7. Exposure per scene**: the s01 procedure (`docs/gates/exposure_calibration.json`) on each built level, the
-  bias recorded in the level spec.
+  bias recorded in the level spec. Measured 2026-10-07 at -11 EV from the edge starts: s01 100-120, s02 98-133, s07
+  126-153, s09 122-144 (mean of 255; the high ends have the sun in view), none saturated. The three new grounds sit
+  within 40 levels of s01's 109 target: no recalibration needed for them; snow (s05, s10) will need one.
 - [ ] **C8. Build, package, live checks** per scene (`scripts/build_level.sh`, `package_sim.sh`, `validate/live_m1.py`):
   `docs/gates/m4_<scene>_gate.json` each (image changes with pose, depth matches geometry at known obstacles, a crash
-  collides, commands track, one step per record). Packaging only while no simulator of ours is running.
+  collides, commands track, one step per record). Packaging only while no simulator of ours is running (the script now
+  refuses otherwise). Interim 2026-10-07: the snapshots' close-ups put the depth at a pole's surface 2 mm from the
+  geometry (camera 0.40 m ahead of the body), boxes 0.08-0.22 m farther than their circumscribed circle, trees
+  0.4-1.5 m farther than their band circle: nothing is closer than its footprint says. The M1-style live check still
+  assumes centred cylinders (fact 9) and is the next thing to generalise.
 - [ ] **C9. Status**: CLAUDE.md's table, spec §6.3 wording where a scene's phrase changed, MEMORY.md's learnings.
 
 ## Not in M4

@@ -102,6 +102,24 @@ def plan_import(sources: dict, measurements: dict, *, assets_root: str = ASSETS_
             "collision": "complex_as_simple", "models": models, "materials": materials}
 
 
+COMPILE_FAILURE = "Failed to compile Material"
+
+
+def check_editor_log(log_path: Path) -> list[str]:
+    """A material that fails to compile is not an error to the editor: it logs a warning and renders the default grid
+    material in its place, which is how six grey grounds reached a packaged build (2026-10-07). The log is the only
+    place it shows."""
+    if not Path(log_path).is_file():
+        return [f"editor log {log_path} missing"]
+    hits = set()
+    for line in Path(log_path).read_text(errors="replace").splitlines():
+        if COMPILE_FAILURE not in line or "AutoFly" not in line:
+            continue
+        path = line.split("[AssetLog] ")[-1].split(":")[0].strip()  # .../M_Grass004.uasset or /Game/.../M_Grass004.M_Grass004
+        hits.add(path.rsplit("/", 1)[-1].split(".")[0])
+    return [f"material failed to compile in the editor (it would render as the default grid): {name}" for name in sorted(hits)]
+
+
 def check_report(spec: dict, measurements: dict, report: dict) -> list[str]:
     """Everything the registry would rely on, checked before it is written."""
     problems: list[str] = []
@@ -182,6 +200,7 @@ def registry_entries(spec: dict, sources: dict, measurements: dict, report: dict
                 "role": "obstacle",
                 "seen": None,
                 "measured_extent_cm_at_unit_scale": [round(h, 4) for h in half],
+                "bounds_origin_cm": [round(o, 4) for o in mesh["origin_cm"]],
                 "profile_step_m": m["profile_step_m"],
                 "radius_profile_m": m["radius_profile_m"],
                 "ground_radius_m": m["ground_radius_m"],
@@ -205,15 +224,16 @@ def registry_entries(spec: dict, sources: dict, measurements: dict, report: dict
     return assets, materials
 
 
-def update_registry(path: Path, assets: dict, materials: dict) -> None:
-    """Merge new entries into the registry; an entry that differs under an existing name is refused (edit by hand)."""
+def update_registry(path: Path, assets: dict, materials: dict, *, replace: bool = False) -> None:
+    """Merge new entries into the registry; an entry that differs under an existing name is refused unless `replace`
+    (a re-import of the same sources, on purpose)."""
     path = Path(path)
     registry = json.loads(path.read_text())
     for section, entries in (("assets", assets), ("materials", materials)):
         for key, entry in entries.items():
             existing = registry[section].get(key)
-            if existing is not None and existing != entry:
-                raise ValueError(f"{section} entry {key!r} exists with different content; remove or edit it by hand first")
+            if existing is not None and existing != entry and not replace:
+                raise ValueError(f"{section} entry {key!r} exists with different content; pass --replace to overwrite it")
             registry[section][key] = entry
     tmp = path.with_name(path.name + ".tmp")
     tmp.write_text(json.dumps(registry, indent=2) + "\n")
@@ -239,6 +259,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--measurements", type=Path, default=_ROOT / "assets" / "measurements.json")
     p.add_argument("--registry", type=Path, default=_ROOT / "assets" / "registry.json")
     p.add_argument("--work", type=Path, default=WORK_DIR)
+    p.add_argument("--replace", action="store_true", help="apply: overwrite registry entries that differ (a deliberate re-import)")
     args = p.parse_args(argv)
     args.work.mkdir(parents=True, exist_ok=True)
     spec_path, report_path = args.work / "import_spec.json", args.work / "import_report.json"
@@ -260,14 +281,14 @@ def main(argv: list[str] | None = None) -> int:
         return 0 if report_path.is_file() else 1
     spec = json.loads(spec_path.read_text())
     report = json.loads(report_path.read_text())
-    problems = check_report(spec, measurements, report)
+    problems = check_report(spec, measurements, report) + check_editor_log(args.work / "import_editor.log")
     if problems:
         print("the report does not pass; the registry is untouched:", file=sys.stderr)
         for line in problems:
             print(f"  - {line}", file=sys.stderr)
         return 2
     assets, materials = registry_entries(spec, sources, measurements, report)
-    update_registry(args.registry, assets, materials)
+    update_registry(args.registry, assets, materials, replace=args.replace)
     print(f"registry updated: {len(assets)} assets ({', '.join(sorted(assets))}) and {len(materials)} materials ({', '.join(sorted(materials))})")
     return 0
 

@@ -213,6 +213,22 @@ stale "fact". Standing rules live in `CLAUDE.md`; this file is the reasoning and
 
 ## Scene learnings
 
+- **Importing glTF through Interchange from Python (2026-10-07, five editor runs).** A pipeline object in
+  `AssetImportTask.options` is ignored; pass an `InterchangePipelineStackOverride` holding the default glTF pipelines
+  (`/Interchange/Pipelines/DefaultGLTFAssetsPipeline` + `DefaultGLTFPipeline`) changed in memory. Defaults bake node
+  transforms (a Poly Haven variant set keeps its side-by-side offsets) and name single meshes after the file; with
+  `use_source_name_for_asset` off, meshes are named after the glTF *mesh* ("Cube_070"), so rename to the registry key.
+  The default Nanite fallback leaves a 2 M-triangle tree with 2,300 triangles, and complex collision runs on the
+  fallback: set `fallback_target` PercentTriangles at 10 %.
+- **A material that fails to compile is only a warning to the editor (2026-10-07).** It renders UE's default grid
+  instead, and six textured grounds reached a packaged build that way: TC_MASKS textures need the Masks sampler, not
+  Linear Color. `scripts/import_assets.py apply` and `scripts/build_level.sh` now refuse on "Failed to compile Material"
+  in the editor log; re-importing a texture recompiles every material using it, so delete an old material before
+  re-importing its textures or its failure is logged under the new run's name.
+- **The drone's cameras are scene captures.** They do not drive texture streaming, so AutoFly textures are imported
+  `never_stream`. The near ground renders as soft blocks at 256 px from 2 m (coarse mips at grazing angles plus the
+  sun's specular patches); it has looked so since M1 on the grid floor and is not a material defect. Dynamic GI
+  (`r.DynamicGlobalIlluminationMethod`) made no difference to these captures at all.
 - **Measure an asset where the drone flies, not where the artist did (2026-10-07).** Poly Haven's boulders are 0.5–1.9 m
   tall: at unit scale most have nothing between 1 and 3 m, so a rock scene built from them at natural size has no
   obstacles for the drone. The young trees are the opposite: canopies 2–3.3 m wide at drone height, centred up to 1 m

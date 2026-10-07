@@ -62,6 +62,11 @@
         91.5167,
         50.1915
       ],
+      "bounds_origin_cm": [
+        -11.2092,
+        -3.3273,
+        42.8272
+      ],
       "profile_step_m": 0.25,
       "radius_profile_m": [
         0.9614,
@@ -107,6 +112,11 @@
         210.3873,
         203.5349,
         170.3303
+      ],
+      "bounds_origin_cm": [
+        5.1535,
+        92.1195,
+        168.6291
       ],
       "profile_step_m": 0.25,
       "radius_profile_m": [
@@ -165,6 +175,11 @@
         145.6616,
         130.753
       ],
+      "bounds_origin_cm": [
+        67.369,
+        21.3009,
+        129.4062
+      ],
       "profile_step_m": 0.25,
       "radius_profile_m": [
         1.0067,
@@ -219,6 +234,11 @@
         61.7131,
         44.1319
       ],
+      "bounds_origin_cm": [
+        8.2065,
+        0.8438,
+        38.1846
+      ],
       "profile_step_m": 0.25,
       "radius_profile_m": [
         1.3639,
@@ -265,6 +285,11 @@
         120.3549,
         153.2703,
         73.6597
+      ],
+      "bounds_origin_cm": [
+        14.8738,
+        14.3122,
+        72.1893
       ],
       "profile_step_m": 0.25,
       "radius_profile_m": [
@@ -314,6 +339,11 @@
         126.1077,
         124.8211,
         95.0231
+      ],
+      "bounds_origin_cm": [
+        -7.9216,
+        21.7164,
+        92.0846
       ],
       "profile_step_m": 0.25,
       "radius_profile_m": [
@@ -365,6 +395,11 @@
         37.399,
         26.9161
       ],
+      "bounds_origin_cm": [
+        4.694,
+        -2.3969,
+        25.9339
+      ],
       "profile_step_m": 0.25,
       "radius_profile_m": [
         0.729,
@@ -411,6 +446,11 @@
         60.5938,
         32.5816
       ],
+      "bounds_origin_cm": [
+        1.6764,
+        -5.4876,
+        30.7363
+      ],
       "profile_step_m": 0.25,
       "radius_profile_m": [
         0.6313,
@@ -456,6 +496,11 @@
         59.0618,
         48.4253,
         135.771
+      ],
+      "bounds_origin_cm": [
+        4.3578,
+        1.8143,
+        131.5928
       ],
       "profile_step_m": 0.25,
       "radius_profile_m": [
@@ -512,6 +557,11 @@
         194.1552,
         26.7445
       ],
+      "bounds_origin_cm": [
+        -16.169,
+        2.5099,
+        16.3056
+      ],
       "profile_step_m": 0.25,
       "radius_profile_m": [
         2.4581,
@@ -556,6 +606,11 @@
         207.9072,
         252.4266,
         161.952
+      ],
+      "bounds_origin_cm": [
+        30.5598,
+        22.8128,
+        159.0056
       ],
       "profile_step_m": 0.25,
       "radius_profile_m": [
@@ -613,6 +668,11 @@
         130.7092,
         129.3717
       ],
+      "bounds_origin_cm": [
+        -18.3349,
+        11.9172,
+        126.5057
+      ],
       "profile_step_m": 0.25,
       "radius_profile_m": [
         1.0698,
@@ -667,6 +727,11 @@
         113.6562,
         96.7874
       ],
+      "bounds_origin_cm": [
+        -14.4227,
+        -8.6807,
+        93.0472
+      ],
       "profile_step_m": 0.25,
       "radius_profile_m": [
         0.8177,
@@ -717,6 +782,11 @@
         90.3004,
         98.2827,
         116.946
+      ],
+      "bounds_origin_cm": [
+        8.5567,
+        13.8768,
+        114.531
       ],
       "profile_step_m": 0.25,
       "radius_profile_m": [
@@ -771,6 +841,11 @@
         76.1873,
         99.7056
       ],
+      "bounds_origin_cm": [
+        0.3689,
+        -9.8075,
+        97.9088
+      ],
       "profile_step_m": 0.25,
       "radius_profile_m": [
         0.402,
@@ -822,6 +897,11 @@
         62.4645,
         83.992
       ],
+      "bounds_origin_cm": [
+        -3.4286,
+        -1.7819,
+        81.8874
+      ],
       "profile_step_m": 0.25,
       "radius_profile_m": [
         0.4373,
@@ -872,6 +952,11 @@
         47.6956,
         71.1799
       ],
+      "bounds_origin_cm": [
+        -3.556,
+        5.1052,
+        69.7795
+      ],
       "profile_step_m": 0.25,
       "radius_profile_m": [
         0.237,
@@ -921,6 +1006,11 @@
         35.7935,
         51.2499
       ],
+      "bounds_origin_cm": [
+        0.2412,
+        0.2411,
+        49.8773
+      ],
       "profile_step_m": 0.25,
       "radius_profile_m": [
         0.2637,
@@ -969,6 +1059,11 @@
         24.1602,
         36.9302
       ],
+      "bounds_origin_cm": [
+        -1.0348,
+        -3.1823,
+        36.3504
+      ],
       "profile_step_m": 0.25,
       "radius_profile_m": [
         0.249,
@@ -1014,6 +1109,11 @@
         19.0858,
         16.246,
         39.3418
+      ],
+      "bounds_origin_cm": [
+        -1.7517,
+        0.7588,
+        38.7524
       ],
       "profile_step_m": 0.25,
       "radius_profile_m": [
@@ -1062,6 +1162,11 @@
         214.6239,
         227.837
       ],
+      "bounds_origin_cm": [
+        14.9357,
+        76.3612,
+        225.4267
+      ],
       "profile_step_m": 0.25,
       "radius_profile_m": [
         0.112,
@@ -1105,6 +1210,27 @@
         }
       },
       "measured_by": "scripts/measure_assets.py (glTF geometry) and scripts/import_assets.py (UE bounds)"
+    },
+    "crate": {
+      "ue_path": "/Engine/BasicShapes/Cube",
+      "base_size_m": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "pivot": "center",
+      "footprint": "box",
+      "category": "geometry",
+      "role": "obstacle",
+      "seen": null,
+      "measured_extent_cm_at_unit_scale": [
+        50.0,
+        50.0,
+        50.0
+      ],
+      "source": "Unreal Engine 5.7.4 engine content (BasicShapes); the same mesh as 'cube', as an obstacle (s07's stacked boxes, plan 5 fact 3)",
+      "licence": "Unreal Engine EULA",
+      "size_and_pivot_verified_by": "scripts/build_level.sh bounds assertion (s01's ground slab is this mesh)"
     }
   },
   "materials": {
@@ -1187,6 +1313,71 @@
         "id": "Snow006",
         "licence": "CC0-1.0"
       }
+    },
+    "red": {
+      "kind": "color_instance",
+      "ue_path": "/Game/AutoFly/Materials/MI_Red",
+      "parent": "/Engine/BasicShapes/BasicShapeMaterial",
+      "parameter": "Color",
+      "rgba": [
+        0.8,
+        0.1,
+        0.1,
+        1.0
+      ]
+    },
+    "blue": {
+      "kind": "color_instance",
+      "ue_path": "/Game/AutoFly/Materials/MI_Blue",
+      "parent": "/Engine/BasicShapes/BasicShapeMaterial",
+      "parameter": "Color",
+      "rgba": [
+        0.1,
+        0.25,
+        0.85,
+        1.0
+      ]
+    },
+    "yellow": {
+      "kind": "color_instance",
+      "ue_path": "/Game/AutoFly/Materials/MI_Yellow",
+      "parent": "/Engine/BasicShapes/BasicShapeMaterial",
+      "parameter": "Color",
+      "rgba": [
+        0.9,
+        0.8,
+        0.1,
+        1.0
+      ]
+    },
+    "green": {
+      "kind": "color_instance",
+      "ue_path": "/Game/AutoFly/Materials/MI_Green",
+      "parent": "/Engine/BasicShapes/BasicShapeMaterial",
+      "parameter": "Color",
+      "rgba": [
+        0.1,
+        0.6,
+        0.2,
+        1.0
+      ]
+    },
+    "wood": {
+      "kind": "color_instance",
+      "ue_path": "/Game/AutoFly/Materials/MI_Wood",
+      "parent": "/Engine/BasicShapes/BasicShapeMaterial",
+      "parameter": "Color",
+      "rgba": [
+        0.55,
+        0.36,
+        0.18,
+        1.0
+      ]
+    },
+    "mesh": {
+      "kind": "mesh_default",
+      "ue_path": "",
+      "note": "the mesh's own imported materials are kept (plan 5, C3b): the palette of a group of imported models"
     }
   }
 }
