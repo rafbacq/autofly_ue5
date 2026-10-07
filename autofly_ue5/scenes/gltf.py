@@ -20,6 +20,7 @@ from pathlib import Path
 import numpy as np
 
 FLOAT32 = 5126
+PROFILE_STEP_M = 0.25  # the radius-by-height profile's slice: fine enough for a 1-3 m band at any scale a scene uses
 INDEX_TYPES = {5121: np.uint8, 5123: np.uint16, 5125: np.uint32}
 TRIANGLES = 4
 
@@ -140,6 +141,29 @@ def _band_points(vertices: np.ndarray, triangles: np.ndarray, lo: float, hi: flo
     return np.concatenate([inside] + crossings) if crossings else inside
 
 
+def band_radius_from_profile(profile: list[float], step_m: float, *, s_xy: float, s_z: float,
+                             band_m: tuple[float, float]) -> float | None:
+    """The footprint radius an instance scaled by (s_xy, s_z) presents to a drone flying in `band_m`: the widest slice of
+    the unit-scale profile whose scaled height overlaps the band, times s_xy. None when the scaled model has no surface
+    in the band (it is below the drone, or the band falls in a gap of the model)."""
+    lo, hi = band_m
+    radii = [r for i, r in enumerate(profile) if r is not None and (i + 1) * step_m * s_z > lo and i * step_m * s_z < hi]
+    return max(radii) * s_xy if radii else None
+
+
+def radius_profile(mesh: MeshGeometry, step_m: float = PROFILE_STEP_M) -> list[float | None]:
+    """Max horizontal reach from the pivot axis per `step_m` slice of height from the base (y = 0, where the actor is
+    placed) to the top; None for a slice with no surface (a gap, or below a floating base)."""
+    top = float(mesh.local_vertices[:, 1].max())
+    profile: list[float | None] = []
+    k = 0
+    while k * step_m < top:
+        pts = _band_points(mesh.local_vertices, mesh.triangles, k * step_m, (k + 1) * step_m)
+        profile.append(round(float(np.hypot(pts[:, 0], pts[:, 2]).max()), 4) if len(pts) else None)
+        k += 1
+    return profile
+
+
 def measure(mesh: MeshGeometry, *, band_m: tuple[float, float] = (1.0, 3.0)) -> dict:
     """Height, extents and the flight-band footprint of a mesh in its own frame (glTF: y up, the pivot at the origin)."""
     v = mesh.local_vertices
@@ -158,6 +182,9 @@ def measure(mesh: MeshGeometry, *, band_m: tuple[float, float] = (1.0, 3.0)) -> 
         "band_radius_m": None,
         "band_centre_offset_m": None,
         "band_radius_about_centre_m": None,
+        "profile_step_m": PROFILE_STEP_M,
+        "radius_profile_m": radius_profile(mesh),
+        "ground_radius_m": round(float(np.hypot(v[:, 0], v[:, 2]).max()), 4),
     }
     if len(band):
         xz = band[:, [0, 2]]

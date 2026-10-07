@@ -96,12 +96,18 @@ class AssetEntry:
     name: str
     ue_path: str
     base_size_m: tuple[float, float, float]
-    pivot: str
+    pivot: str  # "center" (engine primitives) or "base" (imported models standing on their origin)
     footprint: str
     category: str
     role: str
     seen: bool | None
     measured_extent_cm_at_unit_scale: tuple[float, float, float] | None
+    # Imported models (plan 5, C3): the mesh's max horizontal reach from the pivot per slice of height at unit scale,
+    # from scenes/gltf.py, so the generator can find what a drone flying at 1-3 m meets at any scale; None where a slice
+    # holds no surface. ground_radius_m is the whole mesh's reach, which keeps placed meshes from interpenetrating.
+    profile_step_m: float | None = None
+    radius_profile_m: tuple[float | None, ...] | None = None
+    ground_radius_m: float | None = None
 
 
 @dataclass(frozen=True)
@@ -240,6 +246,10 @@ def load_registry(path: Path = ASSET_REGISTRY) -> AssetRegistry:
             pivot=a["pivot"], footprint=a["footprint"], category=a["category"], role=a["role"], seen=a["seen"],
             measured_extent_cm_at_unit_scale=(tuple(float(v) for v in a["measured_extent_cm_at_unit_scale"])
                                               if a["measured_extent_cm_at_unit_scale"] is not None else None),
+            profile_step_m=float(a["profile_step_m"]) if a.get("profile_step_m") is not None else None,
+            radius_profile_m=(tuple(None if v is None else float(v) for v in a["radius_profile_m"])
+                              if a.get("radius_profile_m") is not None else None),
+            ground_radius_m=float(a["ground_radius_m"]) if a.get("ground_radius_m") is not None else None,
         )
         for name, a in data["assets"].items()
     }

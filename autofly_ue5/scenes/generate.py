@@ -18,10 +18,12 @@ from __future__ import annotations
 import math
 import random
 
+from autofly_ue5.scenes.gltf import band_radius_from_profile
 from autofly_ue5.scenes.model import AssetEntry, AssetRegistry, Bounds, Instance, Layout, ObstacleGroup, SceneFile
 
 MAX_PLACEMENT_TRIES = 20_000
 SUPPORTED_FOOTPRINTS = ("circle", "box")
+SUPPORTED_PIVOTS = ("center", "base")
 
 Keepout = list[tuple[float, float, float]]  # (x, y, footprint radius) of instances already placed
 
@@ -123,19 +125,37 @@ def _partition(rng: random.Random, total: int, parts: int, size_range: tuple[int
     return sizes
 
 
-def _footprint_radius_m(asset: AssetEntry, s_xy: float) -> float:
+def _ground_radius_m(asset: AssetEntry, s_xy: float) -> float:
+    """The whole footprint on the ground: what keeps placed meshes from interpenetrating."""
+    if asset.ground_radius_m is not None:
+        return round(asset.ground_radius_m * s_xy, 4)
     if asset.footprint == "circle":
         return round(asset.base_size_m[0] * s_xy / 2.0, 4)
     return round(math.hypot(asset.base_size_m[0] * s_xy, asset.base_size_m[1] * s_xy) / 2.0, 4)  # box: circumscribed
+
+
+def _footprint_radius_m(asset: AssetEntry, s_xy: float, s_z: float = 1.0, band_m: tuple[float, float] | None = None) -> float:
+    """What the drone meets: for a measured model, the profile's reach in the flight band at this scale; for a primitive,
+    the whole footprint. Raises when a measured model has nothing in the band at this scale: it is not an obstacle to a
+    drone flying there, and a scene that lists it must scale it or leave it out."""
+    if asset.radius_profile_m is not None and band_m is not None:
+        radius = band_radius_from_profile(list(asset.radius_profile_m), asset.profile_step_m, s_xy=s_xy, s_z=s_z, band_m=band_m)
+        if radius is None:
+            raise ValueError(f"asset {asset.name!r} at scale z {s_z} is {asset.base_size_m[2] * s_z:.2f} m tall with nothing "
+                             f"in the flight band {band_m}: scale it up or leave it out")
+        return round(radius, 4)
+    return _ground_radius_m(asset, s_xy)
 
 
 def _check_group(group: ObstacleGroup, registry: AssetRegistry) -> AssetEntry:
     if group.asset not in registry.assets:
         raise ValueError(f"asset {group.asset!r} is not in the registry")
     asset = registry.assets[group.asset]
-    if asset.footprint not in SUPPORTED_FOOTPRINTS or asset.pivot != "center":
+    if asset.footprint not in SUPPORTED_FOOTPRINTS or asset.pivot not in SUPPORTED_PIVOTS:
         raise UnsupportedPlacementError(f"asset {group.asset!r} footprint={asset.footprint} pivot={asset.pivot} is not "
-                                        f"supported (footprints {SUPPORTED_FOOTPRINTS}, pivot 'center')")
+                                        f"supported (footprints {SUPPORTED_FOOTPRINTS}, pivots {SUPPORTED_PIVOTS})")
+    if group.placement["type"] == "stacks" and asset.pivot != "center":
+        raise ValueError(f"asset {group.asset!r} has pivot {asset.pivot!r}; stacks need a centre pivot to sit box on box")
     for material in group.palette:
         if material not in registry.materials:
             raise ValueError(f"material {material!r} is not in the registry")
@@ -143,12 +163,14 @@ def _check_group(group: ObstacleGroup, registry: AssetRegistry) -> AssetEntry:
 
 
 def _instance(tag: str, group: ObstacleGroup, asset: AssetEntry, x: float, y: float, *, s_xy: float, s_z: float,
-              material: str, yaw: float = 0.0, z_top_m: float = 0.0) -> Instance:
-    """One instance standing on `z_top_m` metres of whatever is below it (0: the ground)."""
+              material: str, yaw: float = 0.0, z_top_m: float = 0.0, band_m: tuple[float, float] | None = None) -> Instance:
+    """One instance standing on `z_top_m` metres of whatever is below it (0: the ground). `z_center` is the actor's NED
+    z: the centre of a centre-pivot primitive, the base of a base-pivot model."""
     height = round(asset.base_size_m[2] * s_z, 4)
+    z = -(z_top_m + height / 2.0) if asset.pivot == "center" else -z_top_m
     return Instance(
-        tag=tag, asset=group.asset, x=round(x, 4), y=round(y, 4), z_center=round(-(z_top_m + height / 2.0), 4),
-        yaw=yaw, scale=(s_xy, s_xy, s_z), material=material, radius_m=_footprint_radius_m(asset, s_xy), height_m=height,
+        tag=tag, asset=group.asset, x=round(x, 4), y=round(y, 4), z_center=round(z, 4),
+        yaw=yaw, scale=(s_xy, s_xy, s_z), material=material, radius_m=_footprint_radius_m(asset, s_xy, s_z, band_m), height_m=height,
     )
 
 
@@ -156,12 +178,18 @@ def generate_layout(scene: SceneFile, registry: AssetRegistry, seed: int | None 
     used_seed = scene.seed if seed is None else seed
     rng = random.Random(used_seed)
     instances: list[Instance] = []
+    ground: Keepout = []  # every placed instance's footprint on the ground, which spacing uses (not the flight-band one)
+    band = scene.altitude_band
     for group in scene.obstacle_groups:
         asset = _check_group(group, registry)
         placement = group.placement["type"]
-        keepout: Keepout = [(i.x, i.y, i.radius_m) for i in instances]
-        radius_max = _footprint_radius_m(asset, group.scale_xy[1])  # spacing uses the largest footprint the group can draw
+        keepout: Keepout = list(ground)
+        radius_max = _ground_radius_m(asset, group.scale_xy[1])  # spacing uses the largest footprint the group can draw
         tag = lambda: f"obs_{len(instances):04d}"  # noqa: E731
+
+        def place(inst: Instance) -> None:
+            instances.append(inst)
+            ground.append((inst.x, inst.y, _ground_radius_m(asset, inst.scale[0])))
 
         def draw_standing(x: float, y: float, *, random_yaw: bool) -> Instance:
             # The pinned draw order of a grid instance: position first, then x-y scale, z scale, material. Scattered and
@@ -170,7 +198,7 @@ def generate_layout(scene: SceneFile, registry: AssetRegistry, seed: int | None 
             s_z = round(rng.uniform(*group.scale_z), 4)
             material = rng.choice(group.palette)
             yaw = round(rng.uniform(-math.pi, math.pi), 4) if random_yaw else 0.0
-            return _instance(tag(), group, asset, x, y, s_xy=s_xy, s_z=s_z, material=material, yaw=yaw)
+            return _instance(tag(), group, asset, x, y, s_xy=s_xy, s_z=s_z, material=material, yaw=yaw, band_m=band)
 
         if placement == "jittered_grid":
             points = jittered_grid(rng, scene.bounds, group.count, group.placement["margin_m"], group.placement["jitter_m"])
@@ -179,19 +207,19 @@ def generate_layout(scene: SceneFile, registry: AssetRegistry, seed: int | None 
                     raise ValueError(f"group {group.asset!r}: a jittered_grid point at ({x:.1f}, {y:.1f}) would overlap an "
                                      f"earlier group's obstacle; a grid cannot move its points, so place it first or widen "
                                      f"its margin")
-                instances.append(draw_standing(x, y, random_yaw=False))
+                place(draw_standing(x, y, random_yaw=False))
         elif placement == "poisson":
             points = poisson(rng, scene.bounds, group.count, group.placement["margin_m"], group.placement["min_distance_m"],
                              keepout=keepout, radius_m=radius_max)
             for x, y in points:
-                instances.append(draw_standing(x, y, random_yaw=True))
+                place(draw_standing(x, y, random_yaw=True))
         elif placement == "clusters":
             p = group.placement
             _centres, members = clusters(rng, scene.bounds, group.count, p["margin_m"], p["cluster_count"],
                                          (p["per_cluster"][0], p["per_cluster"][1]), p["radius_m"],
                                          keepout=keepout, member_radius_m=radius_max)
             for x, y in (point for group_points in members for point in group_points):
-                instances.append(draw_standing(x, y, random_yaw=True))
+                place(draw_standing(x, y, random_yaw=True))
         elif placement == "stacks":
             p = group.placement
             heights = _partition(rng, group.count, p["stack_count"], (p["height_range"][0], p["height_range"][1]), what="stack")
@@ -204,7 +232,7 @@ def generate_layout(scene: SceneFile, registry: AssetRegistry, seed: int | None 
                     s_z = round(rng.uniform(*group.scale_z), 4)
                     box = _instance(tag(), group, asset, x, y, s_xy=s_xy, s_z=s_z, material=rng.choice(group.palette), yaw=yaw,
                                     z_top_m=z_top)
-                    instances.append(box)
+                    place(box)
                     z_top += box.height_m
         else:  # the schema admits no other type; a new one must be placed here before a scene may use it
             raise UnsupportedPlacementError(f"placement '{placement}' is not implemented")

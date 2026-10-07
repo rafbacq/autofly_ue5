@@ -132,3 +132,31 @@ def test_the_measurement_script_records_every_model_of_the_sources(tmp_path):
     assert [m["asset"] for m in report["meshes"]] == ["demo", "demo"] and [m["node"] for m in report["meshes"]] == ["demo_a", "demo_b"]
     assert report["meshes"][0]["band_radius_m"] == pytest.approx(0.3) and report["meshes"][1]["band_radius_m"] is None
     assert report["band_m"] == [1.0, 3.0]
+
+
+def test_the_radius_profile_gives_the_footprint_at_any_scale(tmp_path):
+    from autofly_ue5.scenes.gltf import PROFILE_STEP_M, band_radius_from_profile, load_meshes, measure
+
+    trunk = _column(0.15, 5.0)
+    canopy = _column(1.4, 2.0, base=1.8)
+    _write_gltf(tmp_path / "tree.gltf", [("tree", _join(trunk, canopy), None)])
+    (mesh,) = load_meshes(tmp_path / "tree.gltf")
+    m = measure(mesh)
+    profile = m["radius_profile_m"]
+    assert PROFILE_STEP_M == 0.25 and len(profile) == 20, "one entry per 0.25 m slice from the base to the 5 m top"
+    assert profile[0] == pytest.approx(0.15) and profile[4] == pytest.approx(0.15), "trunk only below 1.8 m"
+    assert profile[8] == pytest.approx(1.4) and profile[15] == pytest.approx(1.4), "canopy from 1.8 to 3.8 m"
+    assert profile[19] == pytest.approx(0.15), "trunk only above the canopy"
+    # the flight band 1-3 m on the model at unit scale: the canopy; scaled to 0.4, the whole tree is 2 m tall and the
+    # band 1-3 m maps to 2.5-7.5 m of the model, which holds only the canopy top and the trunk
+    assert band_radius_from_profile(profile, PROFILE_STEP_M, s_xy=1.0, s_z=1.0, band_m=(1.0, 3.0)) == pytest.approx(1.4)
+    assert band_radius_from_profile(profile, PROFILE_STEP_M, s_xy=2.0, s_z=1.0, band_m=(1.0, 3.0)) == pytest.approx(2.8)
+    assert band_radius_from_profile(profile, PROFILE_STEP_M, s_xy=1.0, s_z=0.4, band_m=(1.0, 3.0)) == pytest.approx(1.4)
+    assert band_radius_from_profile(profile, PROFILE_STEP_M, s_xy=1.0, s_z=0.3, band_m=(1.0, 3.0)) == pytest.approx(1.4), \
+        "at 0.3 the band is the model's 3.33-10 m: the canopy top (to 3.8 m) is still in it"
+    assert band_radius_from_profile(profile, PROFILE_STEP_M, s_xy=1.0, s_z=0.25, band_m=(1.0, 3.0)) == pytest.approx(0.15), \
+        "at 0.25 the band is the model's 4-12 m: above the canopy, only the trunk's top metre"
+    assert band_radius_from_profile(profile, PROFILE_STEP_M, s_xy=1.0, s_z=0.1, band_m=(1.0, 3.0)) is None, "0.5 m tall: below the band"
+    rock = measure(load_meshes(tmp_path / "tree.gltf")[0])  # reuse: a 1 m 'rock' is a scaled-down tree for this purpose
+    assert band_radius_from_profile(rock["radius_profile_m"], PROFILE_STEP_M, s_xy=3.0, s_z=0.6, band_m=(1.0, 3.0)) == pytest.approx(4.2), \
+        "scaled 3x wide and to 3 m tall: the canopy (1.8-3.8 m -> 1.08-2.28 m) is in the band at 3 x 1.4"

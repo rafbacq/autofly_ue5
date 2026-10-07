@@ -263,3 +263,89 @@ def test_errors_name_the_cause_for_inputs_the_schema_admits(tmp_path):
                                                       "per_cluster": [8, 4], "radius_m": 3.0})], scene_id="s06")
     with pytest.raises(SceneFileError, match="height_range"):
         _scene(tmp_path, [_group(count=8, placement={"type": "stacks", "margin_m": 8.0, "stack_count": 2, "height_range": [5, 2]})])
+
+
+# ------------------------------------------------------------------------------------------------------------------
+# M4: imported models with a radius-by-height profile and a base pivot (scenes/gltf.py, assets/measurements.json).
+# ------------------------------------------------------------------------------------------------------------------
+
+
+def _registry_with_tree():
+    """The real registry plus a tree measured like scenes/gltf.py measures: a thin trunk to 1.25 m, a 1.4 m canopy from
+    1.25 to 3.5 m, 3.5 m tall, the pivot at its base; and a rock that is 1.0 m tall at unit scale."""
+    import dataclasses
+
+    from autofly_ue5.scenes.model import AssetEntry
+
+    registry = load_registry()
+    tree = AssetEntry(name="tree", ue_path="/Game/AutoFly/Assets/tree/tree", base_size_m=(2.8, 2.8, 3.5), pivot="base",
+                      footprint="circle", category="nature", role="obstacle", seen=None, measured_extent_cm_at_unit_scale=None,
+                      profile_step_m=0.25, radius_profile_m=(0.15,) * 5 + (1.4,) * 9, ground_radius_m=1.4)
+    rock = AssetEntry(name="rock", ue_path="/Game/AutoFly/Assets/rock/rock", base_size_m=(1.3, 1.8, 1.0), pivot="base",
+                      footprint="circle", category="nature", role="obstacle", seen=None, measured_extent_cm_at_unit_scale=None,
+                      profile_step_m=0.25, radius_profile_m=(0.95, 0.9, 0.85, 0.6), ground_radius_m=0.95)
+    return dataclasses.replace(registry, assets={**registry.assets, "tree": tree, "rock": rock})
+
+
+def test_a_profiled_asset_s_footprint_is_what_the_flight_band_meets_at_its_scale(tmp_path):
+    scene = _scene(tmp_path, [_group(asset="tree", count=12, xy=(1.0, 1.0), z=(1.0, 1.0),
+                                     placement={"type": "poisson", "margin_m": 8.0, "min_distance_m": 6.0})], scene_id="s02")
+    layout = generate_layout(scene, _registry_with_tree())
+    assert len(layout.instances) == 12
+    for inst in layout.instances:
+        assert inst.radius_m == pytest.approx(1.4), "the canopy fills the 1-3 m band at unit scale"
+        assert inst.height_m == pytest.approx(3.5) and inst.z_center == 0.0, "a base pivot stands on the ground"
+    halved = _scene(tmp_path, [_group(asset="tree", count=12, xy=(1.0, 1.0), z=(0.3, 0.3),
+                                      placement={"type": "poisson", "margin_m": 8.0, "min_distance_m": 6.0})], scene_id="s02")
+    for inst in generate_layout(halved, _registry_with_tree()).instances:
+        assert inst.radius_m == pytest.approx(1.4), "at 0.3 the tree is 1.05 m tall: its canopy top (1.25-3.5 -> 0.375-1.05 m) still reaches 1 m"
+    tiny = _scene(tmp_path, [_group(asset="tree", count=4, xy=(1.0, 1.0), z=(0.2, 0.2),
+                                    placement={"type": "poisson", "margin_m": 8.0, "min_distance_m": 6.0})], scene_id="s02")
+    with pytest.raises(ValueError, match="flight band"):
+        generate_layout(tiny, _registry_with_tree())  # 0.7 m tall: below the band, no obstacle to the drone
+
+
+def test_scaled_rocks_present_their_scaled_profile_and_unscaled_rocks_are_refused(tmp_path):
+    big = _scene(tmp_path, [_group(asset="rock", count=20, xy=(2.0, 3.0), z=(2.0, 3.0),
+                                   placement={"type": "poisson", "margin_m": 8.0, "min_distance_m": 7.0})], scene_id="s05")
+    layout = generate_layout(big, _registry_with_tree())
+    for inst in layout.instances:
+        s_xy, _s, s_z = inst.scale
+        # 1-3 m at scale s_z is the model's 1/s_z to 3/s_z; a 1 m rock scaled 2-3x spans that with its slices 0.33+ m
+        assert 0.6 * s_xy - 1e-6 <= inst.radius_m <= 0.95 * s_xy + 1e-6
+        assert inst.height_m == pytest.approx(1.0 * s_z)
+    natural = _scene(tmp_path, [_group(asset="rock", count=5, xy=(1.0, 1.0), z=(1.0, 1.0))], scene_id="s03")
+    with pytest.raises(ValueError, match="flight band"):
+        generate_layout(natural, _registry_with_tree())
+
+
+def test_placement_spacing_uses_the_ground_footprint_so_meshes_never_interpenetrate(tmp_path):
+    # At scale 0.3 the tree's band radius is 1.4 but its ground radius is also 1.4 x 1.0: here make the band radius small
+    # by using the rock scaled tall and thin: band radius comes from the upper, narrower slices; ground radius from the base
+    scene = _scene(tmp_path, [_group(asset="rock", count=40, xy=(1.0, 1.0), z=(3.0, 3.0),
+                                     placement={"type": "poisson", "margin_m": 8.0, "min_distance_m": 0.5})], scene_id="s05")
+    layout = generate_layout(scene, _registry_with_tree())
+    for a, b in itertools.combinations(layout.instances, 2):
+        assert math.hypot(a.x - b.x, a.y - b.y) >= 2 * 0.95 - 1e-9, "centres at least two ground radii apart"
+
+
+def test_the_registry_reads_profiles_and_stacks_refuse_a_base_pivot(tmp_path):
+    import dataclasses
+
+    from autofly_ue5.scenes.model import load_registry as load
+
+    data = json.loads((SCENES_DIR.parent / "assets" / "registry.json").read_text())
+    data["assets"]["tree"] = {"ue_path": "/Game/AutoFly/Assets/tree/tree", "base_size_m": [2.8, 2.8, 3.5], "pivot": "base",
+                              "footprint": "circle", "category": "nature", "role": "obstacle", "seen": None,
+                              "measured_extent_cm_at_unit_scale": [140.0, 140.0, 175.0], "profile_step_m": 0.25,
+                              "radius_profile_m": [0.15] * 5 + [1.4] * 9, "ground_radius_m": 1.4}
+    path = tmp_path / "registry.json"
+    path.write_text(json.dumps(data))
+    registry = load(path)
+    assert registry.assets["tree"].radius_profile_m == (0.15,) * 5 + (1.4,) * 9 and registry.assets["tree"].ground_radius_m == 1.4
+    assert registry.assets["cylinder"].radius_profile_m is None, "engine primitives have none"
+    boxes = _registry_with_box()
+    based = dataclasses.replace(boxes, assets={**boxes.assets, "crate": dataclasses.replace(boxes.assets["crate"], pivot="base")})
+    with pytest.raises(ValueError, match="pivot"):
+        generate_layout(_scene(tmp_path, [_group(asset="crate", count=10, placement={"type": "stacks", "margin_m": 8.0,
+                                                                                      "stack_count": 3, "height_range": [2, 5]})]), based)

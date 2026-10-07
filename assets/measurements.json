@@ -1,6 +1,6 @@
 {
   "format": "autofly_ue5_asset_measurements/1",
-  "measured": "2026-10-07 14:00:19",
+  "measured": "2026-10-07 17:22:05",
   "sources": "/home/nvidiasims/research_uav/autofly_ue5/assets/sources.json",
   "band_m": [
     1.0,
@@ -36,7 +36,15 @@
       "band_vertex_share": 0.0,
       "band_radius_m": null,
       "band_centre_offset_m": null,
-      "band_radius_about_centre_m": null
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.9614,
+        0.9044,
+        0.8937,
+        0.7953
+      ],
+      "ground_radius_m": 0.9671
     },
     {
       "asset": "island_tree_02",
@@ -66,7 +74,25 @@
       "band_vertex_share": 0.9743,
       "band_radius_m": 3.3162,
       "band_centre_offset_m": 0.9226,
-      "band_radius_about_centre_m": 2.6426
+      "band_radius_about_centre_m": 2.6426,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.4072,
+        0.3816,
+        0.6033,
+        0.8231,
+        0.9495,
+        2.4707,
+        2.9327,
+        3.0013,
+        3.1538,
+        3.1529,
+        3.1813,
+        3.3162,
+        3.2338,
+        2.5347
+      ],
+      "ground_radius_m": 3.3162
     },
     {
       "asset": "island_tree_03",
@@ -96,7 +122,22 @@
       "band_vertex_share": 0.7688,
       "band_radius_m": 2.2136,
       "band_centre_offset_m": 1.0115,
-      "band_radius_about_centre_m": 1.5736
+      "band_radius_about_centre_m": 1.5736,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        1.0067,
+        1.3136,
+        1.4316,
+        1.9613,
+        2.1999,
+        2.2136,
+        2.1781,
+        2.1706,
+        1.8388,
+        0.6243,
+        0.3166
+      ],
+      "ground_radius_m": 2.2136
     },
     {
       "asset": "namaqualand_boulder_02",
@@ -126,7 +167,15 @@
       "band_vertex_share": 0.0,
       "band_radius_m": null,
       "band_centre_offset_m": null,
-      "band_radius_about_centre_m": null
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        1.3639,
+        1.2943,
+        1.1472,
+        0.6127
+      ],
+      "ground_radius_m": 1.381
     },
     {
       "asset": "namaqualand_boulder_03",
@@ -156,7 +205,17 @@
       "band_vertex_share": 0.3322,
       "band_radius_m": 1.3916,
       "band_centre_offset_m": 0.1575,
-      "band_radius_about_centre_m": 1.3521
+      "band_radius_about_centre_m": 1.3521,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        1.684,
+        1.6575,
+        1.5266,
+        1.3912,
+        1.3916,
+        1.1556
+      ],
+      "ground_radius_m": 1.684
     },
     {
       "asset": "namaqualand_boulder_04",
@@ -186,7 +245,19 @@
       "band_vertex_share": 0.4073,
       "band_radius_m": 1.4158,
       "band_centre_offset_m": 0.3082,
-      "band_radius_about_centre_m": 1.1595
+      "band_radius_about_centre_m": 1.1595,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        1.4599,
+        1.4322,
+        1.4768,
+        1.4686,
+        1.4158,
+        1.3016,
+        1.2636,
+        1.0856
+      ],
+      "ground_radius_m": 1.4768
     },
     {
       "asset": "namaqualand_boulder_05",
@@ -216,7 +287,14 @@
       "band_vertex_share": 0.0,
       "band_radius_m": null,
       "band_centre_offset_m": null,
-      "band_radius_about_centre_m": null
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.729,
+        0.727,
+        0.3229
+      ],
+      "ground_radius_m": 0.729
     },
     {
       "asset": "namaqualand_boulder_06",
@@ -246,7 +324,14 @@
       "band_vertex_share": 0.0,
       "band_radius_m": null,
       "band_centre_offset_m": null,
-      "band_radius_about_centre_m": null
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.6313,
+        0.6646,
+        0.637
+      ],
+      "ground_radius_m": 0.6646
     },
     {
       "asset": "quiver_tree_01",
@@ -276,7 +361,22 @@
       "band_vertex_share": 0.9284,
       "band_radius_m": 0.672,
       "band_centre_offset_m": 0.0472,
-      "band_radius_about_centre_m": 0.6517
+      "band_radius_about_centre_m": 0.6517,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.1282,
+        0.1247,
+        0.1199,
+        0.1134,
+        0.0944,
+        0.1002,
+        0.1142,
+        0.3381,
+        0.5766,
+        0.672,
+        0.618
+      ],
+      "ground_radius_m": 0.672
     },
     {
       "asset": "sand_rocks_small_01",
@@ -306,7 +406,13 @@
       "band_vertex_share": 0.0,
       "band_radius_m": null,
       "band_centre_offset_m": null,
-      "band_radius_about_centre_m": null
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        2.4581,
+        1.7595
+      ],
+      "ground_radius_m": 2.4752
     },
     {
       "asset": "searsia_burchellii",
@@ -336,7 +442,24 @@
       "band_vertex_share": 0.8617,
       "band_radius_m": 2.8942,
       "band_centre_offset_m": 0.3814,
-      "band_radius_about_centre_m": 2.7134
+      "band_radius_about_centre_m": 2.7134,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        1.3248,
+        1.9317,
+        2.3422,
+        2.5772,
+        2.7269,
+        2.8571,
+        2.8942,
+        2.649,
+        2.6128,
+        2.3608,
+        1.2217,
+        1.0041,
+        0.906
+      ],
+      "ground_radius_m": 2.8942
     },
     {
       "asset": "searsia_burchellii",
@@ -366,7 +489,22 @@
       "band_vertex_share": 0.7834,
       "band_radius_m": 2.0029,
       "band_centre_offset_m": 0.2189,
-      "band_radius_about_centre_m": 1.8662
+      "band_radius_about_centre_m": 1.8662,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        1.0698,
+        1.4107,
+        1.5988,
+        1.725,
+        1.75,
+        1.5474,
+        1.5595,
+        2.0029,
+        1.419,
+        1.2292,
+        1.2151
+      ],
+      "ground_radius_m": 2.0029
     },
     {
       "asset": "searsia_burchellii",
@@ -396,7 +534,19 @@
       "band_vertex_share": 0.3816,
       "band_radius_m": 1.0538,
       "band_centre_offset_m": 0.199,
-      "band_radius_about_centre_m": 0.8939
+      "band_radius_about_centre_m": 0.8939,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.8177,
+        1.1294,
+        1.2237,
+        1.2194,
+        1.0538,
+        0.7935,
+        0.8509,
+        0.6562
+      ],
+      "ground_radius_m": 1.2237
     },
     {
       "asset": "searsia_lucida",
@@ -426,7 +576,21 @@
       "band_vertex_share": 0.7292,
       "band_radius_m": 1.184,
       "band_centre_offset_m": 0.163,
-      "band_radius_about_centre_m": 1.2332
+      "band_radius_about_centre_m": 1.2332,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.3888,
+        0.8122,
+        1.0125,
+        1.0685,
+        1.184,
+        1.0798,
+        1.1223,
+        0.9776,
+        0.7524,
+        0.2498
+      ],
+      "ground_radius_m": 1.184
     },
     {
       "asset": "searsia_lucida",
@@ -456,7 +620,19 @@
       "band_vertex_share": 0.6743,
       "band_radius_m": 0.8899,
       "band_centre_offset_m": 0.0981,
-      "band_radius_about_centre_m": 0.8693
+      "band_radius_about_centre_m": 0.8693,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.402,
+        0.7652,
+        0.8338,
+        0.8358,
+        0.7999,
+        0.8899,
+        0.883,
+        0.4423
+      ],
+      "ground_radius_m": 0.8899
     },
     {
       "asset": "searsia_lucida",
@@ -486,7 +662,18 @@
       "band_vertex_share": 0.4379,
       "band_radius_m": 0.9258,
       "band_centre_offset_m": 0.0435,
-      "band_radius_about_centre_m": 0.9679
+      "band_radius_about_centre_m": 0.9679,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.4373,
+        0.5798,
+        0.6551,
+        0.8639,
+        0.9258,
+        0.909,
+        0.4683
+      ],
+      "ground_radius_m": 0.9258
     },
     {
       "asset": "searsia_lucida",
@@ -516,7 +703,17 @@
       "band_vertex_share": 0.1675,
       "band_radius_m": 0.5739,
       "band_centre_offset_m": 0.1126,
-      "band_radius_about_centre_m": 0.4942
+      "band_radius_about_centre_m": 0.4942,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.237,
+        0.5219,
+        0.5507,
+        0.5923,
+        0.5739,
+        0.4132
+      ],
+      "ground_radius_m": 0.5923
     },
     {
       "asset": "searsia_lucida",
@@ -546,7 +743,16 @@
       "band_vertex_share": 0.0006,
       "band_radius_m": 0.3308,
       "band_centre_offset_m": 0.3026,
-      "band_radius_about_centre_m": 0.0486
+      "band_radius_about_centre_m": 0.0486,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.2637,
+        0.5125,
+        0.5494,
+        0.3694,
+        0.3308
+      ],
+      "ground_radius_m": 0.5494
     },
     {
       "asset": "searsia_lucida",
@@ -576,7 +782,14 @@
       "band_vertex_share": 0.0,
       "band_radius_m": null,
       "band_centre_offset_m": null,
-      "band_radius_about_centre_m": null
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.249,
+        0.3454,
+        0.317
+      ],
+      "ground_radius_m": 0.3454
     },
     {
       "asset": "searsia_lucida",
@@ -606,7 +819,15 @@
       "band_vertex_share": 0.0,
       "band_radius_m": null,
       "band_centre_offset_m": null,
-      "band_radius_about_centre_m": null
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.1428,
+        0.2104,
+        0.2008,
+        0.2191
+      ],
+      "ground_radius_m": 0.2191
     },
     {
       "asset": "tree_small_02",
@@ -636,7 +857,30 @@
       "band_vertex_share": 0.2439,
       "band_radius_m": 2.7504,
       "band_centre_offset_m": 0.6966,
-      "band_radius_about_centre_m": 2.2016
+      "band_radius_about_centre_m": 2.2016,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.112,
+        0.1301,
+        0.1898,
+        0.1881,
+        0.2698,
+        1.1725,
+        1.172,
+        1.3348,
+        1.8487,
+        1.935,
+        2.6677,
+        2.7504,
+        2.9249,
+        2.8751,
+        2.7889,
+        2.7689,
+        2.5302,
+        2.2259,
+        1.0183
+      ],
+      "ground_radius_m": 2.9249
     }
   ]
 }
