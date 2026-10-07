@@ -21,9 +21,9 @@ def check(ok, what):
 
 
 def make_material(entry, ass):
-    if entry["kind"] == "engine":
+    if entry["kind"] in ("engine", "textured"):  # textured: a Material asset scripts/import_assets.py built from an ambientCG set
         material = unreal.load_asset(entry["ue_path"])
-        check(material is not None, "engine material " + entry["ue_path"])
+        check(material is not None, entry["kind"] + " material " + entry["ue_path"])
         return material
     check(entry["kind"] == "color_instance", "unknown material kind " + str(entry["kind"]))
     folder, name = entry["ue_path"].rsplit("/", 1)

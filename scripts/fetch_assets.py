@@ -145,7 +145,7 @@ def _polyhaven(entry: dict, downloads: Path, web, previous: dict | None, log) ->
 
 
 def _ambientcg(entry: dict, downloads: Path, web, previous: dict | None, log) -> dict:
-    api = web.json(f"https://ambientcg.com/api/v2/full_json?id={entry['id']}&include=downloadData,displayData,tagData")
+    api = web.json(f"https://ambientcg.com/api/v2/full_json?id={entry['id']}&include=downloadData,displayData,tagData,dimensionsData")
     found = api.get("foundAssets") or []
     if not found:
         raise ValueError(f"ambientCG has no asset {entry['id']!r}")
@@ -163,8 +163,10 @@ def _ambientcg(entry: dict, downloads: Path, web, previous: dict | None, log) ->
         members = [m for m in z.namelist() if not m.endswith("/")]
         if not all((root / m).is_file() for m in members):
             z.extractall(root)
+    dims = [asset.get("dimensionX"), asset.get("dimensionY")]  # the material's real size in cm, for the ground's tiling
     return {**entry, "licence": LICENCE, "licence_url": "https://docs.ambientcg.com/license/", "name": asset.get("displayName"),
             "tags": asset.get("tags"), "page": f"https://ambientcg.com/a/{entry['id']}",
+            "dimensions_cm": dims if all(d is not None for d in dims) else None,
             "files": [{"path": name, "url": item["downloadLink"], "size": item.get("size"), "md5": None, "sha256": sha,
                        "unpacked": sorted(members)}]}
 

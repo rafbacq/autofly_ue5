@@ -42,6 +42,7 @@ class _FakeWeb:
             return {"name": "Fir Tree 01", "authors": {"Rob Tuytel": "photography"}, "categories": ["trees"], "dimensions": [2673.0, 654.0, 1926.0]}
         if "ambientcg.com/api" in url:
             return {"foundAssets": [{"assetId": "PavingStones070", "displayName": "Paving Stones 070", "tags": ["paving"],
+                                     "dimensionX": 115, "dimensionY": 115,
                                      "downloadFolders": {"default": {"downloadFiletypeCategories": {"zip": {"downloads": [
                                          {"attribute": "1K-JPG", "downloadLink": "https://ambientcg.com/get?file=PavingStones070_1K-JPG.zip", "size": 1},
                                          {"attribute": "2K-JPG", "downloadLink": "https://ambientcg.com/get?file=PavingStones070_2K-JPG.zip",
@@ -70,6 +71,7 @@ def test_models_and_materials_are_fetched_checked_recorded_and_not_fetched_twice
     assert (tmp_path / "downloads" / "polyhaven" / "fir_tree_01" / "textures" / "fir_diff_2k.jpg").read_bytes() == b"jpg-body"
     paving = next(a for a in saved["assets"] if a["id"] == "PavingStones070")
     assert paving["files"][0]["path"] == "PavingStones070_2K-JPG.zip" and paving["files"][0]["sha256"] == hashlib.sha256(web.zip_bytes).hexdigest()
+    assert paving["dimensions_cm"] == [115, 115]
     assert sorted(p.name for p in (tmp_path / "downloads" / "ambientcg" / "PavingStones070").iterdir()) == [
         "PavingStones070_2K-JPG.zip", "PavingStones070_2K_Color.jpg", "PavingStones070_2K_NormalGL.jpg"], "the zip is unpacked beside itself"
     downloads_first = [u for u in web.fetched if u.startswith("https://dl/") or "get?file" in u]
