@@ -1,0 +1,642 @@
+{
+  "format": "autofly_ue5_asset_measurements/1",
+  "measured": "2026-10-07 14:00:19",
+  "sources": "/home/nvidiasims/research_uav/autofly_ue5/assets/sources.json",
+  "band_m": [
+    1.0,
+    3.0
+  ],
+  "frame": "glTF: x right, y up, z towards the viewer; metres",
+  "meshes": [
+    {
+      "asset": "boulder_01",
+      "source": "polyhaven",
+      "file": "boulder_01_2k.gltf",
+      "node": "boulder_01",
+      "mesh": "rock_PROXY_5m.002",
+      "node_transformed": false,
+      "vertices": 67042,
+      "triangles": 66122,
+      "extent_m": [
+        1.2721,
+        1.0038,
+        1.8303
+      ],
+      "base_m": -0.0736,
+      "top_m": 0.9302,
+      "height_m": 1.0038,
+      "pivot_offset_xz_m": [
+        -0.1121,
+        -0.0333
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null
+    },
+    {
+      "asset": "island_tree_02",
+      "source": "polyhaven",
+      "file": "island_tree_02_2k.gltf",
+      "node": "island_tree_02_LOD0",
+      "mesh": "mesh.001",
+      "node_transformed": false,
+      "vertices": 874494,
+      "triangles": 1072213,
+      "extent_m": [
+        4.2077,
+        3.4066,
+        4.0707
+      ],
+      "base_m": -0.017,
+      "top_m": 3.3896,
+      "height_m": 3.4066,
+      "pivot_offset_xz_m": [
+        0.0515,
+        0.9212
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.9743,
+      "band_radius_m": 3.3162,
+      "band_centre_offset_m": 0.9226,
+      "band_radius_about_centre_m": 2.6426
+    },
+    {
+      "asset": "island_tree_03",
+      "source": "polyhaven",
+      "file": "island_tree_03_2k.gltf",
+      "node": "island_tree_03_LOD0",
+      "mesh": "mesh.002",
+      "node_transformed": false,
+      "vertices": 1708346,
+      "triangles": 2085320,
+      "extent_m": [
+        2.9721,
+        2.6151,
+        2.9132
+      ],
+      "base_m": -0.0135,
+      "top_m": 2.6016,
+      "height_m": 2.6151,
+      "pivot_offset_xz_m": [
+        0.6737,
+        0.213
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.7688,
+      "band_radius_m": 2.2136,
+      "band_centre_offset_m": 1.0115,
+      "band_radius_about_centre_m": 1.5736
+    },
+    {
+      "asset": "namaqualand_boulder_02",
+      "source": "polyhaven",
+      "file": "namaqualand_boulder_02_2k.gltf",
+      "node": "boulder_02",
+      "mesh": "boulder_02_5m",
+      "node_transformed": false,
+      "vertices": 53437,
+      "triangles": 97964,
+      "extent_m": [
+        2.5321,
+        0.8826,
+        1.2343
+      ],
+      "base_m": -0.0595,
+      "top_m": 0.8232,
+      "height_m": 0.8826,
+      "pivot_offset_xz_m": [
+        0.0821,
+        0.0084
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null
+    },
+    {
+      "asset": "namaqualand_boulder_03",
+      "source": "polyhaven",
+      "file": "namaqualand_boulder_03_2k.gltf",
+      "node": "boulder_03_LOD0",
+      "mesh": "realCap_Model_2",
+      "node_transformed": false,
+      "vertices": 33166,
+      "triangles": 64826,
+      "extent_m": [
+        2.4071,
+        1.4732,
+        3.0654
+      ],
+      "base_m": -0.0147,
+      "top_m": 1.4585,
+      "height_m": 1.4732,
+      "pivot_offset_xz_m": [
+        0.1487,
+        0.1431
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.3322,
+      "band_radius_m": 1.3916,
+      "band_centre_offset_m": 0.1575,
+      "band_radius_about_centre_m": 1.3521
+    },
+    {
+      "asset": "namaqualand_boulder_04",
+      "source": "polyhaven",
+      "file": "namaqualand_boulder_04_2k.gltf",
+      "node": "boulder_04",
+      "mesh": "realCap_Model_2",
+      "node_transformed": false,
+      "vertices": 30165,
+      "triangles": 59066,
+      "extent_m": [
+        2.5222,
+        1.9005,
+        2.4964
+      ],
+      "base_m": -0.0294,
+      "top_m": 1.8711,
+      "height_m": 1.9005,
+      "pivot_offset_xz_m": [
+        -0.0792,
+        0.2172
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.4073,
+      "band_radius_m": 1.4158,
+      "band_centre_offset_m": 0.3082,
+      "band_radius_about_centre_m": 1.1595
+    },
+    {
+      "asset": "namaqualand_boulder_05",
+      "source": "polyhaven",
+      "file": "namaqualand_boulder_05_2k.gltf",
+      "node": "namaqualand_boulder_05",
+      "mesh": "Boulder",
+      "node_transformed": false,
+      "vertices": 46185,
+      "triangles": 89618,
+      "extent_m": [
+        1.364,
+        0.5383,
+        0.748
+      ],
+      "base_m": -0.0098,
+      "top_m": 0.5285,
+      "height_m": 0.5383,
+      "pivot_offset_xz_m": [
+        0.0469,
+        -0.024
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null
+    },
+    {
+      "asset": "namaqualand_boulder_06",
+      "source": "polyhaven",
+      "file": "namaqualand_boulder_06_2k.gltf",
+      "node": "namaqualand_boulder_06",
+      "mesh": "mesh_boulder_01_5m",
+      "node_transformed": false,
+      "vertices": 56521,
+      "triangles": 109114,
+      "extent_m": [
+        0.675,
+        0.6516,
+        1.2119
+      ],
+      "base_m": -0.0185,
+      "top_m": 0.6332,
+      "height_m": 0.6516,
+      "pivot_offset_xz_m": [
+        0.0168,
+        -0.0549
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null
+    },
+    {
+      "asset": "quiver_tree_01",
+      "source": "polyhaven",
+      "file": "quiver_tree_01_2k.gltf",
+      "node": "quiver_tree_01",
+      "mesh": "realCap_Model_1.009",
+      "node_transformed": false,
+      "vertices": 88548,
+      "triangles": 150124,
+      "extent_m": [
+        1.1812,
+        2.7154,
+        0.9685
+      ],
+      "base_m": -0.0418,
+      "top_m": 2.6736,
+      "height_m": 2.7154,
+      "pivot_offset_xz_m": [
+        0.0436,
+        0.0181
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.9284,
+      "band_radius_m": 0.672,
+      "band_centre_offset_m": 0.0472,
+      "band_radius_about_centre_m": 0.6517
+    },
+    {
+      "asset": "sand_rocks_small_01",
+      "source": "polyhaven",
+      "file": "sand_rocks_small_01_2k.gltf",
+      "node": "sand_rocks_small_01_LOD0",
+      "mesh": "sand_rocks_small_type_01_remesh.001",
+      "node_transformed": false,
+      "vertices": 386857,
+      "triangles": 739469,
+      "extent_m": [
+        4.6266,
+        0.5349,
+        3.8831
+      ],
+      "base_m": -0.1044,
+      "top_m": 0.4305,
+      "height_m": 0.5349,
+      "pivot_offset_xz_m": [
+        -0.1617,
+        0.0251
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null
+    },
+    {
+      "asset": "searsia_burchellii",
+      "source": "polyhaven",
+      "file": "searsia_burchellii_2k.gltf",
+      "node": "searsia_burchellii_large_LOD0",
+      "mesh": "Cube.014",
+      "node_transformed": true,
+      "vertices": 484482,
+      "triangles": 361558,
+      "extent_m": [
+        4.1581,
+        3.239,
+        5.0485
+      ],
+      "base_m": -0.0295,
+      "top_m": 3.2096,
+      "height_m": 3.239,
+      "pivot_offset_xz_m": [
+        0.3056,
+        0.2281
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.8617,
+      "band_radius_m": 2.8942,
+      "band_centre_offset_m": 0.3814,
+      "band_radius_about_centre_m": 2.7134
+    },
+    {
+      "asset": "searsia_burchellii",
+      "source": "polyhaven",
+      "file": "searsia_burchellii_2k.gltf",
+      "node": "searsia_burchellii_medium_LOD0",
+      "mesh": "Cube.015",
+      "node_transformed": true,
+      "vertices": 289378,
+      "triangles": 210262,
+      "extent_m": [
+        3.5754,
+        2.5874,
+        2.6142
+      ],
+      "base_m": -0.0287,
+      "top_m": 2.5588,
+      "height_m": 2.5874,
+      "pivot_offset_xz_m": [
+        -0.1833,
+        0.1192
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.7834,
+      "band_radius_m": 2.0029,
+      "band_centre_offset_m": 0.2189,
+      "band_radius_about_centre_m": 1.8662
+    },
+    {
+      "asset": "searsia_burchellii",
+      "source": "polyhaven",
+      "file": "searsia_burchellii_2k.gltf",
+      "node": "searsia_burchellii_small_LOD0",
+      "mesh": "Cube.016",
+      "node_transformed": true,
+      "vertices": 57854,
+      "triangles": 44516,
+      "extent_m": [
+        1.6549,
+        1.9357,
+        2.2731
+      ],
+      "base_m": -0.0374,
+      "top_m": 1.8983,
+      "height_m": 1.9357,
+      "pivot_offset_xz_m": [
+        -0.1442,
+        -0.0868
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.3816,
+      "band_radius_m": 1.0538,
+      "band_centre_offset_m": 0.199,
+      "band_radius_about_centre_m": 0.8939
+    },
+    {
+      "asset": "searsia_lucida",
+      "source": "polyhaven",
+      "file": "searsia_lucida_2k.gltf",
+      "node": "searsia_lucida_a_LOD0",
+      "mesh": "Cube.070",
+      "node_transformed": true,
+      "vertices": 136311,
+      "triangles": 113405,
+      "extent_m": [
+        1.806,
+        2.3389,
+        1.9657
+      ],
+      "base_m": -0.0241,
+      "top_m": 2.3148,
+      "height_m": 2.3389,
+      "pivot_offset_xz_m": [
+        0.0856,
+        0.1388
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.7292,
+      "band_radius_m": 1.184,
+      "band_centre_offset_m": 0.163,
+      "band_radius_about_centre_m": 1.2332
+    },
+    {
+      "asset": "searsia_lucida",
+      "source": "polyhaven",
+      "file": "searsia_lucida_2k.gltf",
+      "node": "searsia_lucida_b_LOD0",
+      "mesh": "Cube.071",
+      "node_transformed": true,
+      "vertices": 110904,
+      "triangles": 88629,
+      "extent_m": [
+        1.4639,
+        1.9941,
+        1.5237
+      ],
+      "base_m": -0.018,
+      "top_m": 1.9761,
+      "height_m": 1.9941,
+      "pivot_offset_xz_m": [
+        0.0037,
+        -0.0981
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.6743,
+      "band_radius_m": 0.8899,
+      "band_centre_offset_m": 0.0981,
+      "band_radius_about_centre_m": 0.8693
+    },
+    {
+      "asset": "searsia_lucida",
+      "source": "polyhaven",
+      "file": "searsia_lucida_2k.gltf",
+      "node": "searsia_lucida_c_LOD0",
+      "mesh": "Cube.068",
+      "node_transformed": true,
+      "vertices": 95774,
+      "triangles": 77603,
+      "extent_m": [
+        1.5089,
+        1.6798,
+        1.2493
+      ],
+      "base_m": -0.021,
+      "top_m": 1.6588,
+      "height_m": 1.6798,
+      "pivot_offset_xz_m": [
+        -0.0343,
+        -0.0178
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.4379,
+      "band_radius_m": 0.9258,
+      "band_centre_offset_m": 0.0435,
+      "band_radius_about_centre_m": 0.9679
+    },
+    {
+      "asset": "searsia_lucida",
+      "source": "polyhaven",
+      "file": "searsia_lucida_2k.gltf",
+      "node": "searsia_lucida_d_LOD0",
+      "mesh": "Cube.069",
+      "node_transformed": true,
+      "vertices": 69852,
+      "triangles": 56320,
+      "extent_m": [
+        1.0953,
+        1.4236,
+        0.9539
+      ],
+      "base_m": -0.014,
+      "top_m": 1.4096,
+      "height_m": 1.4236,
+      "pivot_offset_xz_m": [
+        -0.0356,
+        0.0511
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.1675,
+      "band_radius_m": 0.5739,
+      "band_centre_offset_m": 0.1126,
+      "band_radius_about_centre_m": 0.4942
+    },
+    {
+      "asset": "searsia_lucida",
+      "source": "polyhaven",
+      "file": "searsia_lucida_2k.gltf",
+      "node": "searsia_lucida_e_LOD0",
+      "mesh": "Cube.064",
+      "node_transformed": true,
+      "vertices": 34182,
+      "triangles": 27701,
+      "extent_m": [
+        1.0339,
+        1.025,
+        0.7159
+      ],
+      "base_m": -0.0137,
+      "top_m": 1.0113,
+      "height_m": 1.025,
+      "pivot_offset_xz_m": [
+        0.0024,
+        0.0024
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0006,
+      "band_radius_m": 0.3308,
+      "band_centre_offset_m": 0.3026,
+      "band_radius_about_centre_m": 0.0486
+    },
+    {
+      "asset": "searsia_lucida",
+      "source": "polyhaven",
+      "file": "searsia_lucida_2k.gltf",
+      "node": "searsia_lucida_f_LOD0",
+      "mesh": "Cube.065",
+      "node_transformed": true,
+      "vertices": 8754,
+      "triangles": 7232,
+      "extent_m": [
+        0.6576,
+        0.7386,
+        0.4832
+      ],
+      "base_m": -0.0058,
+      "top_m": 0.7328,
+      "height_m": 0.7386,
+      "pivot_offset_xz_m": [
+        -0.0103,
+        -0.0318
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null
+    },
+    {
+      "asset": "searsia_lucida",
+      "source": "polyhaven",
+      "file": "searsia_lucida_2k.gltf",
+      "node": "searsia_lucida_g_LOD0",
+      "mesh": "Cube.067",
+      "node_transformed": true,
+      "vertices": 7761,
+      "triangles": 6302,
+      "extent_m": [
+        0.3817,
+        0.7868,
+        0.3249
+      ],
+      "base_m": -0.0059,
+      "top_m": 0.7809,
+      "height_m": 0.7868,
+      "pivot_offset_xz_m": [
+        -0.0175,
+        0.0076
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null
+    },
+    {
+      "asset": "tree_small_02",
+      "source": "polyhaven",
+      "file": "tree_small_02_2k.gltf",
+      "node": "tree_small_02_LOD0",
+      "mesh": "BezierCurve.002",
+      "node_transformed": false,
+      "vertices": 1777278,
+      "triangles": 2062487,
+      "extent_m": [
+        2.9167,
+        4.5567,
+        4.2925
+      ],
+      "base_m": -0.0241,
+      "top_m": 4.5326,
+      "height_m": 4.5567,
+      "pivot_offset_xz_m": [
+        0.1494,
+        0.7636
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.2439,
+      "band_radius_m": 2.7504,
+      "band_centre_offset_m": 0.6966,
+      "band_radius_about_centre_m": 2.2016
+    }
+  ]
+}

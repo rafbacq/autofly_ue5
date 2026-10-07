@@ -42,6 +42,15 @@ reachability and the live checks of §11. Then M5 trains one expert per train sc
    straight line from below). Harder scenes should lower it; the paper's models score 73-78 %.
 8. **Decided now, because changing it later would move every pinned layout:** scattered and clustered obstacles
    (poisson, clusters) face a random way; grid pillars keep yaw 0 (s01). Boxes share one yaw per stack.
+10. **Measured from the glTF geometry (`scripts/measure_assets.py`, `assets/measurements.json`, 2026-10-07):**
+   natural-size boulders are below the flight band (`boulder_01` 1.0 m tall, the Namaqualand boulders 0.5–1.9 m; only
+   `_03` and `_04` reach into 1–3 m), so s03–s05 must scale them to 2–4 m standing stones or a drone at 1–3 m meets no
+   rock. The young trees are wide at drone height: flight-band radii 3.3 m (`island_tree_02`), 2.8 m (`tree_small_02`),
+   2.9 / 2.0 / 1.1 m (`searsia_burchellii` large / medium / small), 2.2 m (`island_tree_03`), 0.3–1.2 m (`searsia_lucida`
+   a–e; f and g are under 0.8 m), 0.7 m (`quiver_tree_01`), with canopy centres 0.1–1.0 m off the pivot. Variant sets
+   import as one static mesh per node (`searsia_burchellii` 3, `searsia_lucida` 7). Triangle counts run to 2 M per
+   tree: import with Nanite, and give each mesh a convex collision that wraps the canopy, which is what the circle
+   footprint models and what the live check must confirm.
 9. **The live checks assume circles.** `sim/check_map.py` expects a (2r, 2r, h) bounding box and `validate/geometry.py`
    models standing columns, so a box instance's circumscribed `radius_m` would fail them (1.0 m wide against 1.41
    expected). C6 gives boxes their real extents before C8 runs on s07.
@@ -70,9 +79,12 @@ reachability and the live checks of §11. Then M5 trains one expert per train sc
 - [x] **C2. Fetch CC0 assets by script** (`scripts/fetch_assets.py`, 2026-10-07): the curated list (6 young trees, 7
   boulders and rock groups, 6 grounds) with source URL, licence, authors, dimensions and sha256 into `downloads/`
   (git-ignored), recorded in `assets/sources.json`. Nothing is imported here.
-- [ ] **C3. Import and measure in the editor** (`scenes/ue/import_assets.py`): import each asset, set collision to
-  complex or a checked convex hull, read the bounds, write the registry entry (`ue_path`, `base_size_m`, `pivot`,
-  `footprint`, `category`, `role`, `seen`, measured extent). Add `+DirectoriesToAlwaysCook` for spawnable targets.
+- [x] **C3a. Measure the models offline** (`autofly_ue5/scenes/gltf.py`, `scripts/measure_assets.py`, 2026-10-07):
+  height, extents and the 1–3 m flight-band footprint of every glTF node, from the buffers (fact 10).
+- [ ] **C3b. Import in the editor** (`scenes/ue/import_assets.py`): import each glTF node as its own static mesh with
+  Nanite and a convex collision, build one material per ambientCG set, read each mesh's bounds back against
+  `measurements.json`, and write the registry entries (`ue_path`, `base_size_m`, `pivot` = base, `footprint` circle of
+  `band_radius_m`, `category`, `role`, `seen`). Add `+DirectoriesToAlwaysCook` for spawnable targets.
 - [ ] **C4. Scene files** `scenes/s02_*.json` ... `s12_*.json`, `s05r`, `s06r`: groups, placements, bands, ground,
   `instruction_obstacle`; each passes schema, generation, reachability and the detour bound offline before any build.
 - [ ] **C5. Target pool** (`assets/targets.json`, spec §6.4): 60 instances, 50 seen / 10 unseen, the Fig. 3c category

@@ -213,6 +213,12 @@ stale "fact". Standing rules live in `CLAUDE.md`; this file is the reasoning and
 
 ## Scene learnings
 
+- **Measure an asset where the drone flies, not where the artist did (2026-10-07).** Poly Haven's boulders are 0.5–1.9 m
+  tall: at unit scale most have nothing between 1 and 3 m, so a rock scene built from them at natural size has no
+  obstacles for the drone. The young trees are the opposite: canopies 2–3.3 m wide at drone height, centred up to 1 m
+  off the pivot. `scripts/measure_assets.py` reads this from the glTF buffers before anything is imported
+  (`assets/measurements.json`); glTF is y-up with the pivot at the base, and a Poly Haven "asset" can be a set of
+  variants as separate nodes.
 - **s01 is permeable everywhere (2026-10-06).** `scenes/paths.py:crossing_detours` at the sampler's 1.4 m inflation:
   max detour 1.013, every start inside the field crosses through it (a 6 m pillar grid inflated to 2 m leaves 2 m
   gaps). The §6.2 rule alone accepts a sealed field whose outer lane is open; the detour over the straight line
