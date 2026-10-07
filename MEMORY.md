@@ -211,6 +211,22 @@ stale "fact". Standing rules live in `CLAUDE.md`; this file is the reasoning and
   (a foreign GPU job, a failed launch) leave a directory you can neither restart nor resume. Found by the 2026-09-25
   final review.
 
+## Scene learnings
+
+- **s01 is permeable everywhere (2026-10-06).** `scenes/paths.py:crossing_detours` at the sampler's 1.4 m inflation:
+  max detour 1.013, every start inside the field crosses through it (a 6 m pillar grid inflated to 2 m leaves 2 m
+  gaps). The §6.2 rule alone accepts a sealed field whose outer lane is open; the detour over the straight line
+  catches a field that spans the scene, and only the through-the-field test (a path inside the field's lateral extent)
+  catches a compact block, which costs just 1.14 to round. The pilot's expert flew s01 at PER 0.96-0.99
+  (`scripts/dataset_stats.py`), so s01 is an easy scene by the paper's own metric; expect lower on tree and rock fields.
+- **Writing a new test file: check the name is free first (2026-10-06).** `tests/test_paths.py` already tested
+  `autofly_ue5/paths.py`; a new file of that name for `scenes/paths.py` replaced it and silently dropped four tests,
+  which the review caught. Scene paths are tested in `tests/test_scene_paths.py`.
+- **An 8-connected grid path overestimates a straight line by up to 8 %, a 4-connected one by up to 41 %.** motion.py's
+  BFS compares two lengths on the same metric (the bias cancels); anything compared with a flown trajectory or a
+  straight line uses `paths.dijkstra_path_m`. L_opt from a grid is therefore an upper bound on the paper's PER; the
+  straight line is a lower bound. Report the interval.
+
 ## Throughput learnings
 
 - **The 1 ms real-time update rate gave 18.0 steps/s against 7.4 at 3 ms** (M0 smoke, lock-step intact, only 50
@@ -222,6 +238,15 @@ stale "fact". Standing rules live in `CLAUDE.md`; this file is the reasoning and
   attempt.
 
 ## Environment and tooling learnings
+
+- **Grounding DINO runs on this host's CPU at 0.34-0.37 frames/s (2026-10-06, tiny, 8 threads, the default 800 px input).**
+  `.venv` cannot take `transformers` (numpy 1.26.4), so `runs/tools/gdino_venv` holds a CPU-only torch 2.14.1 +
+  transformers 5.19.0, and the model is cached under `runs/tools/hf_home` (recipe: `docs/runbook-rebalance.md`). The
+  100-episode pilot is a 13-14 h CPU job (the GPU would be far faster; unmeasured), but a torch process on the GPU is a foreign job to
+  the simulator launch guard: a live run's relaunch would be refused while it holds more than 2 GB. Score on the CPU
+  beside live runs (niced; the simulators kept their 190 % CPU each), on the GPU only when nothing may need to launch.
+  Its confidence for the pilot's orange cylinder rises with approach (0.29 at 66 m, 0.67 at 36 m, 0.76 at 20 m, 0.88
+  at 5 m), so the paper's 0.7 lands mid-episode; the box sits where the target's bearing predicts.
 
 - **Dataset size and pace (M3 pilot, 2026-10-03).** 100 episodes = 17,738 records = 1.77 GB of PNG frames, stored twice:
   the raw store and the RLDS shards each hold the same PNGs. The paper's 13K episodes would need about 460 GB for
