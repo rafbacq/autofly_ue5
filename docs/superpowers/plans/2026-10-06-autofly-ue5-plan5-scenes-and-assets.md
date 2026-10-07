@@ -1,9 +1,9 @@
 # M4 Scenes and Assets Plan (draft for the user's go-ahead)
 
-> **Status:** drafted 2026-10-06 while run 6's follow-up held the simulator slots. The offline tasks (C0, C1) are done
-> on branch `feat/rebalance`; everything that needs the editor, the GPU or a download waits for the decisions below
-> and for a window in which no training, gate or collection runs (packaging replaces the binary every simulator runs
-> from). Steps use checkbox (`- [ ]`) syntax; each task is test-first, like Plans 2-4.
+> **Status:** drafted 2026-10-06 while run 6's follow-up held the simulator slots; **go-ahead 2026-10-07**: the user
+> delegated U1-U4 ("do what you recommend and what ... would be most aligned with what they would do in the paper or in
+> convention") and allowed any milestone to start once run 6's work had finished. The decisions below are therefore
+> taken as recommended. Steps use checkbox (`- [ ]`) syntax; each task is test-first, like Plans 2-4.
 
 **Goal (spec §12, M4):** the asset library and scenes s02-s12, s05r and s06r (spec §6.3); every scene builds, passes
 reachability and the live checks of §11. Then M5 trains one expert per train scene and collects.
@@ -46,26 +46,30 @@ reachability and the live checks of §11. Then M5 trains one expert per train sc
    models standing columns, so a box instance's circumscribed `radius_m` would fail them (1.0 m wide against 1.41
    expected). C6 gives boxes their real extents before C8 runs on s07.
 
-## Decisions needed from the user
+## Decisions (taken 2026-10-07 as recommended; the user delegated them)
 
 - **U1: assets.** (a) CC0 only for now: Poly Haven trees and rocks, ambientCG grounds, Kenney/Quaternius low-poly
   props and vehicles as targets (a visible cartoon gap next to photoreal trees); (b) CC0 for obstacles and grounds,
   Fab (user's account, Standard License, no NoAI listings, terms confirmed in a browser) for vehicles and buildings.
-  *Recommendation: (b), starting the CC0 downloads now and the Fab items when the user is at the browser.*
-- **U2: grounds.** Textured CC0 materials imported once, or flat-colour placeholders first? *Recommendation: textures,
-  so each scene is calibrated once (fact 6).*
+  **Decided: (b).** The CC0 list is `scripts/fetch_assets.py`'s (6 young trees 2.3-4.7 m tall and up to 8.5 m wide, 7
+  boulders and rock groups of 0.5-1.9 m, 6 grounds; sizes from the APIs on 2026-10-07; 662 MB), recorded with sha256 and authors in `assets/sources.json`. Vehicles and buildings
+  wait for a Fab session with the user at the browser (its licence page refuses automated fetches; NoAI listings
+  excluded).
+- **U2: grounds.** Textured CC0 materials imported once, or flat-colour placeholders first? **Decided: textures**, so each
+  scene is calibrated once (fact 6): ambientCG 2K JPG sets, one material per ground built in the editor (C3).
 - **U3: order.** s09 and s07 first (fact 3), then s02 and s06 (trees), s03-s05 (rocks), s08, s10, s11-s12, and the
-  re-seeded s05r/s06r last. *Recommendation: as listed.*
-- **U4: the acceptance rule** for a generated layout (fact 2). *Recommendation: at the sampler's 1.4 m inflation, 12
+  re-seeded s05r/s06r last. **Decided: as listed.**
+- **U4: the acceptance rule** for a generated layout (fact 2). **Decided:** at the sampler's 1.4 m inflation, 12
   evenly spaced starts per edge: `max` <= 1.25, `unreachable` = 0 and `through_unreachable` = 0, recorded in each
-  scene's layout file beside the reachability result.*
+  scene's layout file beside the reachability result (C4 adds it to `scenes/build.py`).
 
 ## Tasks
 
 - [x] **C0. Placements** (75a9222): `poisson`, `clusters`, `stacks`, box footprints, several groups per scene; s01 pinned.
 - [x] **C1. Detour metric** (64e87ce): `crossing_detours` and `optimal_path_m` on the inflated grid; PER for a store.
-- [ ] **C2. Fetch CC0 assets by script** (`scripts/fetch_assets.py`): a curated list with source URL, licence and sha256
-  into `downloads/` (git-ignored), recorded in `assets/sources.json`. Nothing is imported here.
+- [x] **C2. Fetch CC0 assets by script** (`scripts/fetch_assets.py`, 2026-10-07): the curated list (6 young trees, 7
+  boulders and rock groups, 6 grounds) with source URL, licence, authors, dimensions and sha256 into `downloads/`
+  (git-ignored), recorded in `assets/sources.json`. Nothing is imported here.
 - [ ] **C3. Import and measure in the editor** (`scenes/ue/import_assets.py`): import each asset, set collision to
   complex or a checked convex hull, read the bounds, write the registry entry (`ue_path`, `base_size_m`, `pivot`,
   `footprint`, `category`, `role`, `seen`, measured extent). Add `+DirectoriesToAlwaysCook` for spawnable targets.

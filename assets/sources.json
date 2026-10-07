@@ -1,0 +1,1302 @@
+{
+  "format": "autofly_ue5_asset_sources/1",
+  "fetched": "2026-10-07 13:52:32",
+  "downloads_dir": "/home/nvidiasims/research_uav/autofly_ue5/downloads",
+  "assets": [
+    {
+      "id": "Grass004",
+      "source": "ambientcg",
+      "kind": "material",
+      "resolution": "2K-JPG",
+      "use": [
+        "s02",
+        "s03",
+        "s06",
+        "s06r"
+      ],
+      "why": "dense garden grass",
+      "licence": "CC0-1.0",
+      "licence_url": "https://docs.ambientcg.com/license/",
+      "name": "Grass 004",
+      "tags": [
+        "004",
+        "4",
+        "dense",
+        "garden",
+        "grass",
+        "grass004",
+        "green",
+        "ground",
+        "lawn",
+        "lush",
+        "natural",
+        "park",
+        "short",
+        "soft",
+        "suburban"
+      ],
+      "page": "https://ambientcg.com/a/Grass004",
+      "files": [
+        {
+          "path": "Grass004_2K-JPG.zip",
+          "url": "https://ambientcg.com/get?file=Grass004_2K-JPG.zip",
+          "size": 39900302,
+          "md5": null,
+          "sha256": "d7d3f08e8bb1e59aed0c3dbb85ea0b46d5308481f89b6a3fd62c0ec9e862245b",
+          "unpacked": [
+            "Grass004.png",
+            "Grass004_2K-JPG.blend",
+            "Grass004_2K-JPG.mtlx",
+            "Grass004_2K-JPG.tres",
+            "Grass004_2K-JPG.usdc",
+            "Grass004_2K-JPG_AmbientOcclusion.jpg",
+            "Grass004_2K-JPG_Color.jpg",
+            "Grass004_2K-JPG_Displacement.jpg",
+            "Grass004_2K-JPG_NormalDX.jpg",
+            "Grass004_2K-JPG_NormalGL.jpg",
+            "Grass004_2K-JPG_Roughness.jpg"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Gravel022",
+      "source": "ambientcg",
+      "kind": "material",
+      "resolution": "2K-JPG",
+      "use": [
+        "s04"
+      ],
+      "why": "grey gravel with pebbles: the stone field's floor",
+      "licence": "CC0-1.0",
+      "licence_url": "https://docs.ambientcg.com/license/",
+      "name": "Gravel 022",
+      "tags": [
+        "22",
+        "dirt",
+        "gravel",
+        "grey",
+        "ground",
+        "pebbles",
+        "stone"
+      ],
+      "page": "https://ambientcg.com/a/Gravel022",
+      "files": [
+        {
+          "path": "Gravel022_2K-JPG.zip",
+          "url": "https://ambientcg.com/get?file=Gravel022_2K-JPG.zip",
+          "size": 31828286,
+          "md5": null,
+          "sha256": "2ed452c2f2f74b8f6c90f80d681c5b01f1007f23c0865962f82cf7964d7d8ff5",
+          "unpacked": [
+            "Gravel022.png",
+            "Gravel022_2K-JPG.blend",
+            "Gravel022_2K-JPG.mtlx",
+            "Gravel022_2K-JPG.tres",
+            "Gravel022_2K-JPG.usdc",
+            "Gravel022_2K-JPG_AmbientOcclusion.jpg",
+            "Gravel022_2K-JPG_Color.jpg",
+            "Gravel022_2K-JPG_Displacement.jpg",
+            "Gravel022_2K-JPG_NormalDX.jpg",
+            "Gravel022_2K-JPG_NormalGL.jpg",
+            "Gravel022_2K-JPG_Roughness.jpg"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Ground037",
+      "source": "ambientcg",
+      "kind": "material",
+      "resolution": "2K-JPG",
+      "use": [
+        "s11"
+      ],
+      "why": "damp earth: a light ground for the city blocks",
+      "licence": "CC0-1.0",
+      "licence_url": "https://docs.ambientcg.com/license/",
+      "name": "Ground 037",
+      "tags": [
+        "037",
+        "37",
+        "damp",
+        "earth",
+        "forest",
+        "grass",
+        "green",
+        "ground",
+        "moss",
+        "natural",
+        "overgrown",
+        "rough",
+        "woodland"
+      ],
+      "page": "https://ambientcg.com/a/Ground037",
+      "files": [
+        {
+          "path": "Ground037_2K-JPG.zip",
+          "url": "https://ambientcg.com/get?file=Ground037_2K-JPG.zip",
+          "size": 37874033,
+          "md5": null,
+          "sha256": "defa9f880ec692eb3ef5435fd7bc7b8721c0d577f7824ea18ac68537f01ab65b",
+          "unpacked": [
+            "Ground037.png",
+            "Ground037_2K-JPG.blend",
+            "Ground037_2K-JPG.mtlx",
+            "Ground037_2K-JPG.tres",
+            "Ground037_2K-JPG.usdc",
+            "Ground037_2K-JPG_AmbientOcclusion.jpg",
+            "Ground037_2K-JPG_Color.jpg",
+            "Ground037_2K-JPG_Displacement.jpg",
+            "Ground037_2K-JPG_NormalDX.jpg",
+            "Ground037_2K-JPG_NormalGL.jpg",
+            "Ground037_2K-JPG_Roughness.jpg"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Ground054",
+      "source": "ambientcg",
+      "kind": "material",
+      "resolution": "2K-JPG",
+      "use": [
+        "s07",
+        "s08",
+        "s12"
+      ],
+      "why": "beach sand: stacked boxes' sand tiles, the ruins' sand, the village",
+      "licence": "CC0-1.0",
+      "licence_url": "https://docs.ambientcg.com/license/",
+      "name": "Ground 054",
+      "tags": [
+        "54",
+        "beach",
+        "dirt",
+        "ground",
+        "mud",
+        "sand"
+      ],
+      "page": "https://ambientcg.com/a/Ground054",
+      "files": [
+        {
+          "path": "Ground054_2K-JPG.zip",
+          "url": "https://ambientcg.com/get?file=Ground054_2K-JPG.zip",
+          "size": 32987812,
+          "md5": null,
+          "sha256": "643e7c8689bac041f17c660eff6a5459bfe0535d4466737beb0e64902b23235a",
+          "unpacked": [
+            "Ground054.png",
+            "Ground054_2K-JPG.blend",
+            "Ground054_2K-JPG.mtlx",
+            "Ground054_2K-JPG.tres",
+            "Ground054_2K-JPG.usdc",
+            "Ground054_2K-JPG_AmbientOcclusion.jpg",
+            "Ground054_2K-JPG_Color.jpg",
+            "Ground054_2K-JPG_Displacement.jpg",
+            "Ground054_2K-JPG_NormalDX.jpg",
+            "Ground054_2K-JPG_NormalGL.jpg",
+            "Ground054_2K-JPG_Roughness.jpg"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "PavingStones070",
+      "source": "ambientcg",
+      "kind": "material",
+      "resolution": "2K-JPG",
+      "use": [
+        "s09"
+      ],
+      "why": "old cobbles: the coloured poles' paving",
+      "licence": "CC0-1.0",
+      "licence_url": "https://docs.ambientcg.com/license/",
+      "name": "Paving Stones 070",
+      "tags": [
+        "70",
+        "cobble",
+        "old",
+        "pavement",
+        "paving",
+        "stones"
+      ],
+      "page": "https://ambientcg.com/a/PavingStones070",
+      "files": [
+        {
+          "path": "PavingStones070_2K-JPG.zip",
+          "url": "https://ambientcg.com/get?file=PavingStones070_2K-JPG.zip",
+          "size": 31217984,
+          "md5": null,
+          "sha256": "0fb428c7d92b166185a3a2b2223f9dd0f26629146342416bcb823e94350f17e7",
+          "unpacked": [
+            "PavingStones070.png",
+            "PavingStones070_2K-JPG.blend",
+            "PavingStones070_2K-JPG.mtlx",
+            "PavingStones070_2K-JPG.tres",
+            "PavingStones070_2K-JPG.usdc",
+            "PavingStones070_2K-JPG_AmbientOcclusion.jpg",
+            "PavingStones070_2K-JPG_Color.jpg",
+            "PavingStones070_2K-JPG_Displacement.jpg",
+            "PavingStones070_2K-JPG_NormalDX.jpg",
+            "PavingStones070_2K-JPG_NormalGL.jpg",
+            "PavingStones070_2K-JPG_Roughness.jpg"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Snow006",
+      "source": "ambientcg",
+      "kind": "material",
+      "resolution": "2K-JPG",
+      "use": [
+        "s05",
+        "s05r",
+        "s10",
+        "s12"
+      ],
+      "why": "flat snow: standing stones, the snowy yard, the desert village's snow variant",
+      "licence": "CC0-1.0",
+      "licence_url": "https://docs.ambientcg.com/license/",
+      "name": "Snow 006",
+      "tags": [
+        "6",
+        "cold",
+        "flat",
+        "ice",
+        "snow",
+        "steps",
+        "stomped",
+        "winter"
+      ],
+      "page": "https://ambientcg.com/a/Snow006",
+      "files": [
+        {
+          "path": "Snow006_2K-JPG.zip",
+          "url": "https://ambientcg.com/get?file=Snow006_2K-JPG.zip",
+          "size": 28719971,
+          "md5": null,
+          "sha256": "40f7ad9659ffa54312df8cd9ad387bf9522559935d7072f7e73780d9892c71b8",
+          "unpacked": [
+            "Snow006.png",
+            "Snow006_2K-JPG.blend",
+            "Snow006_2K-JPG.mtlx",
+            "Snow006_2K-JPG.tres",
+            "Snow006_2K-JPG.usdc",
+            "Snow006_2K-JPG_AmbientOcclusion.jpg",
+            "Snow006_2K-JPG_Color.jpg",
+            "Snow006_2K-JPG_Displacement.jpg",
+            "Snow006_2K-JPG_NormalDX.jpg",
+            "Snow006_2K-JPG_NormalGL.jpg",
+            "Snow006_2K-JPG_Roughness.jpg"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "boulder_01",
+      "source": "polyhaven",
+      "kind": "model",
+      "resolution": "2k",
+      "use": [
+        "s03",
+        "s04",
+        "s05"
+      ],
+      "why": "1.3 x 1.8 x 1.0 m boulder, 14 MB",
+      "licence": "CC0-1.0",
+      "licence_url": "https://polyhaven.com/license",
+      "name": "Boulder 01",
+      "authors": {
+        "Rico Cilliers": "All"
+      },
+      "categories": [
+        "rocks",
+        "nature",
+        "collection: verdant_trail"
+      ],
+      "dimensions_m": [
+        1.273,
+        1.831,
+        1.004
+      ],
+      "page": "https://polyhaven.com/a/boulder_01",
+      "files": [
+        {
+          "path": "boulder_01_2k.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/2k/boulder_01/boulder_01_2k.gltf",
+          "size": 2773,
+          "md5": "3ef4b3c88c898e12b096eeb40f1edbb9",
+          "sha256": "52d118b56748a18509e4ec0075d07b254d72a0401793f22363c0bb3a682e7361"
+        },
+        {
+          "path": "boulder_01.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/boulder_01/boulder_01.bin",
+          "size": 2938808,
+          "md5": "27a19fa031d8b4c3a09261f19c444dc5",
+          "sha256": "7f5b06503d62bd95bfe9c6b8a354a5cc8ff04a4d271a8cf87a3e3125db4232d7"
+        },
+        {
+          "path": "textures/boulder_01_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/boulder_01/boulder_01_arm_2k.jpg",
+          "size": 2273068,
+          "md5": "94c796dfd73f72b11e557cb2c05ff51e",
+          "sha256": "ab52859dde519b4822111aa60916b6d21f8a6966c67b6cec44d1cd0775b8a86a"
+        },
+        {
+          "path": "textures/boulder_01_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/boulder_01/boulder_01_diff_2k.jpg",
+          "size": 3672483,
+          "md5": "63571077317c9a2d1db95894e0268a07",
+          "sha256": "90bbaa17c1fe0254d2b0b6e5148264fa834953a72724d566f14af029eebe3ca3"
+        },
+        {
+          "path": "textures/boulder_01_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/boulder_01/boulder_01_nor_gl_2k.jpg",
+          "size": 4649207,
+          "md5": "73ee1783fca7605fd454f0af3e5b85fa",
+          "sha256": "5174b318712ac7725cbcb55d422607f9c66d7f8d035c5412ab897b5939e2db6b"
+        }
+      ]
+    },
+    {
+      "id": "island_tree_02",
+      "source": "polyhaven",
+      "kind": "model",
+      "resolution": "2k",
+      "use": [
+        "s02",
+        "s06"
+      ],
+      "why": "3.4 m tall, 8.5 m wide leaning broadleaf, 59 MB",
+      "licence": "CC0-1.0",
+      "licence_url": "https://polyhaven.com/license",
+      "name": "Island Tree 02",
+      "authors": {
+        "Rob Tuytel": "scanning, processing",
+        "Rico Cilliers": "cleanup, processing"
+      },
+      "categories": [
+        "nature",
+        "plants",
+        "trees"
+      ],
+      "dimensions_m": [
+        8.486,
+        4.079,
+        3.409
+      ],
+      "page": "https://polyhaven.com/a/island_tree_02",
+      "files": [
+        {
+          "path": "island_tree_02_2k.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/2k/island_tree_02/island_tree_02_2k.gltf",
+          "size": 8545,
+          "md5": "8f26ebaa1648086a1958ce67a8154e64",
+          "sha256": "134b85d69f89fa6ad84555999ea02ae28ddf4713d4672e18e03d5917fd43ae62"
+        },
+        {
+          "path": "island_tree_02.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/island_tree_02/island_tree_02.bin",
+          "size": 40686576,
+          "md5": "7fa9d6ee752b670cabb65053a5c6395b",
+          "sha256": "427d69ccc1ea12d1fb9c6af89691563b4a097f39a6f34c15be6e45ef5e5fd4ce"
+        },
+        {
+          "path": "textures/island_tree_02_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/island_tree_02/island_tree_02_arm_2k.jpg",
+          "size": 2347246,
+          "md5": "661a0b08c23989c081904d53d1bb1433",
+          "sha256": "89e20810f614231578314846acff92821249f4124f4aa6e2f630df45d7acb6b2"
+        },
+        {
+          "path": "textures/island_tree_02_branches_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/island_tree_02/island_tree_02_branches_arm_2k.jpg",
+          "size": 1523257,
+          "md5": "969af8206d91a37edfefaf65a668470e",
+          "sha256": "a39d8291ba54adf1ca42f15abe2f622d0ac59fb13c87087a0fabc755b91dfee8"
+        },
+        {
+          "path": "textures/island_tree_02_branches_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/island_tree_02/island_tree_02_branches_diff_2k.jpg",
+          "size": 1476655,
+          "md5": "3210126439a8423b3caba28de0f3c25f",
+          "sha256": "52cb2c660983836249e3f31ad286ca1bab8033e93070569b23e1867e3ae70b4d"
+        },
+        {
+          "path": "textures/island_tree_02_branches_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/island_tree_02/island_tree_02_branches_nor_gl_2k.jpg",
+          "size": 2437750,
+          "md5": "0b598c975ce1515ea0d51fb0d5696ea3",
+          "sha256": "e4cac77b4f35ad47ba4fcdb9061f91acf3318d9889dd259cb5e6e132b0ab60c7"
+        },
+        {
+          "path": "textures/island_tree_02_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/island_tree_02/island_tree_02_diff_2k.jpg",
+          "size": 2684467,
+          "md5": "1593cf55910abff0a418b2799870471a",
+          "sha256": "2ca2706adc5bde6bc46fa4a4680041a1797cf6684a31629259559935a97e0057"
+        },
+        {
+          "path": "textures/island_tree_02_leaves_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/island_tree_02/island_tree_02_leaves_arm_2k.jpg",
+          "size": 1645169,
+          "md5": "a03c8dd6852becfbc0fbec70a4f0b30f",
+          "sha256": "cf4d604711d955d74a13b656bdbf840015ac38a71e24821849efade730634cc6"
+        },
+        {
+          "path": "textures/island_tree_02_leaves_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/island_tree_02/island_tree_02_leaves_diff_2k.jpg",
+          "size": 661175,
+          "md5": "9898a7bf79fe6214f7ca8c3b139c4116",
+          "sha256": "e5c56ca13525aed76572852da5f69ae87cbee9e15abe2e1eff23adf92975f14a"
+        },
+        {
+          "path": "textures/island_tree_02_leaves_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/island_tree_02/island_tree_02_leaves_nor_gl_2k.jpg",
+          "size": 1378585,
+          "md5": "b7d1e6306288a64119e1d17dae3c272d",
+          "sha256": "efa74b8b59a7466a295bf210505560002990183817b6c33663f3ec0dd438dd73"
+        },
+        {
+          "path": "textures/island_tree_02_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/island_tree_02/island_tree_02_nor_gl_2k.jpg",
+          "size": 4339456,
+          "md5": "e5e741ee0d2b5299893ddef2952e4c55",
+          "sha256": "3b088058cd9c8759f1ee223fad90f860257f574ae2ba7401cd4982c687b853cf"
+        }
+      ]
+    },
+    {
+      "id": "island_tree_03",
+      "source": "polyhaven",
+      "kind": "model",
+      "resolution": "2k",
+      "use": [
+        "s02",
+        "s06"
+      ],
+      "why": "2.6 m tall, 8.5 m wide leaning broadleaf, 98 MB",
+      "licence": "CC0-1.0",
+      "licence_url": "https://polyhaven.com/license",
+      "name": "Island Tree 03",
+      "authors": {
+        "Rob Tuytel": "scanning, processing",
+        "Rico Cilliers": "cleanup, processing"
+      },
+      "categories": [
+        "nature",
+        "plants",
+        "trees"
+      ],
+      "dimensions_m": [
+        8.49,
+        2.913,
+        2.616
+      ],
+      "page": "https://polyhaven.com/a/island_tree_03",
+      "files": [
+        {
+          "path": "island_tree_03_2k.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/2k/island_tree_03/island_tree_03_2k.gltf",
+          "size": 8557,
+          "md5": "9b20befb448eee719f97bd29e2c8fae3",
+          "sha256": "7c61eb6b7a019386c3de1fdf35c33e01a356b8f0bf475591bf96eaa8f0b58c30"
+        },
+        {
+          "path": "island_tree_03.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/island_tree_03/island_tree_03.bin",
+          "size": 79562548,
+          "md5": "fc2c29ce9665baa6964ea137d1f25ec7",
+          "sha256": "ac0631f236502155307ac0320b53201a0d3bab6348699ad9edd3172322aaf08b"
+        },
+        {
+          "path": "textures/island_tree_03_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/island_tree_03/island_tree_03_arm_2k.jpg",
+          "size": 2054971,
+          "md5": "75a1e9ca61365bcfa6214b68ad8610ea",
+          "sha256": "42e37475c83dc7dc8edd5e5ee2f9439dc3ad20407069da873456fc5e02f46d95"
+        },
+        {
+          "path": "textures/island_tree_03_branches_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/island_tree_03/island_tree_03_branches_arm_2k.jpg",
+          "size": 1523257,
+          "md5": "969af8206d91a37edfefaf65a668470e",
+          "sha256": "a39d8291ba54adf1ca42f15abe2f622d0ac59fb13c87087a0fabc755b91dfee8"
+        },
+        {
+          "path": "textures/island_tree_03_branches_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/island_tree_03/island_tree_03_branches_diff_2k.jpg",
+          "size": 1476655,
+          "md5": "3210126439a8423b3caba28de0f3c25f",
+          "sha256": "52cb2c660983836249e3f31ad286ca1bab8033e93070569b23e1867e3ae70b4d"
+        },
+        {
+          "path": "textures/island_tree_03_branches_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/island_tree_03/island_tree_03_branches_nor_gl_2k.jpg",
+          "size": 2437750,
+          "md5": "0b598c975ce1515ea0d51fb0d5696ea3",
+          "sha256": "e4cac77b4f35ad47ba4fcdb9061f91acf3318d9889dd259cb5e6e132b0ab60c7"
+        },
+        {
+          "path": "textures/island_tree_03_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/island_tree_03/island_tree_03_diff_2k.jpg",
+          "size": 2751789,
+          "md5": "91582e78a04764cdd32082dff1a700f2",
+          "sha256": "92a39dc4c4add8c22c296d7383bfa8376c7db93be04d246e5788ccb30f8bb131"
+        },
+        {
+          "path": "textures/island_tree_03_leaves_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/island_tree_03/island_tree_03_leaves_arm_2k.jpg",
+          "size": 1645169,
+          "md5": "a03c8dd6852becfbc0fbec70a4f0b30f",
+          "sha256": "cf4d604711d955d74a13b656bdbf840015ac38a71e24821849efade730634cc6"
+        },
+        {
+          "path": "textures/island_tree_03_leaves_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/island_tree_03/island_tree_03_leaves_diff_2k.jpg",
+          "size": 661175,
+          "md5": "9898a7bf79fe6214f7ca8c3b139c4116",
+          "sha256": "e5c56ca13525aed76572852da5f69ae87cbee9e15abe2e1eff23adf92975f14a"
+        },
+        {
+          "path": "textures/island_tree_03_leaves_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/island_tree_03/island_tree_03_leaves_nor_gl_2k.jpg",
+          "size": 1378585,
+          "md5": "b7d1e6306288a64119e1d17dae3c272d",
+          "sha256": "efa74b8b59a7466a295bf210505560002990183817b6c33663f3ec0dd438dd73"
+        },
+        {
+          "path": "textures/island_tree_03_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/island_tree_03/island_tree_03_nor_gl_2k.jpg",
+          "size": 4097801,
+          "md5": "703e90a3d735b01f28422265c67dd1ab",
+          "sha256": "03336e479c80e51d06ecf8e17cc976f457d21eef66608968b690977ad8e56f5d"
+        }
+      ]
+    },
+    {
+      "id": "namaqualand_boulder_02",
+      "source": "polyhaven",
+      "kind": "model",
+      "resolution": "2k",
+      "use": [
+        "s03",
+        "s04",
+        "s05"
+      ],
+      "why": "2.5 x 1.2 x 0.9 m, 13 MB",
+      "licence": "CC0-1.0",
+      "licence_url": "https://polyhaven.com/license",
+      "name": "Namaqualand Boulder 02",
+      "authors": {
+        "Greg Zaal": "Photography",
+        "Rico Cilliers": "modeling"
+      },
+      "categories": [
+        "nature",
+        "rocks",
+        "collection: namaqualand"
+      ],
+      "dimensions_m": [
+        2.533,
+        1.235,
+        0.883
+      ],
+      "page": "https://polyhaven.com/a/namaqualand_boulder_02",
+      "files": [
+        {
+          "path": "namaqualand_boulder_02_2k.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/2k/namaqualand_boulder_02/namaqualand_boulder_02_2k.gltf",
+          "size": 2818,
+          "md5": "9193646b820fdbc76cb9c3c77f0c5c38",
+          "sha256": "e181b722c8c8bd56f98ab8883b283b3cb3c437c372af3b831aec2f94c22fe0f2"
+        },
+        {
+          "path": "namaqualand_boulder_02.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/namaqualand_boulder_02/namaqualand_boulder_02.bin",
+          "size": 2297768,
+          "md5": "aa8f2212633a07a7e9a805e90977f4fd",
+          "sha256": "0f6daa7ec9b1a92207c0b09b737ff1eec904aebc1c1eada778afa6e5eacd55c0"
+        },
+        {
+          "path": "textures/namaqualand_boulder_02_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/namaqualand_boulder_02/namaqualand_boulder_02_arm_2k.jpg",
+          "size": 2914937,
+          "md5": "732a68f2aeb07223278987dfcafe83ac",
+          "sha256": "2314bc882e140adba4ee2eae2873f11458b359208b59240a04ae85f2e5766014"
+        },
+        {
+          "path": "textures/namaqualand_boulder_02_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/namaqualand_boulder_02/namaqualand_boulder_02_diff_2k.jpg",
+          "size": 3867934,
+          "md5": "0f37f02ceb397383a0d0bddfaef4441d",
+          "sha256": "0f81c51224deb025079f10dad21530e77e42baad541eb766922fe8fc6e46a88e"
+        },
+        {
+          "path": "textures/namaqualand_boulder_02_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/namaqualand_boulder_02/namaqualand_boulder_02_nor_gl_2k.jpg",
+          "size": 3919158,
+          "md5": "9591cab5cf9658a9eb23da834856a661",
+          "sha256": "3067767374241dec6612ad60cc806cb9e30594f784d74f19a7cda4cdc2d28cc0"
+        }
+      ]
+    },
+    {
+      "id": "namaqualand_boulder_03",
+      "source": "polyhaven",
+      "kind": "model",
+      "resolution": "2k",
+      "use": [
+        "s03",
+        "s05"
+      ],
+      "why": "2.4 x 3.1 x 1.5 m, 10 MB",
+      "licence": "CC0-1.0",
+      "licence_url": "https://polyhaven.com/license",
+      "name": "Namaqualand Boulder 03",
+      "authors": {
+        "Jenelle van Heerden": "modeling",
+        "Dario Barresi": "Photography"
+      },
+      "categories": [
+        "nature",
+        "rocks",
+        "collection: namaqualand"
+      ],
+      "dimensions_m": [
+        2.408,
+        3.065,
+        1.474
+      ],
+      "page": "https://polyhaven.com/a/namaqualand_boulder_03",
+      "files": [
+        {
+          "path": "namaqualand_boulder_03_2k.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/2k/namaqualand_boulder_03/namaqualand_boulder_03_2k.gltf",
+          "size": 2823,
+          "md5": "51e9fe01b1b5420b955488ba907497c8",
+          "sha256": "5d135c8e3a74edf7f53ae04d41deed19582ed6ced6d629d5d51e730319ed0dcb"
+        },
+        {
+          "path": "namaqualand_boulder_03.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/namaqualand_boulder_03/namaqualand_boulder_03.bin",
+          "size": 1450268,
+          "md5": "ded61ea310a66144546eac2a891b6dba",
+          "sha256": "d24151021ed310fe3207f1b5964bff22b583e77d2617427a88b5dcbc0447a475"
+        },
+        {
+          "path": "textures/namaqualand_boulder_03_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/namaqualand_boulder_03/namaqualand_boulder_03_arm_2k.jpg",
+          "size": 2441884,
+          "md5": "3c5421ec927e1f25d62c75ae69474402",
+          "sha256": "24f443dd1c1da875a3653f0820d02e3140319fe199123765987d166ada3d1ddc"
+        },
+        {
+          "path": "textures/namaqualand_boulder_03_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/namaqualand_boulder_03/namaqualand_boulder_03_diff_2k.jpg",
+          "size": 3341422,
+          "md5": "15932af831e44b675c18c3ef54398dc8",
+          "sha256": "d7bfae01eed80a6318679f13a8be14253fa0f6338b93f6e2126946f86bea4f82"
+        },
+        {
+          "path": "textures/namaqualand_boulder_03_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/namaqualand_boulder_03/namaqualand_boulder_03_nor_gl_2k.jpg",
+          "size": 2919390,
+          "md5": "28de2b985022f5329bc5ff47b8648e20",
+          "sha256": "e83ccfe677a6c82aadd56d1e5138aa97823a23cde32573dd65dafb321fffeb33"
+        }
+      ]
+    },
+    {
+      "id": "namaqualand_boulder_04",
+      "source": "polyhaven",
+      "kind": "model",
+      "resolution": "2k",
+      "use": [
+        "s03",
+        "s05"
+      ],
+      "why": "2.5 x 2.5 x 1.9 m, 10 MB: the tallest, s05's standing stone",
+      "licence": "CC0-1.0",
+      "licence_url": "https://polyhaven.com/license",
+      "name": "Namaqualand Boulder 04",
+      "authors": {
+        "Jenelle van Heerden": "All"
+      },
+      "categories": [
+        "nature",
+        "rocks",
+        "collection: namaqualand"
+      ],
+      "dimensions_m": [
+        2.523,
+        2.501,
+        1.904
+      ],
+      "page": "https://polyhaven.com/a/namaqualand_boulder_04",
+      "files": [
+        {
+          "path": "namaqualand_boulder_04_2k.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/2k/namaqualand_boulder_04/namaqualand_boulder_04_2k.gltf",
+          "size": 2818,
+          "md5": "ea9a944e115a14b01a56d010d0b25e62",
+          "sha256": "199a6ff206a09086a82542238dbdc0e024832d8662c3f5648dd4b6bbf3e3c724"
+        },
+        {
+          "path": "namaqualand_boulder_04.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/namaqualand_boulder_04/namaqualand_boulder_04.bin",
+          "size": 1319676,
+          "md5": "bd83376dfe39432568dc13a8fb738953",
+          "sha256": "99ba28ddc8da9ba24e1a419e69ed05f14c4b483bf06268a8a77495545985318a"
+        },
+        {
+          "path": "textures/namaqualand_boulder_04_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/namaqualand_boulder_04/namaqualand_boulder_04_arm_2k.jpg",
+          "size": 2312195,
+          "md5": "96359f20e2193209100c7ae3a8e41720",
+          "sha256": "72e2bb7b3272ff6c7d2eaaccecd9c96b03a900d19b5782c2dfb7c24a484cf890"
+        },
+        {
+          "path": "textures/namaqualand_boulder_04_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/namaqualand_boulder_04/namaqualand_boulder_04_diff_2k.jpg",
+          "size": 3338065,
+          "md5": "9de0d9fe68a7567c23a40600cd0c1d04",
+          "sha256": "26f69446ee57722c402b45d22240a08ffc6b272fe3d3a42aaa733093f3eb6f50"
+        },
+        {
+          "path": "textures/namaqualand_boulder_04_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/namaqualand_boulder_04/namaqualand_boulder_04_nor_gl_2k.jpg",
+          "size": 3152936,
+          "md5": "889dbf0a767d24e54ac47b98a6beab73",
+          "sha256": "3621233d2c493167b7897fb339ca935d50a1c2f8b9f700a8c8a7b0cc765ae464"
+        }
+      ]
+    },
+    {
+      "id": "namaqualand_boulder_05",
+      "source": "polyhaven",
+      "kind": "model",
+      "resolution": "2k",
+      "use": [
+        "s04"
+      ],
+      "why": "1.4 x 0.7 x 0.5 m, 12 MB: a stone of the stone field",
+      "licence": "CC0-1.0",
+      "licence_url": "https://polyhaven.com/license",
+      "name": "Namaqualand Boulder 05",
+      "authors": {
+        "Jenelle van Heerden": "modeling",
+        "Dario Barresi": "Photography"
+      },
+      "categories": [
+        "collection: namaqualand",
+        "nature",
+        "rocks"
+      ],
+      "dimensions_m": [
+        1.364,
+        0.749,
+        0.538
+      ],
+      "page": "https://polyhaven.com/a/namaqualand_boulder_05",
+      "files": [
+        {
+          "path": "namaqualand_boulder_05_2k.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/2k/namaqualand_boulder_05/namaqualand_boulder_05_2k.gltf",
+          "size": 2872,
+          "md5": "988e318ea252f5a4cb80ec1c98551b96",
+          "sha256": "d2e1f687c01176703e76b6c6d9ff7a98c868a3c6402c7d97bc17a613e9c64fcc"
+        },
+        {
+          "path": "namaqualand_boulder_05.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/namaqualand_boulder_05/namaqualand_boulder_05.bin",
+          "size": 2015628,
+          "md5": "64bca194605dee7e361d43beabb3d4b7",
+          "sha256": "a60ade71de8612c873f9112159ed5d93dcba58979007a0915bc10d551a9ed03c"
+        },
+        {
+          "path": "textures/namaqualand_boulder_05_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/namaqualand_boulder_05/namaqualand_boulder_05_arm_2k.jpg",
+          "size": 2657942,
+          "md5": "32c6fa3dd92d2090968b1f6cd6cad05e",
+          "sha256": "ee4c689c7e2f33942b2bccd8a231f300236a30eb4b465ccf1bc73c5bd8a2bdff"
+        },
+        {
+          "path": "textures/namaqualand_boulder_05_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/namaqualand_boulder_05/namaqualand_boulder_05_diff_2k.jpg",
+          "size": 3222354,
+          "md5": "741f6992b52e91007470d76eccf9465d",
+          "sha256": "2645ed1fb098c26edd1e578cf21168f35ae99dfb91125cc0984bb48290741cd1"
+        },
+        {
+          "path": "textures/namaqualand_boulder_05_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/namaqualand_boulder_05/namaqualand_boulder_05_nor_gl_2k.jpg",
+          "size": 4038861,
+          "md5": "04a861f1481d0bc6f77d03d65d5ca79e",
+          "sha256": "c06189c42343caf3985cda8e123423414e6f7f777c46363c6a39e8164158cf2e"
+        }
+      ]
+    },
+    {
+      "id": "namaqualand_boulder_06",
+      "source": "polyhaven",
+      "kind": "model",
+      "resolution": "2k",
+      "use": [
+        "s04"
+      ],
+      "why": "0.7 x 1.2 x 0.7 m, 13 MB",
+      "licence": "CC0-1.0",
+      "licence_url": "https://polyhaven.com/license",
+      "name": "Namaqualand Boulder 06",
+      "authors": {
+        "Greg Zaal": "Photography",
+        "Jenelle van Heerden": "modeling"
+      },
+      "categories": [
+        "nature",
+        "rocks",
+        "collection: namaqualand"
+      ],
+      "dimensions_m": [
+        0.675,
+        1.213,
+        0.652
+      ],
+      "page": "https://polyhaven.com/a/namaqualand_boulder_06",
+      "files": [
+        {
+          "path": "namaqualand_boulder_06_2k.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/2k/namaqualand_boulder_06/namaqualand_boulder_06_2k.gltf",
+          "size": 2880,
+          "md5": "2e782a3c6f9e84d5204d85b034cab502",
+          "sha256": "405f95c207f1b48b1d3f84a04e9458e62f4d4269ff62f32b1ee870a8b4471dea"
+        },
+        {
+          "path": "namaqualand_boulder_06.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/namaqualand_boulder_06/namaqualand_boulder_06.bin",
+          "size": 2463356,
+          "md5": "1643b528fa072dc3bf5bc5ad6add1933",
+          "sha256": "c74e1f84fd9b48ba86420263804da0899d4d2d2f470276be801ef450ac5e08f3"
+        },
+        {
+          "path": "textures/namaqualand_boulder_06_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/namaqualand_boulder_06/namaqualand_boulder_06_arm_2k.jpg",
+          "size": 2673250,
+          "md5": "25da5def4ce1325cb46c10ab824da32a",
+          "sha256": "0dff7558c398075629cdbe927e7df2af17236e4ad4d626c62dd952617a227e41"
+        },
+        {
+          "path": "textures/namaqualand_boulder_06_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/namaqualand_boulder_06/namaqualand_boulder_06_diff_2k.jpg",
+          "size": 3735726,
+          "md5": "fb5a616f9ee20a2a3cd9b92198673058",
+          "sha256": "f0420241be612a043e2afbecf46e2681743ee6bba58a85d5a32a424a3a849aaa"
+        },
+        {
+          "path": "textures/namaqualand_boulder_06_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/namaqualand_boulder_06/namaqualand_boulder_06_nor_gl_2k.jpg",
+          "size": 4366385,
+          "md5": "a44dff0ded5430f4d19a94d850d3a4af",
+          "sha256": "d4a8317d2a081439121f7f1ad37af55714826e70d55a7dc51b4b5444c362a663"
+        }
+      ]
+    },
+    {
+      "id": "quiver_tree_01",
+      "source": "polyhaven",
+      "kind": "model",
+      "resolution": "2k",
+      "use": [
+        "s02"
+      ],
+      "why": "2.7 m quiver tree: a short, thick trunk entirely in the flight band, 22 MB",
+      "licence": "CC0-1.0",
+      "licence_url": "https://polyhaven.com/license",
+      "name": "Quiver Tree 01",
+      "authors": {
+        "James Ray Cock": "Photography",
+        "Dario Barresi": "Photography",
+        "Rico Cilliers": "modeling"
+      },
+      "categories": [
+        "nature",
+        "plants",
+        "trees",
+        "collection: namaqualand"
+      ],
+      "dimensions_m": [
+        1.181,
+        0.969,
+        2.716
+      ],
+      "page": "https://polyhaven.com/a/quiver_tree_01",
+      "files": [
+        {
+          "path": "quiver_tree_01_2k.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/2k/quiver_tree_01/quiver_tree_01_2k.gltf",
+          "size": 5080,
+          "md5": "e52d346140a73feeac75b1fd1e08f237",
+          "sha256": "c04c3695eb768bcca3b8a87d40a981cae276f4ae7b503685514a658b61fbe65d"
+        },
+        {
+          "path": "quiver_tree_01.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/quiver_tree_01/quiver_tree_01.bin",
+          "size": 4413204,
+          "md5": "4d02b6a0e57a20fbaee31c6b7820b0f2",
+          "sha256": "20efdf4aa14825ffd01abb21535afd485a00022c96ad04c1269bb01c137bbe08"
+        },
+        {
+          "path": "textures/quiver_tree_01_leaf_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/quiver_tree_01/quiver_tree_01_leaf_arm_2k.jpg",
+          "size": 2654551,
+          "md5": "5ab84c81760cd2c526a4833ffeab6a3e",
+          "sha256": "ac5b970173996617523250a597fa9bdee420db5783bdeec1bca1e42bfca027e3"
+        },
+        {
+          "path": "textures/quiver_tree_01_leaf_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/quiver_tree_01/quiver_tree_01_leaf_diff_2k.jpg",
+          "size": 2276970,
+          "md5": "6b390fedf7aae696f0f68ce606232a5f",
+          "sha256": "5eb0e781faec82c65cfa2da646a08763f1ccd99b4f8d0a90cf6dd216d05b8a45"
+        },
+        {
+          "path": "textures/quiver_tree_01_leaf_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/quiver_tree_01/quiver_tree_01_leaf_nor_gl_2k.jpg",
+          "size": 3559481,
+          "md5": "48fa639eca1995608bd822c3d5102c61",
+          "sha256": "2152aee0f5294975122e7a4279a75ad9bec2ccd097cfa4d503d13cb7fda942b3"
+        },
+        {
+          "path": "textures/quiver_tree_01_trunk_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/quiver_tree_01/quiver_tree_01_trunk_arm_2k.jpg",
+          "size": 1871432,
+          "md5": "741bf10e3c5a3a19574f19ee9f19b324",
+          "sha256": "55cf601fae48706c0feed6d0b2afd3a4a2f3460b3c17bc84f0e7b03c5bb320dd"
+        },
+        {
+          "path": "textures/quiver_tree_01_trunk_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/quiver_tree_01/quiver_tree_01_trunk_diff_2k.jpg",
+          "size": 2734373,
+          "md5": "7b2eb7c29995b9bef8dec86ab36d85fa",
+          "sha256": "6a0aab7949ef08d95f8a7bdd8dd9a1cd97dc402de3e370745aa6f0f37b301fef"
+        },
+        {
+          "path": "textures/quiver_tree_01_trunk_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/quiver_tree_01/quiver_tree_01_trunk_nor_gl_2k.jpg",
+          "size": 4045445,
+          "md5": "54bca1f06abfad95f385ee32e6dc2b5d",
+          "sha256": "360292a6c8d7602dcc15d352d48690f3aac61fbbedc5fb9f6be6309abfb76075"
+        }
+      ]
+    },
+    {
+      "id": "sand_rocks_small_01",
+      "source": "polyhaven",
+      "kind": "model",
+      "resolution": "2k",
+      "use": [
+        "s04",
+        "s08"
+      ],
+      "why": "4.6 x 3.9 x 0.5 m flat rock group, 31 MB: low mass, a stone field's floor pieces",
+      "licence": "CC0-1.0",
+      "licence_url": "https://polyhaven.com/license",
+      "name": "Sand Rocks Small 01",
+      "authors": {
+        "Rob Tuytel": "Photography, processing",
+        "Rico Cilliers": "cleanup"
+      },
+      "categories": [
+        "nature",
+        "rocks",
+        "collection: smugglers_cove",
+        "collection: verdant_trail"
+      ],
+      "dimensions_m": [
+        4.627,
+        3.884,
+        0.536
+      ],
+      "page": "https://polyhaven.com/a/sand_rocks_small_01",
+      "files": [
+        {
+          "path": "sand_rocks_small_01_2k.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/2k/sand_rocks_small_01/sand_rocks_small_01_2k.gltf",
+          "size": 2887,
+          "md5": "0274616a70df07024eafdea5c5ccbb15",
+          "sha256": "a4b05d1ab4323aa0ffc4af1092093be3e957548a79cc55e9a1ebee0b556c8d12"
+        },
+        {
+          "path": "sand_rocks_small_01.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/sand_rocks_small_01/sand_rocks_small_01.bin",
+          "size": 21253052,
+          "md5": "327c5e2efdde87ecf9d89bbe90ed923e",
+          "sha256": "77ea63c7cb39654b3e804f3b3a3dafdb5a39ff828192465276908dc3a963a44e"
+        },
+        {
+          "path": "textures/sand_rocks_small_01_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/sand_rocks_small_01/sand_rocks_small_01_arm_2k.jpg",
+          "size": 2683303,
+          "md5": "ed5e5ff4d4e45754491400b2093eb50b",
+          "sha256": "8504aa069f4429f18b9e2c439635f9f5bb88a3ffda425f02bfcd3d7413c1a6c2"
+        },
+        {
+          "path": "textures/sand_rocks_small_01_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/sand_rocks_small_01/sand_rocks_small_01_diff_2k.jpg",
+          "size": 2785116,
+          "md5": "e66b8a2f4d6c0837be5a7c570fbc92ef",
+          "sha256": "6bd0ad55a3f4e628cc291b7d6eb34958471fcdd5cd9fe931bef94bcec88ffd1a"
+        },
+        {
+          "path": "textures/sand_rocks_small_01_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/sand_rocks_small_01/sand_rocks_small_01_nor_gl_2k.jpg",
+          "size": 4231854,
+          "md5": "f91fef4b39ecb45884bcf9f3e25f26a5",
+          "sha256": "8452cb2079a822256339acbc23158e1f8b0980bb76f350f64c2da62203c1574f"
+        }
+      ]
+    },
+    {
+      "id": "searsia_burchellii",
+      "source": "polyhaven",
+      "kind": "model",
+      "resolution": "2k",
+      "use": [
+        "s06"
+      ],
+      "why": "3.2 m tall, 8.4 m wide bushy tree, 38 MB",
+      "licence": "CC0-1.0",
+      "licence_url": "https://polyhaven.com/license",
+      "name": "Searsia Burchellii",
+      "authors": {
+        "James Ray Cock": "modeling",
+        "Jenelle van Heerden": "photography"
+      },
+      "categories": [
+        "nature",
+        "trees",
+        "collection: namaqualand"
+      ],
+      "dimensions_m": [
+        8.356,
+        5.063,
+        3.247
+      ],
+      "page": "https://polyhaven.com/a/searsia_burchellii",
+      "files": [
+        {
+          "path": "searsia_burchellii_2k.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/2k/searsia_burchellii/searsia_burchellii_2k.gltf",
+          "size": 15079,
+          "md5": "02f6ca91643bd14ef264f1c575baca99",
+          "sha256": "4d4b912ea3cc9dfe306e47c572f4373d2785301671f2bc94eae276a9ad1442db"
+        },
+        {
+          "path": "searsia_burchellii.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/searsia_burchellii/searsia_burchellii.bin",
+          "size": 33273876,
+          "md5": "a415e710a2b077d2b1b33401a13f8b9a",
+          "sha256": "28d37b817d3d09d2bf9a765e247786ea65200927cb28d631ba59680ebbf6931f"
+        },
+        {
+          "path": "textures/searsia_burchellii_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/searsia_burchellii/searsia_burchellii_arm_2k.jpg",
+          "size": 1624015,
+          "md5": "ad01d0e2ff0f34da5bab209ea0f928da",
+          "sha256": "1c9c814767e46301a01cbf7218b181cd209046ec8c3729e271c67780e3600807"
+        },
+        {
+          "path": "textures/searsia_burchellii_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/searsia_burchellii/searsia_burchellii_diff_2k.jpg",
+          "size": 1558401,
+          "md5": "4eaa95cb6016f417e8240f4a8ec755d1",
+          "sha256": "2c069713677c6f47228420fe837ecbed76677198db306ae864b53224cc5448a6"
+        },
+        {
+          "path": "textures/searsia_burchellii_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/searsia_burchellii/searsia_burchellii_nor_gl_2k.jpg",
+          "size": 1888915,
+          "md5": "c0b76a91e280df7dafbd682244bab3b1",
+          "sha256": "86a665c52e1cb88b211ccd8ce0d691a097c33ca4031b2975e6154b05cdff72dc"
+        }
+      ]
+    },
+    {
+      "id": "searsia_lucida",
+      "source": "polyhaven",
+      "kind": "model",
+      "resolution": "2k",
+      "use": [
+        "s02",
+        "s06"
+      ],
+      "why": "2.3 m tall, 4.8 m wide bush, 25 MB: a cluster member with mass at flight altitude",
+      "licence": "CC0-1.0",
+      "licence_url": "https://polyhaven.com/license",
+      "name": "Searsia Lucida",
+      "authors": {
+        "James Ray Cock": "modeling",
+        "Jenelle van Heerden": "Photography"
+      },
+      "categories": [
+        "nature",
+        "plants",
+        "trees",
+        "collection: namaqualand"
+      ],
+      "dimensions_m": [
+        4.783,
+        2.844,
+        2.339
+      ],
+      "page": "https://polyhaven.com/a/searsia_lucida",
+      "files": [
+        {
+          "path": "searsia_lucida_2k.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/2k/searsia_lucida/searsia_lucida_2k.gltf",
+          "size": 31443,
+          "md5": "0a18c47b81fcd03a891db4da6518d9eb",
+          "sha256": "083eff7f2b9587e5bdb3c4e80a1bb03d10d15b51d29d011c5c988f03ff230b8f"
+        },
+        {
+          "path": "searsia_lucida.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/searsia_lucida/searsia_lucida.bin",
+          "size": 17913396,
+          "md5": "aa4c42ee903a3ac22d53386d82480e6d",
+          "sha256": "e0be13cac215725de1f8438d96e1010049d655512a0608c36eabe2ba5abff851"
+        },
+        {
+          "path": "textures/searsia_lucida_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/searsia_lucida/searsia_lucida_arm_2k.jpg",
+          "size": 2029933,
+          "md5": "f8872f2172218125dd250e963c0aec8a",
+          "sha256": "72223563a8fd63191c55c8a03b8917065756cdb2ae2e80e167ae341c97d62f00"
+        },
+        {
+          "path": "textures/searsia_lucida_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/searsia_lucida/searsia_lucida_diff_2k.jpg",
+          "size": 1797791,
+          "md5": "38b70b5dfc6ac049cefc8a502fa94bf5",
+          "sha256": "16eebc961b456192da906aa1385c6ab805ec9797fd600a15b3a2e72db1e3844d"
+        },
+        {
+          "path": "textures/searsia_lucida_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/searsia_lucida/searsia_lucida_nor_gl_2k.jpg",
+          "size": 2997220,
+          "md5": "11ac2226f7473b91cc805dc334b97f99",
+          "sha256": "1352cbc2ede3687d252b082c84b1a19ca820c083ed6385a8353073fce9c43a1f"
+        }
+      ]
+    },
+    {
+      "id": "tree_small_02",
+      "source": "polyhaven",
+      "kind": "model",
+      "resolution": "2k",
+      "use": [
+        "s02"
+      ],
+      "why": "4.7 m tall, 4.3 m wide small tree, 115 MB",
+      "licence": "CC0-1.0",
+      "licence_url": "https://polyhaven.com/license",
+      "name": "Tree Small 02",
+      "authors": {
+        "Rico Cilliers": "All"
+      },
+      "categories": [
+        "nature",
+        "plants",
+        "trees",
+        "collection: verdant_trail"
+      ],
+      "dimensions_m": [
+        2.921,
+        4.293,
+        4.65
+      ],
+      "page": "https://polyhaven.com/a/tree_small_02",
+      "files": [
+        {
+          "path": "tree_small_02_2k.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/2k/tree_small_02/tree_small_02_2k.gltf",
+          "size": 9075,
+          "md5": "7b77f2ca02edf5d7964ca3514e66c6b7",
+          "sha256": "a1a7c8a145c811392457c111bff8192146f655a75b5de163ec659cd32af17726"
+        },
+        {
+          "path": "textures/tree_small_02_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/tree_small_02/tree_small_02_arm_2k.jpg",
+          "size": 2586815,
+          "md5": "038ad0c1968be6802b20d084cdf30603",
+          "sha256": "e96b4e84e9786b982d01562e0d249f6e58db1b656dd511db7c034d6ed60b1c92"
+        },
+        {
+          "path": "textures/tree_small_02_branch_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/tree_small_02/tree_small_02_branch_arm_2k.jpg",
+          "size": 1147503,
+          "md5": "d6a0921ec6dbeaaf22a4b91d68fe16d1",
+          "sha256": "82da928cc4e8a45c559f6abe8053227c7ae6cc14eb8d026a30c203aedd087042"
+        },
+        {
+          "path": "textures/tree_small_02_branch_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/tree_small_02/tree_small_02_branch_diff_2k.jpg",
+          "size": 1425692,
+          "md5": "5ba327fc166360fcbb44f2eb04fbd8d8",
+          "sha256": "9032de9e063ee7e3763a6b10d19d89302f5776e85a966b6dd1c3a5634b2a80e1"
+        },
+        {
+          "path": "textures/tree_small_02_branch_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/tree_small_02/tree_small_02_branch_nor_gl_2k.jpg",
+          "size": 1781975,
+          "md5": "12286d5b329b4fb4203fc155a01b0a04",
+          "sha256": "368505992d867bb50eccc00d77940a7a3eaf32f42de9f536d105407b0d6df3fd"
+        },
+        {
+          "path": "textures/tree_small_02_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/tree_small_02/tree_small_02_diff_2k.jpg",
+          "size": 3170612,
+          "md5": "ff4d82640b7e0daaec0b71bfc1cef76c",
+          "sha256": "4ab3210b6ec6bb1181145500bca71d1c1f81ead6baaa8600f5979c2cec50c6a4"
+        },
+        {
+          "path": "textures/tree_small_02_leaves_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/tree_small_02/tree_small_02_leaves_arm_2k.jpg",
+          "size": 2191542,
+          "md5": "4b88d67947fe214f2afc65beb83bee02",
+          "sha256": "a126c0d92b60c44c0664e4d3651831970e259b0d5a1fb39ebb67081cbecaca96"
+        },
+        {
+          "path": "textures/tree_small_02_leaves_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/tree_small_02/tree_small_02_leaves_diff_2k.jpg",
+          "size": 961870,
+          "md5": "021ddc0cf1d94b99716a106cede576c7",
+          "sha256": "6c984a46861562f2a20381c54106aa5e07ce0d3fce785907f8d263157e7561af"
+        },
+        {
+          "path": "textures/tree_small_02_leaves_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/tree_small_02/tree_small_02_leaves_nor_gl_2k.jpg",
+          "size": 2395771,
+          "md5": "ab509e55b5d763f68195e0eb257bb5e3",
+          "sha256": "40c956e345430562cdb4d0470c7d499aa160f1fa3dd7555d88be2dedf0d7ff2e"
+        },
+        {
+          "path": "textures/tree_small_02_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/tree_small_02/tree_small_02_nor_gl_2k.jpg",
+          "size": 4555311,
+          "md5": "064c3e1d08f010c732e7af6395a66769",
+          "sha256": "cb7897fc0aea602964836116ecf631614ece2970f579647fe1070bccb428fe89"
+        },
+        {
+          "path": "tree_small_02.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/tree_small_02/tree_small_02.bin",
+          "size": 95102324,
+          "md5": "7a7019a87e6fe0d7475c0fa2e08d8962",
+          "sha256": "8da6c3c389ad8748286d1b7488cd827f75ebdad9d8f59ef7dfb0916df5edc634"
+        }
+      ]
+    }
+  ]
+}
