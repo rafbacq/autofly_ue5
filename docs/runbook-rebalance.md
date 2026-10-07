@@ -93,6 +93,7 @@ $PY scripts/rebalance_dataset.py --raw data/s01_pilot --detections runs/rebalanc
     --allow-partial --out runs/rebalance/s01_pilot_probe/rebalance.json
 ```
 
-The numbers are in the decision record. Finishing the pilot: the same `detect_targets.py` command without `--episodes`
-and `--out data/s01_pilot/detections.json`, seeded by copying the probe's file there first (it is continued, not
-redone), then `rebalance_dataset.py --raw data/s01_pilot`.
+The numbers are in the decision record. The pilot was then finished the same way on 2026-10-07: the probe's file copied
+to `data/s01_pilot/detections.json`, the same `detect_targets.py` command without `--episodes` and `--out` (13 h, job
+`detect_s01_pilot`; the file was continued, not redone), then `rebalance_dataset.py --raw data/s01_pilot` wrote
+`data/s01_pilot/rebalance.json`: P0 = (0.652, 0.348), weights (0.766, 1.438).

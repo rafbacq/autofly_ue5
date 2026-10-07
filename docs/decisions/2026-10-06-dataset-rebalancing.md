@@ -98,10 +98,41 @@ What it says:
   requirement (the first record from which the score stays above the threshold for k records), each measured on the
   real targets' `first_detection.off_target` and `detection_persistence`.
 
+## The whole pilot: 100 episodes, 2026-10-07
+
+The remaining 90 episodes were scored overnight on the CPU beside run 6's session 1 (job `detect_s01_pilot`, 15,937
+frames in 13.0 h, 0.34 frames/s; the four training simulators kept 201 % CPU each throughout). `data/s01_pilot/
+rebalance.json` is the store's own, written by `rebalance_dataset.py --raw data/s01_pilot` at the default 0.7.
+
+| | |
+|---|---|
+| Scored | 17,738 records of 100 episodes; `detections.json` records both runs |
+| At 0.7, one-way split | P0 = (0.652, 0.348), KL 0.047 nats, weights (0.766, 1.438), resample sizes (77, 144) of (100, 100) sub-trajectories |
+| At 0.7, per record | 4,993 of 17,738 records above 0.7: P0(2) = 0.281. The paper's 0.27 |
+| Never detected | 0 of 100; every episode's maximum lies in 0.868–0.899 |
+| On target | 99 of 100 first detections cover the target's bearing. Of all 4,993 records above 0.7 with the target in view, 2 (0.04 %, in 2 episodes) have their box elsewhere. One of them is a first detection: `s01_400000026`, record 80 of 188, a wide box on the left of the image scoring 0.707 at 44 m while the target stood mid-right with no distractor near, so that episode's target seeking starts 16 records early |
+| Transition | median 27.9 m from the target (11.4–55.1 m); at 15–89 % of the episode, median 65 % |
+| Persistence | 0.81 |
+
+Threshold sweep over the 100 episodes (same columns as the probe's):
+
+| threshold | P0 | weights | per-record P0(2) | persistence | first detections on target | median distance |
+|---|---|---|---|---|---|---|
+| 0.50 | 0.073 / 0.927 | 6.89 / 0.539 | 0.514 | 0.55 | 38 of 100 | 65 m |
+| 0.60 | 0.288 / 0.712 | 1.74 / 0.702 | 0.388 | 0.54 | 57 of 100 | 56 m |
+| 0.65 | 0.483 / 0.517 | 1.035 / 0.968 | 0.338 | 0.66 | 87 of 100 | 35 m |
+| **0.70** | 0.652 / 0.348 | 0.766 / 1.438 | 0.281 | 0.81 | 99 of 100 | 28 m |
+| 0.75 | 0.740 / 0.260 | 0.676 / 1.924 | 0.215 | 0.83 | 100 of 100 | 21 m |
+| 0.80 | 0.836 / 0.164 | 0.598 / 3.05 | 0.142 | 0.86 | 100 of 100 | 14 m |
+| 0.85 | 0.891 / 0.109 | 0.561 / 4.58 | 0.094 | 0.86 | 100 of 100 | 11 m |
+| 0.90 | 1.000 / 0.000 | 0.5 / 2217 | 0.000 | 0.25 | 1 of 100 (99 never detected) | 6.5 m |
+
+The ten-episode probe held: the split is (0.65, 0.35) against the probe's (0.64, 0.36), the per-record reading 0.28
+against 0.28, and 0.75 is the lowest threshold with no false first detection in 100 episodes. The one false positive
+at 0.7 is the first seen, and the kind M5's real target pool must be watched for.
+
 ## What is left
 
-- Finish the pilot (90 episodes): about 12 h on the CPU, or on the GPU (far faster; unmeasured) when no simulator
-  needs to launch (runbook §2). Then `rebalance_dataset.py --raw data/s01_pilot` writes the store's own `rebalance.json`.
 - M5 decides the threshold against real target pools: this probe's target is the placeholder orange cylinder, alone
   in its colour. With 60 targets and 3–5 distractors per scene, `first_detection.off_target` is the number to watch.
 - Applying the weights is the training pipeline's job (a later LeRobot/OpenVLA export): `stratified_resample` draws

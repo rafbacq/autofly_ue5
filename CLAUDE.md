@@ -58,10 +58,10 @@ Git-ignored but present on the GPU host:
 | M3 | **Passed** 2026-10-03 (`docs/gates/m3_gate.json`): the 100-episode s01 pilot kept 100 of 101 (stochastic s01_r2 best_model, a0 = sector8), the validator passed over 17,738 records, and TFDS read every episode back exactly from `data/s01_pilot/1.0.0/`. a0 costs the expert nothing (`docs/gates/m3_a0_probe.json`: 50/50 with, 49/50 without). Decisions: `docs/decisions/2026-10-03-m3-a0-and-collection.md`, review: `2026-10-03-m3-review-findings.md` |
 
 Each milestone stops for the user's go-ahead before the next starts. The user asked for M2d and M3 on 2026-10-02.
-Ahead of M5, the rebalancing stage of spec §10.3 is built and probed on ten pilot episodes
-(`docs/decisions/2026-10-06-dataset-rebalancing.md`); the pilot's remaining 90 episodes are being scored on the CPU
-(job `detect_s01_pilot`, 2026-10-06 19:17, ~13 h). M4's offline groundwork is done (plan 5, C0-C1: every placement type,
-the detour metric); its editor and asset work waits for decisions U1-U4 and a window with no live simulator.
+Ahead of M5, the rebalancing stage of spec §10.3 is built and run on the whole pilot: `data/s01_pilot/rebalance.json`
+holds P0 = (0.652, 0.348) and weights (0.766, 1.438) at the paper's 0.7, every first detection but one on the target
+(`docs/decisions/2026-10-06-dataset-rebalancing.md`). M4's offline groundwork is done (plan 5, C0-C1: every placement
+type, the detour metric); its editor and asset work waits for decisions U1-U4 and a window with no live simulator.
 
 ## Hard rules on this host
 
