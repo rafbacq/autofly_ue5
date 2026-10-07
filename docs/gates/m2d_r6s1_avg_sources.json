@@ -1,0 +1,335 @@
+{
+  "averaged": "runs/expert/s01d_r6/averaged/avg_250k_end.zip",
+  "sha256": "23714ce4049654d323bdef2c794353e7af9619bfc1ad58f974470ac42b94906c",
+  "n_sources": 82,
+  "sources": [
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_250000_steps.zip",
+      "sha256": "16d8c6d16e9d6dd6f997157872f97300e930a4896f355334c094bfc6b91f2bd8"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_260000_steps.zip",
+      "sha256": "efefcc92cc447b470263cbb7fd7781ac1eb59cec61cc2de78780edf747b9f738"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_270000_steps.zip",
+      "sha256": "3a5b29931fa47d7da128e1e75539bcb3dcb91953ce6598a8c29e43ba78c8d9b3"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_280000_steps.zip",
+      "sha256": "b9503051e1589666fefebd98e1ad86c073d2aca10e2b2dca940017b92fdd3c9a"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_290000_steps.zip",
+      "sha256": "7f5a6dc677749cd9f414764ddcd1d4400903a9ccbf503356d8f3b31c2edb5d16"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_300000_steps.zip",
+      "sha256": "56417d92790b6526d053128a6cea50a2893bf373a091c8f14f09b253b8bf99ea"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_310000_steps.zip",
+      "sha256": "438f3ffa97df469310e5c74be253fca94b3a1891fb950f87466aa2e6a5370766"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_320000_steps.zip",
+      "sha256": "f1a60dbb5c3c7a52d3350f4003a645916a52117eb077d4428cd3fa1d85c4e288"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_330000_steps.zip",
+      "sha256": "4ba943406c7e45c18946b7b210d8ebe4ee2474148855e1392c18278940d52c0a"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_340000_steps.zip",
+      "sha256": "8f07498deeb7eda511b595596f8fe572f9039a55b746426169fa66c83b9a17fd"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_350000_steps.zip",
+      "sha256": "bc8d03b969d37545770966b68258fd487981187876ad5ba91f0061667033d126"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_360000_steps.zip",
+      "sha256": "35eefa71d210dadb300915a0784b1bcf48773aac65065dbd6d279f54e58b9c06"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_370000_steps.zip",
+      "sha256": "56061c7b8668c259d3f60dc10282f92c393fcc7bcca6a18910826839fe2e068f"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_380000_steps.zip",
+      "sha256": "3cbf14c1f1cab181ee70e52e16adf7af9ea919b6fb83559affff9b47b260efe5"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_390000_steps.zip",
+      "sha256": "2ddfc7dcb31246e6694d1ea85f7ede2c05ffbc155676b40e796f4e7294b34d1c"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_400000_steps.zip",
+      "sha256": "3410273c6bc55fa857b8834e83869db39f964eadc81cdf7efddc82c1efa823ee"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_410000_steps.zip",
+      "sha256": "d68f6d62ce861db882926467a055104ed415d8787e41265ccbf6093b6cd952c1"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_420000_steps.zip",
+      "sha256": "2a3280c5648d84d6e5f4d566cde41a0cefadf654ebf8ebf5f93077fdea3d3ac6"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_430000_steps.zip",
+      "sha256": "f6ad47e11e7a65acc8140039a77dd70ecce920e0f4796a87fc6d003f66947460"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_440000_steps.zip",
+      "sha256": "67e6168cb0d634a6e71936ecd7719af6003bb8daf29fe9eb7d0ce9c2067f493e"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_450000_steps.zip",
+      "sha256": "6e0abdf0ea1d5f665a7ce81b748b108782c5dc79d3241ae67c6b9d4f9cab2582"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_460000_steps.zip",
+      "sha256": "ccc60c95cd11173c2bb33ee6f8616d9d24d591d42430356fb286d3ed5ac3002a"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_470000_steps.zip",
+      "sha256": "cb649c02477605cdfa47b74f906508877467a171120f4fd1182d0a97b654d8cc"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_480000_steps.zip",
+      "sha256": "904aa5cb29a6163afc73c2acca9cb8e4b8f1b3fe8027d1c90d0134918b68a96f"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_490000_steps.zip",
+      "sha256": "974a9c3f6ba93a1d802f6b000d9ddd63a46c48295faf85d84b4adba58ab0141a"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_500000_steps.zip",
+      "sha256": "1151f8c2fb8db466b2c22c9e210691bfdda456739b359e6bd31cd9893cda9356"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_510000_steps.zip",
+      "sha256": "6a11ec11d3dbbce2fda78499b3b7c8b54fb1b4d9c95620648733c3f2459b2387"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_520000_steps.zip",
+      "sha256": "a85814db517cc39cc856c03678ba8201c9bdc634d120d5bbc034adae02d511ee"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_530000_steps.zip",
+      "sha256": "85d539323ee99174ef7ecc8d17b1a14130b574d4c18856c42702266e3af74c2f"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_540000_steps.zip",
+      "sha256": "f0cb99aaf7e2e404de21bcd8a0b5f4529633d5611c4831f8f386a9a36b0f0f8f"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_550000_steps.zip",
+      "sha256": "232e5e9d6ddca4a910a4bb4885d5c80f1f388a5817f4dc3637304cc1e815d245"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_560000_steps.zip",
+      "sha256": "3481cdfc1ce3848c287cb7a7db08d4812c4cd2c0bf88f1f3817bec445041e85d"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_570000_steps.zip",
+      "sha256": "c25888b32afc29903c5eb36bb4322533ff559e0aa7e98713b0dfb98616cc28a8"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_580000_steps.zip",
+      "sha256": "5a1177a8f9058eb5983aa93b01f7aa4401e70f090e96d8374a08da4cd3724474"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_590000_steps.zip",
+      "sha256": "25644ac20a9ce7d082b654f7f86a4cb8c2d8786f7a316b806a6fde2bbcd630a7"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_600000_steps.zip",
+      "sha256": "e6c55876301d381323c789f9c13d0e731c2e6a5c293b3da4c46c55d450d43a4e"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_610000_steps.zip",
+      "sha256": "7086fa63ad5eab50c16349b2d0d9caa9486f87ccdc40cac4794419a039149c8e"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_620000_steps.zip",
+      "sha256": "8f2ae31ec75192bdbab5371949792de735f15740b091a6bd1f9d84e128e39baa"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_630000_steps.zip",
+      "sha256": "546a309e9473f8087dcaba9d9d7be08ba0c9e7e69a125086b0f953ee9b46425a"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_640000_steps.zip",
+      "sha256": "280ec2f2bfde2f44a927387501f62cc2ac8b3ec1cfe78c0996da6adeb03bb30a"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_650000_steps.zip",
+      "sha256": "64cf9b11f8c02f06e9ec85dd4c8a6ebf07610520e656a22c6f9e697f6c56551a"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_660000_steps.zip",
+      "sha256": "a2a4582a179b121dc8a5c896eff1979fe3174a9fee6cf2338d76361ae2b964b8"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_670000_steps.zip",
+      "sha256": "dd7c85a6ae91f33cd4896e22d066102b253eb76f96188104f91e6c55e52419bb"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_680000_steps.zip",
+      "sha256": "4766d58dec1cd79bcb74dc608960caad8c1c041e326f1ea69cce48e01f3fe376"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_690000_steps.zip",
+      "sha256": "8ed79b89f87823ccfe0d2b94918a3c45798407ad9a9afed99b6caed54d029030"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_700000_steps.zip",
+      "sha256": "8a38aab0bbd60047a2199162437cf784d0215a3c031cd1056dd8148507d51fff"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_710000_steps.zip",
+      "sha256": "bffbb7f16d54e2fac7cd594e2f611ccf68ae22f0276b8c604919a893e5b6e856"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_720000_steps.zip",
+      "sha256": "a3327bbb4ee0cce2dbf27d847b2679e3a5fbe29f4a47c7aadd9c72d6a824b7c9"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_730000_steps.zip",
+      "sha256": "40e2b3ae5655e00b09e0aef79e07557e554baa577d380c528d1b00fcf61651e0"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_740000_steps.zip",
+      "sha256": "0e29a67244934c725a7cafdc1a77fc14e1249670ee858eb245614c416dad2d0f"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_750000_steps.zip",
+      "sha256": "fa129cbb323606c8d16993549f009b1becd5020362339132da5352217014e041"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_760000_steps.zip",
+      "sha256": "48a30f2acfdf3644ef8cb2041b659aaf846bd0bc8ec93afab5d8ef5991a508ce"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_770000_steps.zip",
+      "sha256": "34e315f18635c6876e8c38216290b8943b7e9a9728954d2ba01ddda706749265"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_780000_steps.zip",
+      "sha256": "1beb310ce578a636b7ed75669068b6c0d71970c19cef6076cebcf46393c47bc2"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_790000_steps.zip",
+      "sha256": "c2eeb36fb12c3ddfa0b4c008bb5667c4473b3b2c31e442b8223d572700cb95c2"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_800000_steps.zip",
+      "sha256": "fdd2a237646b50616836fc0b88600eb64060b8d8343e5e7512b4a1d38feae0a7"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_810000_steps.zip",
+      "sha256": "cd38612a69b22a6fb4cc26cdb31281fa85b1b1eb76dfcc24a7a5d91db4a2773a"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_820000_steps.zip",
+      "sha256": "57a59c83d156fb09fc562b814ef15639a2be1335b03169b07299ddcce5b4d089"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_830000_steps.zip",
+      "sha256": "545f6c25ab2aefca4b044850d1b400bb59905ae5bc2b242a3fd51c66acbe4173"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_840000_steps.zip",
+      "sha256": "317b315d40369c0565133284a10b8886423b10beec4272db7efac39cf38ac489"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_850000_steps.zip",
+      "sha256": "c1cafeb26fdeac4ccee6d2bf0b59d3ef68d87c99d59973a552df115926512759"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_860000_steps.zip",
+      "sha256": "7755cbafe3cbc74313fdf0bb1f9b983de3f73ecac27b8997f27bb41027c894af"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_870000_steps.zip",
+      "sha256": "0536f512c6c6bb64f29f9206bafd1e1c8d126778dfef7ce5b0ca20a8fdbdaa9f"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_880000_steps.zip",
+      "sha256": "d4f3f3bffcf3d03f1a633a564171c888d5a1b6293f000bbdd4b4d1d051717c53"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_890000_steps.zip",
+      "sha256": "bc0e326c93b98b5cd9ba283ee179827e91fec4f452a076dff47b307e10eb18ec"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_900000_steps.zip",
+      "sha256": "f060981e0ab2c71329acf9e5a9bf6cb191e3f2e999ce864dd079da939fac43f2"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_910000_steps.zip",
+      "sha256": "43a7242f38ad5961016f2d865d3877dbc96fdd3a0f2a909eb1cb11bb6a9d6c42"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_920000_steps.zip",
+      "sha256": "59e4c970355dbfb25ad65ccefff7be86ded935d845a7cd49e26b61a39f609b47"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_930000_steps.zip",
+      "sha256": "1b2069a8074de1f3dfa498f470f6ac2e3eede147c42d399adf14a6e05a133d3b"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_940000_steps.zip",
+      "sha256": "c2e112a46d2f99ea796b46a9bcda06eb6461e1e9183c7d135c0c2824f5e62285"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_950000_steps.zip",
+      "sha256": "4bbce2235c3b62f0136092d6568bc9dbc4c5bdd4791e6888210cd332b634ba43"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_960000_steps.zip",
+      "sha256": "07ee551d0cd9a2324402263f6059ee6cb0800a12df39801b8519d55730b5131c"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_970000_steps.zip",
+      "sha256": "a53a1bc16f2ab106b3307d69ee784921069353bf8098532fd03b4d48b88685d3"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_980000_steps.zip",
+      "sha256": "dec6ecda7a3862b23e38ce92199c862af210bf12cce0843ecfa3990dfe8dc359"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_990000_steps.zip",
+      "sha256": "b2b0d586ce45349ae6a8dc8de0b42f5f0b21ab34187cc6541cc3f3cf3ed0877b"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_1000000_steps.zip",
+      "sha256": "a5eaff5fdac001fa2a87825197e0b02e07c7310b17162496ea7457c9ddd0e5cc"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_1010000_steps.zip",
+      "sha256": "46497c8550f15039d6e44ccaf0f4d22c52e6bdd1f45a73dd0b4076d847d50377"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_1020000_steps.zip",
+      "sha256": "2e0f33445241de0ab4cda5ae77e4a8d09ce8f4d91c064ca9803d0a45049797f9"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_1030000_steps.zip",
+      "sha256": "4c2afd2316ff1fe40f095645f25b93dce4ef261fab0283c1e01ef6cafb5c5027"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_1040000_steps.zip",
+      "sha256": "cbe821ef521817d49bd3b8e0fd012a32aafd34d7a254eaa9047a2b61b2406c28"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_1050000_steps.zip",
+      "sha256": "50db5927d517d708df66d8e8dc5a4b19d54d0f0ce7f7c702c47b2c5294ca555a"
+    },
+    {
+      "path": "runs/expert/s01d_r6/checkpoints/rl_model_1060000_steps.zip",
+      "sha256": "9bba16bb936c2c1a3b76f137ba2a5be74b179c13d63dfa67d470399b4c767006"
+    }
+  ]
+}
