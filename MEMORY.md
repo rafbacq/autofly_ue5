@@ -104,6 +104,16 @@ stale "fact". Standing rules live in `CLAUDE.md`; this file is the reasoning and
   - The mean of 31 checkpoints (250k-550k, `scripts/average_checkpoints.py`) flew 100 fresh validation episodes with 0
     exits, at 0.94 against 0.83 for the stage-2 winner (p = 0.035). Narrower means did less: 6 at 0.88, 16 at 0.91.
   - It gated 0.935, the best M2d score, though still under the bar. The gain was in exits; mover contacts did not fall.
+- **Late checkpoints of a long run fly worse; a wide mean still helps (2026-10-07, run 6 session 1).**
+  - From 550k to 1,060k the individual checkpoints scored 0.60–0.95 on the eval watch, below the 250k–550k ones.
+  - Means of late windows alone were the worst (0.88–0.89 on 100 fresh episodes). The widest mean (250k–1,060k)
+    was the best at 0.95, yet gated 0.920 and confirmed 0.930.
+  - Selecting the best of four on 100 episodes inflates it, as with stage 1. Pooled over 400 independent episodes the
+    expert flies 0.925 (CI 0.895–0.947).
+- **Mover contacts stay near 4.5% whatever the lever (2026-10-07).**
+  - Unchanged by a wider training boundary, a clearance penalty, weight averaging, and 12 more hours.
+  - The replayed contacts happen in saturated turns near a mover (`2026-10-06-s01d-r6-plan.md`).
+  - Untried: a closing penalty, a lower entropy target.
 - **Stage 1's best is inflated; trust stage 2 (2026-10-06).** Run 6's stage-1 leader (0.975 on 40 episodes) scored
   0.85 on stage 2's 100. The top of 21 noisy scores regresses. Taking five candidates into stage 2 costs nothing with
   five free slots.
@@ -237,9 +247,10 @@ stale "fact". Standing rules live in `CLAUDE.md`; this file is the reasoning and
 
 - What gets s01d from 0.885 to 0.95? Run 5 (mover input, r_bounds 10, a 0.3 m training contact margin, an altitude
   margin) gated 0.885. Its 23 failures were 10 static, 7 mover, 5 altitude and 1 lateral. Run 6 (2026-10-06) trains
-  each boundary 0.5 m outside the task's failure line. It gated 0.920, and the mean of its checkpoints gated 0.935.
-  Left: mover near misses at full speed (8 of 13). Candidate levers are speed near movers (a speed-aware boundary or a
-  cost), with weight averaging kept (`docs/decisions/2026-10-06-s01d-r6-plan.md`). The user chooses.
+  each boundary 0.5 m outside the task's failure line. It gated 0.920, and the mean of its checkpoints gated 0.935. 12 h
+  more and a wider mean flew 0.925 over 400 episodes, so the expert is at about 0.93. Mover near misses (about 4.5%)
+  resisted every lever. Untried: a closing penalty, a lower entropy target, a lateral margin. The user chooses
+  (`docs/decisions/2026-10-06-s01d-r6-plan.md`).
 
 Settled:
 - a0's aligned start costs the s01 expert nothing (2026-10-03, `docs/gates/m3_a0_probe.json`): 50/50 with a0, 49/50
