@@ -16,10 +16,12 @@ reachability and the live checks of §11. Then M5 trains one expert per train sc
 1. **The generator places every type spec §6.1 names** (C0, 75a9222): `poisson`, `clusters` and `stacks` beside s01's
    `jittered_grid`, box footprints (the circumscribed circle), several groups per scene without overlap. s01's layout is
    pinned to M1's build (`S01_LAYOUT_SHA256`); it did not move.
-2. **A detour metric answers spec §13** (C1, 64e87ce): `scenes/paths.py:crossing_detours` flies random start-band
-   cells straight across to the opposite target band on the inflated grid. s01 reads 1.00-1.02 on every edge; a field
-   with one gap 1.0-1.6; a sealed field is unreachable or costs the way round. A bound for new scenes is to be chosen
-   (U4); 1.25 would admit s01 with room and reject a wall.
+2. **A detour metric answers spec §13** (C1, 64e87ce, hardened after review): `scenes/paths.py:crossing_detours`
+   flies evenly spaced start-band cells straight across to the opposite target band on the inflated grid and reports
+   the detour over the straight line *and* whether a crossing exists inside the field's own lateral extent, where
+   rounding the field is not allowed. s01: max detour 1.013, nothing unreachable, every start inside the field crosses
+   through it. A wall with one gap: 1.0-1.6. A wall to the bounds: unreachable (max = inf). A compact 20 x 20 m block
+   of pillars: detour 1.14 but `through_unreachable` > 0, which is what catches it. The bound is U4.
 3. **Two scenes need no download.** s07 (stacked boxes) is the engine cube stacked by `stacks`; s09 (tall coloured
    poles) is the engine cylinder with a colour palette (colour instances are built in the editor, as MI_White was).
    Both need only a ground material and an exposure calibration, so they can be built first, while assets for the
@@ -35,9 +37,14 @@ reachability and the live checks of §11. Then M5 trains one expert per train sc
 6. **Exposure is per scene** (-11 EV calibrated s01's grid floor to mean brightness 109; `docs/gates/exposure_calibration.json`).
    A ground that is brighter or darker needs its own value, found the same way, so a placeholder ground would mean
    calibrating twice.
-7. **The pilot's expert flies near-optimally on s01**: PER in [0.956, 0.993] over the 100 kept episodes
-   (`scripts/dataset_stats.py`, `runs/rebalance/s01_pilot_path_efficiency.json`). Harder scenes should lower it; the
-   paper's models score 73-78 %.
+7. **The pilot's expert flies near-optimally on s01**: PER in [0.956, 0.994] over the 100 kept episodes
+   (`scripts/dataset_stats.py`, `runs/rebalance/s01_pilot_path_efficiency.json`; the grid bounds it from above, the
+   straight line from below). Harder scenes should lower it; the paper's models score 73-78 %.
+8. **Decided now, because changing it later would move every pinned layout:** scattered and clustered obstacles
+   (poisson, clusters) face a random way; grid pillars keep yaw 0 (s01). Boxes share one yaw per stack.
+9. **The live checks assume circles.** `sim/check_map.py` expects a (2r, 2r, h) bounding box and `validate/geometry.py`
+   models standing columns, so a box instance's circumscribed `radius_m` would fail them (1.0 m wide against 1.41
+   expected). C6 gives boxes their real extents before C8 runs on s07.
 
 ## Decisions needed from the user
 
@@ -49,8 +56,9 @@ reachability and the live checks of §11. Then M5 trains one expert per train sc
   so each scene is calibrated once (fact 6).*
 - **U3: order.** s09 and s07 first (fact 3), then s02 and s06 (trees), s03-s05 (rocks), s08, s10, s11-s12, and the
   re-seeded s05r/s06r last. *Recommendation: as listed.*
-- **U4: the detour bound** for accepting a generated layout (fact 2). *Recommendation: max 1.25 over 12 samples per
-  edge at the sampler's 1.4 m inflation, recorded in each scene's layout file beside the reachability result.*
+- **U4: the acceptance rule** for a generated layout (fact 2). *Recommendation: at the sampler's 1.4 m inflation, 12
+  evenly spaced starts per edge: `max` <= 1.25, `unreachable` = 0 and `through_unreachable` = 0, recorded in each
+  scene's layout file beside the reachability result.*
 
 ## Tasks
 
@@ -68,8 +76,9 @@ reachability and the live checks of §11. Then M5 trains one expert per train sc
   every existing draw, and the instruction names the target; s01's pool stays the orange cylinder so its golden setups
   do not move. The collector's `--target-name` placeholder goes.
 - [ ] **C6. Footprints and the runtime spawn table**: footprint circles from measured extents at flight altitude;
-  `_spawn_asset_name` checked against `world.list_assets()` for every target (spec §7.1: short names, base `UMaterial`
-  only).
+  box extents (base x scale, yaw) for `check_map.py`, `validate/geometry.py` and `motion.py`'s `CircleFootprint`
+  (fact 9); `_spawn_asset_name` checked against `world.list_assets()` for every target (spec §7.1: short names, base
+  `UMaterial` only).
 - [ ] **C7. Exposure per scene**: the s01 procedure (`docs/gates/exposure_calibration.json`) on each built level, the
   bias recorded in the level spec.
 - [ ] **C8. Build, package, live checks** per scene (`scripts/build_level.sh`, `package_sim.sh`, `validate/live_m1.py`):

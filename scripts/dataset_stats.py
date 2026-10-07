@@ -12,7 +12,10 @@ models and does not define L_opt; both conventions are recorded with the numbers
 The grid path overestimates the true optimum (8-connected moves: up to about 8 %; the inflation: whatever the real
 drone could have cut closer), so `per_physical` and `per_clearance` are upper bounds on the paper's PER. The straight
 line to the success disc is a lower bound on L_opt, so `per_straight` = straight / max(L, straight) is a lower bound
-on PER. The true value lies between them; on the pilot the two bounds are 0.96 and 0.99 (2026-10-06).
+on PER; the grid estimate is floored by it (a cell inside the disc can undercut the disc's edge by part of a cell). The
+true value lies between them; on the pilot the two bounds are 0.96 and 0.99 (2026-10-06). Conventions recorded with
+the numbers: L is 3-D (climbs count), the optimum and the straight line are horizontal (the success test is). Static
+scenes only: on a dynamic scene the movers' homes are not where they flew, and runtime distractors are on no grid.
 """
 
 from __future__ import annotations
@@ -30,13 +33,15 @@ import math  # noqa: E402
 
 import numpy as np  # noqa: E402
 
+from autofly_ue5.expert.episode import spawn_clearance_m  # noqa: E402
 from autofly_ue5.expert.reward import RewardConfig  # noqa: E402
-from autofly_ue5.scenes.model import DRONE_HALF_SPAN_M, Layout  # noqa: E402
+from autofly_ue5.scenes.model import DRONE_HALF_SPAN_M, Layout, SceneFile  # noqa: E402
 from autofly_ue5.scenes.paths import optimal_path_m  # noqa: E402
 from autofly_ue5.scenes.resolve import resolve_scene  # noqa: E402
 
-INFLATIONS_M = {"physical": DRONE_HALF_SPAN_M, "clearance": 1.4}
+INFLATIONS_M = {"physical": DRONE_HALF_SPAN_M, "clearance": spawn_clearance_m()}
 RESOLUTION_M = 0.5
+PER_KEYS = ("per_straight", "per_physical", "per_clearance")
 
 
 def trajectory_length_m(poses_per_record: list, final_pose: list) -> float:
@@ -52,34 +57,55 @@ def episode_efficiency(layout: Layout, provenance: dict, *, success_radius_m: fl
     flown = trajectory_length_m(provenance["poses_per_record"], provenance["final_pose"])
     out = {"records": len(provenance["poses_per_record"]), "flown_m": round(flown, 3),
            "straight_m": round(max(math.hypot(target[0] - start[0], target[1] - start[1]) - success_radius_m, 0.0), 3)}
-    out["per_straight"] = round(out["straight_m"] / max(flown, out["straight_m"]), 4) if out["straight_m"] > 0 else None
+    straight = out["straight_m"]
+    out["per_straight"] = round(straight / max(flown, straight), 4) if max(flown, straight) > 0 else None
     for name, inflate in INFLATIONS_M.items():
         l_opt = optimal_path_m(layout, (start[0], start[1]), (target[0], target[1]), goal_radius_m=success_radius_m,
                                inflate_m=inflate, resolution_m=resolution_m)
+        if l_opt is not None:
+            l_opt = max(l_opt, straight)  # the true optimum is never shorter than the straight line
         out[f"l_opt_{name}_m"] = None if l_opt is None else round(l_opt, 3)
-        out[f"per_{name}"] = None if l_opt is None else round(l_opt / max(flown, l_opt), 4)
+        out[f"per_{name}"] = None if l_opt is None or max(flown, l_opt) <= 0 else round(l_opt / max(flown, l_opt), 4)
     return out
 
 
-def dataset_stats(raw: Path, *, layout: Layout | None = None) -> dict:
+def summarise(episodes: list[dict]) -> dict:
+    """Distribution summaries; the three PER figures over the same episodes (those with every optimum), so the interval's
+    ends are comparable, with the number left out."""
+    common = [e for e in episodes if all(e.get(k) is not None for k in PER_KEYS)]
+    summary: dict = {"episodes": len(episodes), "episodes_without_l_opt": len(episodes) - len(common)}
+
+    def stats(values):
+        return ({"mean": round(float(np.mean(values)), 4), "median": round(float(np.median(values)), 4),
+                 "min": round(float(np.min(values)), 4), "max": round(float(np.max(values)), 4), "n": len(values)}
+                if values else None)
+
+    for key in ("flown_m", "straight_m", "l_opt_physical_m", "l_opt_clearance_m"):
+        summary[key] = stats([e[key] for e in episodes if e.get(key) is not None])
+    for key in PER_KEYS:
+        summary[key] = stats([e[key] for e in common])
+    return summary
+
+
+def dataset_stats(raw: Path, *, scene_layout: tuple[SceneFile, Layout] | None = None) -> dict:
     raw = Path(raw)
     manifest = json.loads((raw / "manifest.json").read_text())
     scenes = set(e["scene"] for e in manifest["episodes"])
-    if layout is None:
+    if scene_layout is None:
         if len(scenes) != 1:
             raise ValueError(f"the store holds scenes {sorted(scenes)}; pass one layout per scene (not supported yet)")
-        layout = resolve_scene(next(iter(scenes))).layout
+        resolved = resolve_scene(next(iter(scenes)))
+        scene_layout = (resolved.scene, resolved.layout)
+    scene, layout = scene_layout
+    if scene.dynamic is not None:
+        raise ValueError(f"scene {scene.id} is dynamic: its movers were not at their homes, so the layout's grid is not "
+                         f"what the episodes flew through; PER needs the per-record mover positions (not implemented)")
     episodes = []
     for entry in manifest["episodes"]:
         provenance = json.loads((raw / "provenance" / f"{entry['id']}.json").read_text())
         episodes.append({"id": entry["id"], **episode_efficiency(layout, provenance)})
-    summary = {"dataset": manifest["name"], "episodes": len(episodes), "resolution_m": RESOLUTION_M,
-               "inflations_m": INFLATIONS_M, "success_radius_m": RewardConfig().success_radius_m}
-    for key in ("flown_m", "straight_m", "l_opt_physical_m", "l_opt_clearance_m", "per_straight", "per_physical", "per_clearance"):
-        values = [e[key] for e in episodes if e.get(key) is not None]
-        summary[key] = ({"mean": round(float(np.mean(values)), 4), "median": round(float(np.median(values)), 4),
-                         "min": round(float(np.min(values)), 4), "max": round(float(np.max(values)), 4), "n": len(values)}
-                        if values else None)
+    summary = {"dataset": manifest["name"], "scene": scene.id, "resolution_m": RESOLUTION_M, "inflations_m": INFLATIONS_M,
+               "success_radius_m": RewardConfig().success_radius_m, "flown_is_3d_optimum_is_2d": True, **summarise(episodes)}
     return {"summary": summary, "episodes": episodes}
 
 

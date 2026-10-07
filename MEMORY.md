@@ -131,9 +131,14 @@ stale "fact". Standing rules live in `CLAUDE.md`; this file is the reasoning and
 ## Scene learnings
 
 - **s01 is permeable everywhere (2026-10-06).** `scenes/paths.py:crossing_detours` at the sampler's 1.4 m inflation:
-  1.00-1.02 on every edge (a 6 m pillar grid inflated to 2 m leaves 2 m gaps). The §6.2 rule alone accepts a sealed
-  field whose outer lane is open; the detour metric is what rejects it. The pilot's expert flew s01 at PER 0.96-0.99
+  max detour 1.013, every start inside the field crosses through it (a 6 m pillar grid inflated to 2 m leaves 2 m
+  gaps). The §6.2 rule alone accepts a sealed field whose outer lane is open; the detour over the straight line
+  catches a field that spans the scene, and only the through-the-field test (a path inside the field's lateral extent)
+  catches a compact block, which costs just 1.14 to round. The pilot's expert flew s01 at PER 0.96-0.99
   (`scripts/dataset_stats.py`), so s01 is an easy scene by the paper's own metric; expect lower on tree and rock fields.
+- **Writing a new test file: check the name is free first (2026-10-06).** `tests/test_paths.py` already tested
+  `autofly_ue5/paths.py`; a new file of that name for `scenes/paths.py` replaced it and silently dropped four tests,
+  which the review caught. Scene paths are tested in `tests/test_scene_paths.py`.
 - **An 8-connected grid path overestimates a straight line by up to 8 %, a 4-connected one by up to 41 %.** motion.py's
   BFS compares two lengths on the same metric (the bias cancels); anything compared with a flown trajectory or a
   straight line uses `paths.dijkstra_path_m`. L_opt from a grid is therefore an upper bound on the paper's PER; the

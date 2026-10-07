@@ -80,12 +80,18 @@ def poisson(rng: random.Random, bounds: Bounds, count: int, margin_m: float, min
 def clusters(rng: random.Random, bounds: Bounds, count: int, margin_m: float, cluster_count: int, per_cluster: tuple[int, int],
              radius_m: float, *, keepout: Keepout = (), member_radius_m: float = 0.0
              ) -> tuple[list[tuple[float, float]], list[list[tuple[float, float]]]]:
-    """`cluster_count` cluster centres whose discs of `radius_m` do not overlap and stay inside the margin, and `count`
-    members split over them with `per_cluster[0] <= size <= per_cluster[1]`, each member uniform in its disc, members at
-    least `2 * member_radius_m` apart and clear of `keepout`."""
+    """`cluster_count` cluster centres whose discs of `radius_m` do not overlap, stay inside the margin and are clear of
+    `keepout`, and `count` members split over them with `per_cluster[0] <= size <= per_cluster[1]`, each member uniform
+    in its disc, every member at least `2 * member_radius_m` from every other (across clusters too) and clear of
+    `keepout`."""
     sizes = _partition(rng, count, cluster_count, per_cluster, what="cluster")
-    centres = poisson(rng, bounds, cluster_count, margin_m + radius_m, 2.0 * radius_m)
+    try:
+        centres = poisson(rng, bounds, cluster_count, margin_m + radius_m, 2.0 * radius_m, keepout=keepout, radius_m=radius_m)
+    except ValueError as err:
+        raise ValueError(f"{cluster_count} clusters of radius {radius_m} m do not fit inside the {margin_m} m margin"
+                         f"{' beside the earlier groups' if keepout else ''}: {err}") from err
     members: list[list[tuple[float, float]]] = []
+    placed: list[tuple[float, float]] = []
     for (cx, cy), size in zip(centres, sizes):
         group: list[tuple[float, float]] = []
         for _ in range(MAX_PLACEMENT_TRIES):
@@ -93,12 +99,14 @@ def clusters(rng: random.Random, bounds: Bounds, count: int, margin_m: float, cl
                 break
             r, theta = radius_m * math.sqrt(rng.random()), rng.uniform(-math.pi, math.pi)
             x, y = cx + r * math.cos(theta), cy + r * math.sin(theta)
-            if (all(math.hypot(x - px, y - py) >= 2.0 * member_radius_m for px, py in group)
+            if (all(math.hypot(x - px, y - py) >= 2.0 * member_radius_m for px, py in placed)
                     and _clear(x, y, member_radius_m, keepout)):
                 group.append((x, y))
+                placed.append((x, y))
         if len(group) != size:
             raise ValueError(f"cluster at ({cx:.1f}, {cy:.1f}) holds {len(group)} of {size} members of radius "
-                             f"{member_radius_m} m inside {radius_m} m in {MAX_PLACEMENT_TRIES} tries")
+                             f"{member_radius_m} m inside {radius_m} m in {MAX_PLACEMENT_TRIES} tries"
+                             f"{' (earlier groups and neighbouring clusters take room too)' if keepout or placed else ''}")
         members.append(group)
     return centres, members
 
@@ -155,11 +163,14 @@ def generate_layout(scene: SceneFile, registry: AssetRegistry, seed: int | None 
         radius_max = _footprint_radius_m(asset, group.scale_xy[1])  # spacing uses the largest footprint the group can draw
         tag = lambda: f"obs_{len(instances):04d}"  # noqa: E731
 
-        def draw_standing(x: float, y: float) -> Instance:
-            # The pinned draw order of a grid instance: position first, then x-y scale, z scale, material.
+        def draw_standing(x: float, y: float, *, random_yaw: bool) -> Instance:
+            # The pinned draw order of a grid instance: position first, then x-y scale, z scale, material. Scattered and
+            # clustered obstacles (rocks, trees, containers) also face a random way; a grid's pillars keep yaw 0, as s01's.
             s_xy = round(rng.uniform(*group.scale_xy), 4)
             s_z = round(rng.uniform(*group.scale_z), 4)
-            return _instance(tag(), group, asset, x, y, s_xy=s_xy, s_z=s_z, material=rng.choice(group.palette))
+            material = rng.choice(group.palette)
+            yaw = round(rng.uniform(-math.pi, math.pi), 4) if random_yaw else 0.0
+            return _instance(tag(), group, asset, x, y, s_xy=s_xy, s_z=s_z, material=material, yaw=yaw)
 
         if placement == "jittered_grid":
             points = jittered_grid(rng, scene.bounds, group.count, group.placement["margin_m"], group.placement["jitter_m"])
@@ -168,19 +179,19 @@ def generate_layout(scene: SceneFile, registry: AssetRegistry, seed: int | None 
                     raise ValueError(f"group {group.asset!r}: a jittered_grid point at ({x:.1f}, {y:.1f}) would overlap an "
                                      f"earlier group's obstacle; a grid cannot move its points, so place it first or widen "
                                      f"its margin")
-                instances.append(draw_standing(x, y))
+                instances.append(draw_standing(x, y, random_yaw=False))
         elif placement == "poisson":
             points = poisson(rng, scene.bounds, group.count, group.placement["margin_m"], group.placement["min_distance_m"],
                              keepout=keepout, radius_m=radius_max)
             for x, y in points:
-                instances.append(draw_standing(x, y))
+                instances.append(draw_standing(x, y, random_yaw=True))
         elif placement == "clusters":
             p = group.placement
             _centres, members = clusters(rng, scene.bounds, group.count, p["margin_m"], p["cluster_count"],
                                          (p["per_cluster"][0], p["per_cluster"][1]), p["radius_m"],
                                          keepout=keepout, member_radius_m=radius_max)
             for x, y in (point for group_points in members for point in group_points):
-                instances.append(draw_standing(x, y))
+                instances.append(draw_standing(x, y, random_yaw=True))
         elif placement == "stacks":
             p = group.placement
             heights = _partition(rng, group.count, p["stack_count"], (p["height_range"][0], p["height_range"][1]), what="stack")

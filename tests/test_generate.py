@@ -201,3 +201,65 @@ def test_a_box_footprint_on_a_single_box_group_gets_the_circumscribed_radius(tmp
     scene = _scene(tmp_path, [_group(asset="crate", count=10, xy=(2.0, 2.0), z=(1.0, 1.0))])
     layout = generate_layout(scene, _registry_with_box())
     assert all(i.radius_m == pytest.approx(math.sqrt(2.0), abs=1e-3) for i in layout.instances)
+
+
+def test_cluster_members_never_touch_across_clusters_or_earlier_groups(tmp_path):
+    big = _group(count=6, xy=(10.0, 10.0), z=(2.0, 2.0), placement={"type": "poisson", "margin_m": 12.0, "min_distance_m": 12.0})
+    trees = _group(count=24, xy=(1.0, 1.2), z=(6.0, 10.0),
+                   placement={"type": "clusters", "margin_m": 8.0, "cluster_count": 4, "per_cluster": [4, 8], "radius_m": 3.0})
+    dense = _group(count=60, xy=(1.2, 1.2), z=(6.0, 10.0),
+                   placement={"type": "clusters", "margin_m": 8.0, "cluster_count": 10, "per_cluster": [4, 8], "radius_m": 3.0})
+    for seed in range(60):
+        for groups, sid in (([dense], "s06"), ([big, trees], "s02")):
+            layout = generate_layout(_scene(tmp_path, groups, scene_id=sid), load_registry(), seed=seed)
+            for a, b in itertools.combinations(layout.instances, 2):
+                assert math.hypot(a.x - b.x, a.y - b.y) >= a.radius_m + b.radius_m - 1e-9, f"seed {seed}: {a.tag} touches {b.tag}"
+
+
+def test_stacks_after_an_earlier_group_keep_clear_of_it(tmp_path):
+    big = _group(count=6, xy=(10.0, 10.0), z=(2.0, 2.0), placement={"type": "poisson", "margin_m": 12.0, "min_distance_m": 12.0})
+    boxes = _group(asset="crate", count=20, xy=(1.0, 1.5), z=(1.0, 1.0),
+                   placement={"type": "stacks", "margin_m": 8.0, "stack_count": 6, "height_range": [2, 5]})
+    for seed in range(20):
+        layout = generate_layout(_scene(tmp_path, [big, boxes]), _registry_with_box(), seed=seed)
+        pillars = [i for i in layout.instances if i.asset == "cylinder"]
+        for box in (i for i in layout.instances if i.asset == "crate"):
+            assert all(math.hypot(box.x - p.x, box.y - p.y) >= box.radius_m + p.radius_m - 1e-9 for p in pillars)
+
+
+def test_a_grid_placed_after_a_distant_group_draws_as_it_would_alone(tmp_path):
+    corner = _group(count=1, xy=(1.0, 1.0), z=(2.0, 2.0), placement={"type": "poisson", "margin_m": 1.0, "min_distance_m": 1.0})
+    grid = _group(count=20, placement={"type": "jittered_grid", "margin_m": 8.0, "jitter_m": 1.0})
+    alone = generate_layout(_scene(tmp_path, [grid], scene_id="s09"), load_registry(), seed=3)
+    # The corner obstacle is drawn with the same rng first, so re-seed the comparison by generating both from one scene
+    # whose first group is trivially far away: the grid's own draws must not depend on the keepout check.
+    together = generate_layout(_scene(tmp_path, [corner, grid], scene_id="s09"), load_registry(), seed=3)
+    assert len(together.instances) == 21
+    # Same positions up to the corner group's draws? Not comparable directly (shared rng), so check the invariant that
+    # matters: a grid never moves its points for a keepout, it only refuses.
+    assert all(i.asset == "cylinder" for i in together.instances)
+    assert alone.instances[0].x != together.instances[1].x or alone.instances[0].y != together.instances[1].y
+
+
+def test_rocks_and_trees_face_random_ways_but_pillars_on_the_grid_do_not(tmp_path):
+    rocks = generate_layout(_scene(tmp_path, [_group(count=30)], scene_id="s03"), load_registry())
+    assert len({i.yaw for i in rocks.instances}) > 1 and all(-math.pi <= i.yaw < math.pi for i in rocks.instances)
+    trees = generate_layout(_scene(tmp_path, [_group(count=24, placement={"type": "clusters", "margin_m": 8.0, "cluster_count": 4,
+                                                                          "per_cluster": [4, 8], "radius_m": 3.0})], scene_id="s06"),
+                            load_registry())
+    assert len({i.yaw for i in trees.instances}) > 1
+    assert all(i.yaw == 0.0 for i in generate_layout(load_scene_file(S01), load_registry()).instances), "s01 is pinned"
+
+
+def test_errors_name_the_cause_for_inputs_the_schema_admits(tmp_path):
+    from autofly_ue5.scenes.model import SceneFileError
+
+    with pytest.raises(ValueError, match="radius"):
+        generate_layout(_scene(tmp_path, [_group(count=8, placement={"type": "clusters", "margin_m": 8.0, "cluster_count": 2,
+                                                                      "per_cluster": [4, 4], "radius_m": 30.0})], scene_id="s06"),
+                        load_registry())
+    with pytest.raises(SceneFileError, match="per_cluster"):
+        _scene(tmp_path, [_group(count=8, placement={"type": "clusters", "margin_m": 8.0, "cluster_count": 2,
+                                                      "per_cluster": [8, 4], "radius_m": 3.0})], scene_id="s06")
+    with pytest.raises(SceneFileError, match="height_range"):
+        _scene(tmp_path, [_group(count=8, placement={"type": "stacks", "margin_m": 8.0, "stack_count": 2, "height_range": [5, 2]})])

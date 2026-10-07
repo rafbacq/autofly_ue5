@@ -211,6 +211,10 @@ def load_scene_file(path: Path) -> SceneFile:
         )
         for i, g in enumerate(data["obstacle_groups"])
     )
+    for i, g in enumerate(groups):  # the schema admits [high, low]; the generator would only fail later, obscurely
+        for key in ("per_cluster", "height_range"):
+            if key in g.placement:
+                _int_range(g.placement[key], f"obstacle_groups[{i}].placement.{key}")
     return SceneFile(
         id=data["id"], split=data["split"], seed=int(data["seed"]), bounds=bounds, ground=data["ground"],
         obstacle_groups=groups,
