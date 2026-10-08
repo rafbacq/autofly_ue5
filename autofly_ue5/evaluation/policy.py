@@ -40,12 +40,13 @@ How a VLA implements it (the next phase; none is attached here):
             return unnormalize_action(normalized, self.stats)
 
 1. Inputs: obs.rgb and obs.instruction, preprocessed as in training (OpenVLA's processor resizes 256 to 224). Add
-   obs.state only if the model was trained on observation.state, and then report it both ways, privileged_state off and
-   on, as revision 1 item 4 asks of every baseline.
-2. Output: de-normalise with the statistics the model was trained with, the train split's dataset_statistics.json of the
-   merged dataset (revision 1 item 1, OpenVLA's schema). Per dimension a = 0.5 (n + 1)(q99 - q01) + q01 where its mask is
-   true; all three of AutoFly's dimensions are (OpenVLA leaves only a gripper unmasked). That is `unnormalize_action`, and
-   spec §8.1 decodes the AutoFly checkpoint the same way.
+   obs.state only if the model was trained on observation.state, normalised with the same file's "proprio" block, and
+   then report it both ways, privileged_state off and on, as revision 1 item 4 asks of every baseline.
+2. Output: de-normalise with the statistics the model was trained with: the merged export's
+   <out>/autofly_ue5_proto/dataset_statistics.json (scripts/export_merged.py; dataset/statistics.py: OpenVLA's schema,
+   train split only). Per dimension a = 0.5 (n + 1)(q99 - q01) + q01 where its mask is true; all three of AutoFly's
+   dimensions are (OpenVLA leaves only a gripper unmasked). That is `unnormalize_action`, and spec §8.1 decodes the
+   AutoFly checkpoint the same way.
 3. Decode greedily (do_sample=False), so a score can be reproduced.
 4. Timing: the simulator runs in lock-step. Its clock advances only inside the harness's step, so act() may take as long
    as it needs and the dynamics do not change; the record keeps the time each action took. A model on the GPU counts as
