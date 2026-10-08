@@ -8,8 +8,8 @@ files, or fly a policy on one condition and score it (autofly_ue5/evaluation).
     env -u PYTHONPATH .venv/bin/python scripts/eval_harness.py run --policy scripted --privileged-state \\
         --condition test_seen --instance 6 --out runs/eval/scripted_test_seen.json
     env -u PYTHONPATH .venv/bin/python scripts/eval_harness.py run \\
-        --policy expert:runs/expert/s01d_r6/averaged/avg_250k_550k.zip --condition test_seen --instance 6 \\
-        --out runs/eval/expert_test_seen.json
+        --policy expert:runs/expert/s02_r1/averaged/avg_350k_end.zip --condition test_seen --instance 6 \\
+        --out runs/eval/expert_test_seen.json   # the s05 and s06 pilot (docs/gates/m5_pilot_screening.json)
 
 - `--policy`: `hover` (the floor), `scripted` (the privileged straight-line baseline: needs --privileged-state), or
   `expert:<checkpoint>` (stochastic, as it collected the dataset, unless --deterministic). A VLA adds its loader to
