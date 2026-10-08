@@ -33,7 +33,7 @@ are already gated on the same episodes.
   deterministic condition only. The collector keeps every reject with its reason, so the first s01d collection batch
   measures the stochastic kept-rate for free. If it falls clearly under the deterministic 0.93 (say below 0.85 over
   100 flown episodes), stop and look before scaling up; do not re-gate.
-- **a0 aligned start** (`--a0 sector8`), as for s01 (`2026-10-03-m3-a0-and-collection.md`).
+- **a0 aligned start** (the collector always applies sector8; there is no flag), as for s01 (`2026-10-03-m3-a0-and-collection.md`).
 - The task's own rules: physical contact, the 1.0 m mover contact rule, the 1–3 m band. No training margin or
   penalty is applied at collection (the env applies them only when asked, and the collector never asks).
 - Episodes that end in a mover contact are rejects (collision), like any other collision.
