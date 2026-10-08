@@ -58,6 +58,7 @@ def record_inputs(raw: Observation, setup: EpisodeSetup) -> tuple[np.ndarray, np
 
 def _fly(model, env, seed: int, *, deterministic: bool, max_steps: int) -> dict[str, Any]:
     obs, info = env.reset(seed=seed, options={"a0": "sector8"})
+    prewarm_steps = info.get("prewarm_steps")  # the reset's first-use hold, with a pool (expert/env.py)
     base = env.unwrapped
     setup = base.setup
     spawned = tuple(base.spawned)
@@ -81,14 +82,16 @@ def _fly(model, env, seed: int, *, deterministic: bool, max_steps: int) -> dict[
         if terminated or truncated:
             return {"setup": setup, "spawned": spawned, "outcome": info["outcome"], "info": info, "frames": frames, "states": states,
                     "actions": actions, "times": times, "poses": poses, "movers": movers,
-                    "final_pose": [raw.pose.x, raw.pose.y, raw.pose.z, raw.pose.yaw]}
+                    "final_pose": [raw.pose.x, raw.pose.y, raw.pose.z, raw.pose.yaw], "prewarm_steps": prewarm_steps}
     return {"setup": setup, "spawned": spawned, "outcome": "exceeded_max_steps", "info": info, "frames": frames, "states": states,
-            "actions": actions, "times": times, "poses": poses, "movers": movers, "final_pose": poses[-1]}
+            "actions": actions, "times": times, "poses": poses, "movers": movers, "final_pose": poses[-1],
+            "prewarm_steps": prewarm_steps}
 
 
 def _pool_object(entry, spawned: dict) -> dict:
-    """A pool object's record: its entry (name, category, seen, asset, scale, material, status), the material the runtime
-    applied (the spawner leaves the mesh's own where it cannot apply the entry's) and the height it stood at."""
+    """A pool object's record: its entry (name, category, seen, asset, scale, material, status, and stand_in: a low-poly
+    stand-in, plan 6 step 2b), the material the runtime applied (the spawner leaves the mesh's own where it cannot apply
+    the entry's) and the height it stood at."""
     return {**entry.to_json(), "material_applied": spawned["material"] or "mesh_default", "spawn_z_ned": spawned["z_ned"]}
 
 
@@ -126,6 +129,9 @@ def _provenance(scene: SceneFile, layout_sha256: str | None, seed: int, flight: 
         "poses_per_record": flight["poses"],
         "sim_time_ns": [int(t) for t in flight["times"]],
         "final_pose": flight["final_pose"],
+        # With a pool: how many more hover steps the reset held before the first record because the episode spawned an
+        # object new to the simulator session (plan 6 step 2a). A pool-free episode's provenance stays M3's, key for key.
+        **({"prewarm_steps": flight["prewarm_steps"]} if flight.get("prewarm_steps") is not None else {}),
         "termination": flight["outcome"],
         "collision_source": info.get("collision_source"),
         # A mesh scene's ending (expert/footprint_contact.py): which tree, how close, from where, how fast; or the circle

@@ -16,8 +16,11 @@ is recorded as M3's gate.
   as `contact_rules` in the record and every episode's provenance (a pillar scene has none).
 - `--targets assets/targets.json` (plan 5 C5): each episode's target and distractors are drawn from the scene split's
   pool, less what the scene's entry of the pool's exclusion table names (assets/target_exclusions.json, plan 6 step
-  2c), and the instruction names the target; the card lists the scene's names with status "pool". Without it, M3's
-  way: the orange cylinder under `--target-name` (default "orange cylinder", a placeholder in the card). Not both.
+  2c), and the instruction names the target; the card lists the scene's names with status "pool". Each episode's
+  provenance records its target's and distractors' entries, their `stand_in` mark included (plan 6 step 2b), and
+  `prewarm_steps`: the hover steps its reset held before the first record for an object new to the simulator session
+  (plan 6 step 2a). Without it, M3's way: the orange cylinder under `--target-name` (default "orange cylinder", a
+  placeholder in the card). Not both.
 - The gate record (default docs/gates/m3_gate.json, never written over) passes when the requested episodes were kept,
   the validator passes, and the engine-fault audit is clean. The TFDS read-back is recorded next to it.
 

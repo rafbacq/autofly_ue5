@@ -574,6 +574,32 @@ def test_the_pilot_cli_with_a_pool_lists_its_names_in_the_card_and_records_the_p
         assert prov["target_pool"] == record["target_pool"] and prov["target"]["name"] == entry["target_name"]
 
 
+def test_each_pool_episode_records_its_first_use_hold_and_which_objects_were_stand_ins(tmp_path):
+    # Plan 6 steps 2a/2b: whether the reset hovered for an object new to the session before the first record, and for
+    # the target and every distractor whether it was a low-poly stand-in; the validator takes both.
+    from autofly_ue5.expert.env import PREWARM_HOLD_STEPS
+    from tests.test_dataset_targets import primitive_pool_entries, write_pool
+
+    entries = [{**e, "stand_in": True} if e["name"] == "grey boulder" else e for e in primitive_pool_entries()]
+    record = _pilot(tmp_path, n_episodes=3, targets=write_pool(tmp_path / "pool" / "targets.json", entries))
+    assert record["status"] == "ok" and record["validation"]["pass"], (record["error"], record["validation"])
+    root = tmp_path / "data" / "pilot"
+    episodes = [json.loads((root / "provenance" / f"{e['id']}.json").read_text())
+                for e in json.loads((root / "manifest.json").read_text())["episodes"]]
+    episodes += [json.loads(p.read_text())["provenance"] for p in (tmp_path / "data" / "rejects" / "pilot").glob("*.json")]
+    holds = [prov["prewarm_steps"] for prov in episodes]
+    assert holds[0] == PREWARM_HOLD_STEPS and set(holds) <= {0, PREWARM_HOLD_STEPS}, holds
+    for prov in episodes:
+        for obj in (prov["target"], *prov["distractors"]):
+            assert obj["stand_in"] is (obj["name"] == "grey boulder"), obj
+
+
+def test_a_pool_free_episode_records_no_first_use_hold(tmp_path):
+    record = _pilot(tmp_path, n_episodes=1)
+    prov = json.loads(next((tmp_path / "data" / "pilot" / "provenance").glob("*.json")).read_text())
+    assert record["status"] == "ok" and "prewarm_steps" not in prov and "stand_in" not in prov["target"]
+
+
 def test_the_pilot_cli_lists_only_what_its_scene_draws_after_the_pool_s_exclusions(tmp_path):
     from tests.test_dataset_targets import WIDE_SEEN, wide_pool
 
