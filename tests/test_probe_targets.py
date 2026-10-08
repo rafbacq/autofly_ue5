@@ -103,6 +103,30 @@ class BoxRenderer(FakeSimulator):
         return dataclasses.replace(obs, depth=depth.astype(np.float32), rgb=rgb)
 
 
+class LateRenderer(BoxRenderer):
+    """Draws a spawned object only once it has existed for `appear_after` steps: live, a target spawned for the first
+    time in a session drew nothing on step 1 and its whole outline by step 5 (runs/m4/targets_settle_diag/settle.json)."""
+
+    def __init__(self, registry, *, appear_after: int, **kwargs):
+        super().__init__(registry, **kwargs)
+        self.appear_after = appear_after
+        self.spawned_at: dict[str, int] = {}
+
+    def spawn(self, name, asset, pose, scale, material=None):
+        unique = super().spawn(name, asset, pose, scale, material)
+        self.spawned_at[unique] = self.steps_taken
+        return unique
+
+    def observe(self):
+        hidden = {n: v for n, v in self._objects.items() if self.steps_taken - self.spawned_at[n] < self.appear_after}
+        for name in hidden:
+            del self._objects[name]
+        try:
+            return super().observe()
+        finally:
+            self._objects.update(hidden)
+
+
 def _setup(tmp_path, **kwargs):
     from autofly_ue5.dataset.targets import TargetPool
     from autofly_ue5.scenes.model import load_registry
@@ -178,6 +202,60 @@ def test_a_target_the_depth_camera_does_not_see_fails_the_depth_check(tmp_path):
     sim, pool, registry, layout = _setup(tmp_path, visible=False)
     rows = _rows(run_probe(sim, pool, registry, layout, out_dir=tmp_path / "out"))
     assert all(not r["depth"]["ok"] and "depth" in r["failed"] for r in rows.values())
+
+
+def _late_setup(tmp_path, appear_after):
+    from autofly_ue5.dataset.targets import TargetPool
+    from autofly_ue5.scenes.model import load_registry
+    from autofly_ue5.scenes.resolve import resolve_scene
+
+    tmp_path.mkdir(parents=True, exist_ok=True)
+    reg_path, pool_path = _write_world(tmp_path)
+    registry = load_registry(reg_path)
+    sim = LateRenderer(registry, appear_after=appear_after)
+    sim.launch("/Game/AutoFly/Maps/S01", 5)
+    return sim, TargetPool.load(pool_path, registry=registry), registry, resolve_scene("s01").layout
+
+
+def test_the_probe_judges_a_target_after_the_env_s_settle_steps_and_records_its_first_step(tmp_path):
+    # Plan 6 step 2a: the env's reset holds PREWARM_HOLD_STEPS hover steps for an object new to the session, so the
+    # probe judges what the first recorded frame would show: the capture after those steps. Step 1's is recorded too.
+    from autofly_ue5.expert.env import PREWARM_HOLD_STEPS
+    from scripts.probe_targets import run_probe
+
+    sim, pool, registry, layout = _late_setup(tmp_path, appear_after=2)
+    summary = run_probe(sim, pool, registry, layout, out_dir=tmp_path / "out")
+    assert summary["pass"] is True and summary["settle_steps"] == PREWARM_HOLD_STEPS
+    for row in summary["targets"]:
+        assert row["first_step_visible"] is False and row["first_step_depth"]["ok"] is False, row["name"]
+        assert row["depth"]["ok"] and row["settle_steps"] == PREWARM_HOLD_STEPS
+    # without settle steps the probe judges step 1, as it did before
+    summary = run_probe(*_late_setup(tmp_path / "b", appear_after=2)[:4], out_dir=tmp_path / "out_b", settle_steps=0)
+    assert summary["pass"] is False and all("depth" in r["failed"] for r in summary["targets"])
+    # and a target still invisible after the settle steps fails
+    summary = run_probe(*_late_setup(tmp_path / "c", appear_after=1 + PREWARM_HOLD_STEPS + 1)[:4], out_dir=tmp_path / "c_out")
+    assert summary["pass"] is False and all("depth" in r["failed"] for r in summary["targets"])
+
+
+def test_a_target_visible_at_once_is_first_step_visible(tmp_path):
+    from scripts.probe_targets import run_probe
+
+    sim, pool, registry, layout = _setup(tmp_path)
+    summary = run_probe(sim, pool, registry, layout, out_dir=tmp_path / "out", settle_steps=2)
+    assert summary["pass"] is True and all(r["first_step_visible"] is True for r in summary["targets"])
+
+
+def test_main_takes_the_settle_steps(tmp_path):
+    from autofly_ue5.scenes.model import load_registry
+    from scripts.probe_targets import main
+
+    reg_path, pool_path = _write_world(tmp_path)
+    base = ["--scene", "s01", "--instance", "5", "--targets", str(pool_path), "--registry", str(reg_path)]
+    assert main([*base, "--out", str(tmp_path / "p0"), "--settle-steps", "0"],
+                sim_factory=lambda: BoxRenderer(load_registry(reg_path))) == 0
+    assert json.loads((tmp_path / "p0" / "summary.json").read_text())["settle_steps"] == 0
+    with pytest.raises(SystemExit):
+        main([*base, "--out", str(tmp_path / "p1"), "--settle-steps", "-1"], sim_factory=lambda: pytest.fail("launched"))
 
 
 def test_the_view_looks_along_a_clear_line_on_open_ground():

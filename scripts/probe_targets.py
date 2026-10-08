@@ -16,9 +16,12 @@ the pool keeps out of the draw). One simulator on the slot given (the launch gua
           UMaterial; the backend raises if set_object_material fails);
   bounds  object_bounds() (the world-axis box, NED metres) against the registry: base_size_m x scale, centred at the
           spawn point plus the scaled bounds origin; 2 % or 2 cm per axis, 5 cm or 2 % at the centre;
-  depth   after one hover step, against the frame before the spawn: inside the target's projected box the depth changed
-          to within its near and far faces on at least 3 % of the pixels (4 at least), and nothing there is nearer than
-          its near face less 0.3 m;
+  depth   after one hover step and `--settle-steps` more (default the env's PREWARM_HOLD_STEPS, 5: what the first
+          recorded frame of an episode shows, since the reset holds that long for an object new to the session; plan 6
+          step 2a), against the frame before the spawn: inside the target's projected box the depth changed to within
+          its near and far faces on at least 3 % of the pixels (4 at least), and nothing there is nearer than its near
+          face less 0.3 m. The same check on the first step's frame is recorded as `first_step_visible`, for information
+          (live, a target new to the session drew nothing there; runs/m4/targets_settle_diag/settle.json);
   colour  for a runtime colour with an RGBA in the registry: the target's pixels keep the colour's channel order (red over
           green and blue ...), which the mesh's own grey does not;
 
@@ -51,6 +54,7 @@ import cv2  # noqa: E402
 import numpy as np  # noqa: E402
 
 from autofly_ue5.dataset.targets import TargetPool, TargetPoolError  # noqa: E402
+from autofly_ue5.expert.env import PREWARM_HOLD_STEPS  # noqa: E402
 from autofly_ue5.expert.episode import _runtime_material_path, _spawn_asset_name, standing_z_ned  # noqa: E402
 from autofly_ue5.scenes.model import AssetRegistry, Layout, load_registry  # noqa: E402
 from autofly_ue5.sim.types import CONTROL_DT_S, ObjectNotFoundError, Pose  # noqa: E402
@@ -222,9 +226,13 @@ def _hold(sim):
     return sim.observe()
 
 
-def run_probe(sim, pool: TargetPool, registry: AssetRegistry, layout: Layout, *, out_dir: Path) -> dict:
-    """Every check against a launched simulator (`sim.list_assets` lists the spawn table). Returns the summary's body;
-    the contact sheet's tiles are written by main()."""
+def run_probe(sim, pool: TargetPool, registry: AssetRegistry, layout: Layout, *, out_dir: Path,
+              settle_steps: int = PREWARM_HOLD_STEPS) -> dict:
+    """Every check against a launched simulator (`sim.list_assets` lists the spawn table), each target judged after
+    one hover step and `settle_steps` more (the env's first-use hold; 0: on the first step, as before plan 6). Returns
+    the summary's body; the contact sheet's tiles are written by main()."""
+    if settle_steps < 0:
+        raise ValueError(f"settle_steps must be 0 or more, got {settle_steps}")
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     entries = probe_entries(pool, registry)
@@ -244,7 +252,8 @@ def run_probe(sim, pool: TargetPool, registry: AssetRegistry, layout: Layout, *,
                "short_name": short, "material_key": entry.material, "material": material, "scale": list(entry.scale),
                "distance_m": round(distance, 3), "position": [round(v, 4) for v in position], "listed": short in table,
                "spawned": False, "spawn_error": None, "collided": None, "bounds": _bounds_check(None, centre, size),
-               "depth": {"ok": False}, "colour": None, "rgb_png": None, "depth_png": None}
+               "depth": {"ok": False}, "colour": None, "rgb_png": None, "depth_png": None, "settle_steps": settle_steps,
+               "first_step_visible": None, "first_step_depth": None}
         rows.append(row)
         region_box = None
         if row["listed"]:
@@ -254,19 +263,24 @@ def run_probe(sim, pool: TargetPool, registry: AssetRegistry, layout: Layout, *,
                 spawned = sim.spawn(SPAWN_NAME, short, Pose(position[0], position[1], position[2], 0.0), entry.scale, material)
                 row["spawned"] = True
                 obs1 = _hold(sim)
-                row["collided"] = bool(obs1.collided)
-                row["bounds"] = _bounds_check(sim.object_bounds(spawned), centre, size)
                 n = obs1.depth.shape[0]
                 region, region_box = _region(centre, size, view, n)
-                row["depth"], target = _depth_check(obs0.depth, obs1.depth, region, region_box)
+                row["first_step_depth"], _target = _depth_check(obs0.depth, obs1.depth, region, region_box)
+                row["first_step_visible"] = row["first_step_depth"]["ok"]  # information: the settled frame decides
+                settled = obs1
+                for _ in range(settle_steps):
+                    settled = _hold(sim)
+                row["collided"] = bool(settled.collided)
+                row["bounds"] = _bounds_check(sim.object_bounds(spawned), centre, size)
+                row["depth"], target = _depth_check(obs0.depth, settled.depth, region, region_box)
                 row["projected_box_px"] = {"rows": region_box["rows"], "cols": region_box["cols"]}
                 rgba = registry.materials[entry.material].rgba if material is not None else None
                 if rgba is not None:
-                    row["colour"] = _colour_check(rgba, obs1.rgb, target)
+                    row["colour"] = _colour_check(rgba, settled.rgb, target)
                 key = entry.asset if entry.asset else "target"
                 row["rgb_png"], row["depth_png"] = f"{k:02d}_{key}_rgb.png", f"{k:02d}_{key}_depth.png"
-                cv2.imwrite(str(out_dir / row["rgb_png"]), np.ascontiguousarray(obs1.rgb[:, :, ::-1]))
-                cv2.imwrite(str(out_dir / row["depth_png"]), _depth_png(obs1.depth))
+                cv2.imwrite(str(out_dir / row["rgb_png"]), np.ascontiguousarray(settled.rgb[:, :, ::-1]))
+                cv2.imwrite(str(out_dir / row["depth_png"]), _depth_png(settled.depth))
             except Exception as err:  # a failing target is recorded, never the end of the probe
                 traceback.print_exc()
                 row["spawn_error"] = f"{type(err).__name__}: {err}"
@@ -291,7 +305,8 @@ def run_probe(sim, pool: TargetPool, registry: AssetRegistry, layout: Layout, *,
     if tiles:
         cv2.imwrite(str(out_dir / "contact_sheet.png"), contact_sheet(tiles))
     return {"view_pose": [view.x, view.y, view.z, view.yaw], "spawn_table": {"size": len(table), "missing": missing},
-            "targets": rows, "failed": [r["name"] for r in rows if not r["pass"]],
+            "settle_steps": settle_steps, "targets": rows, "failed": [r["name"] for r in rows if not r["pass"]],
+            "first_step_invisible": [r["name"] for r in rows if r["first_step_visible"] is False],
             "pass": bool(rows) and all(r["pass"] for r in rows)}
 
 
@@ -305,7 +320,13 @@ def main(argv: list[str] | None = None, *, sim_factory=None) -> int:
     p.add_argument("--registry", type=Path, default=_ROOT / "assets" / "registry.json")
     p.add_argument("--out", type=Path, required=True)
     p.add_argument("--scene-config", default=None, help="default: scene_autofly_<base>_fast.jsonc")
+    p.add_argument("--settle-steps", type=int, default=PREWARM_HOLD_STEPS,
+                   help="hover steps after the first one before a target is judged: the env's first-use hold "
+                        f"(default {PREWARM_HOLD_STEPS}); 0 judges the first step's frame. The first step's frame is "
+                        "recorded as first_step_visible either way")
     args = p.parse_args(argv)
+    if args.settle_steps < 0:
+        p.error(f"--settle-steps must be 0 or more, got {args.settle_steps}")
     resolved = resolve_scene(args.scene)
     config = args.scene_config or resolved.default_scene_config.replace(".jsonc", "_fast.jsonc")
     args.out.mkdir(parents=True, exist_ok=True)
@@ -331,7 +352,7 @@ def main(argv: list[str] | None = None, *, sim_factory=None) -> int:
         sim = sim_factory()
     try:
         sim.launch(resolved.map_path, args.instance)
-        summary.update(run_probe(sim, pool, registry, resolved.layout, out_dir=args.out))
+        summary.update(run_probe(sim, pool, registry, resolved.layout, out_dir=args.out, settle_steps=args.settle_steps))
     except Exception as err:
         traceback.print_exc()
         summary["error"] = f"{type(err).__name__}: {err}"

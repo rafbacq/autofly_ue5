@@ -249,7 +249,9 @@ following, then destroys the object:
 1. Checks the short name is in `world.list_assets()`.
 2. Spawns the entry 4–10 m straight ahead, standing on the ground as collection stands it, at its pool scale and with
    its runtime material.
-3. Steps once.
+3. Steps once (recorded as `first_step_visible`, for information), then `--settle-steps` more (default 5, the env's
+   first-use hold since plan 6 step 2a: what an episode's first recorded frame shows). `--settle-steps 0` judges the
+   first step, as the 2026-10-08 run did.
 4. Compares the bounding box with the registry, checks the depth inside the projected box against the frame before
    the spawn, and checks the channel order of a runtime colour.
 
