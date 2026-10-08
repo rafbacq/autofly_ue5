@@ -1,11 +1,12 @@
-# autofly_ue5: project status, 2026-10-07
+# autofly_ue5: project status, 2026-10-07 (updated 2026-10-08)
 
 What this project has built and measured so far, in one folder: the simulation side of AutoFly (arXiv 2602.09657)
 recreated on Unreal Engine 5.7.4 + Project AirSim 1.0.1, SAC "expert" pilots that fly procedurally built obstacle
-scenes, and the AutoFly-format dataset their flights become. Every number below is read from a record in `records/`
-(copies of `docs/gates/*.json` and the dataset's own files) by `scripts/results_figures.py`; the videos are the
+scenes, and the AutoFly-format dataset their flights become. Every number below is read from a record: sections 1–3
+from the copies in `records/` (of `docs/gates/*.json` and the dataset's own files) by `scripts/results_figures.py`,
+sections 4–8 from the `docs/gates/` and `runs/` files each one names, by the figure script it names; the videos are the
 project's own renders (`scripts/render_episodes.py`, `scripts/dataset_episode_video.py`). Code state: `main` at
-e44a859.
+3827c00.
 
 ## Milestones
 
@@ -16,8 +17,9 @@ e44a859.
 | M2 | SAC expert on s01 (white pillars) ≥ 0.95 over 200 episodes | **Passed** 2026-09-26: 0.98 deterministic, 0.99 stochastic | `records/m2_gate.json` |
 | M2d | moving pillars (s01d): expert ≥ 0.95 | **Gate failed, expert accepted** (2026-10-07): 0.775 → 0.885 → 0.920 → **0.935** over six runs against the bar of 0.95; the user accepted the 0.935 expert for collection, stochastically, and no run 7 starts (`docs/decisions/2026-10-07-s01d-accepted-at-0.935.md`) | `records/m2d_*_gate.json` |
 | M3 | collector, dataset writer, validator; 100-episode pilot | **Passed** 2026-10-03: 100 of 101 episodes kept, 17,738 records, TFDS reads them back exactly | `records/m3_gate.json` |
+| M4 | asset library; scenes s02–s12 | **In progress**: eight scenes built, packaged and gated live (s01, s02, s03, s04, s05, s06, s07, s09); the footprint contact rule for mesh scenes (2026-10-08); the 60-entry target pool live in the simulator, 35 of them drawable (C5/C6); per-scene exposure, with s05's snow at −12 EV (C7). Left: s08 (no asset yet), s10–s12 (Fab), s05r, s06r | `docs/gates/m4_*_gate.json`, `m4_targets_probe.json`, `docs/superpowers/plans/…plan5…` |
+| M5 | an expert per scene, then collection | **Started** 2026-10-08: s02 run 1 trained (12.0 h, 640,916 steps, no backend fault); its pre-registered evaluation is running | `docs/gates/m5_s02_train.json`, `docs/decisions/2026-10-08-m5-s02-r1-evaluation-plan.md` |
 | M5 (part) | dataset rebalancing (paper App. A.2.4) | **Done on the pilot** 2026-10-07 | `records/s01_pilot_rebalance.json` |
-| M4 | asset library; scenes s02–s12 | **In progress**: s09, s07, s02, s03 and s06 built, packaged and gated live; the footprint contact rule for mesh scenes is built (2026-10-08); the remaining scenes, the target pool and the snow exposure are next | `docs/gates/m4_*_gate.json`, `docs/superpowers/plans/…plan5…` |
 | M6 (part) | path efficiency (the paper's PER) | **Measured on the pilot** | `records/s01_pilot_path_efficiency.json` |
 
 ## 1. The experts and their gates
@@ -137,7 +139,7 @@ inside the circle (gaps 0.11–0.48 m), which this figure caught and the offline
 largest tree to scale with the drone sitting on the boundary. Numbers: `figures/s02_footprint_rule.json`
 (`scripts/footprint_rule_figure.py`).
 
-## 6. Two more scenes: scattered rocks and tree clusters (C4, 2026-10-08)
+## 6. Four more scenes: scattered rocks, tree clusters, a stone field, standing stones (C4, 2026-10-08)
 
 ![layouts](figures/layouts_c4.png)
 
@@ -154,10 +156,94 @@ which is exactly what the footprint rule of section 5 keeps the experts from doi
 
 ![s06](scenes/s06_snapshots.png)
 
+In the afternoon two more rock scenes followed. s04, a stone field on gravel, has 33 stones 1.4–2.2 m tall: 11 natural
+boulders and 22 painted in the red/blue/yellow/green/white palette the poles use (worst crossing detour 1.157). s05,
+standing stones on snow, has 12 boulders stretched into standing stones 4–6.7 m tall beside 12 ordinary boulders
+(detour 1.142). Both passed the live gate (`docs/gates/m4_s04_gate.json`, `m4_s05_gate.json`: 33 and 24 actors as
+built within 4 µm, depth probes on a boulder at 3, 6 and 12 m, the crash into it at 7.80 m of travel against 7.56 m
+predicted on s04 and 7.26 m against 7.22 m on s05, both resets freed by a 1.5 m retrace on the first attempt).
+
+![s04](scenes/s04_snapshots.png)
+
+![s05](scenes/s05_snapshots.png)
+
+Snow needed its own exposure (C7). Its texture reflects 3.95× what grass does, so a scene file may now set
+`exposure_bias_ev`, and s05 sets −12 EV, estimated from that albedo and confirmed on the first build: its seven
+snapshot poses average 97–123 of 255 with no saturated pixel (`scenes/s05_snapshots.json`), around s01's calibrated
+109. s04's gravel needs no change (117–144 at −11 EV).
+
+## 7. s02's first expert and what its failures showed (M5, 2026-10-08)
+
+The first expert on a mesh scene trained on s02 (sparse young trees) from scratch for 12 hours, on one depth frame, four
+simulators, the footprint rule of section 5 with its 0.2 m training margin (`docs/gates/m5_s02_train.json`):
+
+| s02 run 1 | |
+|---|---|
+| steps | 640,916 in 12.0 h: 14.8 steps/s at N = 4 (14.9 measured beforehand, `docs/gates/m5_s02_instances.json`) |
+| training episodes | 4,812: 1,583 successes, 2,530 collisions, 625 out of bounds, 74 timeouts (under the training rules) |
+| collisions by source | 2,482 at the training margin (1.1 m), 19 at the task's 0.9 m rule, 29 the simulator's own contact event |
+| faults | 0 backend faults, 0 relaunches, no GPU error |
+
+![s02 run 1 training](figures/s02_r1_training.png)
+
+Left: training episodes, rolling over 300. Success stayed at zero until about 85k steps, reached 0.4 by 200k and then
+hovered at 0.32–0.49, ending at 0.48; nearly every collision ended at the training-only margin. Right: the eval watch,
+20 deterministic episodes per 50k checkpoint under the task's rules: 0.00 at 50k, a high of 0.70 at 250k, 0.60 at 600k,
+far under the 0.95 bar. Of its 240 flights 112 succeeded; the footprint rule ended 85 and the altitude band or the
+scene's edge 40. Twenty-episode points are noisy (neighbours differ by up to 0.35 here), so no checkpoint is chosen on
+them (`figures/s02_r1_training.json`, `scripts/m5_training_figure.py`).
+
+Since the footprint rule was the commonest failure, its 82 endings in the first 220 watched flights were measured
+against the trees' real geometry, ray-cast from the glTF models exactly as the live checks do
+(`scripts/footprint_endings_figure.py`):
+
+![footprint endings](figures/s02_footprint_endings.png)
+
+When the rule ended a flight the drone was a **median 2.70 m** from the nearest leaf or wood at its altitude, never
+closer than 0.94 m. Over the whole flight band only **9 of 82** endings came within 0.9 m of the tree's real outline,
+which is the distance the rule means to keep. The cause is the circle: it is centred on the model's pivot with the
+model's whole reach as its radius, and three of s02's six species lean (canopies 0.65–1.03 m off the pivot). They took
+62 of the 82 endings at a median 3.00 m from any leaf, against 1.18 m for the 20 on upright species: on the side away
+from the lean the circle bulges up to about 3 m past the leaves. The nearest leaf or wood was in the camera's view in
+only 8 endings. The expert flies on depth alone, so it was stopped by a boundary it cannot see, and a wider training
+margin would only push that boundary farther out. The minimum enclosing circle would shrink the leaning trees' circles
+by 41–49 % in area, and the outline itself is tighter still (`figures/s02_footprint_endings.json`).
+
+So the rule is to measure to the trees' real outline rather than to the pivot circle: **decided** 2026-10-08, being
+built and reviewed, not yet applied to any run. Run 1's evaluation goes on as pre-registered before any result existed
+(`docs/decisions/2026-10-08-m5-s02-r1-evaluation-plan.md`): three named candidates (the checkpoint means over
+200k–end and 350k–end, and `final`) fly the same 100 fresh episodes under the circle rule, the best is gated once on
+200, and a failed gate stays failed. If run 2 trains under the outline rule, run 1's pick is also flown under it on
+the same 200 episodes as a separate record, so the two runs are compared under one rule.
+
+## 8. The target pool, live (C5/C6, 2026-10-08)
+
+Collection draws each episode's target and its distractors from a pool, and the instruction names the target. The pool
+has 60 entries (`assets/targets.json`): 48 imported models (23 Poly Haven, CC0; 25 Kenney stand-ins: 12 vehicles,
+10 people, 2 animals and a traffic cone) and 12 engine primitives (cylinders, cubes, cones and spheres in five
+colours). The pool now draws **35** of them, the 23 Poly Haven models and the 12 primitives; the 25 Kenney stand-ins
+are imported and spawn correctly but stay undrawn until the user decides whether their blocky style may stand in for
+the paper's vehicles and people.
+
+![targets](scenes/targets_contact_sheet.png)
+
+The live probe (`docs/gates/m4_targets_probe.json`, sheet from `runs/m4/targets_probe/`) spawned each of the 60 entries
+on s01 in front of the drone: every one is in the spawn table, spawns, and has its registry size to the millimetre;
+55 of 60 show in the depth frame one step after spawning. The five blank tiles (the red sedan, the grandfather clock,
+the fire extinguisher, the generator and the man in the brown jacket) are not broken assets but first-use loading:
+a diagnostic spawned them again in a fresh session and each was visible within five steps (1 s), and on a second
+spawn at once; the three Poly Haven models were absent one step after their first spawn there too
+(`runs/m4/targets_settle_diag/settle.json`). So before the first collection with the pool, every pool
+asset is to be shown once in view after each launch, so that no recorded first frame misses its target. The probe's
+record says "failed" for those five, as written; nothing was re-run to make it pass.
+
 ## Numbers worth knowing
 
 - Simulation runs at 1 ms real-time update rate in lock-step at 5 Hz; four simulators plus an evaluator share one
-  RTX 4090 at 13.5 environment steps/s in total; a 12 h training run is 550k–560k steps.
+  RTX 4090 at 13.5 environment steps/s in total; a 12 h training run is 550k–560k steps on s01d. On s02 four
+  simulators made 14.9 steps/s (one: 11.3), and 12 h made 640,916 steps.
+- A built scene whose assets are imported costs under half an hour of live time (build, package, snapshots, gate);
+  only packaging needs every simulator stopped.
 - One 100-episode dataset is 1.77 GB of PNG frames, stored twice (raw store and RLDS shards). The paper's 13K episodes
   would need about 460 GB.
 - Grounding DINO (tiny) scores 0.34 frames/s on the host's CPU; the pilot took 14.5 h beside live training without
