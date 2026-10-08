@@ -1,0 +1,36 @@
+{
+  "description": "C9 audit: gate episodes that could not have been flown from their start (see the rule).",
+  "source": "docs/gates/m5_s02_gate.json",
+  "source_sha256": "a796b9aa3c35271447a5599b30f5ade95c190757f67b567c6a9a2818055361a6",
+  "source_last_commit": null,
+  "rule": "|final_distance - start_distance| > 0.4 m x steps + 0.5 m",
+  "flagged": [],
+  "n_flagged": 0,
+  "worst_legitimate_ratio": 0.9522,
+  "success_rate_excluding_flagged": {
+    "avg_350k_end": {
+      "deterministic": {
+        "successes": 116,
+        "episodes": 200,
+        "rate": 0.58
+      },
+      "stochastic": {
+        "successes": 0,
+        "episodes": 0,
+        "rate": null
+      }
+    }
+  },
+  "after_a_collision": {
+    "avg_350k_end:deterministic": {
+      "flagged": 0,
+      "resets": 79
+    }
+  },
+  "after_other_outcomes": {
+    "avg_350k_end:deterministic": {
+      "flagged": 0,
+      "resets": 120
+    }
+  }
+}
