@@ -522,9 +522,14 @@ def check_target_report(spec: dict, report: dict) -> list[str]:
             problems.append(f"{key}: a cards part was imported; a target spawns as one mesh")
         mesh = meshes[0]
         (node,) = model["nodes"]
-        if mesh.get("name") != key or mesh.get("path") != f"{model['destination']}/{key}":
+        # Interchange lays a merged single-mesh import out as <destination>/<key>/StaticMeshes/<key> (beside Materials/
+        # and Textures/), measured live on 2026-10-08; the obstacles' import is flat. Either is spawnable: the spawn
+        # table keys meshes by short name (the key) and +DirectoriesToAlwaysCook covers the destination recursively.
+        # The registry records the path the mesh actually has.
+        accepted = (f"{model['destination']}/{key}", f"{model['destination']}/{key}/StaticMeshes/{key}")
+        if mesh.get("name") != key or mesh.get("path") not in accepted:
             problems.append(f"{key}: imported as {mesh.get('name')} at path {mesh.get('path')}, expected "
-                            f"{model['destination']}/{key}")
+                            f"{' or '.join(accepted)}")
         problems += _extent_problems(key, mesh, node["extent_m"])
         gx, gy, gz = node["extent_m"]
         ox, oy, oz = mesh["origin_cm"]

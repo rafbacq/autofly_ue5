@@ -206,6 +206,27 @@ def test_the_plan_refuses_a_model_that_is_mostly_alpha_cards(tmp_path):
         plan(w)
 
 
+def _with_path(spec: dict, path_of) -> dict:
+    """fake_report with each mesh at path_of(destination, key)."""
+    report = fake_report(spec)
+    for model, reported in zip(spec["models"], report["models"]):
+        reported["meshes"][0]["path"] = path_of(model["destination"], model["id"])
+    return report
+
+
+def test_registry_entries_record_where_the_mesh_actually_is(tmp_path):
+    from scripts.import_assets import target_registry_entries
+
+    w = world(tmp_path)
+    spec = plan(w)
+    report = _with_path(spec, lambda d, k: f"{d}/{k}/StaticMeshes/{k}")
+    entries = target_registry_entries(spec, report, w["sources"])
+    for model in spec["models"]:
+        key = model["id"]
+        assert entries[key]["ue_path"] == f"{model['destination']}/{key}/StaticMeshes/{key}"
+        assert entries[key]["ue_path"].rsplit("/", 1)[-1] == key, "the spawn table's short name stays the key"
+
+
 def test_the_editor_report_is_checked_against_the_plan(tmp_path):
     from scripts.import_assets import check_target_report
 
@@ -227,6 +248,12 @@ def test_the_editor_report_is_checked_against_the_plan(tmp_path):
     assert any("material" in p for p in broken(lambda m, r: m["materials"].append(None)))
     assert any("one static mesh" in p for p in broken(lambda m, r: r["models"][0]["meshes"].append(dict(m, name="extra"))))
     assert any("tgt_chair_x" in p and "path" in p for p in broken(lambda m, r: m.__setitem__("path", "/Game/AutoFly/Targets/x/y")))
+    # Interchange's live layout (2026-10-08): a folder per import with Materials/StaticMeshes/Textures inside. The spawn
+    # table keys meshes by short name and the cook rule covers the destination recursively, so it is accepted; a mesh
+    # outside the target's own destination, or under another name, is not.
+    assert check_target_report(spec, _with_path(spec, lambda d, k: f"{d}/{k}/StaticMeshes/{k}")) == []
+    assert any("path" in p for p in check_target_report(spec, _with_path(spec, lambda d, k: f"/Game/AutoFly/Elsewhere/{k}")))
+    assert any("path" in p for p in check_target_report(spec, _with_path(spec, lambda d, k: f"{d}/{k}/StaticMeshes/other")))
     assert any("cards" in p for p in broken(lambda m, r: r["models"][0].__setitem__("cards_meshes", [m])))
     assert any("pass=False" in p for p in broken(lambda m, r: r.__setitem__("pass", False)))
     report = fake_report(spec)
