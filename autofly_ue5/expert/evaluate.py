@@ -64,7 +64,8 @@ class EvalReport:
     episodes_retried: int = 0
     fault_counts: dict[str, int] = field(default_factory=lambda: {name: 0 for name in KNOWN_FAULT_NAMES})
     mean_return: float | None = None
-    # What the collisions hit (spec §6.5): "sim", "mover" or "mover_inferred"; empty without collisions.
+    # What the collisions hit (spec §6.5, expert/footprint_contact.py): "sim", "mover", "mover_inferred" or "footprint",
+    # and under a training run's boundaries "static_margin" and "footprint_margin"; empty without collisions.
     collision_sources: dict[str, int] = field(default_factory=dict)
 
     @classmethod
@@ -159,6 +160,9 @@ def _run_one_episode(model, env, seed: int, *, deterministic: bool, max_steps: i
                 "mover_in_view": info.get("mover_in_view"),
                 "mover_contact": info.get("mover_contact"),  # gap, bearing, moving or yielding (2026-10-03)
                 **({"inferred_from": info["inferred_from"]} if info.get("inferred_from") else {}),
+                # A mesh scene's ending: the tree, gap, bearing and speed at the footprint rule, or the circle nearest a
+                # physical contact. Only where the env named one, so a pillar scene's records are as before.
+                **{key: info[key] for key in ("footprint_contact", "footprint_nearest") if key in info},
             }
     # AutoFlyEnv's own step_limit (default 300, spec Sec8) always truncates well before this bound;
     # reaching it means something is not honouring that contract -- report it, don't spin forever.

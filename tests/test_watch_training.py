@@ -48,6 +48,7 @@ def test_the_watcher_summarises_episodes_evaluations_faults_and_progress(tmp_pat
     assert s["log"]["sb3"]["total_timesteps"] == 21234 and s["log"]["fault_names"] == {"CameraPoseError": 1}
     assert s["log"]["counts"]["relaunches"] == 1 and s["log"]["counts"]["mover_inferred"] == 1
     assert s["log"]["counts"]["move_refused"] == 1
+    assert s["log"]["counts"]["footprint"] == 0 and s["log"]["counts"]["footprint_margin"] == 0, "a pillar run has none"
     text = render_text(s)
     assert "scene s01d" in text and "3xfloat16" in text and "21,234" in text and "mover 1" in text
     assert s["log"]["finished"] is None

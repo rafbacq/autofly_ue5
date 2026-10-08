@@ -139,6 +139,7 @@ from autofly_ue5.expert.altitude_margin import AltitudeMarginPenalty
 from autofly_ue5.evidence import default_evidence_path, record_destination, refuse_existing_evidence
 from autofly_ue5.expert.evaluate import FaultAwareEvalCallback
 from autofly_ue5.expert.features import POLICY_KWARGS
+from autofly_ue5.expert.footprint_contact import FOOTPRINT_CONTACT_M, footprint_obstacles, task_contact_rules
 from autofly_ue5.expert.mover_clearance import MoverClearancePenalty, MoverClosingPenalty
 from autofly_ue5.expert.obs import (
     DEPTH_SIZE,
@@ -170,7 +171,7 @@ from autofly_ue5.expert.vec import call_reset_with_timeout, collect_fault_summar
 from autofly_ue5.expert.warmstart import PolicyWarmupSAC, warm_start
 from autofly_ue5.expert.warmstart import plan as warm_plan
 from autofly_ue5.paths import RUNS_DIR
-from autofly_ue5.scenes.model import Layout, SceneFile
+from autofly_ue5.scenes.model import AssetRegistry, Layout, SceneFile, load_registry
 from autofly_ue5.scenes.resolve import ResolvedScene, resolve_scene
 from autofly_ue5.sim.airsim_backend import RESET_POSITION_TOLERANCE_M, scene_config_factory, scene_config_record
 from autofly_ue5.sim.process import SIM_RUN_DIR, instance_dir, stop_instances, sweep_orphaned_instances
@@ -302,11 +303,12 @@ def run_identity(resolved: ResolvedScene, obs_config: ObsConfig, scene_config: s
                  mover_clearance: MoverClearancePenalty | None = None,
                  mover_closing: MoverClosingPenalty | None = None,
                  altitude_margin: AltitudeMarginPenalty | None = None,
-                 mover_contact_margin_m: float = 0.0, static_contact_m: float = 0.0) -> dict:
+                 mover_contact_margin_m: float = 0.0, static_contact_m: float = 0.0,
+                 footprint_contact_margin_m: float = 0.0, registry: AssetRegistry | None = None) -> dict:
     """What a run's replay buffer and checkpoints are tied to: resuming under anything else would mix two tasks, two
     observation shapes or two simulator clocks (the scene config holds the clock rate) in one buffer. A training
     penalty is part of the reward the buffer holds, so a run that pays one names it; one that does not serialises
-    exactly as every run before it."""
+    exactly as every run before it. `registry`: the asset registry the run reads (default: read now)."""
     dynamic = resolved.scene.dynamic
     extra = {}
     if mover_clearance is not None:
@@ -319,6 +321,11 @@ def run_identity(resolved: ResolvedScene, obs_config: ObsConfig, scene_config: s
         extra["mover_contact_margin_m"] = mover_contact_margin_m  # where a mover contact ends a training episode
     if static_contact_m:
         extra["static_contact_m"] = static_contact_m  # where a static pillar ends a training episode
+    if footprint_obstacles(resolved.layout.instances, registry if registry is not None else load_registry()):
+        # A mesh scene's episodes end at the footprint rule (expert/footprint_contact.py): the task's distance, which a
+        # change of would make the buffer another task's, and the run's margin. A pillar scene names nothing, so every
+        # earlier run's identity still matches.
+        extra["footprint_contact"] = {"contact_m": FOOTPRINT_CONTACT_M, "training_margin_m": footprint_contact_margin_m}
     return {
         "scene_config": scene_config_record(scene_config) if scene_config is not None else None,
         "scene": resolved.scene.id,
@@ -620,7 +627,9 @@ class OutcomeHistogramCallback(BaseCallback):
         self.histogram: Counter[str] = Counter()
         # What each collision hit (spec §6.5): "sim" (physical contact: a static pillar, or with a static boundary on,
         # anything it does not cover), "mover" (the d_col rule), "mover_inferred" (a backend fault right next to a mover,
-        # scored as a collision), "static_margin" (a training run's static pillar boundary, expert/static_contact.py).
+        # scored as a collision), "footprint" (the task's rule at a mesh obstacle's footprint circle,
+        # expert/footprint_contact.py), and in training "static_margin" (expert/static_contact.py) and "footprint_margin"
+        # (the run's margin outside the footprint rule).
         self.collision_sources: Counter[str] = Counter()
         # The last OUTCOME_WINDOW real episodes, for TensorBoard's outcomes/* curves (watchers, runbook-m2d step 5).
         self._recent: deque[str] = deque(maxlen=self.OUTCOME_WINDOW)
@@ -667,7 +676,7 @@ class OutcomeHistogramCallback(BaseCallback):
         for outcome in ("success", "out_of_bounds", "timeout"):
             self.logger.record(f"outcomes/{outcome}", counts[outcome] / n)
         self.logger.record("outcomes/collision", sum(v for k, v in counts.items() if k.startswith("collision_")) / n)
-        for source in ("sim", "mover", "mover_inferred", "static_margin"):
+        for source in ("sim", "mover", "mover_inferred", "static_margin", "footprint", "footprint_margin"):
             self.logger.record(f"outcomes/collision_{source}", counts[f"collision_{source}"] / n)
         self.logger.record("outcomes/sim_fault_episodes", self._fault_episodes)
         for key, totals in self._penalties.items():
@@ -766,6 +775,10 @@ def build_arg_parser() -> argparse.ArgumentParser:
                    help="training only: a step whose path passes within M metres of a static pillar's surface ends the "
                         "episode as a collision (expert/static_contact.py); the expert observes, and the gate scores, "
                         "physical contact only. 0 (default): physical contact only")
+    p.add_argument("--footprint-contact-margin", type=float, default=0.0, metavar="M",
+                   help="training only, on a scene with mesh obstacles (trees, rocks): a footprint contact ends the "
+                        f"episode M metres outside the task's rule (expert/footprint_contact.py, "
+                        f"{FOOTPRINT_CONTACT_M:g} m from the circle); the gate scores the task's own rule")
     p.add_argument("--sim-root", type=Path, default=SIM_RUN_DIR,
                    help="where this run's simulators are recorded (tests point it at a scratch directory)")
     return p
@@ -819,6 +832,30 @@ def main(argv: list[str] | None = None) -> int:
             raise ValueError(f"--static-contact-m {args.static_contact_m} m is beyond the {start_floor_m:g} m a start "
                              f"can be from a pillar (starts keep {spawn_clearance_m():g} m; a reset may land "
                              f"{RESET_POSITION_TOLERANCE_M:g} m off)")
+        if not (math.isfinite(args.footprint_contact_margin) and args.footprint_contact_margin >= 0):
+            raise ValueError(f"--footprint-contact-margin must be a non-negative number of metres, got "
+                             f"{args.footprint_contact_margin}")
+        # The asset registry, read once here: the identity, the record and every worker use this copy. M4 keeps
+        # re-importing assets, and a registry read again in the record's unguarded assembly hours later could raise and
+        # lose the run's record (as s01d_r1 lost its own, MEMORY.md 2026-10-02) or disagree with the one it trained on.
+        registry = load_registry()
+        meshes = footprint_obstacles(layout.instances, registry)
+        contact_rules = task_contact_rules(layout, registry)
+        if meshes and scene_file.dynamic is not None:
+            raise ValueError(f"scene {scene_file.id} has moving pillars and mesh obstacles: moving a mesh would leave its "
+                             f"<tag>_cards actor behind, and how the mover rule and the footprint rule share an obstacle "
+                             f"is not designed")
+        if args.static_contact_m and len(meshes) == len(layout.instances):
+            raise ValueError(f"--static-contact-m: scene {scene_file.id} has no pillar or box (every obstacle is a mesh, "
+                             f"under the footprint rule)")
+        if args.footprint_contact_margin and not meshes:
+            raise ValueError(f"--footprint-contact-margin: scene {scene_file.id} has no mesh obstacle (the footprint rule "
+                             f"covers measured models only)")
+        if FOOTPRINT_CONTACT_M + args.footprint_contact_margin > start_floor_m:
+            raise ValueError(f"--footprint-contact-margin {args.footprint_contact_margin} m puts the boundary at "
+                             f"{FOOTPRINT_CONTACT_M + args.footprint_contact_margin:g} m, beyond the {start_floor_m:g} m a "
+                             f"start can be from a footprint circle (starts keep {spawn_clearance_m():g} m; a reset may "
+                             f"land {RESET_POSITION_TOLERANCE_M:g} m off)")
         altitude_margin = None
         if args.altitude_margin_penalty is not None:
             altitude_margin = AltitudeMarginPenalty(*args.altitude_margin_penalty).check_band(
@@ -826,7 +863,8 @@ def main(argv: list[str] | None = None) -> int:
         identity = run_identity(resolved, obs_config, scene_config, mover_clearance=mover_clearance,
                                 mover_closing=mover_closing, altitude_margin=altitude_margin,
                                 mover_contact_margin_m=args.mover_contact_margin,
-                                static_contact_m=args.static_contact_m)
+                                static_contact_m=args.static_contact_m,
+                                footprint_contact_margin_m=args.footprint_contact_margin, registry=registry)
         if (run_root / STOP_REQUEST_FILE).exists():
             raise RuntimeError(f"{run_root / STOP_REQUEST_FILE} is a pending stop request; remove it to start or "
                                f"resume this run")
@@ -880,7 +918,8 @@ def main(argv: list[str] | None = None) -> int:
             seed_base_fn=lambda rank: session_seed_base(rank, session), instance_offset=0, sim_factory=sim_factory,
             sim_root=sim_root, obs_config=obs_config, mover_clearance=mover_clearance, mover_closing=mover_closing,
             altitude_margin=altitude_margin, mover_contact_margin_m=args.mover_contact_margin,
-            static_contact_m=args.static_contact_m,
+            static_contact_m=args.static_contact_m, footprint_contact_margin_m=args.footprint_contact_margin,
+            registry=registry,
         )
         # A separate simulator instance (own ports), one slot past the training workers, so evaluation
         # can run concurrently with training without colliding on ports with any training worker. Its own seed
@@ -890,7 +929,7 @@ def main(argv: list[str] | None = None) -> int:
             scene_file, layout, 1, map_path=map_path, monitor_dir=eval_monitor_dir,
             seed_base_fn=lambda _rank: EVAL_CALLBACK_SEED_BASE, instance_offset=args.instances, sim_factory=sim_factory,
             sim_root=sim_root, obs_config=obs_config, mover_clearance=None, mover_closing=None, altitude_margin=None,
-            mover_contact_margin_m=0.0, static_contact_m=0.0,
+            mover_contact_margin_m=0.0, static_contact_m=0.0, footprint_contact_margin_m=0.0, registry=registry,
         )
 
         if args.resume:
@@ -1013,6 +1052,7 @@ def main(argv: list[str] | None = None) -> int:
         "scene": args.scene,
         "map": map_path,
         "identity": identity,
+        "contact_rules": contact_rules,  # the task's rules beyond physical contact (None: contact only)
         "obs_config": obs_config.to_json(),
         "host": host,
         "instances": args.instances,
@@ -1038,6 +1078,7 @@ def main(argv: list[str] | None = None) -> int:
             "altitude_margin_penalty": altitude_margin.to_json() if altitude_margin is not None else None,
             "mover_contact_margin_m": args.mover_contact_margin,
             "static_contact_m": args.static_contact_m,
+            "footprint_contact_margin_m": args.footprint_contact_margin,
             "batch_size": args.batch_size,
             # What the model actually trained with, not what this file intends (a resumed model restores its own).
             "train_freq": str(model.train_freq) if model is not None else None,

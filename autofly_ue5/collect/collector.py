@@ -97,6 +97,9 @@ def _provenance(scene: SceneFile, layout_sha256: str | None, seed: int, flight: 
         "final_pose": flight["final_pose"],
         "termination": flight["outcome"],
         "collision_source": info.get("collision_source"),
+        # A mesh scene's ending (expert/footprint_contact.py): which tree, how close, from where, how fast; or the circle
+        # nearest a physical contact. Only where the env named one, so a pillar scene's provenance is as before.
+        **{key: info[key] for key in ("footprint_contact", "footprint_nearest") if key in info},
         "oob_kind": info.get("oob_kind"),
         "final_distance_m": info.get("final_distance_m"),
         "deterministic": deterministic,

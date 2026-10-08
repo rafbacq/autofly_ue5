@@ -20,7 +20,7 @@ from autofly_ue5.expert.mover_clearance import MoverClearancePenalty, MoverClosi
 from autofly_ue5.expert.obs import ObsConfig
 from autofly_ue5.expert.resilient import ResilientAutoFlyEnv
 from autofly_ue5.expert.seeds import worker_seed_base
-from autofly_ue5.scenes.model import Layout, SceneFile
+from autofly_ue5.scenes.model import AssetRegistry, Layout, SceneFile
 from autofly_ue5.sim.airsim_backend import ProjectAirSimSimulator
 from autofly_ue5.sim.process import (
     SIM_RUN_DIR,
@@ -67,6 +67,8 @@ def make_vec_env(
     altitude_margin: AltitudeMarginPenalty | None = None,
     mover_contact_margin_m: float = 0.0,
     static_contact_m: float = 0.0,
+    footprint_contact_margin_m: float = 0.0,
+    registry: AssetRegistry | None = None,
 ) -> VecEnv:
     """n `AutoFlyEnv`s, each `ResilientAutoFlyEnv(Monitor(AutoFlyEnv(...)))`, vectorised.
 
@@ -91,7 +93,9 @@ def make_vec_env(
     `mover_clearance` / `mover_closing` / `altitude_margin`: a training run's penalties, paid by every env
     (`expert/mover_clearance.py`, `expert/altitude_margin.py`); `mover_contact_margin_m`: a training run's safety
     margin outside the task's mover contact rule; `static_contact_m`: a training run's static pillar boundary
-    (`expert/static_contact.py`).
+    (`expert/static_contact.py`); `footprint_contact_margin_m`: a training run's margin outside the task's footprint
+    rule on a mesh scene (`expert/footprint_contact.py`); `registry`: the asset registry every env reads which obstacles
+    are meshes from (default: each reads its own), so a trainer's workers share the copy its identity was built from.
     """
     if n < 1:
         raise ValueError(f"n must be >= 1, got {n}")
@@ -107,7 +111,8 @@ def make_vec_env(
             base = AutoFlyEnv(scene, layout, sim_factory, map_path=map_path, instance=instance, seed_base=seed_base_fn(rank),
                               obs_config=obs_config, mover_clearance=mover_clearance, mover_closing=mover_closing,
                               altitude_margin=altitude_margin, mover_contact_margin_m=mover_contact_margin_m,
-                              static_contact_m=static_contact_m)
+                              static_contact_m=static_contact_m, footprint_contact_margin_m=footprint_contact_margin_m,
+                              registry=registry)
             # outcome and collision_source per episode, for scripts/watch_training.py (the info always carries both).
             monitored = Monitor(base, filename=str(monitor_dir / f"{instance}.monitor.csv"),
                                 info_keywords=("is_success", "outcome", "collision_source"))

@@ -21,6 +21,7 @@ from gymnasium import spaces
 
 from autofly_ue5.expert.altitude_margin import AltitudeMarginPenalty
 from autofly_ue5.expert.episode import EpisodeSetup, a0_aligned, apply_setup, clear_setup, sample_setup
+from autofly_ue5.expert.footprint_contact import FootprintContactRule, footprint_obstacles
 from autofly_ue5.expert.mover_clearance import MoverClearancePenalty, MoverClosingPenalty
 from autofly_ue5.expert.movers import MoverController, home_poses, park_poses
 from autofly_ue5.expert.obs import (
@@ -35,7 +36,7 @@ from autofly_ue5.expert.obs import (
 from autofly_ue5.expert.reward import Outcome, RewardConfig, evaluate, oob_kind, reward_config_for_scene
 from autofly_ue5.expert.static_contact import StaticContactBoundary
 from autofly_ue5.frames import wrap_pi
-from autofly_ue5.scenes.model import Layout, SceneFile
+from autofly_ue5.scenes.model import AssetRegistry, Layout, SceneFile, load_registry
 from autofly_ue5.sim.protocol import Simulator
 from autofly_ue5.sim.types import CONTROL_DT_S, CameraPoseError, KinematicsJumpError, Observation, Pose, StartCollisionError
 
@@ -63,6 +64,12 @@ class AutoFlyEnv(gym.Env):
     A dynamic scene (spec §6.5) also moves some of the level's pillars. Every pillar this env may have displaced is
     tracked in `_displaced` from before it moves until it is back home, and parked 50 m under its home before the
     reset sequence, so the drone and a pillar are never in one place: see `reset()`.
+
+    A scene with mesh obstacles (trees, rocks: expert/footprint_contact.py) ends an episode at each obstacle's footprint
+    circle, geometrically and on every step, because a body that reaches wood can wedge the simulator's actor. That is
+    the task's rule, scored by the gate; `footprint_contact_margin_m` widens it for a training run only. `registry`: the
+    asset registry that decides which obstacles are meshes (default: read now); a trainer passes the one copy it read
+    before claiming its run root, so its identity, record and workers cannot disagree about it.
     """
 
     metadata: dict[str, Any] = {"render_modes": []}
@@ -84,6 +91,8 @@ class AutoFlyEnv(gym.Env):
         altitude_margin: AltitudeMarginPenalty | None = None,
         mover_contact_margin_m: float = 0.0,
         static_contact_m: float = 0.0,
+        footprint_contact_margin_m: float = 0.0,
+        registry: AssetRegistry | None = None,
     ) -> None:
         super().__init__()
         if not (math.isfinite(static_contact_m) and static_contact_m >= 0):
@@ -110,6 +119,25 @@ class AutoFlyEnv(gym.Env):
         self._mover_closing = mover_closing
         self._closing_depths: list[float] | None = None  # each mover's depth inside the margin after the last step
         self._altitude_margin = altitude_margin  # expert/altitude_margin.py: any scene, training only
+        if not (math.isfinite(footprint_contact_margin_m) and footprint_contact_margin_m >= 0):
+            raise ValueError(f"a footprint contact margin must be a non-negative number of metres, "
+                             f"got {footprint_contact_margin_m}")
+        # The task's contact rule for mesh obstacles (expert/footprint_contact.py), with a training run's margin on top.
+        # Which instances it covers is the registry's say (a measured model, never an engine primitive), decided once.
+        self._footprint_obstacles = footprint_obstacles(layout.instances, registry if registry is not None else load_registry())
+        self._footprint_tags = frozenset(inst.tag for inst in self._footprint_obstacles)
+        if footprint_contact_margin_m and not self._footprint_obstacles:
+            raise ValueError(f"scene {scene.id} has no mesh obstacle, so a footprint contact margin cannot apply")
+        if self._footprint_obstacles and scene.dynamic is not None:
+            raise ValueError(f"scene {scene.id} has moving pillars and mesh obstacles: moving a mesh would leave its "
+                             f"<tag>_cards actor (the leaves, which have no collision) behind, and how the mover rule and "
+                             f"the footprint rule share an obstacle is not designed")
+        if static_contact_m and all(inst.tag in self._footprint_tags for inst in layout.instances):
+            # The boundary covers pillars and boxes only: here it would end nothing, yet a run's identity would name it.
+            raise ValueError(f"scene {scene.id} has no pillar or box (every obstacle is a mesh, under the footprint rule), "
+                             f"so a static contact boundary cannot apply")
+        self._footprint_contact_margin_m = float(footprint_contact_margin_m)
+        self._footprint: FootprintContactRule | None = None
         self._scene = scene
         self._layout = layout
         self._sim_factory = sim_factory
@@ -178,6 +206,7 @@ class AutoFlyEnv(gym.Env):
         self._spawned = ()
         self._movers = None
         self._static = None
+        self._footprint = None
         if self._displaced:
             # Out of the way of the reset's up-across-down sequence: the drone may have ended on a vacated home spot,
             # and sending a pillar home there would put it inside the drone.
@@ -236,14 +265,24 @@ class AutoFlyEnv(gym.Env):
         # contact.
         if movers is not None and movers.nearest_gap((obs.pose.x, obs.pose.y)) <= movers.termination_m:
             raise StartCollisionError(f"the episode's first observation is within {movers.termination_m} m of a mover")
-        static = (StaticContactBoundary.for_episode(self._layout.instances, new, self._static_contact_m)
+        # A training run's static boundary covers the solids (pillars, boxes); the mesh obstacles are the footprint
+        # rule's, whatever the run asked for.
+        static = (StaticContactBoundary.for_episode([i for i in self._layout.instances if i.tag not in self._footprint_tags],
+                                                    new, self._static_contact_m)
                   if self._static_contact_m else None)
         if static is not None and static.nearest_gap((obs.pose.x, obs.pose.y)) <= static.boundary_m:
             raise StartCollisionError(f"the episode's first observation is within {static.boundary_m} m of a static "
                                       f"pillar")
+        footprint = (FootprintContactRule.for_episode(self._footprint_obstacles, new,
+                                                      training_margin_m=self._footprint_contact_margin_m)
+                     if self._footprint_obstacles else None)
+        if footprint is not None and footprint.nearest_gap((obs.pose.x, obs.pose.y)) <= footprint.termination_m:
+            raise StartCollisionError(f"the episode's first observation is within {footprint.termination_m} m of a mesh "
+                                      f"obstacle's footprint circle")
         self._displaced = new
         self._movers = movers
         self._static = static
+        self._footprint = footprint
         if movers is not None:
             movers.record_frame(obs.pose)
         self._closing_depths = None
@@ -267,6 +306,11 @@ class AutoFlyEnv(gym.Env):
     def step(self, action: np.ndarray) -> tuple[dict[str, np.ndarray], float, bool, bool, dict]:
         if self._sim is None or self._setup is None:
             raise RuntimeError("AutoFlyEnv.step() called before reset()")
+        if self._footprint_obstacles and self._footprint is None:
+            # reset() stores the episode before its start checks, so after one of them refused the start a step would
+            # fly without the footprint rule, and a body could reach wood unscored.
+            raise RuntimeError("AutoFlyEnv.step(): reset() did not complete (a start check refused the episode); "
+                               "reset() again before stepping")
 
         action = np.clip(np.asarray(action, dtype=np.float32), self.action_space.low, self.action_space.high)
         v_forward, yaw_rate, v_z = (float(a) for a in action)
@@ -290,13 +334,16 @@ class AutoFlyEnv(gym.Env):
         obs = self._sim.observe()
 
         contact = movers.contact((before.x, before.y), (obs.pose.x, obs.pose.y)) if movers is not None else None
-        # A training run's static boundary, unless something else already ended the step: a physical contact is
-        # scored as the contact it is.
+        # The task's footprint rule for mesh obstacles, then a training run's static boundary, unless something else
+        # already ended the step: a physical contact is scored as the contact it is.
+        footprint = (self._footprint.contact((before.x, before.y), (obs.pose.x, obs.pose.y))
+                     if self._footprint is not None and contact is None and not obs.collided else None)
         static = (self._static.contact((before.x, before.y), (obs.pose.x, obs.pose.y))
-                  if self._static is not None and contact is None and not obs.collided else None)
-        collided = obs.collided or contact is not None or static is not None
+                  if self._static is not None and contact is None and not obs.collided and footprint is None else None)
+        collided = obs.collided or contact is not None or static is not None or footprint is not None
         source = ("mover" if contact is not None else
                   "sim" if obs.collided else
+                  self._footprint.source(footprint[1]) if footprint is not None else
                   "static_margin" if static is not None else None)
         seen = movers.seen_recently(contact[0]) if contact is not None else None  # the frames the policy flew on
         mover_contact = None
@@ -333,6 +380,30 @@ class AutoFlyEnv(gym.Env):
         info = self._info(result.outcome, dist, obs.pose, bearing, kind,
                           collision_source=source if result.outcome is Outcome.COLLISION else None, mover_in_view=seen,
                           mover_contact=mover_contact if result.outcome is Outcome.COLLISION else None)
+        if footprint is not None:
+            # Where the rule ended the episode (the key exists only on such a step: every pillar scene keeps its infos
+            # exactly), and a log line per ending, so a run can be read for which trees end its flights and from where.
+            tag, gap = footprint
+            tree = self._instances[tag]
+            contact_info = info["footprint_contact"] = {
+                "tag": tag,
+                "asset": tree.asset,
+                "gap_m": round(gap, 4),
+                "rule": source,
+                "bearing_deg": round(math.degrees(wrap_pi(math.atan2(tree.y - before.y, tree.x - before.x) - before.yaw)), 2),
+                "drone_forward_m_s": round(v_forward, 3),
+            }
+            print(f"FOOTPRINT instance {self._instance}: {tag} ({tree.asset}) at {contact_info['gap_m']:.2f} m from its "
+                  f"circle ({source}), bearing {contact_info['bearing_deg']:+.0f} deg, forward "
+                  f"{contact_info['drone_forward_m_s']:.2f} m/s", file=sys.stderr)
+        elif source == "sim" and self._footprint is not None:
+            # A physical contact in a mesh scene, which the rule exists to prevent. The nearest circle tells apart wood
+            # outside it (a branch the band radius missed: a small gap), a spawned target or distractor (placed 1.4 m
+            # or more from every circle: a larger gap) and a rule that did not fire (the centre inside a circle).
+            nearest = self._footprint.nearest((before.x, before.y), (obs.pose.x, obs.pose.y))
+            if nearest is not None:
+                tag, gap = nearest
+                info["footprint_nearest"] = {"tag": tag, "asset": self._instances[tag].asset, "gap_m": round(gap, 4)}
         if static is not None:
             # Where the boundary was crossed, as for a mover contact; the key exists only on such a step, so every run
             # without a boundary keeps its infos exactly.
@@ -387,6 +458,15 @@ class AutoFlyEnv(gym.Env):
         return {"movers": self._movers.observation(pose, slots)}
 
     @property
+    def contact_rules(self) -> dict | None:
+        """The contact rules this env applies beyond the simulator's own collision event (for run records): the
+        footprint rule and this env's margin on a mesh scene; None where physical contact is the only rule."""
+        if not self._footprint_obstacles:
+            return None
+        rule = FootprintContactRule(self._footprint_obstacles, training_margin_m=self._footprint_contact_margin_m)
+        return {"footprint": rule.to_json()}
+
+    @property
     def setup(self) -> EpisodeSetup | None:
         """The current episode's setup (M3's collector records it as provenance)."""
         return self._setup
@@ -421,8 +501,8 @@ class AutoFlyEnv(gym.Env):
               collision_source: str | None = None, mover_in_view: bool | None = None,
               mover_contact: dict | None = None) -> dict:
         # pose/bearing_deg/oob_kind: where an episode ended and which bound it left, for the run record (the
-        # 2026-09-17 gate could not say either). collision_source ("sim", "mover", "mover_inferred", and in training
-        # "static_margin"), n_movers,
+        # 2026-09-17 gate could not say either). collision_source ("sim", "mover", "mover_inferred", "footprint", and in
+        # training "static_margin" and "footprint_margin"), n_movers,
         # movers (each mover's x, y this step) and mover_in_view: spec §6.5; empty for a static scene.
         return {
             "outcome": outcome.value,

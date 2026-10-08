@@ -64,6 +64,7 @@ from autofly_ue5.expert.evaluate import (  # noqa: E402
 from autofly_ue5.expert.faults import KNOWN_FAULT_NAMES  # noqa: E402
 from autofly_ue5.expert.obs import ObsConfig, obs_config_from_space  # noqa: E402
 from autofly_ue5.expert.resilient import ResilientAutoFlyEnv  # noqa: E402
+from autofly_ue5.expert.footprint_contact import task_contact_rules  # noqa: E402
 from autofly_ue5.expert.reward import REWARD_VERSION, reward_config_for_scene  # noqa: E402
 from autofly_ue5.expert.seeds import EVAL_SEED_BASE  # noqa: E402
 from autofly_ue5.expert.train import sha256_of  # noqa: E402
@@ -211,7 +212,11 @@ def run(
     run_started = time.strftime("%Y-%m-%d %H:%M:%S")
     run_start_epoch = time.time()
     # the coefficients mean_return is scored with (spec §8's, plus the scene's own since 2026-10-03)
-    reward_config = json.loads(json.dumps(dataclasses.asdict(reward_config_for_scene(resolve_scene(scene).scene))))
+    resolved_for_record = resolve_scene(scene)
+    reward_config = json.loads(json.dumps(dataclasses.asdict(reward_config_for_scene(resolved_for_record.scene))))
+    # The task's contact rules beyond the simulator's collision event (None: physical contact only): a mesh scene's
+    # footprint rule (expert/footprint_contact.py), which this gate scores, so the record says what it measured.
+    contact_rules = task_contact_rules(resolved_for_record.layout)
     xid_before = xid_count(run_started)
     boot_before = boot_id()
 
@@ -267,6 +272,7 @@ def run(
             "obs_config": obs_config.to_json() if obs_config is not None else None,
             "reward_version": REWARD_VERSION,
             "reward_config": reward_config,
+            "contact_rules": contact_rules,
             "scene_config": scene_config_record(scene_config) if scene_config else None,
             "eval_seed_base": seed_base,
             "episodes_requested_per_condition": n_episodes,

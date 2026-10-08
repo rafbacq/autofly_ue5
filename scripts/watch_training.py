@@ -45,6 +45,9 @@ LOG_COUNTERS = {
     "faults": re.compile(r"^FAULT instance \d+: caught (\w+)"),
     "relaunches": re.compile(r"^RELAUNCH instance \d+: relaunching"),
     "mover_inferred": re.compile(r"^MOVER instance \d+:"),
+    # A footprint ending names its rule: the task's own line, or a training run's margin outside it (expert/env.py).
+    "footprint": re.compile(r"^FOOTPRINT instance \d+: .*\(footprint\)"),
+    "footprint_margin": re.compile(r"^FOOTPRINT instance \d+: .*\(footprint_margin\)"),
     "move_refused": re.compile(r"^MOVE-REFUSED "),
     "fatal": re.compile(r"^FATAL instance \d+:"),
     "skipped_evaluations": re.compile(r"^WARNING: evaluation at \d+ timesteps could not finish"),
@@ -224,6 +227,7 @@ def render_text(summary: dict) -> str:
     counts = log["counts"]
     faults = ", ".join(f"{k} {v}" for k, v in sorted(log["fault_names"].items())) or "none"
     lines.append(f"faults: {faults}   relaunches {counts['relaunches']}   mover-inferred collisions {counts['mover_inferred']}"
+                 f"   footprint endings {counts['footprint']} (+{counts['footprint_margin']} at the training margin)"
                  f"   refused moves {counts['move_refused']}   FATAL {counts['fatal']}"
                  f"   skipped evaluations {counts['skipped_evaluations']}")
     if log["finished"]:

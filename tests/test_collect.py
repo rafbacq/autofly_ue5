@@ -99,7 +99,36 @@ def test_failed_episodes_go_to_the_rejects_with_their_reason(tmp_path):
     assert len(rejects) == 3
     record = json.loads(rejects[0].read_text())
     assert record["reason"] == "out_of_bounds" and record["provenance"]["seed"] == SEED_BASE
+    assert not any(k.startswith("footprint") for k in record["provenance"]), "a pillar scene's provenance is as before"
     assert json.loads((root / "manifest.json").read_text())["counts"]["episodes"] == 0
+
+
+def test_an_episode_the_footprint_rule_ended_is_rejected_with_the_tree_and_where_it_was_reached(tmp_path):
+    # The rejects are where a tree scene's footprint endings land: each says which tree, how close, from where.
+    from autofly_ue5.collect.collector import collect
+    from autofly_ue5.dataset.raw import RawDatasetWriter
+    from autofly_ue5.expert.env import AutoFlyEnv
+    from autofly_ue5.expert.resilient import ResilientAutoFlyEnv
+    from tests.test_footprint_contact import AtTheNearestTree, recording_tree_factory, tree_scene_and_layout
+
+    scene, layout = tree_scene_and_layout()
+    sims = []
+    base = AutoFlyEnv(scene, layout, recording_tree_factory(layout, sims), map_path="/Game/AutoFly/Maps/S99", instance=0)
+    env = ResilientAutoFlyEnv(base, instance=0, sim_root=tmp_path / "sim")
+    writer = RawDatasetWriter(tmp_path / "data", "trees", scene=scene, provenance=PROVENANCE)
+    summary = collect(AtTheNearestTree(layout, sims), env, scene=scene, writer=writer, seed_base=SEED_BASE, n_keep=1,
+                      target_name="orange cylinder", max_attempts=3, layout_sha256="test-layout")
+    assert summary["kept"] == 0 and summary["rejected"] == 3
+    rejects = [json.loads(p.read_text()) for p in sorted((tmp_path / "data" / "rejects" / "trees").glob("*.json"))]
+    ended = [r for r in rejects if r["provenance"]["collision_source"] == "footprint"]
+    assert ended, [r["provenance"]["collision_source"] for r in rejects]
+    assets = {inst.tag: inst.asset for inst in layout.instances}
+    for record in ended:
+        contact = record["provenance"]["footprint_contact"]
+        assert record["reason"] == "collision" and contact["rule"] == "footprint"
+        assert assets[contact["tag"]] == contact["asset"] and contact["gap_m"] <= 0.9 + 1e-9
+        assert {"bearing_deg", "drone_forward_m_s"} <= set(contact)
+    assert all("footprint_contact" not in r["provenance"] for r in rejects if r["provenance"]["collision_source"] != "footprint")
 
 
 def test_a_backend_fault_replays_the_seed_and_never_reaches_the_store(tmp_path):
