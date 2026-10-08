@@ -40,11 +40,14 @@ def _report(ok=True):
     return {"pass": True, "models": [{"id": "tree_x", "destination": "/Game/AutoFly/Assets/tree_x", "meshes": [
         {"name": "tree_x_a", "imported_name": "Cube_070", "path": "/Game/AutoFly/Assets/tree_x/tree_x_a", "box_extent_cm": a_extent,
          "origin_cm": [0.0, 5.0, 87.5], "triangles": 1000, "vertices": 600, "nanite_enabled": True,
-         "collision_trace_flag": "CTF_USE_COMPLEX_AS_SIMPLE", "materials": ["/Game/AutoFly/Assets/tree_x/M_bark"]},
+         "collision_trace_flag": "CTF_USE_COMPLEX_AS_SIMPLE", "materials": ["/Game/AutoFly/Assets/tree_x/M_bark"],
+         "foliage": {"changed": [{"material": "/Game/AutoFly/Assets/tree_x/MI_leaves", "blend_mode": "BLEND_MASKED", "alpha_cutoff": 0.5}],
+                     "slots": [{"material": "/Game/AutoFly/Assets/tree_x/M_bark", "blend_mode": "BLEND_OPAQUE"},
+                               {"material": "/Game/AutoFly/Assets/tree_x/MI_leaves", "blend_mode": "BLEND_MASKED"}]}},
         {"name": "Cube_071", "path": "/Game/AutoFly/Assets/tree_x/Cube_071", "box_extent_cm": [45.0, 50.0, 60.0],
          "source_triangles": 20000,
          "origin_cm": [0.0, 0.0, 60.0], "triangles": 200, "vertices": 120, "nanite_enabled": True,
-         "collision_trace_flag": "CTF_USE_COMPLEX_AS_SIMPLE", "materials": []}]}],
+         "collision_trace_flag": "CTF_USE_COMPLEX_AS_SIMPLE", "materials": [], "foliage": {"changed": [], "slots": []}}]}],
         "materials": [{"id": "Paving1", "name": "M_Paving1", "path": "/Game/AutoFly/Materials/Ground/M_Paving1",
                        "connected": ["MP_BASE_COLOR", "MP_NORMAL", "MP_ROUGHNESS", "MP_AMBIENT_OCCLUSION"], "tiling": 173.913,
                        "textures": {"color": "/Game/AutoFly/Materials/Ground/Textures/Paving1/Paving1_2K-JPG_Color"}}]}
@@ -78,6 +81,12 @@ def test_the_report_is_checked_against_the_measurements_before_the_registry_is_w
     no_nanite = _report()
     no_nanite["models"][0]["meshes"][0]["nanite_enabled"] = False
     assert any("nanite" in p.lower() for p in check_report(spec, _measurements(), no_nanite))
+    translucent = _report()
+    translucent["models"][0]["meshes"][0]["foliage"]["slots"][1]["blend_mode"] = "BLEND_TRANSLUCENT"
+    assert any("translucent" in p and "MI_leaves" in p for p in check_report(spec, _measurements(), translucent))
+    unreported = _report()
+    del unreported["models"][0]["meshes"][0]["foliage"]
+    assert any("not reported" in p for p in check_report(spec, _measurements(), unreported))
     half = _report()
     half["materials"][0]["connected"] = ["MP_BASE_COLOR"]
     assert any("M_Paving1" in p for p in check_report(spec, _measurements(), half))

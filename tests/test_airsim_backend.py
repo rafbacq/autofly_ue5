@@ -55,6 +55,10 @@ class FakeWorld:
         self.drop_depth = False
         self.time_skew_ns = 0
         self.camera_lag_m = 0.0  # simulated stuck Unreal actor: the camera stays this far behind kinematics
+        # A canopy: a box (NED metres) the Unreal actor's swept moves cannot pass through. A move whose path crosses
+        # it leaves the actor where it was (kinematics move on, the camera stays with the actor), except a retrace --
+        # a horizontal move against the heading, back the way the drone flew. None: every move lands.
+        self.canopy = None
 
     def get_sim_clock_type(self):
         return "steppable"
@@ -68,8 +72,8 @@ class FakeWorld:
         self.drone.integrate(dt_ns / 1e9)
         cams = self.drone.sensors["FrontCamera"]
         offset = 0.4 - self.camera_lag_m
-        cam = {"pos_x": self.drone.x + offset * math.cos(self.drone.yaw), "pos_y": self.drone.y + offset * math.sin(self.drone.yaw),
-               "pos_z": self.drone.z}
+        ax, ay, az = self.drone.actor_position()
+        cam = {"pos_x": ax + offset * math.cos(self.drone.yaw), "pos_y": ay + offset * math.sin(self.drone.yaw), "pos_z": az}
         self.client.publish(cams["scene_camera"], {"time_stamp": self.t, "encoding": "BGR", "height": 4, "width": 4, "data": bytes(48), **cam})
         if not self.drop_depth:
             self.client.publish(cams["depth_planar_camera"], {"time_stamp": self.t, "encoding": "16FC1", "height": 4, "width": 4, "data": bytes(32), **cam})
@@ -86,6 +90,14 @@ class FakeWorld:
     def destroy_object(self, object_name):
         return self.spawned.pop(object_name, None) is not None
 
+    def get_3d_bounding_box(self, object_name, box_alignment):
+        # the server answers with the box of a spawned object, or nothing for an unknown name
+        if object_name not in self.spawned or box_alignment != 0:
+            return {}
+        _, pose, scale, _ = self.spawned[object_name]
+        t = pose["translation"]
+        return {"center": {"x": t["x"], "y": t["y"], "z": t["z"]}, "size": {"x": scale[0], "y": scale[1], "z": scale[2]}}
+
 
 class FakeDrone:
     def __init__(self, client, world, name):
@@ -94,6 +106,9 @@ class FakeDrone:
         self.sensors = {"FrontCamera": {"scene_camera": "/rgb", "depth_planar_camera": "/depth"}}
         self.robot_info = {"collision_info": "/collision"}
         self.x, self.y, self.z, self.yaw = 0.0, 0.0, -2.0, 0.0
+        self.actor = None  # where the Unreal actor really is when a swept move left it behind; None: with the kinematics
+        self.retrace_blocked = False  # a grazing crash: moves straight back are blocked at their start as well
+        self.exit_normal = None  # the direction a penetrating actor may leave by (the last collision's normal)
         self.cmd = (0.0, 0.0, 0.0)
         self.commands, self.poses = [], []
         self.api_enabled = self.armed = False
@@ -122,17 +137,70 @@ class FakeDrone:
 
     def integrate(self, dt):
         v_forward, v_down, yaw_rate = self.cmd
+        if self.actor is not None and (v_forward or v_down):
+            self.actor = None  # flying moves the actor with the kinematics again (the fake does not model a stuck flight)
         self.x += v_forward * math.cos(self.yaw) * dt
         self.y += v_forward * math.sin(self.yaw) * dt
         self.z += v_down * dt
         self.yaw += yaw_rate * dt
 
+    def actor_position(self):
+        return self.actor if self.actor is not None else (self.x, self.y, self.z)
+
     def set_pose(self, pose, reset_kinematics=True):
+        """The swept move the plugin makes (UnrealRobot.cpp MoveRobotToUnrealPose), as the live simulator showed it on
+        s02 (2026-10-07). Starting inside the canopy: the actor does not move, the kinematics do (a camera-pose error).
+        Hitting the canopy on the way: the actor stops at the hit, a collision event is raised, and the kinematics snap
+        back to the actor (no camera error, the pose simply did not take)."""
         self.poses.append(pose)
         t, r = pose["translation"], pose["rotation"]
-        self.x, self.y, self.z = t["x"], t["y"], t["z"]
+        start = self.actor_position()
+        end = (t["x"], t["y"], t["z"])
         self.yaw = quat_to_yaw(r["w"], r["x"], r["y"], r["z"])
+        blocked_at = self._sweep_blocked(start, end)
+        if blocked_at is None:
+            self.x, self.y, self.z = end
+            self.actor = None
+        elif blocked_at == 0.0:
+            self.x, self.y, self.z = end
+            self.actor = start
+        else:
+            hit = tuple(s + blocked_at * (e - s) for s, e in zip(start, end))
+            self.x, self.y, self.z = hit
+            self.actor = None
+            self.world.pending_events.append({"type": "collision", "sim_time_ns": self.world.t + 1, "object_name": "canopy",
+                                              "impact_point": {"x": hit[0], "y": hit[1], "z": hit[2]}, "normal": {"x": 0.0, "y": 0.0, "z": 1.0}})
         return True
+
+    def _sweep_blocked(self, start, end):
+        """None when the move lands; 0.0 when it starts inside the canopy; else the fraction of the way at which it hits."""
+        box = self.world.canopy
+        if box is None:
+            return None
+        dx, dy, dz = end[0] - start[0], end[1] - start[1], end[2] - start[2]
+        horizontal = math.hypot(dx, dy)
+        if abs(dz) < 1e-9 and horizontal > 0:
+            # a retrace: back along the heading, through the space the drone came through
+            if not self.retrace_blocked and math.cos(self.yaw) * dx + math.sin(self.yaw) * dy < -0.98 * horizontal:
+                return None
+        if self.exit_normal is not None:
+            n = self.exit_normal
+            if (n[0] * dx + n[1] * dy + n[2] * dz) > 0.98 * math.sqrt(dx * dx + dy * dy + dz * dz):
+                # moving out along the normal: UE ignores the initial overlap it is leaving, and once out of that card
+                # the body is free to sweep back the way it came
+                self.retrace_blocked = False
+                return None
+
+        def inside(x, y, z):
+            return box["x_min"] <= x <= box["x_max"] and box["y_min"] <= y <= box["y_max"] and box["z_min"] <= z <= box["z_max"]
+
+        if inside(*start):
+            return 0.0
+        for i in range(1, 41):
+            f = i / 40.0
+            if inside(start[0] + f * dx, start[1] + f * dy, start[2] + f * dz):
+                return (i - 1) / 40.0
+        return None
 
     def get_ground_truth_kinematics(self):
         stale = self.world.stale_kinematics > 0
@@ -200,6 +268,102 @@ def test_camera_left_behind_is_an_error_outside_collisions():
     sim.command_velocity(0.0, 0.0, 0.0)
     with pytest.raises(CameraPoseError):
         sim.step()
+
+
+# a canopy over NED x in [4, 10], y in [-3, 3], from 1 m to 6 m up: the drone flying east-north... along +x at 2 m altitude
+# stops under it at x = 5, and a straight climb from there sweeps through leaves
+CANOPY = {"x_min": 4.0, "x_max": 10.0, "y_min": -3.0, "y_max": 3.0, "z_min": -6.0, "z_max": -1.0}
+
+
+def _fly_under_the_canopy(sim):
+    sim.reset(Pose(0.0, 0.0, -2.0, 0.0))
+    sim._world.canopy = CANOPY
+    for _ in range(13):  # 13 x 0.4 m = 5.2 m: inside the box in x, still at 2 m
+        sim.command_velocity(2.0, 0.0, 0.0)
+        sim.step()
+    assert sim._drone.x == pytest.approx(5.2) and sim._drone.actor is None
+
+
+def test_reset_from_under_a_canopy_retraces_before_climbing():
+    """s02, 2026-10-07: after a crash into a tree the climb to the safe altitude was blocked by the leaf cards above
+    (the Unreal actor stayed, the kinematics rose: CameraPoseError 18 m, then 50 m). The AutoFly action space only
+    moves body-forward, so a move straight back along the heading retraces free space; the reset tries that, farther
+    each time, before giving up."""
+    sim = make_sim()
+    _fly_under_the_canopy(sim)
+    obs = sim.reset(Pose(-20.0, 10.0, -2.0, 1.0))
+    assert obs.pose == Pose(-20.0, 10.0, -2.0, 1.0) and obs.camera_pose_error_m == pytest.approx(0.0)
+    assert sim._drone.actor is None
+    # the first attempt was the plain climb (blocked), then a retrace of 1.5 m from where the actor really was
+    poses = [(round(p["translation"]["x"], 3), round(p["translation"]["y"], 3), round(p["translation"]["z"], 3)) for p in sim._drone.poses[-5:]]
+    assert poses[0] == (5.2, 0.0, -20.0), "the climb that the canopy blocked"
+    assert poses[1] == (3.7, 0.0, -2.0), "1.5 m straight back along the heading, at the actor's altitude"
+    assert poses[2] == (3.7, 0.0, -20.0) and poses[3] == (-20.0, 10.0, -20.0) and poses[4] == (-20.0, 10.0, -2.0)
+    assert sim.last_reset_retrace_m == 1.5 and sim.last_reset_escape == ("retrace", 1.5)
+
+
+def test_reset_from_below_a_canopy_notices_the_snapped_back_kinematics():
+    """The other way a swept climb fails: it travels, hits the canopy above, the plugin raises a collision and the
+    kinematics snap back to the actor. The camera then agrees with the kinematics, so only checking that each hop
+    arrived tells the reset to retrace (s02's second smoke, 2026-10-07: ResetPoseError 38 m with no camera error)."""
+    sim = make_sim()
+    sim.reset(Pose(0.0, 0.0, -2.0, 0.0))
+    sim._world.canopy = {**CANOPY, "z_min": -6.0, "z_max": -3.0}  # the canopy hangs from 3 to 6 m: the drone flies under it
+    for _ in range(13):
+        sim.command_velocity(2.0, 0.0, 0.0)
+        sim.step()
+    obs = sim.reset(Pose(-20.0, 10.0, -2.0, 1.0))
+    assert obs.pose == Pose(-20.0, 10.0, -2.0, 1.0) and obs.collided is False
+    poses = [(round(p["translation"]["x"], 3), round(p["translation"]["y"], 3), round(p["translation"]["z"], 3)) for p in sim._drone.poses[-5:]]
+    assert poses[0] == (5.2, 0.0, -20.0), "the climb that hit the canopy at 3 m"
+    assert poses[1][0] == pytest.approx(3.7) and poses[1][2] == pytest.approx(-3.0, abs=0.15), "back 1.5 m from where the actor stopped (just under the canopy)"
+    assert poses[2][:2] == pytest.approx((3.7, 0.0)) and poses[2][2] == -20.0
+    assert sim.last_reset_retrace_m == 1.5
+    assert sim.last_reset_escape == ("retrace", 1.5), "the snap-back's collision event had an upward normal: a nudge up is blocked too"
+
+
+def test_reset_after_a_grazing_crash_nudges_out_along_the_collision_normal():
+    """A card hit edge-on has a normal across the heading: a move straight back is not 'out of' it and UE blocks it at
+    its start (s02's gate, 2026-10-07: camera 8.000 m behind the kinematics after an 8 m retrace). The nudge along the
+    collision's normal is the direction UE lets a penetrating actor leave by."""
+    sim = make_sim()
+    _fly_under_the_canopy(sim)
+    # the crash: the last step reported a collision whose normal points +y (across the +x heading)
+    sim._world.pending_events = [{"type": "collision", "sim_time_ns": sim._world.t + 1, "object_name": "obs_0002",
+                                  "impact_point": {"x": 5.6, "y": 0.0, "z": -2.0}, "normal": {"x": 0.0, "y": 1.0, "z": 0.0}}]
+    sim.command_velocity(2.0, 0.0, 0.0)
+    sim.step()
+    assert sim.observe().collided
+    sim._drone.retrace_blocked = True  # this canopy also stops moves straight back (the fake's grazing case)
+    sim._drone.exit_normal = (0.0, 1.0, 0.0)
+    before = len(sim._drone.poses)
+    obs = sim.reset(Pose(-20.0, 10.0, -2.0, 1.0))
+    assert obs.pose == Pose(-20.0, 10.0, -2.0, 1.0)
+    poses = [(round(p["translation"]["x"], 3), round(p["translation"]["y"], 3), round(p["translation"]["z"], 3)) for p in sim._drone.poses[before:]]
+    assert poses[0] == (5.6, 0.0, -20.0), "the plain climb, blocked from inside the canopy"
+    assert poses[1] == (5.6, 0.5, -2.0), "0.5 m along the normal, +y, at the actor's altitude: this one lands"
+    assert poses[2] == (5.6, 0.5, -20.0), "but the climb from there is still under leaves"
+    # the body is out of the card it was overlapping: the retraces now sweep free space, and the second one clears the canopy
+    assert sim.last_reset_escape == ("retrace", 4.0)
+    assert poses[-3][:2] == pytest.approx((0.1, 2.0)) and poses[-2] == (-20.0, 10.0, -20.0) and poses[-1] == (-20.0, 10.0, -2.0)
+
+
+def test_reset_gives_up_when_no_retrace_frees_the_actor():
+    sim = make_sim()
+    _fly_under_the_canopy(sim)
+    sim._world.canopy = {**CANOPY, "x_min": -100.0, "x_max": 100.0, "y_min": -100.0, "y_max": 100.0}  # a roof over everything
+    with pytest.raises(CameraPoseError):
+        sim.reset(Pose(-20.0, 10.0, -2.0, 1.0))
+
+
+def test_a_reset_in_the_clear_makes_the_same_calls_as_before():
+    """The escape ladder changes nothing when the first climb lands: three set_pose calls, up, across, down."""
+    sim = make_sim()
+    sim.reset(Pose(0.0, 0.0, -2.0, 0.0))
+    before = len(sim._drone.poses)
+    sim.reset(Pose(3.0, 4.0, -2.0, 0.5))
+    poses = [(p["translation"]["x"], p["translation"]["y"], p["translation"]["z"]) for p in sim._drone.poses[before:]]
+    assert poses == [(0.0, 0.0, -20.0), (3.0, 4.0, -20.0), (3.0, 4.0, -2.0)] and sim.last_reset_escape == ("climb", 0.0)
 
 
 def test_camera_error_on_a_collision_step_is_recorded_not_raised():
@@ -289,6 +453,13 @@ def test_spawn_and_destroy():
     sim.destroy(name)
     with pytest.raises(ObjectNotFoundError):
         sim.destroy(name)
+
+
+def test_object_bounds_reads_the_world_axis_box_and_misses_unknown_names():
+    sim = make_sim()
+    name = sim.spawn("AF_Box", "1M_Cube", Pose(1.0, 2.0, -0.5, 0.3), (2.0, 1.0, 1.0), None)
+    assert sim.object_bounds(name) == ((1.0, 2.0, -0.5), (2.0, 1.0, 1.0))
+    assert sim.object_bounds("nothing_here") is None
 
 
 def test_invalid_dt_is_rejected():

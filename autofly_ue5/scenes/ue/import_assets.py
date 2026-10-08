@@ -2,7 +2,8 @@
 
 Reads the import spec (env AUTOFLY_IMPORT_SPEC, from scripts/import_assets.py plan) and writes a report (env
 AUTOFLY_IMPORT_OUT). For every glTF model: import it under its destination, then for every static mesh that came out
-enable Nanite, set complex-as-simple collision, save, and report its bounds, triangle count and materials. For every
+enable Nanite, set complex-as-simple collision, make any translucent (glTF BLEND) material Masked so leaves write depth
+(ue_materials.py), save, and report its bounds, triangle count and materials. For every
 ambientCG set: import the four texture maps, set each one's sampler kind (sRGB colour; linear, DirectX-convention
 normal; linear masks), build one Material with a tiled TextureCoordinate feeding four TextureSamples into BaseColor,
 Normal, Roughness and AmbientOcclusion, recompile, save, and report which inputs are connected.
@@ -12,9 +13,13 @@ editor is asked to quit, as scripts/build_level.sh's scripts do. Nothing here is
 """
 import json
 import os
+import sys
 import traceback
 
 import unreal
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import ue_materials  # noqa: E402
 
 SPEC = json.load(open(os.environ["AUTOFLY_IMPORT_SPEC"]))
 OUT = os.environ["AUTOFLY_IMPORT_OUT"]
@@ -169,6 +174,9 @@ def import_model(model):
         else:
             info["nanite_enabled"] = False
         info["collision_trace_flag"] = set_complex_collision(mesh) if SPEC.get("collision") == "complex_as_simple" else None
+        # glTF BLEND leaves come in Translucent, which writes no depth: Masked, as UE foliage is (ue_materials)
+        info["foliage"] = ue_materials.mask_foliage_of(mesh, SPEC.get("alpha_cutoff", ue_materials.DEFAULT_ALPHA_CUTOFF))
+        check(not any(s["blend_mode"] == "BLEND_TRANSLUCENT" for s in info["foliage"]["slots"]), "translucent slots left on " + mesh.get_name())
         check(unreal.EditorAssetLibrary.save_loaded_asset(mesh, False), "save " + mesh.get_path_name())
         entry["meshes"].append(info)
     # Rename each mesh to its registry key: Interchange named it after the glTF mesh ("Cube_070"), the spec says which

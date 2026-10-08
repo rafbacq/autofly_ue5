@@ -33,6 +33,10 @@ class MeshGeometry:
     vertices: np.ndarray  # (n, 3) with the node's world transform applied
     triangles: np.ndarray  # (t, 3) vertex indices into either array
     transformed: bool  # whether the node's world transform is not the identity
+    # (t,) per triangle: whether its material renders opaque (alphaMode OPAQUE, or no material). Poly Haven's trees
+    # carry their leaves as alpha-blended cards (alphaMode BLEND), which the simulator renders alpha-tested once imported
+    # as Masked: a ray through such a card may see through it, a ray onto an opaque triangle may not (2026-10-07).
+    triangle_opaque: np.ndarray | None = None
 
 
 def _accessor_array(gltf: dict, buffers: list[bytes], index: int, *, expect_float: bool) -> np.ndarray:
@@ -96,7 +100,7 @@ def load_meshes(path: Path) -> list[MeshGeometry]:
         world = parent @ _node_matrix(node)
         if "mesh" in node:
             mesh = gltf["meshes"][node["mesh"]]
-            local_parts, tri_parts, offset = [], [], 0
+            local_parts, tri_parts, opaque_parts, offset = [], [], [], 0
             for prim in mesh["primitives"]:
                 if prim.get("mode", TRIANGLES) != TRIANGLES or "POSITION" not in prim["attributes"]:
                     continue
@@ -106,16 +110,20 @@ def load_meshes(path: Path) -> list[MeshGeometry]:
                 else:
                     indices = np.arange(len(positions))
                 tris = indices[: len(indices) - len(indices) % 3].reshape(-1, 3) + offset
+                material = gltf["materials"][prim["material"]] if "material" in prim else {}
                 local_parts.append(positions)
                 tri_parts.append(tris)
+                opaque_parts.append(np.full(len(tris), material.get("alphaMode", "OPAQUE") == "OPAQUE"))
                 offset += len(positions)
             if local_parts:
                 local = np.concatenate(local_parts)
                 tris = np.concatenate(tri_parts) if tri_parts else np.zeros((0, 3), np.int64)
+                opaque = np.concatenate(opaque_parts) if opaque_parts else np.zeros(0, bool)
                 transformed = not np.allclose(world, np.eye(4))
                 vertices = (local @ world[:3, :3].T) + world[:3, 3] if transformed else local.copy()
                 out.append(MeshGeometry(name=node.get("name", f"node_{index}"), mesh_name=mesh.get("name", f"mesh_{node['mesh']}"),
-                                        local_vertices=local, vertices=vertices, triangles=tris, transformed=transformed))
+                                        local_vertices=local, vertices=vertices, triangles=tris, transformed=transformed,
+                                        triangle_opaque=opaque))
         for child in node.get("children", []):
             visit(child, world)
 

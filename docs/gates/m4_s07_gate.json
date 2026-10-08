@@ -1,0 +1,999 @@
+{
+  "scene": "s07",
+  "map": "/Game/AutoFly/Maps/S07",
+  "layout": "/home/nvidiasims/research_uav/autofly_ue5/runs/levels/s07.layout.json",
+  "scene_sha256": "d6e6e7b86bd902811c3f88c6695720a5d2db4059135e59ea8b44f3614b6285a8",
+  "layout_sha256": "cc9e5fb1afde42d493a149a25841c914e8a586b6235586b5c556dfd53d046a92",
+  "obstacle_kinds": {
+    "box": 60
+  },
+  "checks": {
+    "map_matches_layout": {
+      "obstacles": [
+        {
+          "found": true,
+          "center_error_m": 2.2324338463483924e-06,
+          "size_error_m": 8.850097654722333e-08,
+          "tag": "obs_0000",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 2.2319988387310146e-06,
+          "size_error_m": 6.72351883057587e-08,
+          "tag": "obs_0001",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 8.420701253751168e-07,
+          "size_error_m": 6.219189052636409e-08,
+          "tag": "obs_0002",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 8.476323418341773e-07,
+          "size_error_m": 6.219189052636409e-08,
+          "tag": "obs_0003",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 8.490813465022197e-07,
+          "size_error_m": 6.219189052636409e-08,
+          "tag": "obs_0004",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 8.450250186163784e-07,
+          "size_error_m": 6.494522097888478e-08,
+          "tag": "obs_0005",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 8.419492298600863e-07,
+          "size_error_m": 6.219189052636409e-08,
+          "tag": "obs_0006",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.6494012127750392e-06,
+          "size_error_m": 4.783150098219835e-09,
+          "tag": "obs_0007",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.6503866254422922e-06,
+          "size_error_m": 4.783150098219835e-09,
+          "tag": "obs_0008",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.64967627401108e-06,
+          "size_error_m": 5.340576181289691e-08,
+          "tag": "obs_0009",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.6499641687239221e-06,
+          "size_error_m": 3.8528442436458477e-08,
+          "tag": "obs_0010",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.6500791273327091e-06,
+          "size_error_m": 3.9672851670502496e-08,
+          "tag": "obs_0011",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.1824804756243382e-06,
+          "size_error_m": 1.1860434945276666e-07,
+          "tag": "obs_0012",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.1831706670697303e-06,
+          "size_error_m": 1.1860434945276666e-07,
+          "tag": "obs_0013",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.1834566323246876e-06,
+          "size_error_m": 1.1860434945276666e-07,
+          "tag": "obs_0014",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 5.862428394224575e-07,
+          "size_error_m": 4.310607915058995e-08,
+          "tag": "obs_0015",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 5.861937744746803e-07,
+          "size_error_m": 4.787445062603979e-08,
+          "tag": "obs_0016",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 6.346161368346986e-07,
+          "size_error_m": 4.141315423922265e-08,
+          "tag": "obs_0017",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 5.51905564249096e-07,
+          "size_error_m": 7.705379645450705e-08,
+          "tag": "obs_0018",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 5.516649735653554e-07,
+          "size_error_m": 7.705379645450705e-08,
+          "tag": "obs_0019",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 5.569734950180797e-07,
+          "size_error_m": 8.201599110968516e-08,
+          "tag": "obs_0020",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 5.517609817678815e-07,
+          "size_error_m": 7.705379645450705e-08,
+          "tag": "obs_0021",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 3.4165359543584097e-07,
+          "size_error_m": 8.699156017755172e-08,
+          "tag": "obs_0022",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 3.5413629746432724e-07,
+          "size_error_m": 8.699156017755172e-08,
+          "tag": "obs_0023",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 3.437990499102891e-07,
+          "size_error_m": 8.699156017755172e-08,
+          "tag": "obs_0024",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 5.87597821722864e-07,
+          "size_error_m": 8.640289306249826e-08,
+          "tag": "obs_0025",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 6.084807223566518e-07,
+          "size_error_m": 3.167249129631955e-08,
+          "tag": "obs_0026",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 6.096765908577882e-07,
+          "size_error_m": 4.253387453356794e-08,
+          "tag": "obs_0027",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 5.937169208854773e-07,
+          "size_error_m": 5.016326909412783e-08,
+          "tag": "obs_0028",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 4.137471956482803e-08,
+          "size_error_m": 6.971359256535692e-08,
+          "tag": "obs_0029",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 2.541422400559978e-08,
+          "size_error_m": 6.179214007140388e-08,
+          "tag": "obs_0030",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 2.4439633589868103e-07,
+          "size_error_m": 6.179214007140388e-08,
+          "tag": "obs_0031",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 2.385893113757496e-06,
+          "size_error_m": 2.3971870710681742e-08,
+          "tag": "obs_0032",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 2.3877924463032684e-06,
+          "size_error_m": 7.55310058941916e-08,
+          "tag": "obs_0033",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 2.387649584098541e-06,
+          "size_error_m": 3.643035895173341e-08,
+          "tag": "obs_0034",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 7.7226919852127e-07,
+          "size_error_m": 1.3830067713271887e-07,
+          "tag": "obs_0035",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 7.722966014394121e-07,
+          "size_error_m": 1.3830067713271887e-07,
+          "tag": "obs_0036",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 7.729698057722668e-07,
+          "size_error_m": 1.3830067713271887e-07,
+          "tag": "obs_0037",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 7.871135119557928e-07,
+          "size_error_m": 1.3830067713271887e-07,
+          "tag": "obs_0038",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.4559027888721245e-06,
+          "size_error_m": 1.0093587077264488e-08,
+          "tag": "obs_0039",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.4558966043823016e-06,
+          "size_error_m": 1.6593933116482162e-08,
+          "tag": "obs_0040",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.4737123515426495e-06,
+          "size_error_m": 2.1171569830613635e-08,
+          "tag": "obs_0041",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.4758414461214932e-06,
+          "size_error_m": 1.0093587077264488e-08,
+          "tag": "obs_0042",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 7.333131416459682e-07,
+          "size_error_m": 4.138946541054622e-08,
+          "tag": "obs_0043",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 7.382817341874394e-07,
+          "size_error_m": 1.716613762248187e-08,
+          "tag": "obs_0044",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 6.927578465939666e-07,
+          "size_error_m": 5.102864353290215e-08,
+          "tag": "obs_0045",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 6.94811713691652e-07,
+          "size_error_m": 5.102864353290215e-08,
+          "tag": "obs_0046",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 5.806127217268926e-07,
+          "size_error_m": 1.3888914551785092e-07,
+          "tag": "obs_0047",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 5.835251273571831e-07,
+          "size_error_m": 1.3888914551785092e-07,
+          "tag": "obs_0048",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 5.864653843232472e-07,
+          "size_error_m": 1.3888914551785092e-07,
+          "tag": "obs_0049",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 7.728951946872654e-07,
+          "size_error_m": 4.7588348373039935e-08,
+          "tag": "obs_0050",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 7.730514128536981e-07,
+          "size_error_m": 8.640289306249826e-08,
+          "tag": "obs_0051",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 7.815852974521527e-07,
+          "size_error_m": 8.850097654722333e-08,
+          "tag": "obs_0052",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 7.742434409126002e-07,
+          "size_error_m": 4.806518560940276e-08,
+          "tag": "obs_0053",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.2889568520668644e-06,
+          "size_error_m": 1.4967804684573593e-07,
+          "tag": "obs_0054",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.2899056830025636e-06,
+          "size_error_m": 1.4967804684573593e-07,
+          "tag": "obs_0055",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.2882264283622984e-06,
+          "size_error_m": 1.4967804684573593e-07,
+          "tag": "obs_0056",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 3.3314355583616716e-07,
+          "size_error_m": 3.604888920705207e-08,
+          "tag": "obs_0057",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 3.506282159823785e-07,
+          "size_error_m": 4.692077637535874e-08,
+          "tag": "obs_0058",
+          "kind": "box"
+        },
+        {
+          "found": true,
+          "center_error_m": 3.3273454976549377e-07,
+          "size_error_m": 4.396438602061181e-08,
+          "tag": "obs_0059",
+          "kind": "box"
+        }
+      ],
+      "checked": 60,
+      "found": 60,
+      "max_center_error_m": 2.3877924463032684e-06,
+      "max_size_error_m": 1.4967804684573593e-07,
+      "ground_top_z_ned": 0.0,
+      "tolerance_m": 0.05,
+      "pass": true
+    },
+    "rgb_changes_with_pose": {
+      "diff_pillar_vs_empty": 34.028422037760414,
+      "diff_pillar_repeat": 2.003473917643229,
+      "brightness_pillar_view": 126.56778462727864,
+      "brightness_empty_view": 154.9073740641276,
+      "pass": true
+    },
+    "depth_matches_geometry": {
+      "probes": [
+        {
+          "tag": "obs_0001",
+          "kind": "box",
+          "solid": true,
+          "distance_m": 3.0,
+          "altitude_m": 2.0,
+          "window": [
+            [
+              126,
+              130
+            ],
+            [
+              126,
+              130
+            ]
+          ],
+          "pixels": {
+            "solid": 16,
+            "interior": 16,
+            "card": 0,
+            "empty": 0
+          },
+          "measured_m": 3.1572265625,
+          "expected_m": 3.15733628653308,
+          "error_m": 0.0001097240330798499,
+          "tolerance_m": 0.15,
+          "inlier_share": 1.0,
+          "min_inlier_share": 0.8,
+          "card_no_nearer_share": null,
+          "beyond_share_off_target": null,
+          "window_spread_predicted_m": 0.035464930019275975,
+          "window_spread_measured_m": 0.03515625,
+          "pose": [
+            -18.825000762939453,
+            -25.556699752807617,
+            -1.9967390298843384,
+            0.0
+          ],
+          "width_px": 39,
+          "expected_width_px": 39,
+          "width_tolerance_px": 3.9000000000000004,
+          "hfov_consistent": true,
+          "pass": true
+        },
+        {
+          "tag": "obs_0001",
+          "kind": "box",
+          "solid": true,
+          "distance_m": 6.0,
+          "altitude_m": 2.0,
+          "window": [
+            [
+              126,
+              130
+            ],
+            [
+              126,
+              130
+            ]
+          ],
+          "pixels": {
+            "solid": 16,
+            "interior": 16,
+            "card": 0,
+            "empty": 0
+          },
+          "measured_m": 6.15625,
+          "expected_m": 6.157346800157443,
+          "error_m": 0.0010968001574429564,
+          "tolerance_m": 0.15,
+          "inlier_share": 1.0,
+          "min_inlier_share": 0.8,
+          "card_no_nearer_share": null,
+          "beyond_share_off_target": null,
+          "window_spread_predicted_m": 0.06916269081105053,
+          "window_spread_measured_m": 0.0625,
+          "pose": [
+            -21.825000762939453,
+            -25.556699752807617,
+            -1.9980113506317139,
+            0.0
+          ],
+          "width_px": 22,
+          "expected_width_px": 21,
+          "width_tolerance_px": 2.1,
+          "hfov_consistent": true,
+          "pass": true
+        },
+        {
+          "tag": "obs_0001",
+          "kind": "box",
+          "solid": true,
+          "distance_m": 12.0,
+          "altitude_m": 2.0,
+          "window": [
+            [
+              126,
+              130
+            ],
+            [
+              126,
+              130
+            ]
+          ],
+          "pixels": {
+            "solid": 16,
+            "interior": 16,
+            "card": 0,
+            "empty": 0
+          },
+          "measured_m": 12.15234375,
+          "expected_m": 12.15736782740617,
+          "error_m": 0.0050240774061691695,
+          "tolerance_m": 0.24,
+          "inlier_share": 1.0,
+          "min_inlier_share": 0.8,
+          "card_no_nearer_share": null,
+          "beyond_share_off_target": null,
+          "window_spread_predicted_m": 0.13655821239459875,
+          "window_spread_measured_m": 0.140625,
+          "pose": [
+            -27.825000762939453,
+            -25.556699752807617,
+            -1.9986673593521118,
+            0.0
+          ],
+          "width_px": 12,
+          "expected_width_px": 11,
+          "width_tolerance_px": 2.0,
+          "hfov_consistent": true,
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    "crash_raises_collision": {
+      "steps_to_collision": 20,
+      "object_name": "StaticMeshActor_2",
+      "target": "obs_0001",
+      "kind": "box",
+      "impact_from_footprint_m": 1.4524253931003095e-05,
+      "footprint_radius_m": 0.7288,
+      "travel_to_impact_m": 6.441341590881347,
+      "expected_travel_m": 6.5229380890088375,
+      "collided_flag": true,
+      "camera_pose_error_at_collision_m": 0.0015472275578647494,
+      "pass": true,
+      "reset_after_crash": {
+        "camera_pose_error_m": 1.5373792544831917e-06,
+        "depth": {
+          "mask_agreement": 0.9999847412109375,
+          "pixels_compared": 32001,
+          "median_relative_diff": 0.0
+        },
+        "rgb_mean_abs_diff": 1.0740000406901042,
+        "pass": true,
+        "retrace_m": 1.5
+      }
+    },
+    "velocity_tracking": {
+      "axes": {
+        "forward": {
+          "mean_abs_error": 0.18751507997515565,
+          "mean_commanded": 2.0,
+          "mean_measured": 1.8124849200248445,
+          "relative_error": 0.09375753998757783,
+          "samples": 10
+        },
+        "vertical_up": {
+          "mean_abs_error": 0.005058467388153076,
+          "mean_commanded": 0.5,
+          "mean_measured": 0.5050584673881531,
+          "relative_error": 0.010116934776306152,
+          "samples": 5
+        },
+        "vertical_down": {
+          "mean_abs_error": 0.030577576160430907,
+          "mean_commanded": -0.5,
+          "mean_measured": -0.5305775761604309,
+          "relative_error": 0.061155152320861814,
+          "samples": 5
+        },
+        "yaw_rate": {
+          "mean_abs_error": 0.02464420562249936,
+          "mean_commanded": 0.5,
+          "mean_measured": 0.47535579437750064,
+          "relative_error": 0.04928841124499872,
+          "samples": 10
+        },
+        "yaw_rate_body_angular_z": {
+          "mean_abs_error": 0.02059040069580078,
+          "mean_commanded": 0.5,
+          "mean_measured": 0.47940959930419924,
+          "relative_error": 0.04118080139160156,
+          "samples": 10
+        }
+      },
+      "threshold_relative_error": 0.2,
+      "pass": true
+    },
+    "one_step_per_record": {
+      "records": 20,
+      "records_per_s": 13.326203139816169,
+      "rows": [
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            25000000000,
+            25000000000,
+            25000000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            25200000000,
+            25200000000,
+            25200000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            25400000000,
+            25400000000,
+            25400000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            25600000000,
+            25600000000,
+            25600000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            25800000000,
+            25800000000,
+            25800000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            26000000000,
+            26000000000,
+            26000000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            26200000000,
+            26200000000,
+            26200000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            26400000000,
+            26400000000,
+            26400000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            26600000000,
+            26600000000,
+            26600000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            26800000000,
+            26800000000,
+            26800000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            27000000000,
+            27000000000,
+            27000000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            27200000000,
+            27200000000,
+            27200000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            27400000000,
+            27400000000,
+            27400000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            27600000000,
+            27600000000,
+            27600000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            27800000000,
+            27800000000,
+            27800000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            28000000000,
+            28000000000,
+            28000000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            28200000000,
+            28200000000,
+            28200000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            28400000000,
+            28400000000,
+            28400000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            28600000000,
+            28600000000,
+            28600000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            28800000000,
+            28800000000,
+            28800000000
+          ],
+          "frame_times_match": true
+        }
+      ],
+      "pass": true,
+      "note": "This check cannot actually fail: frame_times_match is guaranteed by FrameCollector.wait() (FrameTimestampError otherwise, sync.py), dt_ns==200_000_000/steps==1 by Observation.sim_time_ns and StepTimingError (airsim_backend.py), and kinematics agreement by StaleStateError. An Observation cannot exist unless all three already held, so a pass here is not independent evidence of them -- it reduces to 'the backend ran 20 steps without raising'. Kept as a gate check anyway because that is still worth recording: it demonstrates the invariants held in a live run, on the packaged binary, not just in the unit tests that pin the raises."
+    },
+    "spawn_destroy_packaged": {
+      "spawned_name": "AF_M1_Cube",
+      "material": "/Game/Geometry/Materials/M_Orange",
+      "center_depth_with_cube_m": 2.099609375,
+      "expected_m": 2.1,
+      "center_rgb_with_cube": [
+        99.4375,
+        56.25,
+        36.3359375
+      ],
+      "orange_dominant": true,
+      "center_depth_after_destroy_m": null,
+      "pass": true
+    }
+  },
+  "probes": [
+    {
+      "tag": "obs_0001",
+      "kind": "box",
+      "distance_m": 3.0,
+      "expected_depth_m": 3.15733628653308,
+      "window_spread_m": 0.035464930019275975,
+      "pose": [
+        -18.825,
+        -25.5567,
+        -2.0,
+        0.0
+      ]
+    },
+    {
+      "tag": "obs_0001",
+      "kind": "box",
+      "distance_m": 6.0,
+      "expected_depth_m": 6.157346800157443,
+      "window_spread_m": 0.06916269081105053,
+      "pose": [
+        -21.825,
+        -25.5567,
+        -2.0,
+        0.0
+      ]
+    },
+    {
+      "tag": "obs_0001",
+      "kind": "box",
+      "distance_m": 12.0,
+      "expected_depth_m": 12.15736782740617,
+      "window_spread_m": 0.13655821239459875,
+      "pose": [
+        -27.825,
+        -25.5567,
+        -2.0,
+        0.0
+      ]
+    }
+  ],
+  "poses": {
+    "open": [
+      -31.0,
+      -25.0,
+      -2.0,
+      1.5707963267948966
+    ],
+    "field_view": [
+      -31.0,
+      0.0,
+      -2.0,
+      0.0
+    ],
+    "empty_view": [
+      -31.0,
+      0.0,
+      -2.0,
+      3.141592653589793
+    ],
+    "spawn": [
+      -31.0,
+      -10.0,
+      -2.0,
+      0.0
+    ],
+    "spawn_view": [
+      -31.0,
+      -13.0,
+      -2.0,
+      1.5707963267948966
+    ]
+  },
+  "frames_dir": "/home/nvidiasims/research_uav/autofly_ue5/runs/m4/s07/frames",
+  "scene_config": {
+    "file": "scene_autofly_s07_fast.jsonc",
+    "sha256": "ff609452edf4de6a505405318df18a743579bdf59a43a2186c665d7b552fb51e"
+  },
+  "check_map": {},
+  "package_manifest": {
+    "description": "Fingerprints the packaged Development Linux binary and content archive (pak) actually produced by scripts/package_sim.sh, plus the git tree that produced them. built_from_git_head is the repo's HEAD at package time, which routinely precedes the commit that later records this file -- packaging happens before committing, not after. working_tree_dirty says whether uncommitted changes were present in that tree (e.g. an in-progress fix not yet committed). Do not compare built_from_git_head to the current HEAD to judge freshness; that comparison is circular. Gate on binary.sha256 instead.",
+    "binary": {
+      "path": "ue_project/Packaged/Development/Linux/Blocks/Binaries/Linux/Blocks",
+      "sha256": "fd845a8c58f095af8ba52849d07ea2768ad48712ba7800a4bcfe7760f0efaade"
+    },
+    "paks": {
+      "ue_project/Packaged/Development/Linux/Blocks/Content/Paks/Blocks-Linux.pak": "ee904c8a2d06fbc25ed137468340f0689f98a9aeca6630a3aa7c594bd9fa3ec1"
+    },
+    "built_from_git_head": "72d0eb9ff4165c4895494f46e77160d01bf33f2a",
+    "working_tree_dirty": true,
+    "level_spec_sha256": "188f9e4118945b7966fa3a03281e0c1663b0e2193c228430bdc06287a40f955a",
+    "level_verify": {
+      "map_path": "/Game/AutoFly/Maps/S01",
+      "pass": true,
+      "obstacles": 80,
+      "worst_location_error_cm": 0.0,
+      "game_mode": "/Script/ProjectAirSim.ProjectAirSimGameMode"
+    },
+    "engine_build_version": {
+      "MajorVersion": 5,
+      "MinorVersion": 7,
+      "PatchVersion": 4,
+      "Changelist": 51494982,
+      "CompatibleChangelist": 47537391,
+      "IsLicenseeVersion": 0,
+      "IsPromotedBuild": 1,
+      "BranchName": "++UE5+Release-5.7"
+    }
+  },
+  "package_matches_manifest": true,
+  "launch_s": 2.521510582009796,
+  "vram_used_mib": 1508,
+  "faults": {
+    "xid_since": "2026-10-07 20:00:23",
+    "xid_before": 0,
+    "xid_after": 0,
+    "boot_id": "026d5453-feb4-429b-abf0-fb4146123ce7",
+    "device_lost": {
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst5/sim-backup-2026.10.08-00.00.23.log": 0,
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst5/sim.log": 0
+    },
+    "kernel_journal_readable": true
+  },
+  "faults_ok": true,
+  "pass": true
+}

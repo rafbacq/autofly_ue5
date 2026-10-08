@@ -10,11 +10,12 @@ import numpy as np
 import pytest
 
 
-def _write_gltf(path, nodes_meshes: list[tuple[str, tuple, dict | None]]):
+def _write_gltf(path, nodes_meshes: list[tuple[str, tuple, dict | None]], alpha_modes: dict[str, str] | None = None):
     """A minimal glTF 2.0 file: one node per (name, (vertices (n, 3) in glTF's Y-up metres, triangles (t, 3)), node
-    extras) with its own mesh of one indexed triangle-list primitive, everything in one .bin."""
+    extras) with its own mesh of one indexed triangle-list primitive, everything in one .bin. `alpha_modes` gives a
+    node's primitive a material of that alphaMode (BLEND, MASK); the others get none."""
     blob = b""
-    buffer_views, accessors, meshes, nodes = [], [], [], []
+    buffer_views, accessors, meshes, nodes, materials = [], [], [], [], []
     for i, (name, (vertices, triangles), node) in enumerate(nodes_meshes):
         vertices = np.asarray(vertices, dtype="<f4")
         indices = np.asarray(triangles, dtype="<u4").ravel()
@@ -24,10 +25,14 @@ def _write_gltf(path, nodes_meshes: list[tuple[str, tuple, dict | None]]):
         accessors.append({"bufferView": 2 * i, "componentType": 5126, "count": len(vertices), "type": "VEC3",
                           "min": vertices.min(axis=0).tolist(), "max": vertices.max(axis=0).tolist()})
         accessors.append({"bufferView": 2 * i + 1, "componentType": 5125, "count": len(indices), "type": "SCALAR"})
-        meshes.append({"name": f"mesh_{name}", "primitives": [{"attributes": {"POSITION": 2 * i}, "indices": 2 * i + 1, "mode": 4}]})
+        primitive = {"attributes": {"POSITION": 2 * i}, "indices": 2 * i + 1, "mode": 4}
+        if alpha_modes and name in alpha_modes:
+            materials.append({"name": f"{name}_material", "alphaMode": alpha_modes[name], "doubleSided": True})
+            primitive["material"] = len(materials) - 1
+        meshes.append({"name": f"mesh_{name}", "primitives": [primitive]})
         nodes.append({"name": name, "mesh": i, **(node or {})})
     gltf = {"asset": {"version": "2.0"}, "scene": 0, "scenes": [{"nodes": list(range(len(nodes)))}], "nodes": nodes,
-            "meshes": meshes, "accessors": accessors, "bufferViews": buffer_views,
+            "meshes": meshes, "accessors": accessors, "bufferViews": buffer_views, "materials": materials,
             "buffers": [{"uri": "model.bin", "byteLength": len(blob)}]}
     path.write_text(json.dumps(gltf))
     (path.parent / "model.bin").write_bytes(blob)
@@ -160,3 +165,14 @@ def test_the_radius_profile_gives_the_footprint_at_any_scale(tmp_path):
     rock = measure(load_meshes(tmp_path / "tree.gltf")[0])  # reuse: a 1 m 'rock' is a scaled-down tree for this purpose
     assert band_radius_from_profile(rock["radius_profile_m"], PROFILE_STEP_M, s_xy=3.0, s_z=0.6, band_m=(1.0, 3.0)) == pytest.approx(4.2), \
         "scaled 3x wide and to 3 m tall: the canopy (1.8-3.8 m -> 1.08-2.28 m) is in the band at 3 x 1.4"
+
+
+def test_each_triangle_knows_whether_its_material_is_opaque(tmp_path):
+    from autofly_ue5.scenes.gltf import load_meshes
+
+    trunk = _column(0.2, 3.0)
+    leaves = _column(1.0, 1.0, base=2.0)
+    _write_gltf(tmp_path / "model.gltf", [("trunk", trunk, None), ("leaves", leaves, None)], alpha_modes={"leaves": "BLEND"})
+    by_name = {m.name: m for m in load_meshes(tmp_path / "model.gltf")}
+    assert by_name["trunk"].triangle_opaque.all() and len(by_name["trunk"].triangle_opaque) == len(trunk[1])
+    assert not by_name["leaves"].triangle_opaque.any() and len(by_name["leaves"].triangle_opaque) == len(leaves[1])

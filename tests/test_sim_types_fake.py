@@ -162,3 +162,21 @@ def test_fake_collides_with_scene_objects_where_they_are_now():
     sim.command_velocity(2.0, 0.0, 0.0)
     sim.step()
     assert not sim.observe().collided
+
+
+def test_fake_depth_is_off_by_default_and_renders_its_pillars_when_asked():
+    plain = FakeSimulator(obstacles=[(6.9, 0.0, 0.5)], image_size=32)
+    plain.launch("/Game/AutoFly/Maps/S01", 0)
+    assert not np.isfinite(plain.reset(Pose(0.0, 0.0, -2.0, 0.0)).depth).any()
+    sim = FakeSimulator(obstacles=[(6.9, 0.0, 0.5)], image_size=256, render_depth=True, obstacle_height_m=4.0)
+    sim.launch("/Game/AutoFly/Maps/S01", 0)
+    depth = sim.reset(Pose(0.0, 0.0, -2.0, 0.0)).depth
+    # the camera is 0.4 m ahead: the pillar's near surface is 6.0 m away at the image centre, and it fills a width of
+    # 2 * atan(r / sqrt(D^2 - r^2)) of the 90 deg field: ~2 * 128 * 0.5 / 6.48 = 19.8 px in row 128
+    assert float(np.median(depth[126:130, 126:130])) == pytest.approx(6.0, abs=0.01)
+    row = depth[128]
+    assert 18 <= int(np.isfinite(row).sum()) <= 22
+    assert np.isinf(row[:100]).all() and np.isinf(row[156:]).all()
+    # the pillar stands 4 m tall on the ground: looking 1.5 m up from 6 m away is still pillar, the top row (6 m up) is sky
+    assert np.isfinite(depth[128 - int(1.5 / 6.0 * 128), 128]) and np.isinf(depth[0, 128])
+    assert sim.object_bounds("obstacle_0") == ((6.9, 0.0, -2.0), (1.0, 1.0, 4.0)) and sim.object_bounds("obstacle_7") is None

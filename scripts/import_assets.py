@@ -146,6 +146,10 @@ def check_report(spec: dict, measurements: dict, report: dict) -> list[str]:
                 problems.append(f"{model['id']}/{node['name']}: Nanite is not enabled")
             if spec.get("collision") == "complex_as_simple" and mesh.get("collision_trace_flag") != "CTF_USE_COMPLEX_AS_SIMPLE":
                 problems.append(f"{model['id']}/{node['name']}: collision is {mesh.get('collision_trace_flag')}")
+            # a translucent slot writes no depth: the depth camera would see through the leaves (s02, 2026-10-07)
+            translucent = [s["material"] for s in mesh.get("foliage", {}).get("slots", []) if s["blend_mode"] == "BLEND_TRANSLUCENT"]
+            if translucent or "foliage" not in mesh:
+                problems.append(f"{model['id']}/{node['name']}: translucent material slots {translucent or '(not reported)'}")
     reported_materials = {m["id"]: m for m in report.get("materials", [])}
     for material in spec["materials"]:
         got = reported_materials.get(material["id"])

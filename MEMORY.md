@@ -6,6 +6,23 @@ stale "fact". Standing rules live in `CLAUDE.md`; this file is the reasoning and
 
 ## Traps: read these before touching the simulator path
 
+- **A crash into foliage can wedge the Unreal actor beyond any teleport (2026-10-07, s02).** The plugin moves the
+  actor to the kinematics by a collision sweep every tick. Wedged among leaf cards, every sweep is blocked at its
+  start and FastPhysics re-pins the kinematics to the actor each tick: climbs, nudges, retraces and far teleports all
+  return the same pose with a collision event. `reset()` now climbs out by a ladder (`RESET_ESCAPES`: climb, a nudge
+  along the collision normal, retraces of 1.5/4/8 m), which frees shallow contacts; deep ones need leaf cards without
+  collision (`docs/decisions/2026-10-07-m4-live-checks-and-foliage.md`). Convex solids (pillars, boxes, trunks) never
+  wedge.
+- **A client that died without `close()` hijacks the next launch on its ports (2026-10-07).** It hangs on
+  projectairsim's non-daemon thread, and its nng dialers reconnect to whatever next listens on the same ports: two
+  launches in a row failed with "Timeout waiting to get topic info". Kill the dead client before relaunching the slot.
+  `stop_sim.py` also returns before the process has exited (a minute); a launch in that window connects to the dying
+  server.
+- **glTF BLEND materials import as Translucent, which writes no depth (2026-10-07).** Poly Haven's leaves and twigs
+  are alpha-blended cards: the RGB showed canopies, the depth camera bare trunks, and the collision mesh held every
+  card. The import now overrides such instances to Masked (`scenes/ue/ue_materials.py`); the host-side report check
+  refuses a translucent slot. Judge a scene's depth by looking at depth frames, not by counting actors.
+
 - **A step's camera frames can fail to arrive (2026-10-05).** 33 minutes into run 5, instance 0 completed a step's clock
   and command, but no rgb/depth frame came within 5 s (`FrameTimeoutError`, `sim/sync.py`). It had never happened in
   any earlier run. It was not a known fault, so the worker exited and the run ended at 25k steps. It is now a step

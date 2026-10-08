@@ -29,6 +29,11 @@ def default_evidence_path(scene_id: str, kind: str) -> Path:
     return GATES_DIR / f"{prefix}_{kind}.json"
 
 
+def m4_evidence_path(scene_id: str, kind: str) -> Path:
+    """docs/gates/m4_<scene>_<kind>.json: plan 5's per-scene live checks (C8), one record per built scene."""
+    return GATES_DIR / f"m4_{scene_id}_{kind}.json"
+
+
 def refuse_existing_evidence(path: Path) -> None:
     """Raise if `path` is an existing file under docs/gates/: a committed record is never written over."""
     resolved = Path(path).resolve()

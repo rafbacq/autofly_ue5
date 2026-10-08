@@ -22,7 +22,10 @@ class Simulator(Protocol):
         steps_taken); returns the settled observation with collided=False.
 
         Raises ResetPoseError if the vehicle settled somewhere other than `pose`, and SetPoseError if the simulator
-        refused the teleport (autofly_ue5.sim.types). Both are recoverable: reset again, or relaunch."""
+        refused the teleport (autofly_ue5.sim.types). Both are recoverable: reset again, or relaunch. Raises
+        CameraPoseError when the simulator's actor could not be freed to climb: the implementation first climbs
+        straight up, then retraces along the heading before climbing, farther each time (a crash under a tree's
+        canopy left the swept actor among the leaves while the kinematics rose, s02 2026-10-07)."""
 
     def spawn(self, name: str, asset: str, pose: Pose, scale: tuple[float, float, float], material: str | None = None) -> str:
         """Spawn a static object; returns the actual (possibly uniquified) name.
@@ -34,6 +37,12 @@ class Simulator(Protocol):
 
     def destroy(self, name: str) -> None:
         """Destroy a spawned object; raises ObjectNotFoundError if it does not exist."""
+
+    def object_bounds(self, name: str) -> tuple[tuple[float, float, float], tuple[float, float, float]] | None:
+        """The world-axis bounding box of a named scene actor as (centre, size), NED metres, or None when there is no
+        such actor. Project AirSim reports the axis-aligned box of the actor's components (the local bounds box,
+        scaled and rotated, re-fitted to the axes), which is what validate/obstacles.py predicts for a layout
+        instance. Read-only; allowed any time after launch()."""
 
     def set_object_poses(self, poses: Mapping[str, Pose]) -> None:
         """Teleport named, already-placed movable scene objects (no sweep), one request per name in order (spec §6.5,

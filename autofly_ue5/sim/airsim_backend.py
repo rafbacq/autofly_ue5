@@ -54,6 +54,9 @@ ROBOT = "Drone1"
 CAMERA = "FrontCamera"
 NO_EPISODE_NS = 2**62
 CAMERA_RECHECK_S = 0.2
+# reset's escape ladder: a plain climb; then a nudge along the last collision's normal (the direction UE lets a
+# penetrating actor leave by) and a climb; then climbs after backing the actor out along its heading by this much
+RESET_ESCAPES = (("climb", 0.0), ("normal", 0.5), ("normal", 1.5), ("retrace", 1.5), ("retrace", 4.0), ("retrace", 8.0))
 FRAME_KEYS = ("rgb", "depth")
 # A refused move is accepted when the object already sits this close to the requested pose (read back after the
 # refusal). The probe read moves back to within 3e-6 m (docs/gates/m2d_mover_probe.json).
@@ -61,6 +64,8 @@ MOVE_READBACK_TOLERANCE_M = 1e-3
 # How far from its requested start a reset may land and still count (M1 measured millimetres; the phantoms of C9
 # were >= 4 m off). Anything a check makes of the start pose must allow this much (train.py: --static-contact-m).
 RESET_POSITION_TOLERANCE_M = 0.3
+# projectairsim.types.BoxAlignment.WORLD_AXIS (an IntEnum; the request carries the integer)
+BOX_ALIGNMENT_WORLD_AXIS = 0
 
 
 @dataclass(frozen=True)
@@ -130,6 +135,9 @@ class ProjectAirSimSimulator:
         self._command_timeout_s = command_timeout_s
         self._camera_offset_m = camera_offset_m
         self._camera_pose_tolerance_m = camera_pose_tolerance_m
+        self._camera_xyz: tuple[float, float, float] | None = None  # the last frame's camera position: where the actor really is
+        self.last_reset_retrace_m = 0.0  # how far the last reset had to back the actor out before it could climb
+        self.last_reset_escape: tuple[str, float] = ("climb", 0.0)  # the RESET_ESCAPES rung the last reset climbed from
         self._reset_position_tolerance_m = reset_position_tolerance_m
         self._reset_yaw_tolerance_rad = reset_yaw_tolerance_rad
         self._max_speed_m_s = max_speed_m_s
@@ -266,15 +274,80 @@ class ProjectAirSimSimulator:
         if not self._drone.set_pose(self._pas_pose(pose), reset_kinematics=True):
             raise SetPoseError(f"set_pose({pose}) failed")
 
+    def _hop(self, waypoint: Pose) -> None:
+        """Teleport to a reset waypoint and step once; raise if the kinematics are not there afterwards. A swept actor
+        that hits something on the way makes the plugin raise a collision and FastPhysics snap the kinematics back to
+        the actor: the camera then agrees with the kinematics, and only the position says the hop did not land
+        (s02's second smoke, 2026-10-07: a reset settled 38 m from its target with no camera error)."""
+        self._teleport(waypoint)
+        self.command_velocity(0.0, 0.0, 0.0)
+        self._step_impl()  # bypasses the reset_done gate: these steps are what consumes frame 0
+        got = self._last_obs.pose
+        error = math.dist((got.x, got.y, got.z), (waypoint.x, waypoint.y, waypoint.z))
+        if error > self._reset_position_tolerance_m:
+            raise ResetPoseError(f"reset hop to {waypoint} settled at {got}: {error:.3f} m off (the actor was stopped on the way)")
+
+    def _escape_to(self, safe_z: float) -> None:
+        """Get the Unreal actor up to the safe altitude. The actor follows the kinematics by a *swept* move every tick
+        (UnrealRobot.cpp MoveRobotToUnrealPose), so a teleport straight up from under a tree's canopy leaves it where
+        it is, among the leaf cards, while the kinematics rise (CameraPoseError: s02's first crash check, 2026-10-07,
+        18 m then 50 m), or stops it at the first leaf it sweeps into, whereupon the kinematics snap back to it (a
+        hop that did not land). The AutoFly action space only ever moves the body forward, so a horizontal move straight
+        back along the heading retraces space the drone has just flown through (UE ignores the initial overlap it is
+        moving out of); from there, farther from the canopy's edge each time, the climb is free. The plain climb comes
+        first: it is what every reset since M1 has done, and it lands everywhere but under an overhang."""
+        current = self._current_pose()
+        normal = self._last_collision_normal()
+        last: Exception | None = None
+        tried = []
+        for kind, metres in RESET_ESCAPES:
+            if kind == "normal" and normal is None:
+                continue
+            tried.append((kind, metres))
+            try:
+                if kind == "climb":
+                    self._hop(Pose(current.x, current.y, safe_z, current.yaw))
+                else:
+                    # from where the actor really is (the last frame's camera, less the mount), not where the
+                    # kinematics were left by a blocked climb
+                    ax, ay, az = self._actor_position(current)
+                    if kind == "normal":
+                        step = (ax + metres * normal[0], ay + metres * normal[1], az + metres * normal[2])
+                    else:
+                        step = (ax - metres * math.cos(current.yaw), ay - metres * math.sin(current.yaw), az)
+                    self._hop(Pose(step[0], step[1], min(step[2], -0.5), current.yaw))  # never into the ground
+                    ax, ay, _ = self._actor_position(current)
+                    self._hop(Pose(ax, ay, safe_z, current.yaw))
+                self.last_reset_retrace_m = metres if kind == "retrace" else 0.0
+                self.last_reset_escape = (kind, metres)
+                return
+            except (CameraPoseError, ResetPoseError) as err:
+                last = err
+        # the last rung's own class, so the fault keeps its meaning for expert/faults.py: a hop that did not land is a
+        # start fault (ResetPoseError: reset again), a camera left behind is a step fault (CameraPoseError)
+        raise type(last)(f"reset could not free the Unreal actor: every escape was stopped ({tried}); last: {last}") from last
+
+    def _last_collision_normal(self) -> tuple[float, float, float] | None:
+        """The push-out direction of the last step's last collision (NED unit vector), if the step had one."""
+        if self._last_obs is None or not self._last_obs.step_collisions:
+            return None
+        n = self._last_obs.step_collisions[-1].normal
+        length = math.sqrt(sum(c * c for c in n))
+        return tuple(c / length for c in n) if length > 1e-6 else None
+
+    def _actor_position(self, kinematics: Pose) -> tuple[float, float, float]:
+        """Where the Unreal actor's body is: the last camera position less its mount, when a frame has been seen."""
+        if self._camera_xyz is None:
+            return (kinematics.x, kinematics.y, kinematics.z)
+        cx, cy, cz = self._camera_xyz
+        return (cx - self._camera_offset_m * math.cos(kinematics.yaw), cy - self._camera_offset_m * math.sin(kinematics.yaw), cz)
+
     def reset(self, pose: Pose) -> Observation:
         self._require_connected()
         self._episode_start_ns = NO_EPISODE_NS
-        current = self._current_pose()
         safe_z = -abs(self._safe_altitude_m)
-        for waypoint in (Pose(current.x, current.y, safe_z, current.yaw), Pose(pose.x, pose.y, safe_z, pose.yaw)):
-            self._teleport(waypoint)
-            self.command_velocity(0.0, 0.0, 0.0)
-            self._step_impl()  # bypasses the reset_done gate: these steps are what consumes frame 0
+        self._escape_to(safe_z)
+        self._hop(Pose(pose.x, pose.y, safe_z, pose.yaw))
         self._teleport(pose)
         for _ in range(self._settle_steps):
             self.command_velocity(0.0, 0.0, 0.0)
@@ -305,6 +378,13 @@ class ProjectAirSimSimulator:
         self._require_connected()
         if not self._world.destroy_object(name):
             raise ObjectNotFoundError(f"destroy_object({name!r}) found no such object")
+
+    def object_bounds(self, name: str) -> tuple[tuple[float, float, float], tuple[float, float, float]] | None:
+        self._require_connected()
+        box = self._world.get_3d_bounding_box(name, BOX_ALIGNMENT_WORLD_AXIS)
+        if not box:
+            return None
+        return ((box["center"]["x"], box["center"]["y"], box["center"]["z"]), (box["size"]["x"], box["size"]["y"], box["size"]["z"]))
 
     def set_object_poses(self, poses: Mapping[str, Pose]) -> None:
         self._require_connected()
@@ -433,10 +513,8 @@ class ProjectAirSimSimulator:
         lin, ang = kin["twist"]["linear"], kin["twist"]["angular"]
         mount = body_to_ned(float(ori["w"]), float(ori["x"]), float(ori["y"]), float(ori["z"]), (self._camera_offset_m, 0.0, 0.0))
         rgb_msg = frames["rgb"]
-        camera_error = math.dist(
-            (float(rgb_msg["pos_x"]), float(rgb_msg["pos_y"]), float(rgb_msg["pos_z"])),
-            (float(pos["x"]) + mount[0], float(pos["y"]) + mount[1], float(pos["z"]) + mount[2]),
-        )
+        self._camera_xyz = (float(rgb_msg["pos_x"]), float(rgb_msg["pos_y"]), float(rgb_msg["pos_z"]))
+        camera_error = math.dist(self._camera_xyz, (float(pos["x"]) + mount[0], float(pos["y"]) + mount[1], float(pos["z"]) + mount[2]))
         if camera_error > self._camera_pose_tolerance_m and not new_events:
             # The sweep hit that stopped the actor may still be on its way as a collision_info message: look once more.
             time.sleep(CAMERA_RECHECK_S)

@@ -24,8 +24,15 @@ class FakeSimulator:
     radius)} -- movable with set_object_poses and collided with wherever they are now, like s01's tagged pillars."""
 
     def __init__(self, obstacles: list[tuple[float, float, float]] | None = None, image_size: int = 256,
-                 reset_steps: int = 4, scene_objects: Mapping[str, tuple[Pose, float]] | None = None) -> None:
+                 reset_steps: int = 4, scene_objects: Mapping[str, tuple[Pose, float]] | None = None, *,
+                 render_depth: bool = False, obstacle_height_m: float = 10.0, camera_offset_m: float = 0.40) -> None:
         self._obstacles = list(obstacles or [])
+        # Opt-in planar depth of the obstacle cylinders (standing on the ground, obstacle_height_m tall) from a 90 deg
+        # pinhole camera camera_offset_m ahead of the body, for the live checks' offline tests. Off by default: the
+        # golden s01 test pins observations rendered without it.
+        self._render_depth = render_depth
+        self._obstacle_height_m = obstacle_height_m
+        self._camera_offset_m = camera_offset_m
         self._scene_objects = {name: (pose, float(radius)) for name, (pose, radius) in (scene_objects or {}).items()}
         self._size = image_size
         self._reset_steps = reset_steps
@@ -160,7 +167,7 @@ class FakeSimulator:
             raise SessionNotResetError("no observation before reset() or step()")
         return Observation(
             rgb=self._render_rgb(),
-            depth=np.full((self._size, self._size), np.inf, dtype=np.float32),
+            depth=self._render_depth_image() if self._render_depth else np.full((self._size, self._size), np.inf, dtype=np.float32),
             pose=self._pose,
             velocity_ned=self._velocity,
             yaw_rate=self._yaw_rate,
@@ -172,6 +179,48 @@ class FakeSimulator:
             kinematics_time_ns=self._t_ns,
             camera_pose_error_m=0.0,
         )
+
+    def _render_depth_image(self) -> np.ndarray:
+        """Planar depth of every obstacle cylinder: for the pixel (row, col) the ray (1, a, b) in the camera's frame
+        (a right, b down, both over the focal length n/2 of a 90 deg field), so the ray parameter is the planar depth."""
+        p = self._pose
+        n = self._size
+        f = n / 2.0
+        a = (np.arange(n) + 0.5 - n / 2.0) / f
+        b = (np.arange(n) + 0.5 - n / 2.0) / f
+        cos_y, sin_y = math.cos(p.yaw), math.sin(p.yaw)
+        dx = cos_y - a[None, :] * sin_y  # forward + a * right, right = (-sin, cos)
+        dy = sin_y + a[None, :] * cos_y
+        dz = np.broadcast_to(b[:, None], (n, n))
+        dx = np.broadcast_to(dx, (n, n))
+        dy = np.broadcast_to(dy, (n, n))
+        ox, oy, oz = p.x + self._camera_offset_m * cos_y, p.y + self._camera_offset_m * sin_y, p.z
+        depth = np.full((n, n), np.inf)
+        for cx, cy, r in self._obstacles:
+            fx, fy = ox - cx, oy - cy
+            qa = dx * dx + dy * dy
+            qb = fx * dx + fy * dy
+            qc = fx * fx + fy * fy - r * r
+            disc = qb * qb - qa * qc
+            ok = disc >= 0
+            t = np.where(ok, (-qb - np.sqrt(np.where(ok, disc, 0.0))) / np.where(qa > 0, qa, 1.0), np.inf)
+            z_hit = oz + t * dz
+            hit = ok & (t > 0) & (z_hit <= 0.0) & (z_hit >= -self._obstacle_height_m)
+            depth = np.where(hit & (t < depth), t, depth)
+        return depth.astype(np.float32)
+
+    def object_bounds(self, name: str) -> tuple[tuple[float, float, float], tuple[float, float, float]] | None:
+        if name.startswith("obstacle_") and name[len("obstacle_"):].isdigit() and int(name[len("obstacle_"):]) < len(self._obstacles):
+            x, y, r = self._obstacles[int(name[len("obstacle_"):])]
+            h = self._obstacle_height_m
+            return ((x, y, -h / 2.0), (2 * r, 2 * r, h))
+        if name in self._scene_objects:
+            pose, r = self._scene_objects[name]
+            return ((pose.x, pose.y, pose.z), (2 * r, 2 * r, 2 * r))
+        if name in self._objects:
+            _, pose, scale, _ = self._objects[name]
+            return ((pose.x, pose.y, pose.z), tuple(scale))
+        return None
 
     def _render_rgb(self) -> np.ndarray:
         p = self._pose

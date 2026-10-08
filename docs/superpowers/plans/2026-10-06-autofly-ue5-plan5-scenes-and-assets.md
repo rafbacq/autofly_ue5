@@ -110,8 +110,12 @@ reachability and the live checks of §11. Then M5 trains one expert per train sc
   collides, commands track, one step per record). Packaging only while no simulator of ours is running (the script now
   refuses otherwise). Interim 2026-10-07: the snapshots' close-ups put the depth at a pole's surface 2 mm from the
   geometry (camera 0.40 m ahead of the body), boxes 0.08-0.22 m farther than their circumscribed circle, trees
-  0.4-1.5 m farther than their band circle: nothing is closer than its footprint says. The M1-style live check still
-  assumes centred cylinders (fact 9) and is the next thing to generalise.
+  0.4-1.5 m farther than their band circle: nothing is closer than its footprint says. Generalised 2026-10-07
+  (`validate/obstacles.py`, `docs/decisions/2026-10-07-m4-live-checks-and-foliage.md`): **s09 and s07 passed**
+  (`docs/gates/m4_s09_gate.json`, `m4_s07_gate.json`); **s02 failed** on its crash check -- a crash into a canopy can
+  wedge the swept Unreal actor among the leaf cards beyond any teleport. Also found and fixed: glTF BLEND leaves were
+  Translucent and invisible to the depth camera (now Masked). Next: import cards as a no-collision companion mesh
+  (collision on wood only), re-run s02 as a new record, re-run the canopy reset probe.
 - [ ] **C9. Status**: CLAUDE.md's table, spec §6.3 wording where a scene's phrase changed, MEMORY.md's learnings.
 
 ## Not in M4

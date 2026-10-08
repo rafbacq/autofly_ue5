@@ -109,6 +109,12 @@ poles' depth lands 2 mm from the geometry; boxes and trees are farther than thei
 
 ![s02](scenes/s02_snapshots.png)
 
+The live checks that gated s01 (M1) now run on any scene: s09 and s07 passed (`docs/gates/m4_s09_gate.json`,
+`m4_s07_gate.json`: every actor within microns, depth within millimetres, crashes where predicted). s02 failed its
+crash check: a crash into a canopy wedges the simulator's actor among the leaf cards, which the next step removes from
+the collision mesh (`docs/decisions/2026-10-07-m4-live-checks-and-foliage.md`). The same checks caught that the trees'
+leaves were invisible to the depth camera and fixed it.
+
 ## Numbers worth knowing
 
 - Simulation runs at 1 ms real-time update rate in lock-step at 5 Hz; four simulators plus an evaluator share one

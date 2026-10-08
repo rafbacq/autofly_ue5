@@ -1,0 +1,1068 @@
+{
+  "scene": "s09",
+  "map": "/Game/AutoFly/Maps/S09",
+  "layout": "/home/nvidiasims/research_uav/autofly_ue5/runs/levels/s09.layout.json",
+  "scene_sha256": "6d9fb1923afed2c31da8dd13dcf7c7b47a9793418e68b84eae8f78c6e1b9e4b4",
+  "layout_sha256": "14d647ab3403da20188dabbd97ecc1eda407e727832122853325197069652ad4",
+  "obstacle_kinds": {
+    "cylinder": 70
+  },
+  "checks": {
+    "map_matches_layout": {
+      "obstacles": [
+        {
+          "found": true,
+          "center_error_m": 2.2181388400612475e-06,
+          "size_error_m": 9.999189376830309e-05,
+          "tag": "obs_0000",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 5.293903757778933e-07,
+          "size_error_m": 1.831054685652589e-07,
+          "tag": "obs_0001",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.0876038403099678e-06,
+          "size_error_m": 0.00010002222061156196,
+          "tag": "obs_0002",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 8.644973469627702e-07,
+          "size_error_m": 4.783630371818504e-07,
+          "tag": "obs_0003",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 4.610174879599089e-07,
+          "size_error_m": 7.812499998038902e-07,
+          "tag": "obs_0004",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.4012508320976637e-06,
+          "size_error_m": 3.402709953803651e-07,
+          "tag": "obs_0005",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.463197937165713e-06,
+          "size_error_m": 7.934570334100499e-08,
+          "tag": "obs_0006",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.2432407383215201e-06,
+          "size_error_m": 9.995822906494478e-05,
+          "tag": "obs_0007",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.6626703622198517e-06,
+          "size_error_m": 1.0681151962899094e-08,
+          "tag": "obs_0008",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 7.245213850975119e-07,
+          "size_error_m": 7.019042946865284e-08,
+          "tag": "obs_0009",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.0969016549143427e-06,
+          "size_error_m": 5.41687015243042e-08,
+          "tag": "obs_0010",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 2.984471019464638e-07,
+          "size_error_m": 2.0370483433396203e-07,
+          "tag": "obs_0011",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 7.007560457493398e-07,
+          "size_error_m": 9.99956130981472e-05,
+          "tag": "obs_0012",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 9.279591857148539e-07,
+          "size_error_m": 2.6321411095153735e-07,
+          "tag": "obs_0013",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.1676526033615566e-07,
+          "size_error_m": 1.5487670879110738e-07,
+          "tag": "obs_0014",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 2.782502008764641e-07,
+          "size_error_m": 9.996671676637536e-05,
+          "tag": "obs_0015",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.8412471648682749e-06,
+          "size_error_m": 4.08935546758471e-07,
+          "tag": "obs_0016",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 6.46456027744705e-07,
+          "size_error_m": 2.929687497044142e-07,
+          "tag": "obs_0017",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 7.647104691344004e-07,
+          "size_error_m": 4.379272464660744e-07,
+          "tag": "obs_0018",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 5.30308781555106e-07,
+          "size_error_m": 3.662109371305178e-07,
+          "tag": "obs_0019",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 2.70126966205373e-07,
+          "size_error_m": 3.9672851581684654e-07,
+          "tag": "obs_0020",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 7.018031169712157e-07,
+          "size_error_m": 9.997005462647479e-05,
+          "tag": "obs_0021",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 7.480246864906513e-07,
+          "size_error_m": 2.3193359410811354e-07,
+          "tag": "obs_0022",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 6.855596861104898e-07,
+          "size_error_m": 2.3117065417466165e-07,
+          "tag": "obs_0023",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.7256496409070498e-06,
+          "size_error_m": 2.685546878211653e-07,
+          "tag": "obs_0024",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 2.3756667878005625e-06,
+          "size_error_m": 8.087158231973035e-08,
+          "tag": "obs_0025",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 9.762361844785106e-07,
+          "size_error_m": 0.00010003232955935193,
+          "tag": "obs_0026",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 5.426732332986919e-07,
+          "size_error_m": 9.998168945313246e-05,
+          "tag": "obs_0027",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 5.878422492685424e-07,
+          "size_error_m": 6.118774411589811e-07,
+          "tag": "obs_0028",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.9647793898316677e-07,
+          "size_error_m": 4.302978515724476e-07,
+          "tag": "obs_0029",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 4.83450989042077e-07,
+          "size_error_m": 9.997320175170188e-05,
+          "tag": "obs_0030",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 4.177823281892932e-07,
+          "size_error_m": 1.724243166023598e-07,
+          "tag": "obs_0031",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 8.884728027642471e-07,
+          "size_error_m": 3.448486332047196e-07,
+          "tag": "obs_0032",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 3.201712922720476e-07,
+          "size_error_m": 1.9607543944033523e-07,
+          "tag": "obs_0033",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 6.339292348485515e-07,
+          "size_error_m": 2.4566650402846335e-07,
+          "tag": "obs_0034",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 8.019271264519885e-07,
+          "size_error_m": 5.0735473600127534e-08,
+          "tag": "obs_0035",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 9.276076279632923e-07,
+          "size_error_m": 1.434326168947564e-07,
+          "tag": "obs_0036",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.5110631761684625e-07,
+          "size_error_m": 3.662109371305178e-08,
+          "tag": "obs_0037",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.8372411342419884e-07,
+          "size_error_m": 3.5018920918616914e-07,
+          "tag": "obs_0038",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 3.6557539774161615e-07,
+          "size_error_m": 9.998130798338778e-05,
+          "tag": "obs_0039",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 5.569569057059284e-07,
+          "size_error_m": 9.998474121097889e-05,
+          "tag": "obs_0040",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.1174727701590186e-06,
+          "size_error_m": 9.55200194496797e-07,
+          "tag": "obs_0041",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 3.291217247771954e-07,
+          "size_error_m": 5.065917960678235e-07,
+          "tag": "obs_0042",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 4.87341572607881e-07,
+          "size_error_m": 8.270263673892941e-07,
+          "tag": "obs_0043",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 4.3851168710724406e-07,
+          "size_error_m": 2.1972656227831067e-07,
+          "tag": "obs_0044",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 7.171423886557891e-07,
+          "size_error_m": 9.999828338624894e-05,
+          "tag": "obs_0045",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 6.578237226597031e-07,
+          "size_error_m": 3.479003911621703e-07,
+          "tag": "obs_0046",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 3.431598521085403e-07,
+          "size_error_m": 2.9602050766186494e-07,
+          "tag": "obs_0047",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 3.3023493023196336e-07,
+          "size_error_m": 8.316040034372918e-08,
+          "tag": "obs_0048",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.0544397366418443e-06,
+          "size_error_m": 2.8228759774151513e-07,
+          "tag": "obs_0049",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 7.167750195910854e-07,
+          "size_error_m": 9.996862411498775e-05,
+          "tag": "obs_0050",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 6.981885034136404e-07,
+          "size_error_m": 0.00010002574920653373,
+          "tag": "obs_0051",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.6450287866997313e-06,
+          "size_error_m": 9.999284744266479e-05,
+          "tag": "obs_0052",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.588579962370254e-06,
+          "size_error_m": 7.85827634075531e-08,
+          "tag": "obs_0053",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 7.28750964751082e-07,
+          "size_error_m": 6.01196289196082e-07,
+          "tag": "obs_0054",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 8.028944588221108e-07,
+          "size_error_m": 2.2354126016921327e-07,
+          "tag": "obs_0055",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 3.753820082518572e-07,
+          "size_error_m": 0.00010006284713748315,
+          "tag": "obs_0056",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.6862342685959055e-07,
+          "size_error_m": 2.944946286831396e-07,
+          "tag": "obs_0057",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 6.808901241785841e-07,
+          "size_error_m": 1.1672973609933024e-07,
+          "tag": "obs_0058",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 3.2018583711797723e-07,
+          "size_error_m": 0.00010002050399782192,
+          "tag": "obs_0059",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.2393220508860635e-06,
+          "size_error_m": 5.599975594350326e-07,
+          "tag": "obs_0060",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.1259425204271496e-06,
+          "size_error_m": 0.0001000049591064478,
+          "tag": "obs_0061",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.2028117343562237e-06,
+          "size_error_m": 9.994554519654475e-05,
+          "tag": "obs_0062",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 2.6879408384939516e-07,
+          "size_error_m": 0.00010006456375122319,
+          "tag": "obs_0063",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 6.784046303702125e-07,
+          "size_error_m": 9.998521804810423e-05,
+          "tag": "obs_0064",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 2.385183875762007e-06,
+          "size_error_m": 5.142211918496287e-07,
+          "tag": "obs_0065",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 9.105742290096636e-07,
+          "size_error_m": 2.2888183615066282e-07,
+          "tag": "obs_0066",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.1804436317059615e-06,
+          "size_error_m": 3.623962401277936e-07,
+          "tag": "obs_0067",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 5.704098848249411e-07,
+          "size_error_m": 5.9509277505753744e-08,
+          "tag": "obs_0068",
+          "kind": "cylinder"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.5914090401571904e-06,
+          "size_error_m": 0.00010001630783085247,
+          "tag": "obs_0069",
+          "kind": "cylinder"
+        }
+      ],
+      "checked": 70,
+      "found": 70,
+      "max_center_error_m": 2.385183875762007e-06,
+      "max_size_error_m": 0.00010006456375122319,
+      "ground_top_z_ned": 0.0,
+      "tolerance_m": 0.05,
+      "pass": true
+    },
+    "rgb_changes_with_pose": {
+      "diff_pillar_vs_empty": 41.76635233561198,
+      "diff_pillar_repeat": 3.509368896484375,
+      "brightness_pillar_view": 125.88800048828125,
+      "brightness_empty_view": 158.74684143066406,
+      "pass": true
+    },
+    "depth_matches_geometry": {
+      "probes": [
+        {
+          "tag": "obs_0000",
+          "kind": "cylinder",
+          "solid": true,
+          "distance_m": 3.0,
+          "altitude_m": 2.0,
+          "window": [
+            [
+              126,
+              130
+            ],
+            [
+              126,
+              130
+            ]
+          ],
+          "pixels": {
+            "solid": 16,
+            "interior": 16,
+            "card": 0,
+            "empty": 0
+          },
+          "measured_m": 3.0009765625,
+          "expected_m": 3.001235818118223,
+          "error_m": 0.00025925561822282006,
+          "tolerance_m": 0.15,
+          "inlier_share": 1.0,
+          "min_inlier_share": 0.8,
+          "card_no_nearer_share": null,
+          "beyond_share_off_target": null,
+          "window_spread_predicted_m": 0.0019794722381725194,
+          "window_spread_measured_m": 0.001953125,
+          "pose": [
+            -27.55190086364746,
+            -22.128999710083008,
+            -1.9967390298843384,
+            0.0
+          ],
+          "width_px": 22,
+          "expected_width_px": 22,
+          "width_tolerance_px": 2.2,
+          "hfov_consistent": true,
+          "pass": true
+        },
+        {
+          "tag": "obs_0000",
+          "kind": "cylinder",
+          "solid": true,
+          "distance_m": 6.0,
+          "altitude_m": 2.0,
+          "window": [
+            [
+              126,
+              130
+            ],
+            [
+              126,
+              130
+            ]
+          ],
+          "pixels": {
+            "solid": 16,
+            "interior": 16,
+            "card": 0,
+            "empty": 0
+          },
+          "measured_m": 6.00390625,
+          "expected_m": 6.005005975720473,
+          "error_m": 0.0010997257204730104,
+          "tolerance_m": 0.15,
+          "inlier_share": 1.0,
+          "min_inlier_share": 0.8,
+          "card_no_nearer_share": null,
+          "beyond_share_off_target": null,
+          "window_spread_predicted_m": 0.008040358602931619,
+          "window_spread_measured_m": 0.0078125,
+          "pose": [
+            -30.55190086364746,
+            -22.128999710083008,
+            -1.9980113506317139,
+            0.0
+          ],
+          "width_px": 12,
+          "expected_width_px": 12,
+          "width_tolerance_px": 2.0,
+          "hfov_consistent": true,
+          "pass": true
+        },
+        {
+          "tag": "obs_0000",
+          "kind": "cylinder",
+          "solid": true,
+          "distance_m": 12.0,
+          "altitude_m": 2.0,
+          "window": [
+            [
+              126,
+              130
+            ],
+            [
+              126,
+              130
+            ]
+          ],
+          "pixels": {
+            "solid": 16,
+            "interior": 16,
+            "card": 0,
+            "empty": 0
+          },
+          "measured_m": 12.01953125,
+          "expected_m": 12.021114035428344,
+          "error_m": 0.0015827854283436693,
+          "tolerance_m": 0.24,
+          "inlier_share": 1.0,
+          "min_inlier_share": 0.8,
+          "card_no_nearer_share": null,
+          "beyond_share_off_target": null,
+          "window_spread_predicted_m": 0.03429667796770275,
+          "window_spread_measured_m": 0.0390625,
+          "pose": [
+            -32.83824920654297,
+            -31.09454917907715,
+            -1.9986673593521118,
+            0.7853981332102384
+          ],
+          "width_px": 6,
+          "expected_width_px": 6,
+          "width_tolerance_px": 2.0,
+          "hfov_consistent": true,
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    "crash_raises_collision": {
+      "steps_to_collision": 20,
+      "object_name": "StaticMeshActor_1",
+      "target": "obs_0000",
+      "kind": "cylinder",
+      "impact_from_footprint_m": 5.08361902868959e-05,
+      "footprint_radius_m": 0.2792,
+      "travel_to_impact_m": 6.399949163818359,
+      "expected_travel_m": 6.400985796419008,
+      "collided_flag": true,
+      "camera_pose_error_at_collision_m": 2.1046498697965177e-06,
+      "pass": true,
+      "reset_after_crash": {
+        "camera_pose_error_m": 1.5258886656813388e-06,
+        "depth": {
+          "mask_agreement": 1.0,
+          "pixels_compared": 39381,
+          "median_relative_diff": 0.0008748906548134983
+        },
+        "rgb_mean_abs_diff": 1.7833760579427083,
+        "pass": true,
+        "retrace_m": 0.0
+      }
+    },
+    "velocity_tracking": {
+      "axes": {
+        "forward": {
+          "mean_abs_error": 0.18750616312029195,
+          "mean_commanded": 2.0,
+          "mean_measured": 1.812493836879708,
+          "relative_error": 0.09375308156014597,
+          "samples": 10
+        },
+        "vertical_up": {
+          "mean_abs_error": 0.005068278312683106,
+          "mean_commanded": 0.5,
+          "mean_measured": 0.5050682783126831,
+          "relative_error": 0.010136556625366212,
+          "samples": 5
+        },
+        "vertical_down": {
+          "mean_abs_error": 0.030576515197753906,
+          "mean_commanded": -0.5,
+          "mean_measured": -0.530576515197754,
+          "relative_error": 0.06115303039550781,
+          "samples": 5
+        },
+        "yaw_rate": {
+          "mean_abs_error": 0.024644205622499582,
+          "mean_commanded": 0.5,
+          "mean_measured": 0.47535579437750036,
+          "relative_error": 0.049288411244999164,
+          "samples": 10
+        },
+        "yaw_rate_body_angular_z": {
+          "mean_abs_error": 0.020590418577194215,
+          "mean_commanded": 0.5,
+          "mean_measured": 0.47940958142280576,
+          "relative_error": 0.04118083715438843,
+          "samples": 10
+        }
+      },
+      "threshold_relative_error": 0.2,
+      "pass": true
+    },
+    "one_step_per_record": {
+      "records": 20,
+      "records_per_s": 13.482727808995975,
+      "rows": [
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            24600000000,
+            24600000000,
+            24600000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            24800000000,
+            24800000000,
+            24800000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            25000000000,
+            25000000000,
+            25000000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            25200000000,
+            25200000000,
+            25200000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            25400000000,
+            25400000000,
+            25400000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            25600000000,
+            25600000000,
+            25600000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            25800000000,
+            25800000000,
+            25800000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            26000000000,
+            26000000000,
+            26000000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            26200000000,
+            26200000000,
+            26200000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            26400000000,
+            26400000000,
+            26400000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            26600000000,
+            26600000000,
+            26600000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            26800000000,
+            26800000000,
+            26800000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            27000000000,
+            27000000000,
+            27000000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            27200000000,
+            27200000000,
+            27200000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            27400000000,
+            27400000000,
+            27400000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            27600000000,
+            27600000000,
+            27600000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            27800000000,
+            27800000000,
+            27800000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            28000000000,
+            28000000000,
+            28000000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            28200000000,
+            28200000000,
+            28200000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            28400000000,
+            28400000000,
+            28400000000
+          ],
+          "frame_times_match": true
+        }
+      ],
+      "pass": true,
+      "note": "This check cannot actually fail: frame_times_match is guaranteed by FrameCollector.wait() (FrameTimestampError otherwise, sync.py), dt_ns==200_000_000/steps==1 by Observation.sim_time_ns and StepTimingError (airsim_backend.py), and kinematics agreement by StaleStateError. An Observation cannot exist unless all three already held, so a pass here is not independent evidence of them -- it reduces to 'the backend ran 20 steps without raising'. Kept as a gate check anyway because that is still worth recording: it demonstrates the invariants held in a live run, on the packaged binary, not just in the unit tests that pin the raises."
+    },
+    "spawn_destroy_packaged": {
+      "spawned_name": "AF_M1_Cube",
+      "material": "/Game/Geometry/Materials/M_Orange",
+      "center_depth_with_cube_m": 2.099609375,
+      "expected_m": 2.1,
+      "center_rgb_with_cube": [
+        99.4296875,
+        56.37890625,
+        36.78515625
+      ],
+      "orange_dominant": true,
+      "center_depth_after_destroy_m": null,
+      "pass": true
+    }
+  },
+  "probes": [
+    {
+      "tag": "obs_0000",
+      "kind": "cylinder",
+      "distance_m": 3.0,
+      "expected_depth_m": 3.001235818118223,
+      "window_spread_m": 0.0019794722381725194,
+      "pose": [
+        -27.551899999999996,
+        -22.129,
+        -2.0,
+        0.0
+      ]
+    },
+    {
+      "tag": "obs_0000",
+      "kind": "cylinder",
+      "distance_m": 6.0,
+      "expected_depth_m": 6.005005975720473,
+      "window_spread_m": 0.008040358602931619,
+      "pose": [
+        -30.5519,
+        -22.129,
+        -2.0,
+        0.0
+      ]
+    },
+    {
+      "tag": "obs_0000",
+      "kind": "cylinder",
+      "distance_m": 12.0,
+      "expected_depth_m": 12.021114035428344,
+      "window_spread_m": 0.03429667796770275,
+      "pose": [
+        -32.838248300020474,
+        -31.094548300020474,
+        -2.0,
+        0.7853981633974483
+      ]
+    }
+  ],
+  "poses": {
+    "open": [
+      -31.0,
+      -25.0,
+      -2.0,
+      1.5707963267948966
+    ],
+    "field_view": [
+      -31.0,
+      0.0,
+      -2.0,
+      0.0
+    ],
+    "empty_view": [
+      -31.0,
+      0.0,
+      -2.0,
+      3.141592653589793
+    ],
+    "spawn": [
+      -31.0,
+      -10.0,
+      -2.0,
+      0.0
+    ],
+    "spawn_view": [
+      -31.0,
+      -13.0,
+      -2.0,
+      1.5707963267948966
+    ]
+  },
+  "frames_dir": "/home/nvidiasims/research_uav/autofly_ue5/runs/m4/s09/frames",
+  "scene_config": {
+    "file": "scene_autofly_s09_fast.jsonc",
+    "sha256": "c5e71b6be7ec93225278b78e2f6cf78714ba12d9596daa9007a606acc27bd92e"
+  },
+  "check_map": {},
+  "package_manifest": {
+    "description": "Fingerprints the packaged Development Linux binary and content archive (pak) actually produced by scripts/package_sim.sh, plus the git tree that produced them. built_from_git_head is the repo's HEAD at package time, which routinely precedes the commit that later records this file -- packaging happens before committing, not after. working_tree_dirty says whether uncommitted changes were present in that tree (e.g. an in-progress fix not yet committed). Do not compare built_from_git_head to the current HEAD to judge freshness; that comparison is circular. Gate on binary.sha256 instead.",
+    "binary": {
+      "path": "ue_project/Packaged/Development/Linux/Blocks/Binaries/Linux/Blocks",
+      "sha256": "fd845a8c58f095af8ba52849d07ea2768ad48712ba7800a4bcfe7760f0efaade"
+    },
+    "paks": {
+      "ue_project/Packaged/Development/Linux/Blocks/Content/Paks/Blocks-Linux.pak": "ee904c8a2d06fbc25ed137468340f0689f98a9aeca6630a3aa7c594bd9fa3ec1"
+    },
+    "built_from_git_head": "72d0eb9ff4165c4895494f46e77160d01bf33f2a",
+    "working_tree_dirty": true,
+    "level_spec_sha256": "188f9e4118945b7966fa3a03281e0c1663b0e2193c228430bdc06287a40f955a",
+    "level_verify": {
+      "map_path": "/Game/AutoFly/Maps/S01",
+      "pass": true,
+      "obstacles": 80,
+      "worst_location_error_cm": 0.0,
+      "game_mode": "/Script/ProjectAirSim.ProjectAirSimGameMode"
+    },
+    "engine_build_version": {
+      "MajorVersion": 5,
+      "MinorVersion": 7,
+      "PatchVersion": 4,
+      "Changelist": 51494982,
+      "CompatibleChangelist": 47537391,
+      "IsLicenseeVersion": 0,
+      "IsPromotedBuild": 1,
+      "BranchName": "++UE5+Release-5.7"
+    }
+  },
+  "package_matches_manifest": true,
+  "launch_s": 2.517502412025351,
+  "vram_used_mib": 1508,
+  "faults": {
+    "xid_since": "2026-10-07 20:00:09",
+    "xid_before": 0,
+    "xid_after": 0,
+    "boot_id": "026d5453-feb4-429b-abf0-fb4146123ce7",
+    "device_lost": {
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst5/sim.log": 0
+    },
+    "kernel_journal_readable": true
+  },
+  "faults_ok": true,
+  "pass": true
+}
