@@ -1,0 +1,137 @@
+{
+  "id": "s03",
+  "split": "train",
+  "seed": 1003,
+  "bounds": {
+    "x_min": -35.0,
+    "x_max": 35.0,
+    "y_min": -35.0,
+    "y_max": 35.0
+  },
+  "ground": "grass",
+  "obstacle_groups": [
+    {
+      "asset": "namaqualand_boulder_04",
+      "count": 5,
+      "scale_range": {
+        "xy": [
+          1.6,
+          2.0
+        ],
+        "z": [
+          1.6,
+          2.0
+        ]
+      },
+      "palette": [
+        "mesh"
+      ],
+      "placement": {
+        "type": "poisson",
+        "margin_m": 8.0,
+        "min_distance_m": 12.0
+      }
+    },
+    {
+      "asset": "namaqualand_boulder_03",
+      "count": 5,
+      "scale_range": {
+        "xy": [
+          1.5,
+          1.9
+        ],
+        "z": [
+          1.5,
+          1.9
+        ]
+      },
+      "palette": [
+        "mesh"
+      ],
+      "placement": {
+        "type": "poisson",
+        "margin_m": 8.0,
+        "min_distance_m": 12.0
+      }
+    },
+    {
+      "asset": "boulder_01",
+      "count": 7,
+      "scale_range": {
+        "xy": [
+          2.0,
+          2.6
+        ],
+        "z": [
+          2.0,
+          2.6
+        ]
+      },
+      "palette": [
+        "mesh"
+      ],
+      "placement": {
+        "type": "poisson",
+        "margin_m": 8.0,
+        "min_distance_m": 9.0
+      }
+    },
+    {
+      "asset": "namaqualand_boulder_02",
+      "count": 5,
+      "scale_range": {
+        "xy": [
+          2.0,
+          2.5
+        ],
+        "z": [
+          2.0,
+          2.5
+        ]
+      },
+      "palette": [
+        "mesh"
+      ],
+      "placement": {
+        "type": "poisson",
+        "margin_m": 8.0,
+        "min_distance_m": 10.0
+      }
+    },
+    {
+      "asset": "namaqualand_boulder_06",
+      "count": 7,
+      "scale_range": {
+        "xy": [
+          2.6,
+          3.4
+        ],
+        "z": [
+          2.6,
+          3.4
+        ]
+      },
+      "palette": [
+        "mesh"
+      ],
+      "placement": {
+        "type": "poisson",
+        "margin_m": 8.0,
+        "min_distance_m": 8.0
+      }
+    }
+  ],
+  "start_band": [
+    2.0,
+    6.0
+  ],
+  "target_band": [
+    0.0,
+    3.0
+  ],
+  "altitude_band": [
+    1.0,
+    3.0
+  ],
+  "instruction_obstacle": "rocks"
+}
