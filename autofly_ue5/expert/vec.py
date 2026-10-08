@@ -17,10 +17,12 @@ from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv, VecEnv
 from autofly_ue5.dataset.targets import TargetPool
 from autofly_ue5.expert.altitude_margin import AltitudeMarginPenalty
 from autofly_ue5.expert.env import AutoFlyEnv
+from autofly_ue5.expert.footprint_contact import DEFAULT_SHAPE
 from autofly_ue5.expert.mover_clearance import MoverClearancePenalty, MoverClosingPenalty
 from autofly_ue5.expert.obs import ObsConfig
 from autofly_ue5.expert.resilient import ResilientAutoFlyEnv
 from autofly_ue5.expert.seeds import worker_seed_base
+from autofly_ue5.scenes.footprint_field import FootprintFields
 from autofly_ue5.scenes.model import AssetRegistry, Layout, SceneFile
 from autofly_ue5.sim.airsim_backend import ProjectAirSimSimulator
 from autofly_ue5.sim.process import (
@@ -71,6 +73,8 @@ def make_vec_env(
     footprint_contact_margin_m: float = 0.0,
     registry: AssetRegistry | None = None,
     target_pool: TargetPool | None = None,
+    footprint_shape: str = DEFAULT_SHAPE,
+    footprint_fields: FootprintFields | None = None,
 ) -> VecEnv:
     """n `AutoFlyEnv`s, each `ResilientAutoFlyEnv(Monitor(AutoFlyEnv(...)))`, vectorised.
 
@@ -97,8 +101,10 @@ def make_vec_env(
     margin outside the task's mover contact rule; `static_contact_m`: a training run's static pillar boundary
     (`expert/static_contact.py`); `footprint_contact_margin_m`: a training run's margin outside the task's footprint
     rule on a mesh scene (`expert/footprint_contact.py`); `registry`: the asset registry every env reads which obstacles
-    are meshes from (default: each reads its own), so a trainer's workers share the copy its identity was built from.
-    `target_pool`: a collection's target pool (plan 5 C5) for every env; the trainer never passes one.
+    are meshes from (default: each reads its own), so a trainer's workers share the copy its identity was built from;
+    `footprint_shape` / `footprint_fields`: what the footprint rule measures to (the outline, from these fields, or the
+    circle) for every env, likewise one copy. `target_pool`: a collection's target pool (plan 5 C5) for every env; the
+    trainer never passes one.
     """
     if n < 1:
         raise ValueError(f"n must be >= 1, got {n}")
@@ -115,7 +121,8 @@ def make_vec_env(
                               obs_config=obs_config, mover_clearance=mover_clearance, mover_closing=mover_closing,
                               altitude_margin=altitude_margin, mover_contact_margin_m=mover_contact_margin_m,
                               static_contact_m=static_contact_m, footprint_contact_margin_m=footprint_contact_margin_m,
-                              registry=registry, target_pool=target_pool)
+                              registry=registry, target_pool=target_pool, footprint_shape=footprint_shape,
+                              footprint_fields=footprint_fields)
             # outcome and collision_source per episode, for scripts/watch_training.py (the info always carries both).
             monitored = Monitor(base, filename=str(monitor_dir / f"{instance}.monitor.csv"),
                                 info_keywords=("is_success", "outcome", "collision_source"))

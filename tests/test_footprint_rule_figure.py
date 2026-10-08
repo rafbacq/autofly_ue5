@@ -44,6 +44,8 @@ def test_the_figure_and_its_numbers_are_written_and_no_flight_reaches_wood(tmp_p
         assert "sim" not in summary["runs"][run]["endings"]
         assert len(data["episodes"][run]) == 3
     assert data["seeds"] == {"base": 300_000_000, "n": 3}
+    # the figure draws circles and their 0.9 m boundary: it flies the circle shape (s02_r1's), whatever the default
+    assert data["rule"]["shape"] == "circle"
     written = {os.path.relpath(os.path.join(d, f), tmp_path) for d, _, files in os.walk(tmp_path) for f in files}
     assert written == {"in/s99_test_trees.json", "in/s99.layout.json", "out/fig.png", "out/fig.json"}
 

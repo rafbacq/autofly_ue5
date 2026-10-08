@@ -83,6 +83,15 @@ def test_the_figure_and_its_numbers_are_written_and_the_transform_checks_pass(tm
     assert data["checks"]["recorded_gap_is_final_gap_max_diff_m"] < 1e-6
     (row,) = data["endings"]
     assert row["tag"] == tree.tag and row["circle_gap_final_m"] == pytest.approx(GAP_M, abs=1e-4)
+    # one more column (2026-10-08): the outline rule's gap at the ending, read from the asset's outline field; the
+    # outline lies inside the circle, so it is never nearer than the circle's gap (beyond the field's 1.3 cm)
+    from autofly_ue5.scenes.footprint_field import FootprintFields, outline_distance
+
+    field = FootprintFields.load({tree.asset})[tree.asset]
+    xy = tuple(row["final_pose"][:2])
+    assert row["outline_gap_final_m"] == pytest.approx(round(outline_distance(field, tree, xy, xy), 4), abs=1e-9)
+    assert row["outline_gap_final_m"] >= GAP_M - 0.02
+    assert data["summary"]["outline_gap_final"]["n"] == 1 and data["summary"]["endings_within_outline_rule"] in (0, 1)
     # the circle holds every corner of the model, so nothing can be nearer than the drone's gap to it
     for key in ("clearance_column", "clearance_slab", "clearance_3d"):
         assert row[key]["all"] >= GAP_M - 1e-3, key
@@ -108,3 +117,52 @@ def test_a_run_without_eval_watch_records_is_refused(tmp_path):
         footprint_endings_figure.main(["--run-root", str(tmp_path / "run"), "--layout", str(layout_path),
                                        "--out", str(tmp_path / "f.png"), "--json", str(tmp_path / "f.json")])
     assert not (tmp_path / "f.png").exists() and not (tmp_path / "f.json").exists()
+
+
+def test_each_recorded_gap_is_compared_with_the_gap_of_the_shape_its_record_scored(tmp_path):
+    # s02_r1's eval-watch records name no shape (the circle, before shapes existed) and their gaps are the circle's;
+    # a record scored under the outline (contact_rules' shape) carries the outline's gap. The check compares each with
+    # its own shape's gap at the ending, and the outline rule's endings are counted at the outline's own 1.05 m.
+    from autofly_ue5.expert.footprint_contact import OUTLINE_CONTACT_M
+    from autofly_ue5.scenes.footprint_field import FootprintFields, outline_distance
+    from scripts import footprint_endings_figure
+
+    layout_path, tree = _write_inputs(tmp_path)
+    field = FootprintFields.load({tree.asset})[tree.asset]
+
+    def at(angle):  # GAP_M outside the circle at `angle` from north: (pose, outline gap)
+        x, y = tree.x + (tree.radius_m + GAP_M) * math.cos(angle), tree.y + (tree.radius_m + GAP_M) * math.sin(angle)
+        return [x, y, -2.0, angle + math.pi / 2], outline_distance(field, tree, (x, y))
+
+    pose, outline_gap = max((at(k * math.pi / 8) for k in range(16)), key=lambda p: p[1])  # the side away from the lean
+    assert outline_gap > GAP_M + 0.2, "the outline lies well inside the circle there"
+    watch = tmp_path / "run" / "eval_watch"
+    record = json.loads((watch / "step_1000.json").read_text())
+    ending = record["checkpoints"]["step_1000"]["deterministic"]["per_episode"][0]
+    ending["final_pose"] = pose
+    ending["footprint_contact"].update(gap_m=round(outline_gap, 4), shape="outline", circle_gap_m=GAP_M)
+    record["contact_rules"] = {"footprint": {"contact_m": OUTLINE_CONTACT_M, "obstacles": 11, "shape": "outline"}}
+    (watch / "step_1000.json").write_text(json.dumps(record))
+    out, record_path = tmp_path / "out" / "fig.png", tmp_path / "out" / "fig.json"
+    assert footprint_endings_figure.main(["--run-root", str(tmp_path / "run"), "--layout", str(layout_path),
+                                          "--out", str(out), "--json", str(record_path)]) == 0
+    data = json.loads(record_path.read_text())
+    (row,) = data["endings"]
+    assert row["scored_shape"] == "outline" and row["circle_gap_final_m"] == pytest.approx(GAP_M, abs=1e-4)
+    assert row["scored_gap_final_m"] == row["outline_gap_final_m"] == pytest.approx(round(outline_gap, 4), abs=1e-9)
+    assert data["checks"]["recorded_gap_is_final_gap_max_diff_m"] < 1e-6, "compared with the outline's own gap"
+    assert data["summary"]["scored_shapes"] == {"outline": 1}
+    assert data["summary"]["endings_within_outline_rule"] == (1 if outline_gap <= OUTLINE_CONTACT_M else 0)
+
+
+def test_a_circle_record_is_compared_with_the_circle_gap(tmp_path):
+    from scripts import footprint_endings_figure
+
+    layout_path, _tree = _write_inputs(tmp_path)  # a record from before shapes: the circle
+    record_path = tmp_path / "out" / "fig.json"
+    assert footprint_endings_figure.main(["--run-root", str(tmp_path / "run"), "--layout", str(layout_path),
+                                          "--out", str(tmp_path / "out" / "fig.png"), "--json", str(record_path)]) == 0
+    data = json.loads(record_path.read_text())
+    (row,) = data["endings"]
+    assert row["scored_shape"] == "circle" and row["scored_gap_final_m"] == row["circle_gap_final_m"]
+    assert data["summary"]["scored_shapes"] == {"circle": 1}

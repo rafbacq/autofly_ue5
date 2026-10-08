@@ -20,6 +20,10 @@ and ranks the results.
 A second stage re-scores the top few on further validation episodes, so the winner is not just the luckiest of many
 noisy estimates: `plan --stage 2 --names step_... step_... --seed-offset 1000 ...`, then `rank --stage 2`. A stage is
 never planned twice, and no two stages share validation episodes.
+
+On a scene with mesh obstacles every part's gate scores the footprint shape the run trained under, read from its
+sessions.json (expert/run_shape.py) and written into each command. `--footprint-shape` is needed only for a run whose
+record names no shape, and is refused where it contradicts the run's.
 """
 
 from __future__ import annotations
@@ -38,7 +42,10 @@ import shlex  # noqa: E402
 import subprocess  # noqa: E402
 import time  # noqa: E402
 
+from autofly_ue5.expert.footprint_contact import SHAPES  # noqa: E402
+from autofly_ue5.expert.run_shape import run_footprint_shape  # noqa: E402
 from autofly_ue5.expert.seeds import SELECTION_SEED_BASE  # noqa: E402
+from autofly_ue5.scenes.resolve import resolve_scene  # noqa: E402
 
 CHECKPOINT_RE = re.compile(r"^rl_model_(\d+)_steps\.zip$")
 LAUNCH_STAGGER_S = 30  # each slot's first launch must not race the others' through the GPU guard (training's hazard #2)
@@ -71,7 +78,9 @@ def split(names: list[str], n_slots: int) -> list[list[str]]:
 
 
 def plan_commands(run_root: Path, chosen: dict[str, Path], *, slots: list[int], episodes: int, scene: str,
-                  scene_config: str, seed_offset: int = 0, stage: int = 1) -> list[dict]:
+                  scene_config: str, seed_offset: int = 0, stage: int = 1, footprint_shape: str | None = None) -> list[dict]:
+    """One m2_gate job per slot over its share of the candidates. `footprint_shape`: a mesh scene's footprint shape as the
+    run trained under it (None: nothing passed; the gate then reads each checkpoint's run itself)."""
     out_dir = Path(run_root) / "selection"
     parts = []
     for slot, share in zip(slots, split(list(chosen), len(slots))):
@@ -82,6 +91,8 @@ def plan_commands(run_root: Path, chosen: dict[str, Path], *, slots: list[int], 
                 "--scene", scene, "--scene-config", scene_config, "--conditions", "deterministic",
                 "--episodes", str(episodes), "--seed-base", str(SELECTION_SEED_BASE + seed_offset),
                 "--instance", str(slot), "--out", str(out)]
+        if footprint_shape is not None:
+            argv += ["--footprint-shape", footprint_shape]
         for name in share:
             argv += ["--model", f"{name}={chosen[name]}"]
         job = f"select_s{stage}_{slot}"
@@ -139,7 +150,7 @@ def rank(records: list[dict]) -> list[dict]:
     return sorted(rows, key=lambda r: (r["success_rate"] is None, -(r["success_rate"] or 0.0), -(r["mean_return"] or 0.0)))
 
 
-def main(argv: list[str] | None = None) -> int:
+def build_arg_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = p.add_subparsers(dest="cmd", required=True)
     pl = sub.add_parser("plan")
@@ -154,10 +165,17 @@ def main(argv: list[str] | None = None) -> int:
     pl.add_argument("--seed-offset", type=int, default=0, help="a later stage scores further validation episodes")
     pl.add_argument("--stage", type=int, default=1)
     pl.add_argument("--launch", action="store_true", help="start the parts with run_job.sh, LAUNCH_STAGGER_S apart")
+    pl.add_argument("--footprint-shape", choices=SHAPES, default=None,
+                    help="a mesh scene's footprint shape, only for a run whose sessions.json names none; default: the "
+                         "one the run trained under (expert/run_shape.py), and a flag that contradicts it is refused")
     rk = sub.add_parser("rank")
     rk.add_argument("--run-root", type=Path, required=True)
     rk.add_argument("--stage", type=int, default=1)
-    args = p.parse_args(argv)
+    return p
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = build_arg_parser().parse_args(argv)
     sel = args.run_root / "selection"
     if args.cmd == "plan":
         refusal = plan_refusal(sel, stage=args.stage, names=args.names, seed_offset=args.seed_offset,
@@ -165,11 +183,19 @@ def main(argv: list[str] | None = None) -> int:
         chosen = {} if refusal else candidates(args.run_root, every=args.every, min_steps=args.min_steps, names=args.names)
         if not refusal and not chosen:
             refusal = f"no candidates in {args.run_root}"
+        footprint_shape = None
+        if not refusal:
+            try:  # the shape the run trained under, written into every part's command (None: a scene without meshes)
+                footprint_shape = run_footprint_shape(resolve_scene(args.scene).layout, args.run_root,
+                                                      args.footprint_shape)
+            except (FileNotFoundError, ValueError) as err:
+                refusal = str(err)
         if refusal:
             print(f"refusing: {refusal}", file=sys.stderr)
             return 2
         parts = plan_commands(args.run_root, chosen, slots=args.slots, episodes=args.episodes, scene=args.scene,
-                              scene_config=args.scene_config, seed_offset=args.seed_offset, stage=args.stage)
+                              scene_config=args.scene_config, seed_offset=args.seed_offset, stage=args.stage,
+                              footprint_shape=footprint_shape)
         sel.mkdir(parents=True, exist_ok=True)
         plan_path = sel / f"stage{args.stage}_plan.json"
         plan_path.write_text(json.dumps({"stage": args.stage, "seed_base": SELECTION_SEED_BASE + args.seed_offset,

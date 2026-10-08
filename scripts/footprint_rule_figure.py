@@ -5,13 +5,18 @@
 
 A crash into a tree can wedge the simulator's actor (2 of 4 crashes into wood stayed wedged,
 docs/gates/m4_s02_wood_crash_reset_probe.json), so tree scenes end an episode where the drone's swept step passes within
-FOOTPRINT_CONTACT_M of a tree's footprint circle (expert/footprint_contact.py), and a training run may add a margin on
+CIRCLE_CONTACT_M of a tree's footprint circle (expert/footprint_contact.py), and a training run may add a margin on
 top. This flies each seed straight at its nearest tree twice, under the task's rule and with the margin, against a fake
 whose only wood is a 0.3 m trunk, and shows where every flight ended: a "sim" ending would mean the rule let the body
 reach wood. The rule is checked after a step is flown, so the ending step can go up to a full step (0.4 m) past the
 boundary: with the first version's 0.5 m, every task-rule ending on s02 (40 of 40, gaps 0.11-0.48 m) had a rotor tip
 inside the circle, which is why the rule is now 0.9 m; the histogram shades the zone a rotor tip would enter, and the
 close-up draws the deepest ending step. It launches nothing and writes only --out and --json.
+
+It draws the circle and flies the circle shape (`footprint_shape="circle"`, CIRCLE_CONTACT_M = 0.9 m): since 2026-10-08
+(afternoon) the task's rule measures to each model's outline instead, at 1.05 m (expert/footprint_contact.py), and this
+figure stays the record of the circle, the rule s02_r1 trained under. scripts/footprint_endings_figure.py measures the
+outline's gap at real endings.
 """
 
 from __future__ import annotations
@@ -40,7 +45,7 @@ from matplotlib.lines import Line2D  # noqa: E402
 from matplotlib.patches import Circle, Patch, PathPatch  # noqa: E402
 from matplotlib.path import Path as MplPath  # noqa: E402
 
-from autofly_ue5.expert.footprint_contact import FOOTPRINT_CONTACT_M, footprint_obstacles  # noqa: E402
+from autofly_ue5.expert.footprint_contact import CIRCLE_CONTACT_M, footprint_obstacles  # noqa: E402
 from autofly_ue5.expert.seeds import PROBE_SEED_BASE  # noqa: E402
 from autofly_ue5.paths import RUNS_DIR, SCENES_DIR  # noqa: E402
 from autofly_ue5.scenes.level_spec import map_path_for  # noqa: E402
@@ -143,7 +148,7 @@ def fly_all(scene, layout, trees, seeds, margin: float) -> list[dict]:
 
     env = AutoFlyEnv(scene, layout, functools.partial(FakeSimulator, obstacles=_wood(trees)),
                      map_path=map_path_for(layout.scene_id), instance=0, max_episode_steps=MAX_STEPS,
-                     footprint_contact_margin_m=margin)
+                     footprint_contact_margin_m=margin, footprint_shape="circle")
     out = []
     for seed in seeds:
         try:
@@ -161,7 +166,7 @@ def summarise(episodes: list[dict], margin: float) -> dict:
     eps = 1e-9
     return {
         "margin_m": margin,
-        "termination_m": FOOTPRINT_CONTACT_M + margin,
+        "termination_m": CIRCLE_CONTACT_M + margin,
         "n": len(episodes),
         "endings": dict(sorted(Counter(_ending(ep) for ep in episodes).items())),
         "gap_m": ({"min": min(gaps), "median": round(statistics.median(gaps), 4), "max": max(gaps)} if gaps else None),
@@ -170,8 +175,8 @@ def summarise(episodes: list[dict], margin: float) -> dict:
         "endings_with_rotor_tip_inside_circle": sum(g < DRONE_HALF_SPAN_M for g in gaps),
         "checks": {
             "no_sim_endings": all(ep["collision_source"] != "sim" for ep in episodes),
-            "footprint_gaps_le_contact_m": all(g <= FOOTPRINT_CONTACT_M + eps for g in rule),
-            "footprint_margin_gaps_in_band": all(FOOTPRINT_CONTACT_M < g <= FOOTPRINT_CONTACT_M + margin + eps
+            "footprint_gaps_le_contact_m": all(g <= CIRCLE_CONTACT_M + eps for g in rule),
+            "footprint_margin_gaps_in_band": all(CIRCLE_CONTACT_M < g <= CIRCLE_CONTACT_M + margin + eps
                                                  for g in wide),
         },
     }
@@ -196,9 +201,9 @@ def _trees(ax, trees, margin: float, active: str, *, label_paths: list | None = 
     for t in trees:
         ax.add_patch(Circle((t.y, t.x), t.radius_m, facecolor=TREE_FILL, edgecolor=TREE_EDGE, linewidth=0.6, zorder=1))
         ax.add_patch(Circle((t.y, t.x), WOOD_RADIUS_M * t.scale[0], facecolor=TRUNK, edgecolor="none", zorder=2))
-        ax.add_patch(Circle((t.y, t.x), t.radius_m + FOOTPRINT_CONTACT_M, fill=False, edgecolor="#333333",
+        ax.add_patch(Circle((t.y, t.x), t.radius_m + CIRCLE_CONTACT_M, fill=False, edgecolor="#333333",
                             linestyle=(0, (4, 2)), linewidth=1.1 if active == "task" else 0.6, zorder=3))
-        ax.add_patch(Circle((t.y, t.x), t.radius_m + FOOTPRINT_CONTACT_M + margin, fill=False, edgecolor="#333333",
+        ax.add_patch(Circle((t.y, t.x), t.radius_m + CIRCLE_CONTACT_M + margin, fill=False, edgecolor="#333333",
                             linestyle=(0, (1, 1.5)), linewidth=1.1 if active == "margin" else 0.6, zorder=3))
     if label_paths is None:
         return
@@ -227,7 +232,7 @@ def _label_spots(trees, paths) -> list[tuple[Instance, tuple[float, float, float
         for t in (t for t in trees if t.asset == asset):
             w, h = 0.55 * len(asset) + 0.6, 1.6
             for k, ang in enumerate(np.radians([-90, 90, 0, 180, -45, -135, 45, 135])):
-                d = t.radius_m + FOOTPRINT_CONTACT_M + 1.0 + abs(math.cos(ang)) * w / 2 + abs(math.sin(ang)) * h / 2
+                d = t.radius_m + CIRCLE_CONTACT_M + 1.0 + abs(math.cos(ang)) * w / 2 + abs(math.sin(ang)) * h / 2
                 box = (t.y + d * math.cos(ang), t.x + d * math.sin(ang), w, h)
                 score = sum(overlap(box, (o.y, o.x, 2 * (o.radius_m + 1.0), 2 * (o.radius_m + 1.0))) for o in trees)
                 score += sum(4 * overlap(box, q) for q in placed)
@@ -269,7 +274,7 @@ def _map_panel(ax, layout: Layout, scene: SceneFile, trees, episodes, margin: fl
 
 
 def _histogram(ax, task_eps, margin_eps, margin: float) -> None:
-    hi = FOOTPRINT_CONTACT_M + margin + 0.1
+    hi = CIRCLE_CONTACT_M + margin + 0.1
     bins = np.arange(0.0, hi + 1e-9, 0.025)
     top = 0
     for eps, colour, label in ((task_eps, ENDING_STYLE["footprint"][0], "task rule"),
@@ -282,8 +287,8 @@ def _histogram(ax, task_eps, margin_eps, margin: float) -> None:
     ax.axvspan(0.0, DRONE_HALF_SPAN_M, color="#e9ecef", zorder=0)
     ax.text(0.015, 0.97, f"gap < drone half-span {DRONE_HALF_SPAN_M} m:\nrotor tips inside the circle\non the ending step",
             transform=ax.transAxes, ha="left", va="top", fontsize=7, color="#495057")
-    for x, style, text in ((FOOTPRINT_CONTACT_M, (0, (4, 2)), f"task rule {FOOTPRINT_CONTACT_M:g} m"),
-                           (FOOTPRINT_CONTACT_M + margin, (0, (1, 1.5)), f"training boundary {FOOTPRINT_CONTACT_M + margin:g} m")):
+    for x, style, text in ((CIRCLE_CONTACT_M, (0, (4, 2)), f"task rule {CIRCLE_CONTACT_M:g} m"),
+                           (CIRCLE_CONTACT_M + margin, (0, (1, 1.5)), f"training boundary {CIRCLE_CONTACT_M + margin:g} m")):
         ax.axvline(x, color="#333333", linestyle=style, linewidth=1.3, zorder=3)
         ax.text(x - 0.012, 0.5, text, transform=ax.get_xaxis_transform(), rotation=90, ha="right", va="center",
                 fontsize=7, color="#333333")
@@ -299,7 +304,7 @@ def _close_up(ax, tree: Instance, margin: float, min_task_gap: float | None) -> 
     """The largest tree to scale, the drone parked on the task boundary (its tips 2 cm outside the circle), and the
     deepest ending step the task-rule flights reached: a step is 0.4 m at full speed, and the rule ends the episode
     after the step that crossed the boundary, not before it."""
-    r, contact = tree.radius_m, FOOTPRINT_CONTACT_M
+    r, contact = tree.radius_m, CIRCLE_CONTACT_M
     trunk = WOOD_RADIUS_M * tree.scale[0]
     ax.add_patch(Circle((0, 0), r, facecolor=TREE_FILL, edgecolor=TREE_EDGE, linewidth=0.8))
     ax.add_patch(Circle((0, 0), trunk, facecolor=TRUNK, edgecolor="none"))
@@ -363,10 +368,10 @@ def draw(out: Path, scene, layout, trees, task_eps, margin_eps, margin: float, s
 
     paths = [ep["path"] for ep in task_eps]
     _map_panel(ax_task, layout, scene, trees, task_eps, margin, "task",
-               f"Task rule: ends at {FOOTPRINT_CONTACT_M:g} m from the circle (dashed)\n{n} flights: {counts('task_rule')}",
+               f"Task rule: ends at {CIRCLE_CONTACT_M:g} m from the circle (dashed)\n{n} flights: {counts('task_rule')}",
                paths)
     _map_panel(ax_wide, layout, scene, trees, margin_eps, margin, "margin",
-               f"Training run: + {margin:g} m margin, ends at {FOOTPRINT_CONTACT_M + margin:g} m (dotted)\n"
+               f"Training run: + {margin:g} m margin, ends at {CIRCLE_CONTACT_M + margin:g} m (dotted)\n"
                f"{n} flights: {counts('training_margin')}", paths)
     _histogram(ax_hist, task_eps, margin_eps, margin)
     biggest = max(trees, key=lambda t: t.radius_m)
@@ -374,7 +379,7 @@ def draw(out: Path, scene, layout, trees, task_eps, margin_eps, margin: float, s
     _close_up(ax_tree, biggest, margin, min(gaps) if gaps else None)
 
     fig.suptitle(f"Footprint contact rule on {layout.scene_id} ({len(trees)} trees): an episode ends as a collision when "
-                 f"the drone's swept step passes within {FOOTPRINT_CONTACT_M:g} m of a tree's footprint circle",
+                 f"the drone's swept step passes within {CIRCLE_CONTACT_M:g} m of a tree's footprint circle",
                  fontsize=13, y=0.975)
     fig.text(0.5, 0.928, f"Scripted flights straight at the nearest tree on the FakeSimulator (its only wood: a "
              f"{WOOD_RADIUS_M:g} m x scale trunk), seeds {task_eps[0]['seed']}-{task_eps[-1]['seed']}, each flown "
@@ -383,9 +388,9 @@ def draw(out: Path, scene, layout, trees, task_eps, margin_eps, margin: float, s
     handles = [
         Patch(facecolor=TREE_FILL, edgecolor=TREE_EDGE, label="footprint circle (layout radius_m)"),
         Patch(facecolor=TRUNK, label=f"fake trunk ({WOOD_RADIUS_M:g} m x scale)"),
-        Line2D([], [], color="#333333", linestyle=(0, (4, 2)), label=f"task contact boundary (+{FOOTPRINT_CONTACT_M:g} m)"),
+        Line2D([], [], color="#333333", linestyle=(0, (4, 2)), label=f"task contact boundary (+{CIRCLE_CONTACT_M:g} m)"),
         Line2D([], [], color="#333333", linestyle=(0, (1, 1.5)),
-               label=f"training boundary (+{FOOTPRINT_CONTACT_M:g} + {margin:g} m)"),
+               label=f"training boundary (+{CIRCLE_CONTACT_M:g} + {margin:g} m)"),
         Patch(facecolor="#f6e3b4", label=f"start band ({scene.start_band[0]:g}-{scene.start_band[1]:g} m in)"),
         Patch(facecolor="#cfe3f5", label=f"target band ({scene.target_band[0]:g}-{scene.target_band[1]:g} m in)"),
         Line2D([], [], color=PATH_COLOUR, linewidth=1.0, marker="o", markersize=3, label="scripted flight (start dot)"),
@@ -435,7 +440,7 @@ def main(argv: list[str] | None = None) -> int:
         "what": "scripted flights straight at the nearest tree on the FakeSimulator; footprint contact rule endings",
         "scene": {"id": scene.id, "path": str(scene.path), "sha256": scene.sha256},
         "layout": {"path": str(layout_path), "sha256": layout_sha, "trees": len(trees)},
-        "rule": {"contact_m": FOOTPRINT_CONTACT_M, "training_margin_m": args.margin,
+        "rule": {"contact_m": CIRCLE_CONTACT_M, "shape": "circle", "training_margin_m": args.margin,
                  "drone_half_span_m": DRONE_HALF_SPAN_M, "fake_wood_radius_m_per_scale": WOOD_RADIUS_M},
         "seeds": {"base": args.seed_base, "n": args.seeds},
         "figure": str(args.out),

@@ -4,14 +4,14 @@
         --layout runs/levels/s02.layout.json --out results/<date>/figures/s02_footprint_endings.png \
         --json results/<date>/figures/s02_footprint_endings.json
 
-In a mesh scene an episode ends as a collision when the drone's swept step comes within 0.9 m of an obstacle's
-footprint circle (expert/footprint_contact.py): a circle about the model's pivot whose radius is the model's widest reach
-from that pivot over its whole height (scenes/generate.py). The expert flies on depth and cannot see the circle; it sees
-the wood and the leaf cards. Three of s02's species lean (island_tree_02, island_tree_03, tree_small_02: canopy centres
-0.65-1.07 m off the pivot, assets/measurements.json), so on the side away from the lean a pivot-centred circle reaches
-well past any leaf. Two readings of s02_r1's endings lead to opposite recipes: if the drone is stopped far from anything
-it can see, the rule is unobservable there and a wider training margin makes it worse; if it is stopped close to the
-geometry, the margin is the lever. This measures which:
+In a mesh scene an episode ended, under the rule s02_r1 trained on, as a collision when the drone's swept step came
+within 0.9 m of an obstacle's footprint circle (expert/footprint_contact.py, the "circle" shape): a circle about the
+model's pivot whose radius is the model's widest reach from that pivot over its whole height (scenes/generate.py). The
+expert flies on depth and cannot see the circle; it sees the wood and the leaf cards. Three of s02's species lean
+(island_tree_02, island_tree_03, tree_small_02: canopy centres 0.65-1.07 m off the pivot, assets/measurements.json), so
+on the side away from the lean a pivot-centred circle reaches well past any leaf. Two readings of s02_r1's endings lead
+to opposite recipes: if the drone is stopped far from anything it can see, the rule is unobservable there and a wider
+training margin makes it worse; if it is stopped close to the geometry, the margin is the lever. This measures which:
 
 1. every footprint ending in the run's eval-watch records (deterministic flights): the horizontal clearance from the
    drone's centre to the named tree's wood alone and to wood plus leaf cards, over 720 horizontal rays at its altitude
@@ -26,6 +26,14 @@ millimetres, docs/gates/m4_s02_gate_run4.json). Ray clearances use it directly. 
 drawn slices place the triangles' corners in the world with the inverse of its transform, which is checked on every tree
 before use: a round trip through Mesh._to_gltf, and window_depths against the same triangles cast in the world frame on
 three endings. It launches nothing and writes only --out and --json.
+
+Since the rule measures to the model's outline (2026-10-08, afternoon; scenes/footprint_field.py), each ending also
+carries `outline_gap_final_m`, the outline rule's gap at the step's end read from the asset's field, and the summary how
+many endings the outline rule (at its own 1.05 m) would also have made there. A record names the shape it was scored
+under (its contact_rules' shape; one from before shapes, as s02_r1's, scored the circle): each ending carries it as
+`scored_shape`, and its recorded gap is checked against that shape's gap at the step's end (`scored_gap_final_m`).
+Every other number keeps its meaning: the circles, the enclosing circles and their 0.9 m boundary lines are the circle's
+analysis (CIRCLE_CONTACT_M).
 """
 
 from __future__ import annotations
@@ -51,10 +59,12 @@ import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 from matplotlib.lines import Line2D  # noqa: E402
 
-from autofly_ue5.expert.footprint_contact import FOOTPRINT_CONTACT_M, footprint_obstacles  # noqa: E402
+from autofly_ue5.expert.footprint_contact import CIRCLE_CONTACT_M, OUTLINE_CONTACT_M, check_shape, footprint_obstacles  # noqa: E402
+from autofly_ue5.expert.run_shape import LEGACY_SHAPE  # noqa: E402
 from autofly_ue5.expert.movers import FORWARD_SPEED_MAX_M_S  # noqa: E402
 from autofly_ue5.frames import wrap_pi  # noqa: E402
 from autofly_ue5.paths import RUNS_DIR  # noqa: E402
+from autofly_ue5.scenes.footprint_field import FootprintFields, outline_distance  # noqa: E402
 from autofly_ue5.scenes.model import DRONE_HALF_SPAN_M, Instance, load_registry  # noqa: E402
 from autofly_ue5.sim.types import CONTROL_DT_S, Pose  # noqa: E402
 from autofly_ue5.validate.obstacles import (  # noqa: E402
@@ -104,6 +114,8 @@ def load_endings(run_root: Path) -> tuple[list[dict], dict]:
     outcomes: Counter = Counter()
     for path in files:
         record = json.loads(path.read_text())
+        # the shape this record was scored under: its contact_rules' (a record from before shapes scored the circle)
+        scored = check_shape(((record.get("contact_rules") or {}).get("footprint") or {}).get("shape", LEGACY_SHAPE))
         for name, checkpoint in sorted(record.get("checkpoints", {}).items()):
             for ep in (checkpoint.get("deterministic") or {}).get("per_episode") or []:
                 outcomes[ep.get("collision_source") or ep.get("outcome") or "none"] += 1
@@ -112,8 +124,11 @@ def load_endings(run_root: Path) -> tuple[list[dict], dict]:
                     continue
                 if not ep.get("final_pose"):
                     raise SystemExit(f"{path}: {name} seed {ep.get('seed')} ended at a footprint without a final pose")
+                if contact.get("shape", scored) != scored:
+                    raise SystemExit(f"{path}: {name} seed {ep.get('seed')} ended under the {contact['shape']}, in a record "
+                                     f"scored under the {scored}")
                 endings.append({"record": path.name, "checkpoint": name, "seed": ep.get("seed"), "steps": ep.get("steps"),
-                                "final_pose": [float(v) for v in ep["final_pose"]], **contact})
+                                "final_pose": [float(v) for v in ep["final_pose"]], "scored_shape": scored, **contact})
     return endings, {"records": [p.name for p in files], "flights": sum(outcomes.values()),
                      "endings": dict(sorted(outcomes.items()))}
 
@@ -229,6 +244,7 @@ def ending_record(ending: dict, mesh: Mesh, tree: dict, geom: dict, world: np.nd
     return {
         "record": ending["record"], "checkpoint": ending["checkpoint"], "seed": ending["seed"], "steps": ending["steps"],
         "tag": ending["tag"], "asset": ending["asset"], "rule": ending.get("rule"),
+        "scored_shape": ending.get("scored_shape", LEGACY_SHAPE),
         "recorded_gap_m": ending.get("gap_m"), "recorded_bearing_deg": ending.get("bearing_deg"),
         "drone_forward_m_s": ending.get("drone_forward_m_s"),
         "final_pose": [round(v, 4) for v in ending["final_pose"]], "altitude_m": round(altitude, 3),
@@ -281,11 +297,11 @@ def azimuth_extent(xy: np.ndarray, centre) -> np.ndarray:
 
 
 def boundary_clearance(xy: np.ndarray, centre, radius: float) -> np.ndarray:
-    """For each bin's middle azimuth, the distance from the rule's boundary point (FOOTPRINT_CONTACT_M outside a circle
+    """For each bin's middle azimuth, the distance from the rule's boundary point (CIRCLE_CONTACT_M outside a circle
     of `radius` about `centre`) to the nearest of `xy`: how far the drone stopped there would be from that geometry."""
     if not len(xy):
         return np.full(EXTENT_AZIMUTHS, np.inf)
-    b = np.asarray(centre)[None, :] + (radius + FOOTPRINT_CONTACT_M) * _BIN_U
+    b = np.asarray(centre)[None, :] + (radius + CIRCLE_CONTACT_M) * _BIN_U
     out = np.empty(EXTENT_AZIMUTHS)
     for i in range(0, EXTENT_AZIMUTHS, 45):
         chunk = b[i:i + 45]
@@ -440,15 +456,15 @@ def tree_summary(tree: dict, geom: dict) -> dict:
         "band_points": {"all": int(len(geom["band_all"])), "wood": int(len(geom["band_wood"]))},
         "pivot_circle": {
             "excess_all": _q(excess_all), "excess_wood": _q(excess_wood),
-            "share_excess_all_gt_contact": _share(excess_all, FOOTPRINT_CONTACT_M),
-            "share_excess_wood_gt_contact": _share(excess_wood, FOOTPRINT_CONTACT_M),
+            "share_excess_all_gt_contact": _share(excess_all, CIRCLE_CONTACT_M),
+            "share_excess_wood_gt_contact": _share(excess_wood, CIRCLE_CONTACT_M),
             "boundary_clearance_all": _q(geom["boundary_all"]), "boundary_clearance_wood": _q(geom["boundary_wood"]),
             "share_boundary_all_gt_far": _share(geom["boundary_all"], FAR_M),
             "share_boundary_wood_gt_far": _share(geom["boundary_wood"], FAR_M),
             "boundary_clearance_column_all": _q(geom["boundary_column_all"]),
         },
         "mec_circle": {
-            "excess_all": _q(mec_excess), "share_excess_all_gt_contact": _share(mec_excess, FOOTPRINT_CONTACT_M),
+            "excess_all": _q(mec_excess), "share_excess_all_gt_contact": _share(mec_excess, CIRCLE_CONTACT_M),
             "boundary_clearance_all": _q(geom["mec_boundary_all"]), "boundary_clearance_wood": _q(geom["mec_boundary_wood"]),
             "share_boundary_all_gt_far": _share(geom["mec_boundary_all"], FAR_M),
             "share_boundary_wood_gt_far": _share(geom["mec_boundary_wood"], FAR_M),
@@ -507,8 +523,8 @@ def asset_summary(asset: str, tree_rows: list[dict], geoms: dict, rows: list[dic
         "area_reduction": _q([t["area_reduction"] for t in mine]),
         "pivot_circle": {
             "excess_all": _q(radius - pool("extent_all")), "excess_wood": _q(radius - pool("extent_wood")),
-            "share_excess_all_gt_contact": _share(radius - pool("extent_all"), FOOTPRINT_CONTACT_M),
-            "share_excess_wood_gt_contact": _share(radius - pool("extent_wood"), FOOTPRINT_CONTACT_M),
+            "share_excess_all_gt_contact": _share(radius - pool("extent_all"), CIRCLE_CONTACT_M),
+            "share_excess_wood_gt_contact": _share(radius - pool("extent_wood"), CIRCLE_CONTACT_M),
             "boundary_clearance_all": _q(pool("boundary_all")), "boundary_clearance_wood": _q(pool("boundary_wood")),
             "share_boundary_all_gt_far": _share(pool("boundary_all"), FAR_M),
             "share_boundary_wood_gt_far": _share(pool("boundary_wood"), FAR_M),
@@ -516,7 +532,7 @@ def asset_summary(asset: str, tree_rows: list[dict], geoms: dict, rows: list[dic
         },
         "mec_circle": {
             "excess_all": _q(mec_r - pool("mec_extent_all")),
-            "share_excess_all_gt_contact": _share(mec_r - pool("mec_extent_all"), FOOTPRINT_CONTACT_M),
+            "share_excess_all_gt_contact": _share(mec_r - pool("mec_extent_all"), CIRCLE_CONTACT_M),
             "boundary_clearance_all": _q(pool("mec_boundary_all")), "boundary_clearance_wood": _q(pool("mec_boundary_wood")),
             "share_boundary_all_gt_far": _share(pool("mec_boundary_all"), FAR_M),
             "share_boundary_wood_gt_far": _share(pool("mec_boundary_wood"), FAR_M),
@@ -524,7 +540,7 @@ def asset_summary(asset: str, tree_rows: list[dict], geoms: dict, rows: list[dic
         },
         "endings_nearest_in_forward_view": sum(1 for r in endings if r["nearest_in_forward_view"]),
         "endings_by_side_of_lean_deg": _bucket([r["lean_angle_deg"] for r in endings], edges=(45.0, 90.0, 135.0)),
-        "endings_outside_mec_rule": sum(1 for r in endings if r["mec_gap_final_m"] > FOOTPRINT_CONTACT_M),
+        "endings_outside_mec_rule": sum(1 for r in endings if r["mec_gap_final_m"] > CIRCLE_CONTACT_M),
         "ending_clearance": {
             "final_all": _q(pick(lambda r: r["clearance_final"]["all"]["min"])),
             "final_wood": _q(pick(lambda r: r["clearance_final"]["wood"]["min"])),
@@ -543,7 +559,7 @@ def asset_summary(asset: str, tree_rows: list[dict], geoms: dict, rows: list[dic
     }
 
 
-def _bucket(values, edges=(DRONE_HALF_SPAN_M, FOOTPRINT_CONTACT_M, 1.0, FAR_M, 2.0)) -> dict:
+def _bucket(values, edges=(DRONE_HALF_SPAN_M, CIRCLE_CONTACT_M, 1.0, FAR_M, 2.0)) -> dict:
     """How many values fall below each line, between them, above the last, or are none (no geometry at that height)."""
     out: dict = {}
     lo = 0.0
@@ -584,6 +600,16 @@ def compute(run_root: Path, layout_path: Path, band_m: tuple[float, float] = BAN
         geoms[tree["tag"]] = geom
         tree_rows.append(tree_summary(tree, geom))
         del world
+    # The outline rule's gap at each ending (the step's end, as circle_gap_final_m): where the rule now measures to; and
+    # the gap of the shape the ending's record was scored under, which its recorded gap is checked against.
+    fields = FootprintFields.load(assets)
+    for row in rows:
+        tree = by_tag[row["tag"]]
+        inst = Instance(**{**tree, "scale": tuple(tree["scale"])})
+        xy = tuple(row["final_pose"][:2])
+        gap = outline_distance(fields[tree["asset"]], inst, xy, xy)
+        row["outline_gap_final_m"] = round(gap, 4) if math.isfinite(gap) else None
+        row["scored_gap_final_m"] = row["outline_gap_final_m"] if row["scored_shape"] == "outline" else row["circle_gap_final_m"]
     window = []
     for i, pose in _window_check_poses(rows):
         tag = rows[i]["tag"]
@@ -600,8 +626,10 @@ def compute(run_root: Path, layout_path: Path, band_m: tuple[float, float] = BAN
         "window_depths": window,
         "window_depths_agree": all(w[k]["hit_pattern_equal"] and (w[k]["max_abs_diff_m"] or 0.0) < 1e-3
                                    for w in window for k in ("all", "wood")),
-        "recorded_gap_is_final_gap_max_diff_m": max((abs(r["circle_gap_final_m"] - r["recorded_gap_m"]) for r in rows),
-                                                    default=0.0),
+        # each recorded gap against its own shape's gap at the step's end (a gap beyond a field's reach counts as inf)
+        "recorded_gap_is_final_gap_max_diff_m": max((abs((math.inf if r["scored_gap_final_m"] is None
+                                                          else r["scored_gap_final_m"]) - r["recorded_gap_m"])
+                                                     for r in rows), default=0.0),
         "column_minus_ray_clearance_max_m": round(max(column_excess), 4) if column_excess else None,
         "slab_minus_ray_clearance_max_m": round(max(slab_excess), 4) if slab_excess else None,
     }
@@ -631,7 +659,11 @@ def compute(run_root: Path, layout_path: Path, band_m: tuple[float, float] = BAN
         "nearest_all_in_forward_view": sum(1 for r in rows if r["nearest_in_forward_view"]),
         "wood_within_rotor_reach": [i for i, r in enumerate(rows) if r["clearance_segment_min"]["wood"] is not None
                                     and r["clearance_segment_min"]["wood"] < DRONE_HALF_SPAN_M],
-        "outside_mec_rule": sum(1 for r in rows if r["mec_gap_final_m"] > FOOTPRINT_CONTACT_M),
+        "outside_mec_rule": sum(1 for r in rows if r["mec_gap_final_m"] > CIRCLE_CONTACT_M),
+        "outline_gap_final": _q([r["outline_gap_final_m"] for r in rows]),
+        "endings_within_outline_rule": sum(1 for r in rows if r["outline_gap_final_m"] is not None
+                                           and r["outline_gap_final_m"] <= OUTLINE_CONTACT_M),
+        "scored_shapes": dict(Counter(r["scored_shape"] for r in rows)),
         "far_side_of_lean": _bucket([r["lean_angle_deg"] for r in rows], edges=(45.0, 90.0, 135.0)),
     }
     record = {
@@ -639,7 +671,8 @@ def compute(run_root: Path, layout_path: Path, band_m: tuple[float, float] = BAN
         "run_root": str(run_root), "eval_watch": flights,
         "layout": {"path": str(layout_path), "sha256": layout_sha, "scene_id": data["layout"]["scene_id"],
                    "trees": len(trees)},
-        "rule": {"contact_m": FOOTPRINT_CONTACT_M, "drone_half_span_m": DRONE_HALF_SPAN_M, "step_m": STEP_M},
+        "rule": {"contact_m": CIRCLE_CONTACT_M, "outline_contact_m": OUTLINE_CONTACT_M,
+                 "drone_half_span_m": DRONE_HALF_SPAN_M, "step_m": STEP_M},
         "method": {"ray_azimuths": RAY_AZIMUTHS, "heights_m": {k: v for k, v in HEIGHTS},
                    "segment_back_m": list(SEGMENT_BACK_M), "extent_azimuths": EXTENT_AZIMUTHS, "grid_m": GRID_M,
                    "band_m": list(band_m), "far_m": FAR_M,
@@ -701,7 +734,7 @@ def _histogram(ax, rows: list[dict]) -> None:
     top = max(counts.max(initial=0), wc.max(initial=0), n_all, n_wood, 1)
     ax.set_ylim(0, top * 1.6)
     for x, style, text in ((DRONE_HALF_SPAN_M, (0, (1, 1.5)), f"rotor reach {DRONE_HALF_SPAN_M:g} m"),
-                           (FOOTPRINT_CONTACT_M, (0, (4, 2)), f"rule {FOOTPRINT_CONTACT_M:g} m")):
+                           (CIRCLE_CONTACT_M, (0, (4, 2)), f"rule {CIRCLE_CONTACT_M:g} m")):
         ax.axvline(x, color=RULE, linestyle=style, linewidth=1.2, zorder=4)
         ax.text(x - 0.03, 0.03, text, transform=ax.get_xaxis_transform(), rotation=90, ha="right", va="bottom",
                 fontsize=7, color=RULE)
@@ -727,7 +760,7 @@ def _asset_strip(ax, rows: list[dict], record: dict, order: list[str]) -> None:
     rng = np.random.default_rng(1)
     hi = 4.6
     ax.axvspan(FAR_M, hi + 0.5, color=FAR_SHADE, zorder=0)
-    for x, style in ((DRONE_HALF_SPAN_M, (0, (1, 1.5))), (FOOTPRINT_CONTACT_M, (0, (4, 2)))):
+    for x, style in ((DRONE_HALF_SPAN_M, (0, (1, 1.5))), (CIRCLE_CONTACT_M, (0, (4, 2)))):
         ax.axvline(x, color=RULE, linestyle=style, linewidth=1.0, zorder=1)
     labels = []
     for k, asset in enumerate(order):
@@ -765,7 +798,7 @@ def _boundary_ranges(ax, record: dict, order: list[str]) -> None:
             ax.plot(q["median"], k + dy, "o", color="white", markeredgecolor=colour, markersize=4.5, zorder=4)
             ax.text(3.75, k + dy, f"{100 * a[key]['share_boundary_all_gt_far']:.0f}%", fontsize=6.5, va="center",
                     ha="right", color="#222222")
-    ax.axvline(FOOTPRINT_CONTACT_M, color=RULE, linestyle=(0, (4, 2)), linewidth=1.0)
+    ax.axvline(CIRCLE_CONTACT_M, color=RULE, linestyle=(0, (4, 2)), linewidth=1.0)
     ax.axvline(FAR_M, color=RULE, linestyle=(0, (1, 1.5)), linewidth=1.0)
     ax.text(3.75, -0.55, f"share > {FAR_M:g} m", fontsize=6.5, ha="right", va="bottom", color="#222222")
     ax.set_yticks(range(len(order)), order, fontsize=7)
@@ -788,12 +821,12 @@ def _tree_layers(ax, tree: dict, geom: dict, *, slice_xy: np.ndarray | None = No
         ax.scatter(slice_xy[:, 1], slice_xy[:, 0], s=1.2, color=SLICE, linewidths=0, rasterized=True, zorder=3)
     r = float(tree["radius_m"])
     ax.add_patch(plt.Circle((tree["y"], tree["x"]), r, fill=False, edgecolor=TREE_EDGE, linewidth=1.3, zorder=4))
-    ax.add_patch(plt.Circle((tree["y"], tree["x"]), r + FOOTPRINT_CONTACT_M, fill=False, edgecolor=RULE,
+    ax.add_patch(plt.Circle((tree["y"], tree["x"]), r + CIRCLE_CONTACT_M, fill=False, edgecolor=RULE,
                             linestyle=(0, (4, 2)), linewidth=1.1, zorder=4))
     mec = geom["mec_all"]
     ax.add_patch(plt.Circle((mec["centre"][1], mec["centre"][0]), mec["radius_m"], fill=False, edgecolor=MEC_COLOUR,
                             linewidth=1.1, zorder=4))
-    ax.add_patch(plt.Circle((mec["centre"][1], mec["centre"][0]), mec["radius_m"] + FOOTPRINT_CONTACT_M, fill=False,
+    ax.add_patch(plt.Circle((mec["centre"][1], mec["centre"][0]), mec["radius_m"] + CIRCLE_CONTACT_M, fill=False,
                             edgecolor=MEC_COLOUR, linestyle=(0, (4, 2)), linewidth=0.8, zorder=4))
     ax.plot(tree["y"], tree["x"], "o", color="black", markersize=3, zorder=5)
     ax.plot(mec["centre"][1], mec["centre"][0], "+", color=MEC_COLOUR, markersize=6, markeredgewidth=1.3, zorder=5)
@@ -819,7 +852,7 @@ def _asset_panel(ax, asset: str, record: dict, drawing: dict) -> None:
             ax.plot(r["final_pose"][1], r["final_pose"][0], "x", color=ENDING, markersize=5, markeredgewidth=1.4, zorder=6)
     row = next(t for t in record["trees"] if t["tag"] == tag)
     a = record["assets"][asset]
-    _square(ax, tree["x"], tree["y"], tree["radius_m"] + FOOTPRINT_CONTACT_M + 0.35)
+    _square(ax, tree["x"], tree["y"], tree["radius_m"] + CIRCLE_CONTACT_M + 0.35)
     ax.set_title(f"{asset} ({tag}, {counts.get(tag, 0)} endings)\ncircle {tree['radius_m']:.2f} m → enclosing "
                  f"{row['mec_all']['radius_m']:.2f} m\ncentre {row['mec_all']['offset_m']:.2f} m off pivot, area "
                  f"−{100 * row['area_reduction']:.0f}%\nboundary > {FAR_M:g} m from leaves: "
@@ -851,7 +884,7 @@ def _close_up(ax, row: dict, drawing: dict, band_m: tuple[float, float]) -> None
         ax.plot(hit[1], hit[0], "o", color=ENDING, markersize=3.5, zorder=8)
         ax.text((y + hit[1]) / 2, (x + hit[0]) / 2, f" {best['min']:.2f} m", fontsize=7, color=ENDING, zorder=9,
                 ha="left", va="bottom", bbox=dict(boxstyle="round,pad=0.1", facecolor="white", edgecolor="none", alpha=0.8))
-    _square(ax, tree["x"], tree["y"], tree["radius_m"] + FOOTPRINT_CONTACT_M + 0.35)
+    _square(ax, tree["x"], tree["y"], tree["radius_m"] + CIRCLE_CONTACT_M + 0.35)
     wood = row["clearance_final"]["wood"]["min"]
     ax.set_title(f"{tag} {tree['asset']}: {row['checkpoint']}, seed {row['seed']}\nat {altitude:.2f} m, "
                  f"{row['circle_gap_final_m']:.2f} m from the circle; nearest leaf {best['min'] or float('nan'):.2f} m,"
@@ -896,7 +929,7 @@ def draw(out: Path, record: dict, drawing: dict, band_m: tuple[float, float]) ->
              f"from the nearest leaf or wood at the drone's altitude. Upright species: {len(other_rows)} endings, median "
              f"{med(other_rows):.2f} m.", ha="center", fontsize=9.5, color="#222222")
     fig.text(0.5, 0.934, f"No ending had wood within the rotor reach ({DRONE_HALF_SPAN_M:g} m). {s['outside_mec_rule']} of "
-             f"{s['endings']} endings lie more than {FOOTPRINT_CONTACT_M:g} m outside the minimum enclosing circle: a rule "
+             f"{s['endings']} endings lie more than {CIRCLE_CONTACT_M:g} m outside the minimum enclosing circle: a rule "
              f"on that circle would not have ended them there.", ha="center", fontsize=9.5, color="#222222")
     fig.text(0.5, 0.916, "Clearances: validate/obstacles.py's glTF ray caster, 720 horizontal rays from the drone's "
              "centre at its altitude and ±0.25 m, to the tree the ending names. Maps: NED, x north up, y east "
@@ -907,7 +940,7 @@ def draw(out: Path, record: dict, drawing: dict, band_m: tuple[float, float]) ->
         Line2D([], [], marker="o", linestyle="none", color=WOOD, markersize=5, label="wood in the band"),
         Line2D([], [], marker="o", linestyle="none", color=SLICE, markersize=5, label="within ±0.25 m of the drone (c)"),
         Line2D([], [], color=TREE_EDGE, linewidth=1.3, label="footprint circle (radius_m, about the pivot •)"),
-        Line2D([], [], color=RULE, linestyle=(0, (4, 2)), label=f"rule boundary (+{FOOTPRINT_CONTACT_M:g} m)"),
+        Line2D([], [], color=RULE, linestyle=(0, (4, 2)), label=f"rule boundary (+{CIRCLE_CONTACT_M:g} m)"),
         Line2D([], [], color=MEC_COLOUR, linewidth=1.1, label="minimum enclosing circle (+ centre), dashed: its boundary"),
         Line2D([], [], color=ENDING, marker="x", linestyle="none", markersize=6, markeredgewidth=1.4,
                label="where a flight ended"),

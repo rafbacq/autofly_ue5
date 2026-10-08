@@ -57,3 +57,7 @@ done
 # then: the pick -> $J start m5_s02_gate -- $PY -m scripts.m2_gate --scene s02 --scene-config $CFG --episodes 200 \
 #   --conditions deterministic --model <pick>=<path> --out docs/gates/m5_s02_gate.json
 ```
+
+Addendum (2026-10-08, before the gate ran): the circle gate is flown on main as it stood before the outline patch (pure
+circle, 0.9 m); after the patch, m2_gate reads s02_r1's identity and scores it under the circle without a flag. The
+outline record of the pick, at the outline's 1.05 m, is docs/gates/m5_s02_gate_outline.json.

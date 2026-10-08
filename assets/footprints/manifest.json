@@ -1,0 +1,892 @@
+{
+ "format": "autofly_ue5_footprint_fields/1",
+ "field_version": 1,
+ "frame": "glTF x (columns) and glTF z (rows) at unit scale, the horizontal plane of validate/obstacles.Mesh._to_gltf: UE x = glTF x, UE y = glTF z; origin = the corner of cell (0, 0)",
+ "cell_m": 0.025,
+ "margin_m": 3.0,
+ "supersample": 4,
+ "fields": {
+  "boulder_01": {
+   "file": "boulder_01.npz",
+   "npz_sha256": "6a45d739c62f8d92383a1689f798960dd13f128e23f0ff0ea0aa26e597114551",
+   "field_sha256": "a0065e1c76b5b26213aa0eb8b1f2d942d50d19fc8158486f476a7107c08fdefe",
+   "field_version": 1,
+   "grid": [
+    314,
+    291
+   ],
+   "origin": [
+    -3.74815970659256,
+    -3.943161140150595
+   ],
+   "source": {
+    "source": "polyhaven",
+    "id": "boulder_01",
+    "node": "boulder_01",
+    "file": "boulder_01_2k.gltf",
+    "gltf_sha256": "52d118b56748a18509e4ec0075d07b254d72a0401793f22363c0bb3a682e7361",
+    "buffers": {
+     "boulder_01.bin": "7f5b06503d62bd95bfe9c6b8a354a5cc8ff04a4d271a8cf87a3e3125db4232d7"
+    }
+   },
+   "triangles": {
+    "all": 66122,
+    "opaque": 66122,
+    "cards": 0,
+    "below_ground": 694,
+    "cut_at_ground": 270
+   },
+   "projection_m": {
+    "x": [
+     -0.74816,
+     0.523976
+    ],
+    "z": [
+     -0.943161,
+     0.881894
+    ]
+   },
+   "pivot_reach_m": 0.961443
+  },
+  "island_tree_02": {
+   "file": "island_tree_02.npz",
+   "npz_sha256": "1568872198b32a0598e22f85b77e6ec1cdaacc1f07b0aff208ddc9c2f3c19c55",
+   "field_sha256": "a14f640a0176311482540d13028adeb20d22c80858eb144f103e844789a51b2e",
+   "field_version": 1,
+   "grid": [
+    403,
+    409
+   ],
+   "origin": [
+    -5.052337884902954,
+    -4.11415421962738
+   ],
+   "source": {
+    "source": "polyhaven",
+    "id": "island_tree_02",
+    "node": "island_tree_02_LOD0",
+    "file": "island_tree_02_2k.gltf",
+    "gltf_sha256": "134b85d69f89fa6ad84555999ea02ae28ddf4713d4672e18e03d5917fd43ae62",
+    "buffers": {
+     "island_tree_02.bin": "427d69ccc1ea12d1fb9c6af89691563b4a097f39a6f34c15be6e45ef5e5fd4ce"
+    }
+   },
+   "triangles": {
+    "all": 1072213,
+    "opaque": 357469,
+    "cards": 714744,
+    "below_ground": 72,
+    "cut_at_ground": 98
+   },
+   "projection_m": {
+    "x": [
+     -2.052338,
+     2.155407
+    ],
+    "z": [
+     -1.114154,
+     2.956543
+    ]
+   },
+   "pivot_reach_m": 3.316243
+  },
+  "island_tree_03": {
+   "file": "island_tree_03.npz",
+   "npz_sha256": "4a0cebe07ce936c21c09beabe8dedf9b28482f4a381aa3dd8954814adba66c02",
+   "field_sha256": "e0879028492e7bb512da08d24115ad87aaa052d60b27ddaafe50f23b1e18110e",
+   "field_version": 1,
+   "grid": [
+    357,
+    359
+   ],
+   "origin": [
+    -3.812345504760742,
+    -4.243606805801392
+   ],
+   "source": {
+    "source": "polyhaven",
+    "id": "island_tree_03",
+    "node": "island_tree_03_LOD0",
+    "file": "island_tree_03_2k.gltf",
+    "gltf_sha256": "7c61eb6b7a019386c3de1fdf35c33e01a356b8f0bf475591bf96eaa8f0b58c30",
+    "buffers": {
+     "island_tree_03.bin": "ac0631f236502155307ac0320b53201a0d3bab6348699ad9edd3172322aaf08b"
+    }
+   },
+   "triangles": {
+    "all": 2085320,
+    "opaque": 676616,
+    "cards": 1408704,
+    "below_ground": 785,
+    "cut_at_ground": 291
+   },
+   "projection_m": {
+    "x": [
+     -0.812346,
+     2.159725
+    ],
+    "z": [
+     -1.243607,
+     1.669626
+    ]
+   },
+   "pivot_reach_m": 2.213591
+  },
+  "namaqualand_boulder_02": {
+   "file": "namaqualand_boulder_02.npz",
+   "npz_sha256": "9053720eb73521d36dea0bec807dc03f6f2e65b53cdc34585cb3a641684b0e0c",
+   "field_sha256": "e7e86037660a8a4bf07fd46ddac10df95cbdf15c5e40530abffb0c61c2f09161",
+   "field_version": 1,
+   "grid": [
+    290,
+    340
+   ],
+   "origin": [
+    -4.184006571769714,
+    -3.6086939573287964
+   ],
+   "source": {
+    "source": "polyhaven",
+    "id": "namaqualand_boulder_02",
+    "node": "boulder_02",
+    "file": "namaqualand_boulder_02_2k.gltf",
+    "gltf_sha256": "e181b722c8c8bd56f98ab8883b283b3cb3c437c372af3b831aec2f94c22fe0f2",
+    "buffers": {
+     "namaqualand_boulder_02.bin": "0f6daa7ec9b1a92207c0b09b737ff1eec904aebc1c1eada778afa6e5eacd55c0"
+    }
+   },
+   "triangles": {
+    "all": 97964,
+    "opaque": 97964,
+    "cards": 0,
+    "below_ground": 5498,
+    "cut_at_ground": 1265
+   },
+   "projection_m": {
+    "x": [
+     -1.184007,
+     1.311686
+    ],
+    "z": [
+     -0.608694,
+     0.622171
+    ]
+   },
+   "pivot_reach_m": 1.363872
+  },
+  "namaqualand_boulder_03": {
+   "file": "namaqualand_boulder_03.npz",
+   "npz_sha256": "7b21e50c42366d1208ce9f81bdcf70bf322cba489043d3a24bd3e69c6da23bff",
+   "field_sha256": "14c2c2c503589b37e809038ce85ca6a4afc7070a53cec624ef7929739b47d1b4",
+   "field_version": 1,
+   "grid": [
+    363,
+    337
+   ],
+   "origin": [
+    -4.054810881614685,
+    -4.389580726623535
+   ],
+   "source": {
+    "source": "polyhaven",
+    "id": "namaqualand_boulder_03",
+    "node": "boulder_03_LOD0",
+    "file": "namaqualand_boulder_03_2k.gltf",
+    "gltf_sha256": "5d135c8e3a74edf7f53ae04d41deed19582ed6ced6d629d5d51e730319ed0dcb",
+    "buffers": {
+     "namaqualand_boulder_03.bin": "d24151021ed310fe3207f1b5964bff22b583e77d2617427a88b5dcbc0447a475"
+    }
+   },
+   "triangles": {
+    "all": 64826,
+    "opaque": 64826,
+    "cards": 0,
+    "below_ground": 145,
+    "cut_at_ground": 256
+   },
+   "projection_m": {
+    "x": [
+     -1.054811,
+     1.352286
+    ],
+    "z": [
+     -1.389581,
+     1.675825
+    ]
+   },
+   "pivot_reach_m": 1.684021
+  },
+  "namaqualand_boulder_04": {
+   "file": "namaqualand_boulder_04.npz",
+   "npz_sha256": "d1ff9ebf010121df6935a581ff5a7b95f7f2e63b226eec0ce683c7393e070435",
+   "field_sha256": "cb48d8036b66ca55f33531abd778a787a0aead424519548613d908326aed8479",
+   "field_version": 1,
+   "grid": [
+    340,
+    341
+   ],
+   "origin": [
+    -4.340292930603027,
+    -4.031047582626343
+   ],
+   "source": {
+    "source": "polyhaven",
+    "id": "namaqualand_boulder_04",
+    "node": "boulder_04",
+    "file": "namaqualand_boulder_04_2k.gltf",
+    "gltf_sha256": "199a6ff206a09086a82542238dbdc0e024832d8662c3f5648dd4b6bbf3e3c724",
+    "buffers": {
+     "namaqualand_boulder_04.bin": "99ba28ddc8da9ba24e1a419e69ed05f14c4b483bf06268a8a77495545985318a"
+    }
+   },
+   "triangles": {
+    "all": 59066,
+    "opaque": 59066,
+    "cards": 0,
+    "below_ground": 427,
+    "cut_at_ground": 310
+   },
+   "projection_m": {
+    "x": [
+     -1.340293,
+     1.18186
+    ],
+    "z": [
+     -1.031048,
+     1.465375
+    ]
+   },
+   "pivot_reach_m": 1.476836
+  },
+  "namaqualand_boulder_05": {
+   "file": "namaqualand_boulder_05.npz",
+   "npz_sha256": "de0b2064ef503290017e2190234cd83b714d04376b4351feb89cc8a83b9033b6",
+   "field_sha256": "04befa9f8012c679efe3877430dbce8bbec8a3640e606e1737447534c3403fbd",
+   "field_version": 1,
+   "grid": [
+    270,
+    295
+   ],
+   "origin": [
+    -3.635075092315674,
+    -3.3979585468769073
+   ],
+   "source": {
+    "source": "polyhaven",
+    "id": "namaqualand_boulder_05",
+    "node": "namaqualand_boulder_05",
+    "file": "namaqualand_boulder_05_2k.gltf",
+    "gltf_sha256": "d2e1f687c01176703e76b6c6d9ff7a98c868a3c6402c7d97bc17a613e9c64fcc",
+    "buffers": {
+     "namaqualand_boulder_05.bin": "a60ade71de8612c873f9112159ed5d93dcba58979007a0915bc10d551a9ed03c"
+    }
+   },
+   "triangles": {
+    "all": 89618,
+    "opaque": 89618,
+    "cards": 0,
+    "below_ground": 119,
+    "cut_at_ground": 128
+   },
+   "projection_m": {
+    "x": [
+     -0.635075,
+     0.728956
+    ],
+    "z": [
+     -0.397959,
+     0.350021
+    ]
+   },
+   "pivot_reach_m": 0.729041
+  },
+  "namaqualand_boulder_06": {
+   "file": "namaqualand_boulder_06.npz",
+   "npz_sha256": "7743fd93ccd21546d07ab705777ce300c5bbf3f7494045dc6a7e7673fe542aaf",
+   "field_sha256": "c96cad6fa63f2708b6e1348ddf7a87e530ef49e67883760263ec9529b7fc2a58",
+   "field_version": 1,
+   "grid": [
+    289,
+    267
+   ],
+   "origin": [
+    -3.32072713971138,
+    -3.6608133912086487
+   ],
+   "source": {
+    "source": "polyhaven",
+    "id": "namaqualand_boulder_06",
+    "node": "namaqualand_boulder_06",
+    "file": "namaqualand_boulder_06_2k.gltf",
+    "gltf_sha256": "405f95c207f1b48b1d3f84a04e9458e62f4d4269ff62f32b1ee870a8b4471dea",
+    "buffers": {
+     "namaqualand_boulder_06.bin": "c74e1f84fd9b48ba86420263804da0899d4d2d2f470276be801ef450ac5e08f3"
+    }
+   },
+   "triangles": {
+    "all": 109114,
+    "opaque": 109114,
+    "cards": 0,
+    "below_ground": 2383,
+    "cut_at_ground": 328
+   },
+   "projection_m": {
+    "x": [
+     -0.320727,
+     0.354256
+    ],
+    "z": [
+     -0.660813,
+     0.551062
+    ]
+   },
+   "pivot_reach_m": 0.664554
+  },
+  "quiver_tree_01": {
+   "file": "quiver_tree_01.npz",
+   "npz_sha256": "c05f3ec598426fb3cd7435c0753119e63d8e3399ae22ec9dba616817fd9a0d05",
+   "field_sha256": "dc1a8cff4cb2a5f3920ad3a6523fce5d6797ec1614525e497616cfcf54842288",
+   "field_version": 1,
+   "grid": [
+    279,
+    288
+   ],
+   "origin": [
+    -3.547040283679962,
+    -3.466109335422516
+   ],
+   "source": {
+    "source": "polyhaven",
+    "id": "quiver_tree_01",
+    "node": "quiver_tree_01",
+    "file": "quiver_tree_01_2k.gltf",
+    "gltf_sha256": "c04c3695eb768bcca3b8a87d40a981cae276f4ae7b503685514a658b61fbe65d",
+    "buffers": {
+     "quiver_tree_01.bin": "20efdf4aa14825ffd01abb21535afd485a00022c96ad04c1269bb01c137bbe08"
+    }
+   },
+   "triangles": {
+    "all": 150124,
+    "opaque": 36970,
+    "cards": 113154,
+    "below_ground": 531,
+    "cut_at_ground": 126
+   },
+   "projection_m": {
+    "x": [
+     -0.54704,
+     0.634195
+    ],
+    "z": [
+     -0.466109,
+     0.502396
+    ]
+   },
+   "pivot_reach_m": 0.67198
+  },
+  "sand_rocks_small_01": {
+   "file": "sand_rocks_small_01.npz",
+   "npz_sha256": "1d7abf55528197f4616347b5c545140a579b43f8c88dbe20b873ef019f14e0b0",
+   "field_sha256": "54034599d0c50c527f5eaf8e82eef92b1393aa3bb35317fc4c9448f61ad4efa1",
+   "field_version": 1,
+   "grid": [
+    393,
+    425
+   ],
+   "origin": [
+    -5.456537870641769,
+    -4.890745702334181
+   ],
+   "source": {
+    "source": "polyhaven",
+    "id": "sand_rocks_small_01",
+    "node": "sand_rocks_small_01_LOD0",
+    "file": "sand_rocks_small_01_2k.gltf",
+    "gltf_sha256": "a4b05d1ab4323aa0ffc4af1092093be3e957548a79cc55e9a1ebee0b556c8d12",
+    "buffers": {
+     "sand_rocks_small_01.bin": "77ea63c7cb39654b3e804f3b3a3dafdb5a39ff828192465276908dc3a963a44e"
+    }
+   },
+   "triangles": {
+    "all": 739469,
+    "opaque": 739469,
+    "cards": 0,
+    "below_ground": 175819,
+    "cut_at_ground": 24685
+   },
+   "projection_m": {
+    "x": [
+     -2.456538,
+     2.151606
+    ],
+    "z": [
+     -1.890746,
+     1.922268
+    ]
+   },
+   "pivot_reach_m": 2.458058
+  },
+  "searsia_burchellii_large": {
+   "file": "searsia_burchellii_large.npz",
+   "npz_sha256": "ab97109218bac344979297c52db2bb47b772ee175211f8683504644a4d5cac69",
+   "field_sha256": "9fdd5a597726e59e5c52db479f3c5ac8da0a851e68a32dcd8d546607ff46c87a",
+   "field_version": 1,
+   "grid": [
+    442,
+    407
+   ],
+   "origin": [
+    -4.7734739780426025,
+    -5.296138286590576
+   ],
+   "source": {
+    "source": "polyhaven",
+    "id": "searsia_burchellii",
+    "node": "searsia_burchellii_large_LOD0",
+    "file": "searsia_burchellii_2k.gltf",
+    "gltf_sha256": "4d4b912ea3cc9dfe306e47c572f4373d2785301671f2bc94eae276a9ad1442db",
+    "buffers": {
+     "searsia_burchellii.bin": "28d37b817d3d09d2bf9a765e247786ea65200927cb28d631ba59680ebbf6931f"
+    }
+   },
+   "triangles": {
+    "all": 361558,
+    "opaque": 197888,
+    "cards": 163670,
+    "below_ground": 3,
+    "cut_at_ground": 32
+   },
+   "projection_m": {
+    "x": [
+     -1.773474,
+     2.384669
+    ],
+    "z": [
+     -2.296138,
+     2.752394
+    ]
+   },
+   "pivot_reach_m": 2.894214
+  },
+  "searsia_burchellii_medium": {
+   "file": "searsia_burchellii_medium.npz",
+   "npz_sha256": "67020eb6d16a25c5578772764db5ca94b95c8e2a756f390aad2ced3403c0a7e2",
+   "field_sha256": "f434796e358d7f6e17c18edc7b5155cdc46d9ba7eb988a6c454707252a8efcd8",
+   "field_version": 1,
+   "grid": [
+    345,
+    384
+   ],
+   "origin": [
+    -4.971051096916199,
+    -4.187920093536377
+   ],
+   "source": {
+    "source": "polyhaven",
+    "id": "searsia_burchellii",
+    "node": "searsia_burchellii_medium_LOD0",
+    "file": "searsia_burchellii_2k.gltf",
+    "gltf_sha256": "4d4b912ea3cc9dfe306e47c572f4373d2785301671f2bc94eae276a9ad1442db",
+    "buffers": {
+     "searsia_burchellii.bin": "28d37b817d3d09d2bf9a765e247786ea65200927cb28d631ba59680ebbf6931f"
+    }
+   },
+   "triangles": {
+    "all": 210262,
+    "opaque": 96730,
+    "cards": 113532,
+    "below_ground": 1,
+    "cut_at_ground": 26
+   },
+   "projection_m": {
+    "x": [
+     -1.971051,
+     1.604353
+    ],
+    "z": [
+     -1.18792,
+     1.426263
+    ]
+   },
+   "pivot_reach_m": 2.002939
+  },
+  "searsia_burchellii_small": {
+   "file": "searsia_burchellii_small.npz",
+   "npz_sha256": "047d2dee63dbf9d2cfeb98df8fb14c422e78b1fc07a5d5543e35d83bf93e7fc6",
+   "field_sha256": "f2a05139e6963fcff0a73d99fa53fdabb8cac3291a2d5d18838acd605afc1b2a",
+   "field_version": 1,
+   "grid": [
+    331,
+    307
+   ],
+   "origin": [
+    -3.9716964960098267,
+    -4.223368883132935
+   ],
+   "source": {
+    "source": "polyhaven",
+    "id": "searsia_burchellii",
+    "node": "searsia_burchellii_small_LOD0",
+    "file": "searsia_burchellii_2k.gltf",
+    "gltf_sha256": "4d4b912ea3cc9dfe306e47c572f4373d2785301671f2bc94eae276a9ad1442db",
+    "buffers": {
+     "searsia_burchellii.bin": "28d37b817d3d09d2bf9a765e247786ea65200927cb28d631ba59680ebbf6931f"
+    }
+   },
+   "triangles": {
+    "all": 44516,
+    "opaque": 24690,
+    "cards": 19826,
+    "below_ground": 5,
+    "cut_at_ground": 37
+   },
+   "projection_m": {
+    "x": [
+     -0.971696,
+     0.683241
+    ],
+    "z": [
+     -1.223369,
+     1.049755
+    ]
+   },
+   "pivot_reach_m": 1.223652
+  },
+  "searsia_lucida_a": {
+   "file": "searsia_lucida_a.npz",
+   "npz_sha256": "af692048903060e31d16ecfbe026881e4b496980fccda1d4fbed7f4f5901c8fa",
+   "field_sha256": "3c67906a49726dae30d2fb381282c64821ce1df414606654d06562f85ef30e70",
+   "field_version": 1,
+   "grid": [
+    319,
+    313
+   ],
+   "origin": [
+    -3.8174365758895874,
+    -3.844059109687805
+   ],
+   "source": {
+    "source": "polyhaven",
+    "id": "searsia_lucida",
+    "node": "searsia_lucida_a_LOD0",
+    "file": "searsia_lucida_2k.gltf",
+    "gltf_sha256": "083eff7f2b9587e5bdb3c4e80a1bb03d10d15b51d29d011c5c988f03ff230b8f",
+    "buffers": {
+     "searsia_lucida.bin": "e0be13cac215725de1f8438d96e1010049d655512a0608c36eabe2ba5abff851"
+    }
+   },
+   "triangles": {
+    "all": 113405,
+    "opaque": 73282,
+    "cards": 40123,
+    "below_ground": 0,
+    "cut_at_ground": 42
+   },
+   "projection_m": {
+    "x": [
+     -0.817437,
+     0.988571
+    ],
+    "z": [
+     -0.844059,
+     1.121595
+    ]
+   },
+   "pivot_reach_m": 1.18403
+  },
+  "searsia_lucida_b": {
+   "file": "searsia_lucida_b.npz",
+   "npz_sha256": "b52c98958ee537e09794c70e02b056855489203d9025af38f6540b5a6b7b0f66",
+   "field_sha256": "051d9caa0a97a8a63c1a7d8217ce4d223a14a351e254357a837b0b4635380ce0",
+   "field_version": 1,
+   "grid": [
+    301,
+    299
+   ],
+   "origin": [
+    -3.728251814842224,
+    -3.8599486351013184
+   ],
+   "source": {
+    "source": "polyhaven",
+    "id": "searsia_lucida",
+    "node": "searsia_lucida_b_LOD0",
+    "file": "searsia_lucida_2k.gltf",
+    "gltf_sha256": "083eff7f2b9587e5bdb3c4e80a1bb03d10d15b51d29d011c5c988f03ff230b8f",
+    "buffers": {
+     "searsia_lucida.bin": "e0be13cac215725de1f8438d96e1010049d655512a0608c36eabe2ba5abff851"
+    }
+   },
+   "triangles": {
+    "all": 88629,
+    "opaque": 62886,
+    "cards": 25743,
+    "below_ground": 3,
+    "cut_at_ground": 38
+   },
+   "projection_m": {
+    "x": [
+     -0.728252,
+     0.73563
+    ],
+    "z": [
+     -0.859949,
+     0.663798
+    ]
+   },
+   "pivot_reach_m": 0.889922
+  },
+  "searsia_lucida_c": {
+   "file": "searsia_lucida_c.npz",
+   "npz_sha256": "8949d9ba30c2c47587a186c95043cfbdbbffe053f2f54b28bbc87e001c21b220",
+   "field_sha256": "168c5048b8ed5a860d4a321fdc9b8b691aca72eaf188c50810b3ae341c015f2a",
+   "field_version": 1,
+   "grid": [
+    290,
+    301
+   ],
+   "origin": [
+    -3.7887455224990845,
+    -3.6424636840820312
+   ],
+   "source": {
+    "source": "polyhaven",
+    "id": "searsia_lucida",
+    "node": "searsia_lucida_c_LOD0",
+    "file": "searsia_lucida_2k.gltf",
+    "gltf_sha256": "083eff7f2b9587e5bdb3c4e80a1bb03d10d15b51d29d011c5c988f03ff230b8f",
+    "buffers": {
+     "searsia_lucida.bin": "e0be13cac215725de1f8438d96e1010049d655512a0608c36eabe2ba5abff851"
+    }
+   },
+   "triangles": {
+    "all": 77603,
+    "opaque": 49351,
+    "cards": 28252,
+    "below_ground": 3,
+    "cut_at_ground": 31
+   },
+   "projection_m": {
+    "x": [
+     -0.788746,
+     0.720174
+    ],
+    "z": [
+     -0.642464,
+     0.606826
+    ]
+   },
+   "pivot_reach_m": 0.925753
+  },
+  "searsia_lucida_d": {
+   "file": "searsia_lucida_d.npz",
+   "npz_sha256": "3eb7b7f180e519d15baaf5639efd3b7db840c1ef8f300e0b4f46d0e2f9cadf53",
+   "field_sha256": "4a569700d185fd78155859f929f37a34ad542aef3f417c205cfc9c99cfbd1ae2",
+   "field_version": 1,
+   "grid": [
+    279,
+    284
+   ],
+   "origin": [
+    -3.583213984966278,
+    -3.4259039759635925
+   ],
+   "source": {
+    "source": "polyhaven",
+    "id": "searsia_lucida",
+    "node": "searsia_lucida_d_LOD0",
+    "file": "searsia_lucida_2k.gltf",
+    "gltf_sha256": "083eff7f2b9587e5bdb3c4e80a1bb03d10d15b51d29d011c5c988f03ff230b8f",
+    "buffers": {
+     "searsia_lucida.bin": "e0be13cac215725de1f8438d96e1010049d655512a0608c36eabe2ba5abff851"
+    }
+   },
+   "triangles": {
+    "all": 56320,
+    "opaque": 36125,
+    "cards": 20195,
+    "below_ground": 1,
+    "cut_at_ground": 43
+   },
+   "projection_m": {
+    "x": [
+     -0.583214,
+     0.512093
+    ],
+    "z": [
+     -0.425904,
+     0.528007
+    ]
+   },
+   "pivot_reach_m": 0.592334
+  },
+  "searsia_lucida_e": {
+   "file": "searsia_lucida_e.npz",
+   "npz_sha256": "7f3954664afbfa647652b17c54b43753ea699563bb2be4d4d2ce1ed42c9b805e",
+   "field_sha256": "d47ca5cd0b4448051310ee25257afc0322ad9ad1c15cd407b38ecd4a6cc111e3",
+   "field_version": 1,
+   "grid": [
+    269,
+    282
+   ],
+   "origin": [
+    -3.5145621299743652,
+    -3.355524003505707
+   ],
+   "source": {
+    "source": "polyhaven",
+    "id": "searsia_lucida",
+    "node": "searsia_lucida_e_LOD0",
+    "file": "searsia_lucida_2k.gltf",
+    "gltf_sha256": "083eff7f2b9587e5bdb3c4e80a1bb03d10d15b51d29d011c5c988f03ff230b8f",
+    "buffers": {
+     "searsia_lucida.bin": "e0be13cac215725de1f8438d96e1010049d655512a0608c36eabe2ba5abff851"
+    }
+   },
+   "triangles": {
+    "all": 27701,
+    "opaque": 17936,
+    "cards": 9765,
+    "below_ground": 0,
+    "cut_at_ground": 35
+   },
+   "projection_m": {
+    "x": [
+     -0.514562,
+     0.519386
+    ],
+    "z": [
+     -0.355524,
+     0.360347
+    ]
+   },
+   "pivot_reach_m": 0.549374
+  },
+  "searsia_lucida_f": {
+   "file": "searsia_lucida_f.npz",
+   "npz_sha256": "abc38ad92b84b9846127adc31a0f41728d15ce482b5d064adb5144c7bac44cc9",
+   "field_sha256": "9cde9660a63a202ad19f869f22b93c8590543c073f0a24bc36d47f8d62ff6628",
+   "field_version": 1,
+   "grid": [
+    260,
+    267
+   ],
+   "origin": [
+    -3.339170426130295,
+    -3.2734250128269196
+   ],
+   "source": {
+    "source": "polyhaven",
+    "id": "searsia_lucida",
+    "node": "searsia_lucida_f_LOD0",
+    "file": "searsia_lucida_2k.gltf",
+    "gltf_sha256": "083eff7f2b9587e5bdb3c4e80a1bb03d10d15b51d29d011c5c988f03ff230b8f",
+    "buffers": {
+     "searsia_lucida.bin": "e0be13cac215725de1f8438d96e1010049d655512a0608c36eabe2ba5abff851"
+    }
+   },
+   "triangles": {
+    "all": 7232,
+    "opaque": 4471,
+    "cards": 2761,
+    "below_ground": 0,
+    "cut_at_ground": 43
+   },
+   "projection_m": {
+    "x": [
+     -0.33917,
+     0.318475
+    ],
+    "z": [
+     -0.273425,
+     0.209779
+    ]
+   },
+   "pivot_reach_m": 0.345372
+  },
+  "searsia_lucida_g": {
+   "file": "searsia_lucida_g.npz",
+   "npz_sha256": "64f2ce9e89a080314e766bff7873d1a3d7e7b0a328707d590f19c1c9ae55ff32",
+   "field_sha256": "2342090795bf3b47e80c602ca253c1a10ff90984c52984187a6b9b62434a750d",
+   "field_version": 1,
+   "grid": [
+    253,
+    256
+   ],
+   "origin": [
+    -3.208374798297882,
+    -3.1548718959093094
+   ],
+   "source": {
+    "source": "polyhaven",
+    "id": "searsia_lucida",
+    "node": "searsia_lucida_g_LOD0",
+    "file": "searsia_lucida_2k.gltf",
+    "gltf_sha256": "083eff7f2b9587e5bdb3c4e80a1bb03d10d15b51d29d011c5c988f03ff230b8f",
+    "buffers": {
+     "searsia_lucida.bin": "e0be13cac215725de1f8438d96e1010049d655512a0608c36eabe2ba5abff851"
+    }
+   },
+   "triangles": {
+    "all": 6302,
+    "opaque": 3815,
+    "cards": 2487,
+    "below_ground": 0,
+    "cut_at_ground": 19
+   },
+   "projection_m": {
+    "x": [
+     -0.208375,
+     0.173341
+    ],
+    "z": [
+     -0.154872,
+     0.170049
+    ]
+   },
+   "pivot_reach_m": 0.219072
+  },
+  "tree_small_02": {
+   "file": "tree_small_02.npz",
+   "npz_sha256": "cfebfe585c206b97f2f24d5bc3e66b74c711fcafe85484f2a9b7e3196065f75e",
+   "field_sha256": "bd4c9ea5290b7d660a86b2947a382fb30ef8e28932b21de8612802a47d636a26",
+   "field_version": 1,
+   "grid": [
+    412,
+    357
+   ],
+   "origin": [
+    -4.308993458747864,
+    -4.38262677192688
+   ],
+   "source": {
+    "source": "polyhaven",
+    "id": "tree_small_02",
+    "node": "tree_small_02_LOD0",
+    "file": "tree_small_02_2k.gltf",
+    "gltf_sha256": "a1a7c8a145c811392457c111bff8192146f655a75b5de163ec659cd32af17726",
+    "buffers": {
+     "tree_small_02.bin": "8da6c3c389ad8748286d1b7488cd827f75ebdad9d8f59ef7dfb0916df5edc634"
+    }
+   },
+   "triangles": {
+    "all": 2062487,
+    "opaque": 123107,
+    "cards": 1939380,
+    "below_ground": 37,
+    "cut_at_ground": 61
+   },
+   "projection_m": {
+    "x": [
+     -1.308993,
+     1.607707
+    ],
+    "z": [
+     -1.382627,
+     2.90985
+    ]
+   },
+   "pivot_reach_m": 2.924909
+  }
+ }
+}

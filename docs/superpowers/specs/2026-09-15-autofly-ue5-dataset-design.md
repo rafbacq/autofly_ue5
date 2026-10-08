@@ -294,17 +294,25 @@ R5–R9.
   contact: among a tree's branches there is no such direction, every escape returns the same pose with a collision
   event, and the wedged actor cannot fly afterwards (`docs/gates/m4_s02_wood_crash_reset_probe.json`: 2 of 4 crashes
   into wood stayed wedged; `docs/decisions/2026-10-07-m4-live-checks-and-foliage.md`). Convex solids (pillars, boxes)
-  never wedge. **So in a scene with mesh obstacles (every registry asset with a radius profile: trees, rocks) the
-  task's contact rule is geometric**, evaluated by the environment on every step as §6.5's mover rule is: an episode
-  ends as a collision when the drone's swept step passes within 0.9 m of an obstacle's footprint circle, the layout's
-  `radius_m` (the model's widest reach in the flight band at its scale, §6.4), which contains every branch the band
-  meets. 0.9 m is the rotor reach (0.48 m from the centre) plus one full-speed step (0.4 m, since the rule is checked
-  after the step is flown and the ending step itself overshoots) plus a full-rate turning step's 0.01 m of chord bow,
-  the same invariant as §6.5's `contact_m − max_speed·dt > 0.48 m`; a 0.5 m first version let 40 of 40 scripted
-  flights end with a rotor tip inside the circle. The physical collision event stays as a backstop, scored as "sim".
+  never wedge. **So in a scene with mesh obstacles (every registry asset with a radius profile in the obstacle role:
+  trees, rocks) the task's contact rule is geometric**, evaluated by the environment on every step as §6.5's mover
+  rule is: an episode ends as a collision when the drone's swept step passes within 1.05 m of an obstacle's outline.
+  The outline is the horizontal projection of all the model's geometry above the ground at every height (a column),
+  read from per-asset distance fields (`scenes/footprint_field.py`, `assets/footprints/`). 1.05 m is the drone's
+  measured collision reach (0.63 m from its centre: physical contacts registered 0.51 m and 0.52–0.63 m from a pillar's
+  surface, farther than the 0.48 m rotor tips) plus one full-speed step (0.4 m, since the rule is checked after the
+  step is flown and the ending step itself overshoots) plus a full-rate turning step's 0.01 m of chord bow, the
+  invariant §6.5's `contact_m − max_speed·dt > 0.48 m` keeps for movers, asserted at import. Until 2026-10-08
+  (afternoon) the distance was 0.9 m to the footprint circle, the layout's `radius_m` (0.48 m of rotor reach, whose
+  shortfall the circle's slack hid; a 0.5 m first version let 40 of 40 scripted flights end with a rotor tip inside the
+  circle). The circle holds the outline but stopped s02_r1's flights a median 2.7 m from any geometry beside leaning
+  trees; it is kept to evaluate the runs that trained under it, and every script that scores a model reads the shape
+  from the model's own run (`expert/run_shape.py`). The physical collision event stays as a backstop, scored as "sim".
   The gate scores this rule and the collector rejects by it; a training run may add a margin on top
-  (`--footprint-contact-margin`, as the mover margin), never exceeding what keeps a start outside the boundary (1.1 m
-  in all, so at most 0.2 m). `autofly_ue5/expert/footprint_contact.py`.
+  (`--footprint-contact-margin`, as the mover margin), never exceeding what keeps a start outside the boundary: the
+  start clearance less the 0.3 m reset tolerance, where a training run may keep its own starts farther out than the
+  scene's 1.4 m (`--spawn-clearance-m`, training only, so the gate's episodes never change).
+  `autofly_ue5/expert/footprint_contact.py`.
 - **Lock-step holds exactly at 5 Hz.** 55/55 records had simulator time, image timestamps and kinematics timestamps
   equal to the step target; camera-to-state pose error stayed at 2.4e-7 m. The velocity command's duration is
   `dt − 2·step-ns = 0.19 s`, sent before the step, with the reply awaited after it.

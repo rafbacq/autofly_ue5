@@ -109,6 +109,7 @@ def test_an_episode_the_footprint_rule_ended_is_rejected_with_the_tree_and_where
     from autofly_ue5.collect.collector import collect
     from autofly_ue5.dataset.raw import RawDatasetWriter
     from autofly_ue5.expert.env import AutoFlyEnv
+    from autofly_ue5.expert.footprint_contact import OUTLINE_CONTACT_M
     from autofly_ue5.expert.resilient import ResilientAutoFlyEnv
     from tests.test_footprint_contact import AtTheNearestTree, recording_tree_factory, tree_scene_and_layout
 
@@ -127,7 +128,8 @@ def test_an_episode_the_footprint_rule_ended_is_rejected_with_the_tree_and_where
     for record in ended:
         contact = record["provenance"]["footprint_contact"]
         assert record["reason"] == "collision" and contact["rule"] == "footprint"
-        assert assets[contact["tag"]] == contact["asset"] and contact["gap_m"] <= 0.9 + 1e-9
+        assert assets[contact["tag"]] == contact["asset"] and contact["gap_m"] <= OUTLINE_CONTACT_M + 1e-9
+        assert contact["shape"] == "outline", "the env's own default: the task's rule"
         assert {"bearing_deg", "drone_forward_m_s"} <= set(contact)
     assert all("footprint_contact" not in r["provenance"] for r in rejects if r["provenance"]["collision_source"] != "footprint")
 
@@ -562,3 +564,135 @@ def test_the_pilot_cli_refuses_a_bad_pool_or_a_target_name_beside_one_before_lau
     assert main([*common, "--targets", str(tmp_path / "missing.json")]) == 2
     assert main([*common, "--targets", str(good), "--target-name", "orange cylinder"]) == 2
     assert not (tmp_path / "m3.json").exists() and not (tmp_path / "data").exists()
+
+
+@pytest.mark.parametrize("shape", ["outline", "circle"])
+def test_a_tree_scene_pilot_records_the_footprint_rule_it_collected_under(tmp_path, monkeypatch, shape):
+    # A mesh scene's episodes end at the footprint rule, so which shape the expert flew under is part of what each
+    # episode is: the record and every episode's provenance carry the rule (a pillar scene's stay M3's, key for key).
+    import functools
+
+    import scripts.collect_dataset as cli
+    from autofly_ue5.expert.obs import ObsConfig
+    from scripts import m2_gate
+    from tests.test_footprint_contact import _tree_resolved, outline_fields_for, outline_rules, tree_scene_and_layout, wood
+
+    _scene, layout = tree_scene_and_layout()
+    expected = (outline_rules(outline_fields_for(layout), 11) if shape == "outline"
+                else {"footprint": {"contact_m": 0.9, "obstacles": 11, "shape": "circle"}})
+    monkeypatch.setattr(cli, "resolve_scene", lambda scene_id: _tree_resolved(tmp_path))
+    monkeypatch.setattr(m2_gate, "resolve_scene", lambda scene_id: _tree_resolved(tmp_path))
+    checkpoint = tmp_path / "model.zip"
+    checkpoint.write_bytes(b"not a real model; the fake loader ignores it")
+    record = cli.run(scene="s99", model_path=checkpoint, scene_config="scene_autofly_s02_fast.jsonc", name="trees",
+                     n_episodes=1, max_attempts=4, instance=5, out_path=tmp_path / "m3.json", data_root=tmp_path / "data",
+                     sim_factory=functools.partial(FakeSimulator, obstacles=wood(layout)),
+                     load_model=lambda path: _StraightAtTargetModel(), obs_config_reader=lambda path: ObsConfig(),
+                     sim_root=tmp_path / "sim", platform={"test": True}, footprint_shape=shape)
+    assert record["error"] is None, record["error"]
+    assert record["contact_rules"] == expected
+    episodes = [json.loads(p.read_text())["provenance"] for p in (tmp_path / "data" / "rejects" / "trees").glob("*.json")]
+    episodes += [json.loads(p.read_text()) for p in (tmp_path / "data" / "trees" / "provenance").glob("*.json")]
+    assert episodes and all(prov["contact_rules"] == expected for prov in episodes)
+    for prov in episodes:
+        if "footprint_contact" in prov:
+            assert prov["footprint_contact"]["shape"] == shape
+
+
+def test_a_pillar_pilot_names_no_footprint_rule(tmp_path):
+    record = _pilot(tmp_path, n_episodes=1)
+    assert record["status"] == "ok" and "contact_rules" not in record
+    prov = json.loads(next((tmp_path / "data" / "pilot" / "provenance").glob("*.json")).read_text())
+    assert "contact_rules" not in prov
+
+
+def test_the_pilot_cli_takes_the_shape_and_refuses_a_mesh_asset_without_a_field_before_launching(tmp_path, monkeypatch,
+                                                                                                capsys):
+    import dataclasses
+
+    import autofly_ue5.expert.footprint_contact as footprint_module
+    import scripts.collect_dataset as cli
+    from tests.test_footprint_contact import LEAN, _tree_resolved, lean_tree, tree_scene_and_layout
+
+    parsed = cli.build_arg_parser().parse_args(["--model", "m", "--scene-config", "c", "--name", "n"])
+    assert parsed.footprint_shape is None and parsed.against_trained_shape is False, "no default: the run decides"
+    registry, _fields, inst = lean_tree(tmp_path / "lean")
+    scene, layout = tree_scene_and_layout()
+    with_lean = dataclasses.replace(layout, instances=(*layout.instances, inst))
+    monkeypatch.setattr(footprint_module, "load_registry", lambda: registry)
+    monkeypatch.setattr(cli, "resolve_scene", lambda scene_id: _tree_resolved(tmp_path, scene, with_lean))
+    monkeypatch.setattr(cli, "checkpoint_obs_config", lambda path: None)
+    checkpoint = tmp_path / "model.zip"
+    checkpoint.write_bytes(b"x")
+    argv = ["--scene", "s99", "--model", str(checkpoint), "--scene-config", "scene_autofly_s02_fast.jsonc", "--name",
+            "trees", "--data-root", str(tmp_path / "data"), "--out", str(tmp_path / "m3.json"), "--sim-root",
+            str(tmp_path / "sim"), "--footprint-shape", "outline"]
+    assert cli.main(argv) == 2
+    assert f"no footprint field for {LEAN}" in capsys.readouterr().err
+    assert not (tmp_path / "data").exists() and not (tmp_path / "m3.json").exists()
+
+
+def _pilot_main(tmp_path, monkeypatch, model, *argv):
+    """The pilot CLI on the test tree scene with run() replaced: (exit code, run()'s keyword arguments or None)."""
+    import scripts.collect_dataset as cli
+    from tests.test_footprint_contact import _tree_resolved
+
+    monkeypatch.setattr(cli, "resolve_scene", lambda scene_id: _tree_resolved(tmp_path))
+    monkeypatch.setattr(cli, "checkpoint_obs_config", lambda path: None)
+    called = []
+    monkeypatch.setattr(cli, "run", lambda **kwargs: called.append(kwargs) or {
+        "status": "ok", "pass": True, "error": None, "collection": None, "validation": None})
+    code = cli.main(["--scene", "s99", "--model", str(model), "--scene-config", "scene_autofly_s02_fast.jsonc", "--name",
+                     "trees", "--data-root", str(tmp_path / "data"), "--out", str(tmp_path / "m3.json"), "--sim-root",
+                     str(tmp_path / "sim"), *argv])
+    return code, (called[0] if called else None)
+
+
+def test_the_pilot_collects_under_the_shape_its_experts_run_trained_under(tmp_path, monkeypatch, capsys):
+    # The expert's run names its footprint shape (expert/run_shape.py): a collection by s02_r1's circle-trained expert
+    # rejects by the circle unless told, on purpose, otherwise.
+    from tests.test_run_shape import LEGACY, run_root
+
+    s02_r1 = run_root(tmp_path, "s02_r1", LEGACY)
+    model = s02_r1 / "averaged" / "avg_1k_end.zip"
+    code, kwargs = _pilot_main(tmp_path, monkeypatch, model)
+    assert code == 0 and kwargs["footprint_shape"] == "circle" and kwargs["against_trained_shape"] is False
+    code, kwargs = _pilot_main(tmp_path, monkeypatch, model, "--footprint-shape", "outline")
+    assert code == 2 and kwargs is None and "--footprint-shape outline contradicts" in capsys.readouterr().err
+    code, kwargs = _pilot_main(tmp_path, monkeypatch, model, "--footprint-shape", "outline", "--against-trained-shape")
+    assert code == 0 and kwargs["footprint_shape"] == "outline" and kwargs["against_trained_shape"] is True
+    loose = tmp_path / "loose.zip"
+    loose.write_bytes(b"x")
+    code, kwargs = _pilot_main(tmp_path, monkeypatch, loose)
+    assert code == 2 and kwargs is None and "pass --footprint-shape outline or" in capsys.readouterr().err
+    assert not (tmp_path / "data").exists() and not (tmp_path / "m3.json").exists()
+
+
+def test_the_pilots_library_call_records_the_shape_its_expert_trained_under_when_it_scores_another(tmp_path, monkeypatch):
+    import functools
+
+    import scripts.collect_dataset as cli
+    from autofly_ue5.expert.obs import ObsConfig
+    from scripts import m2_gate
+    from tests.test_footprint_contact import _tree_resolved, outline_fields_for, outline_rules, tree_scene_and_layout, wood
+    from tests.test_run_shape import LEGACY, run_root
+
+    _scene, layout = tree_scene_and_layout()
+    monkeypatch.setattr(cli, "resolve_scene", lambda scene_id: _tree_resolved(tmp_path))
+    monkeypatch.setattr(m2_gate, "resolve_scene", lambda scene_id: _tree_resolved(tmp_path))
+    s02_r1 = run_root(tmp_path, "s02_r1", LEGACY)
+    common = dict(scene="s99", scene_config="scene_autofly_s02_fast.jsonc", n_episodes=1, max_attempts=2, instance=5,
+                  sim_factory=functools.partial(FakeSimulator, obstacles=wood(layout)),
+                  load_model=lambda path: _StraightAtTargetModel(), obs_config_reader=lambda path: ObsConfig(),
+                  sim_root=tmp_path / "sim", platform={"test": True})
+    with pytest.raises(ValueError, match="contradicts"):
+        cli.run(model_path=s02_r1 / "final.zip", name="a", out_path=tmp_path / "a.json", data_root=tmp_path / "data",
+                footprint_shape="outline", **common)
+    record = cli.run(model_path=s02_r1 / "final.zip", name="b", out_path=tmp_path / "b.json", data_root=tmp_path / "data",
+                     footprint_shape="outline", against_trained_shape=True, **common)
+    expected = outline_rules(outline_fields_for(layout), 11)
+    expected["footprint"]["trained_shape"] = "circle"
+    assert record["error"] is None and record["contact_rules"] == expected
+    record = cli.run(model_path=s02_r1 / "final.zip", name="c", out_path=tmp_path / "c.json", data_root=tmp_path / "data",
+                     **common)
+    assert record["contact_rules"] == {"footprint": {"contact_m": 0.9, "obstacles": 11, "shape": "circle"}}

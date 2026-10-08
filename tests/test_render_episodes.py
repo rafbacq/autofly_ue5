@@ -263,3 +263,67 @@ def test_main_refuses_a_slot_another_live_run_holds(tmp_path, capsys):
         stop(7, grace_s=2.0, run_root=tmp_path / "sim")
     assert "slot 7 holds simulator pid" in capsys.readouterr().err
     assert log.read_text() == "the other run's log\n" and not (tmp_path / "viz").exists()
+
+
+@pytest.mark.parametrize("gate, requested, expected", [
+    (None, None, "outline"),
+    (None, "circle", "circle"),
+    ({"contact_rules": None}, None, "outline"),  # a pillar scene's gate: no footprint rule to follow
+    ({"contact_rules": {"footprint": {"contact_m": 0.9, "obstacles": 27}}}, None, "circle"),  # before shapes: the circle
+    ({"contact_rules": {"footprint": {"contact_m": 0.9, "obstacles": 27, "shape": "outline"}}}, None, "outline"),
+    ({"contact_rules": {"footprint": {"contact_m": 0.9, "obstacles": 27, "shape": "circle"}}}, "circle", "circle"),
+])
+def test_a_replay_follows_the_footprint_shape_its_gate_scored(gate, requested, expected):
+    assert rv.replay_footprint_shape(gate, requested) == expected
+
+
+def test_a_replay_refuses_a_shape_its_gate_did_not_score():
+    gate = {"contact_rules": {"footprint": {"contact_m": 0.9, "obstacles": 27}}}
+    with pytest.raises(ValueError, match="circle"):
+        rv.replay_footprint_shape(gate, "outline")
+
+
+def test_the_replay_builds_its_env_under_the_gates_shape(tmp_path, monkeypatch):
+    seen = []
+    real = rv.build_eval_env
+    monkeypatch.setattr(rv, "build_eval_env", lambda *a, **k: seen.append(k.get("footprint_shape")) or real(*a, **k))
+    truth = _scripted_gate_episodes(tmp_path, 1)
+    gate = _write_gate(tmp_path / "gate.json", _checkpoint(tmp_path), truth)
+    record = json.loads(gate.read_text())
+    record["contact_rules"] = {"footprint": {"contact_m": 0.9, "obstacles": 0, "shape": "circle"}}
+    gate.write_text(json.dumps(record))
+    summary = _render(tmp_path, [0], gate_path=gate)
+    assert summary["status"] == "ok", summary["error"]
+    assert seen == ["circle"] and summary["footprint_shape"] == "circle"
+
+
+def test_without_a_gate_record_a_replay_follows_the_checkpoints_run_never_a_default(tmp_path):
+    # As the gate reads a model's run (expert/run_shape.py), so does a replay with no gate record to follow; a record's
+    # own shape still wins, as the outline record of a circle-trained pick replays under the outline.
+    from tests.test_footprint_contact import tree_scene_and_layout
+    from tests.test_run_shape import LEGACY, run_root
+
+    _scene, layout = tree_scene_and_layout()
+    s02_r1 = run_root(tmp_path, "s02_r1", LEGACY)
+    final = s02_r1 / "final.zip"
+    assert rv.replay_footprint_shape(None, None, layout=layout, checkpoint=final) == "circle"
+    with pytest.raises(ValueError, match="contradicts"):
+        rv.replay_footprint_shape(None, "outline", layout=layout, checkpoint=final)
+    loose = _checkpoint(tmp_path / "loose")
+    with pytest.raises(ValueError, match="pass --footprint-shape"):
+        rv.replay_footprint_shape(None, None, layout=layout, checkpoint=loose)
+    assert rv.replay_footprint_shape(None, "outline", layout=layout, checkpoint=loose) == "outline"
+    record = {"contact_rules": {"footprint": {"contact_m": 1.05, "obstacles": 11, "shape": "outline",
+                                              "trained_shape": "circle"}}}
+    assert rv.replay_footprint_shape(record, None, layout=layout, checkpoint=final) == "outline"
+    pillars = scene_and_layout("s01")[1]
+    assert rv.replay_footprint_shape(None, None, layout=pillars, checkpoint=loose) == "outline", "irrelevant there"
+
+
+def test_the_replay_hands_its_layout_and_checkpoint_to_the_shape_it_follows(tmp_path, monkeypatch):
+    seen = []
+    real = rv.replay_footprint_shape
+    monkeypatch.setattr(rv, "replay_footprint_shape", lambda gate, requested, **kw: seen.append(kw) or real(gate, requested, **kw))
+    summary = _render(tmp_path, [0])
+    assert summary["status"] == "ok", summary["error"]
+    assert seen[0]["checkpoint"] == tmp_path / "model.zip" and seen[0]["layout"].scene_id == "s01"

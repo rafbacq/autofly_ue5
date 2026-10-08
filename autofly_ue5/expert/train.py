@@ -102,6 +102,14 @@ retention policy of its own -- would otherwise let a 12-hour run accumulate on t
 replay-buffer pickles. `PruneOldReplayBuffersCallback`/`prune_old_replay_buffers` keep every model `.zip`
 (cheap, the whole training history) but only the newest `DEFAULT_KEEP_REPLAY_BUFFERS` replay buffers (one
 to resume from, one as a fallback if the newest was mid-write when a crash landed).
+
+A training boundary (`--footprint-contact-margin`, `--static-contact-m`) may reach no farther than a start can be: the
+start clearance less the reset tolerance, else a legitimate start lands inside it and its seed replays until the worker
+gives up. `--spawn-clearance-m M` (2026-10-08) keeps the training workers' starts, targets and distractors M from every
+obstacle, so the boundary may reach M - 0.3 m: under the outline's 1.05 m the scene's own 1.4 m leaves a margin of only
+0.05 m. It is training only, and deliberately not a scene-file field: the evaluation env keeps the scene's own clearance
+as the gate and the collector do, because a scene's clearance changes the gate's episodes for the same seeds, and with
+them every comparison of runs on the same 200 gate episodes. The identity names it only when it is set.
 """
 
 from __future__ import annotations
@@ -139,7 +147,18 @@ from autofly_ue5.expert.altitude_margin import AltitudeMarginPenalty
 from autofly_ue5.evidence import default_evidence_path, record_destination, refuse_existing_evidence
 from autofly_ue5.expert.evaluate import FaultAwareEvalCallback
 from autofly_ue5.expert.features import POLICY_KWARGS
-from autofly_ue5.expert.footprint_contact import FOOTPRINT_CONTACT_M, footprint_obstacles, task_contact_rules
+from autofly_ue5.expert.footprint_contact import (
+    CIRCLE_CONTACT_M,
+    DEFAULT_SHAPE,
+    OUTLINE_CONTACT_M,
+    SHAPES,
+    FootprintContactRule,
+    check_shape,
+    contact_distance_m,
+    footprint_obstacles,
+    require_fields,
+    task_contact_rules,
+)
 from autofly_ue5.expert.mover_clearance import MoverClearancePenalty, MoverClosingPenalty
 from autofly_ue5.expert.obs import (
     DEPTH_SIZE,
@@ -159,6 +178,7 @@ from autofly_ue5.expert.resilient import (  # noqa: F401  (re-exported: moved fr
     _bounded_close,
 )
 from autofly_ue5.expert.reward import REWARD_VERSION, reward_config_for_scene
+from autofly_ue5.expert.run_shape import LEGACY_SHAPE, SESSIONS_FILE
 from autofly_ue5.expert.seeds import (  # noqa: F401  (EVAL_SEED_BASE etc. re-exported for callers)
     EVAL_CALLBACK_SEED_BASE,
     EVAL_SEED_BASE,
@@ -171,6 +191,7 @@ from autofly_ue5.expert.vec import call_reset_with_timeout, collect_fault_summar
 from autofly_ue5.expert.warmstart import PolicyWarmupSAC, warm_start
 from autofly_ue5.expert.warmstart import plan as warm_plan
 from autofly_ue5.paths import RUNS_DIR
+from autofly_ue5.scenes.footprint_field import FootprintFields
 from autofly_ue5.scenes.model import AssetRegistry, Layout, SceneFile, load_registry
 from autofly_ue5.scenes.resolve import ResolvedScene, resolve_scene
 from autofly_ue5.sim.airsim_backend import RESET_POSITION_TOLERANCE_M, scene_config_factory, scene_config_record
@@ -282,7 +303,7 @@ def replay_buffer_for(checkpoint: Path) -> Path:
 # --------------------------------------------------------------------------------------------------------
 # Run isolation: one run directory holds one run, and each resumed session draws fresh episodes.
 # --------------------------------------------------------------------------------------------------------
-SESSIONS_FILE = "sessions.json"
+# SESSIONS_FILE ("sessions.json") is defined with the reader that finds a model's run by it (expert/run_shape.py).
 
 
 # What every run recorded before 2026-10-02 (no "identity" in its sessions.json) trained on: static s01 with one float32
@@ -304,11 +325,14 @@ def run_identity(resolved: ResolvedScene, obs_config: ObsConfig, scene_config: s
                  mover_closing: MoverClosingPenalty | None = None,
                  altitude_margin: AltitudeMarginPenalty | None = None,
                  mover_contact_margin_m: float = 0.0, static_contact_m: float = 0.0,
-                 footprint_contact_margin_m: float = 0.0, registry: AssetRegistry | None = None) -> dict:
+                 footprint_contact_margin_m: float = 0.0, registry: AssetRegistry | None = None,
+                 footprint_shape: str = DEFAULT_SHAPE, footprint_fields: FootprintFields | None = None,
+                 training_spawn_clearance_m: float | None = None) -> dict:
     """What a run's replay buffer and checkpoints are tied to: resuming under anything else would mix two tasks, two
     observation shapes or two simulator clocks (the scene config holds the clock rate) in one buffer. A training
     penalty is part of the reward the buffer holds, so a run that pays one names it; one that does not serialises
-    exactly as every run before it. `registry`: the asset registry the run reads (default: read now)."""
+    exactly as every run before it. `registry`: the asset registry the run reads (default: read now); `footprint_fields`
+    the outline fields (default: read now); `training_spawn_clearance_m`: --spawn-clearance-m, named only when given."""
     dynamic = resolved.scene.dynamic
     extra = {}
     if mover_clearance is not None:
@@ -321,15 +345,26 @@ def run_identity(resolved: ResolvedScene, obs_config: ObsConfig, scene_config: s
         extra["mover_contact_margin_m"] = mover_contact_margin_m  # where a mover contact ends a training episode
     if static_contact_m:
         extra["static_contact_m"] = static_contact_m  # where a static pillar ends a training episode
-    if footprint_obstacles(resolved.layout.instances, registry if registry is not None else load_registry()):
-        # A mesh scene's episodes end at the footprint rule (expert/footprint_contact.py): the task's distance, which a
-        # change of would make the buffer another task's, and the run's margin. A pillar scene names nothing, so every
-        # earlier run's identity still matches.
-        extra["footprint_contact"] = {"contact_m": FOOTPRINT_CONTACT_M, "training_margin_m": footprint_contact_margin_m}
+    meshes = footprint_obstacles(resolved.layout.instances, registry if registry is not None else load_registry())
+    if meshes:
+        # A mesh scene's episodes end at the footprint rule (expert/footprint_contact.py): the task's distance (the
+        # shape's), which a change of would make the buffer another task's, the run's margin, and what the distance is
+        # measured to: the shape and, for the outline, each asset's field content (another field is another boundary;
+        # fields added for other assets change nothing here). A pillar scene names nothing, so every earlier run's
+        # identity still matches.
+        footprint = {"contact_m": contact_distance_m(footprint_shape), "training_margin_m": footprint_contact_margin_m,
+                     "shape": check_shape(footprint_shape)}
+        if footprint_shape == "outline":
+            footprint["fields"] = require_fields({inst.asset for inst in meshes}, footprint_fields).digest()
+        extra["footprint_contact"] = footprint
     if resolved.scene.spawn_clearance_m is not None:
         # Where the scene's episodes begin (scene_spawn_clearance_m), named only by a scene that sets it so every
         # earlier run's identity still matches. The scene's hash already differs; this says why in the record.
         extra["spawn_clearance_m"] = resolved.scene.spawn_clearance_m
+    if training_spawn_clearance_m is not None:
+        # Where the training workers' episodes begin (--spawn-clearance-m): what the buffer's episodes are drawn from,
+        # named only by a run that sets it, so every earlier run's identity still matches.
+        extra["training_spawn_clearance_m"] = training_spawn_clearance_m
     return {
         "scene_config": scene_config_record(scene_config) if scene_config is not None else None,
         "scene": resolved.scene.id,
@@ -344,9 +379,20 @@ def run_identity(resolved: ResolvedScene, obs_config: ObsConfig, scene_config: s
     }
 
 
+def _with_legacy_shape(recorded: dict) -> dict:
+    """A mesh scene's run recorded before the footprint rule had shapes (2026-10-08, afternoon: s02_r1) trained under
+    the circle, the only shape there was: its entry is read as naming it (run_shape.LEGACY_SHAPE, as the gate reads
+    it), so it resumes under the circle and not under the outline."""
+    footprint = recorded.get("footprint_contact")
+    if isinstance(footprint, dict) and "shape" not in footprint:
+        return {**recorded, "footprint_contact": {**footprint, "shape": LEGACY_SHAPE}}
+    return recorded
+
+
 def _identity_mismatch(recorded: dict | None, identity: dict) -> list[str]:
     if recorded is None:  # a run from before identities were recorded
         return [k for k, v in LEGACY_IDENTITY.items() if identity.get(k) != v]
+    recorded = _with_legacy_shape(recorded)
     return [k for k in sorted(set(recorded) | set(identity)) if recorded.get(k) != identity.get(k)]
 
 
@@ -781,8 +827,21 @@ def build_arg_parser() -> argparse.ArgumentParser:
                         "physical contact only. 0 (default): physical contact only")
     p.add_argument("--footprint-contact-margin", type=float, default=0.0, metavar="M",
                    help="training only, on a scene with mesh obstacles (trees, rocks): a footprint contact ends the "
-                        f"episode M metres outside the task's rule (expert/footprint_contact.py, "
-                        f"{FOOTPRINT_CONTACT_M:g} m from the circle); the gate scores the task's own rule")
+                        f"episode M metres outside the task's rule (expert/footprint_contact.py: {OUTLINE_CONTACT_M:g} m "
+                        f"from the obstacle's outline, or {CIRCLE_CONTACT_M:g} m from its circle under --footprint-shape "
+                        f"circle); the gate scores the task's own rule. Contact distance + M may not exceed the "
+                        f"training starts' clearance less the reset tolerance (--spawn-clearance-m)")
+    p.add_argument("--spawn-clearance-m", type=float, default=None, metavar="M",
+                   help="training only: the training workers keep their episodes' starts, targets and distractors M "
+                        "metres from every obstacle (at least the scene's own clearance: 1.4 m unless its file sets "
+                        "more), so --footprint-contact-margin and --static-contact-m may reach M less the reset "
+                        "tolerance; the evaluation env, like the gate and the collector, keeps the scene's own. Not a "
+                        "scene-file field, because that would change the gate's episodes for the same seeds and break "
+                        "every comparison of runs on the same 200 gate episodes. Recorded in the run identity")
+    p.add_argument("--footprint-shape", choices=SHAPES, default=DEFAULT_SHAPE,
+                   help="on a scene with mesh obstacles, what the footprint rule measures to: the model's outline "
+                        "(default, the task's rule since 2026-10-08; assets/footprints/) or its footprint circle (what "
+                        "s02_r1 trained under). Training and evaluation use it alike; recorded in the run identity")
     p.add_argument("--sim-root", type=Path, default=SIM_RUN_DIR,
                    help="where this run's simulators are recorded (tests point it at a scratch directory)")
     return p
@@ -831,13 +890,26 @@ def main(argv: list[str] | None = None) -> int:
         # A start keeps the scene's spawn clearance (episode.scene_spawn_clearance_m: 1.4 m, or the scene file's own
         # spawn_clearance_m) from every pillar's surface, and a reset may land up to the backend's tolerance off it
         # (review of 3a0c3b7). A boundary beyond what is left could put a legitimate start inside it: a seeded first
-        # reset replays its seed until the worker gives up, and that ends the run.
+        # reset replays its seed until the worker gives up, and that ends the run. --spawn-clearance-m keeps the
+        # training workers' starts farther out (never closer), and the training boundaries may then reach that far; the
+        # evaluation env keeps the scene's own, so the gate's and the collector's episodes never change with it.
         start_clearance_m = scene_spawn_clearance_m(scene_file)
-        start_floor_m = round(start_clearance_m - RESET_POSITION_TOLERANCE_M, 6)
+        training_clearance_m = start_clearance_m
+        if args.spawn_clearance_m is not None:
+            if not math.isfinite(args.spawn_clearance_m):
+                raise ValueError(f"--spawn-clearance-m must be a number of metres, got {args.spawn_clearance_m}")
+            if args.spawn_clearance_m < start_clearance_m:
+                raise ValueError(f"--spawn-clearance-m {args.spawn_clearance_m:g} m is below the {start_clearance_m:g} m "
+                                 f"the scene's own episodes keep: training starts may be kept farther out, never closer")
+            training_clearance_m = args.spawn_clearance_m
+        training_scene = (scene_file if args.spawn_clearance_m is None
+                          else dataclasses.replace(scene_file, spawn_clearance_m=training_clearance_m))
+        starts = (f"training starts keep {training_clearance_m:g} m" if args.spawn_clearance_m is not None
+                  else f"starts keep {start_clearance_m:g} m")
+        start_floor_m = round(training_clearance_m - RESET_POSITION_TOLERANCE_M, 6)
         if args.static_contact_m > start_floor_m:
             raise ValueError(f"--static-contact-m {args.static_contact_m} m is beyond the {start_floor_m:g} m a start "
-                             f"can be from a pillar (starts keep {start_clearance_m:g} m; a reset may land "
-                             f"{RESET_POSITION_TOLERANCE_M:g} m off)")
+                             f"can be from a pillar ({starts}; a reset may land {RESET_POSITION_TOLERANCE_M:g} m off)")
         if not (math.isfinite(args.footprint_contact_margin) and args.footprint_contact_margin >= 0):
             raise ValueError(f"--footprint-contact-margin must be a non-negative number of metres, got "
                              f"{args.footprint_contact_margin}")
@@ -846,7 +918,6 @@ def main(argv: list[str] | None = None) -> int:
         # lose the run's record (as s01d_r1 lost its own, MEMORY.md 2026-10-02) or disagree with the one it trained on.
         registry = load_registry()
         meshes = footprint_obstacles(layout.instances, registry)
-        contact_rules = task_contact_rules(layout, registry)
         if meshes and scene_file.dynamic is not None:
             raise ValueError(f"scene {scene_file.id} has moving pillars and mesh obstacles: moving a mesh would leave its "
                              f"<tag>_cards actor behind, and how the mover rule and the footprint rule share an obstacle "
@@ -857,11 +928,22 @@ def main(argv: list[str] | None = None) -> int:
         if args.footprint_contact_margin and not meshes:
             raise ValueError(f"--footprint-contact-margin: scene {scene_file.id} has no mesh obstacle (the footprint rule "
                              f"covers measured models only)")
-        if FOOTPRINT_CONTACT_M + args.footprint_contact_margin > start_floor_m:
+        # The margin's ceiling before the rule is built: an excessive margin is refused as what it is, not as a field
+        # too short for the boundary it would put out there.
+        footprint_boundary_m = contact_distance_m(args.footprint_shape) + args.footprint_contact_margin
+        if meshes and footprint_boundary_m > start_floor_m:
             raise ValueError(f"--footprint-contact-margin {args.footprint_contact_margin} m puts the boundary at "
-                             f"{FOOTPRINT_CONTACT_M + args.footprint_contact_margin:g} m, beyond the {start_floor_m:g} m a "
-                             f"start can be from a footprint circle (starts keep {start_clearance_m:g} m; a reset may "
-                             f"land {RESET_POSITION_TOLERANCE_M:g} m off)")
+                             f"{footprint_boundary_m:g} m from the {args.footprint_shape}, beyond the {start_floor_m:g} m a "
+                             f"start can be from a footprint circle ({starts}; a reset may land "
+                             f"{RESET_POSITION_TOLERANCE_M:g} m off)")
+        # The outline fields likewise, once, and every refusal they can cause before the run root is claimed: an asset
+        # without a field, an instance with two horizontal scales, a field too short for the run's boundary.
+        footprint_fields = (FootprintFields.load({inst.asset for inst in meshes})
+                            if meshes and args.footprint_shape == "outline" else None)
+        if meshes:
+            FootprintContactRule(meshes, training_margin_m=args.footprint_contact_margin, shape=args.footprint_shape,
+                                 fields=footprint_fields)
+        contact_rules = task_contact_rules(layout, registry, shape=args.footprint_shape, fields=footprint_fields)
         altitude_margin = None
         if args.altitude_margin_penalty is not None:
             altitude_margin = AltitudeMarginPenalty(*args.altitude_margin_penalty).check_band(
@@ -870,7 +952,9 @@ def main(argv: list[str] | None = None) -> int:
                                 mover_closing=mover_closing, altitude_margin=altitude_margin,
                                 mover_contact_margin_m=args.mover_contact_margin,
                                 static_contact_m=args.static_contact_m,
-                                footprint_contact_margin_m=args.footprint_contact_margin, registry=registry)
+                                footprint_contact_margin_m=args.footprint_contact_margin, registry=registry,
+                                footprint_shape=args.footprint_shape, footprint_fields=footprint_fields,
+                                training_spawn_clearance_m=args.spawn_clearance_m)
         if (run_root / STOP_REQUEST_FILE).exists():
             raise RuntimeError(f"{run_root / STOP_REQUEST_FILE} is a pending stop request; remove it to start or "
                                f"resume this run")
@@ -919,13 +1003,15 @@ def main(argv: list[str] | None = None) -> int:
         swept = sweep_orphaned_instances(sim_root)
         if swept:
             print(f"swept orphaned instances before starting: {swept}", file=sys.stderr)
+        # The training workers draw their episodes at the training clearance (--spawn-clearance-m); the evaluation env
+        # below at the scene's own.
         train_env = make_vec_env(
-            scene_file, layout, args.instances, map_path=map_path, monitor_dir=monitor_dir,
+            training_scene, layout, args.instances, map_path=map_path, monitor_dir=monitor_dir,
             seed_base_fn=lambda rank: session_seed_base(rank, session), instance_offset=0, sim_factory=sim_factory,
             sim_root=sim_root, obs_config=obs_config, mover_clearance=mover_clearance, mover_closing=mover_closing,
             altitude_margin=altitude_margin, mover_contact_margin_m=args.mover_contact_margin,
             static_contact_m=args.static_contact_m, footprint_contact_margin_m=args.footprint_contact_margin,
-            registry=registry,
+            registry=registry, footprint_shape=args.footprint_shape, footprint_fields=footprint_fields,
         )
         # A separate simulator instance (own ports), one slot past the training workers, so evaluation
         # can run concurrently with training without colliding on ports with any training worker. Its own seed
@@ -936,6 +1022,7 @@ def main(argv: list[str] | None = None) -> int:
             seed_base_fn=lambda _rank: EVAL_CALLBACK_SEED_BASE, instance_offset=args.instances, sim_factory=sim_factory,
             sim_root=sim_root, obs_config=obs_config, mover_clearance=None, mover_closing=None, altitude_margin=None,
             mover_contact_margin_m=0.0, static_contact_m=0.0, footprint_contact_margin_m=0.0, registry=registry,
+            footprint_shape=args.footprint_shape, footprint_fields=footprint_fields,
         )
 
         if args.resume:
@@ -1085,7 +1172,10 @@ def main(argv: list[str] | None = None) -> int:
             "mover_contact_margin_m": args.mover_contact_margin,
             "static_contact_m": args.static_contact_m,
             "footprint_contact_margin_m": args.footprint_contact_margin,
-            "spawn_clearance_m": start_clearance_m,  # what the sampler kept starts, targets and distractors from
+            # what the footprint rule measured to: a mesh scene's only (a pillar scene's config is as before)
+            **({"footprint_shape": args.footprint_shape} if meshes else {}),
+            "spawn_clearance_m": start_clearance_m,  # what the scene's sampler keeps starts, targets and distractors from
+            "training_spawn_clearance_m": args.spawn_clearance_m,  # the training workers' own, if set (else None)
             "batch_size": args.batch_size,
             # What the model actually trained with, not what this file intends (a resumed model restores its own).
             "train_freq": str(model.train_freq) if model is not None else None,

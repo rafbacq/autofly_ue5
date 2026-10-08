@@ -160,3 +160,74 @@ def test_rank_fails_while_any_candidate_is_unfinished(tmp_path):
     _fill(plan["parts"][0], plan)
     _fill(plan["parts"][1], plan, status="failed")
     assert main(["rank", "--run-root", str(root)]) == 1
+
+
+def test_a_plan_can_name_the_footprint_shape_its_gates_score(tmp_path):
+    import shlex
+
+    from scripts.m2_gate import build_arg_parser
+    from scripts.select_checkpoint import candidates, plan_commands
+
+    root = _run(tmp_path / "run")
+    for shape in ("circle", None):
+        parts = plan_commands(root, candidates(root, every=10_000, min_steps=0), slots=[0, 1], episodes=40,
+                              scene="s02", scene_config="scene_autofly_s02_fast.jsonc", footprint_shape=shape)
+        for part in parts:
+            argv = shlex.split(part["command"])
+            args = build_arg_parser().parse_args(argv[argv.index("scripts.m2_gate") + 1:])
+            assert args.footprint_shape == shape, "None: the gate reads the checkpoint's run itself"
+            assert ("--footprint-shape" in argv) == (shape is not None)
+
+
+def _plan_main(tmp_path, monkeypatch, root, *argv, layout=None):
+    import scripts.select_checkpoint as sc
+    from tests.test_footprint_contact import _tree_resolved
+
+    monkeypatch.setattr(sc, "resolve_scene", lambda scene_id: _tree_resolved(tmp_path, layout=layout))
+    code = sc.main(["plan", "--run-root", str(root), "--every", "50000", "--slots", "0", "1", "--episodes", "40",
+                    "--scene", "s99", "--scene-config", "scene_autofly_s02_fast.jsonc", *argv])
+    plan_path = root / "selection" / "stage1_plan.json"
+    return code, (json.loads(plan_path.read_text()) if plan_path.is_file() else None)
+
+
+def test_a_plan_scores_the_candidates_under_the_shape_their_run_trained_under(tmp_path, monkeypatch, capsys):
+    # The run's sessions.json names its shape (expert/run_shape.py): every part's gate is told it, unasked.
+    import shlex
+
+    from scripts.m2_gate import build_arg_parser
+    from tests.test_run_shape import LEGACY, run_root
+
+    root = run_root(tmp_path, "s02_r1", LEGACY)
+    code, plan = _plan_main(tmp_path, monkeypatch, root)
+    assert code == 0 and plan["parts"]
+    for part in plan["parts"]:
+        argv = shlex.split(part["command"])
+        assert build_arg_parser().parse_args(argv[argv.index("scripts.m2_gate") + 1:]).footprint_shape == "circle"
+    other = run_root(tmp_path, "s02_r2", LEGACY)
+    code, plan = _plan_main(tmp_path, monkeypatch, other, "--footprint-shape", "outline")
+    assert code == 2 and plan is None and "--footprint-shape outline contradicts" in capsys.readouterr().err
+
+
+def test_a_plan_for_a_run_that_names_no_shape_needs_the_flag_and_a_pillar_scenes_never_does(tmp_path, monkeypatch,
+                                                                                            capsys):
+    from tests.test_expert_episode import scene_and_layout
+
+    root = _run(tmp_path / "run")  # checkpoints, but no sessions.json
+    code, plan = _plan_main(tmp_path, monkeypatch, root)
+    assert code == 2 and plan is None and "pass --footprint-shape outline or" in capsys.readouterr().err
+    code, plan = _plan_main(tmp_path, monkeypatch, root, "--footprint-shape", "circle")
+    assert code == 0 and all("--footprint-shape circle" in part["command"] for part in plan["parts"])
+    pillars = _run(tmp_path / "pillars")
+    code, plan = _plan_main(tmp_path, monkeypatch, pillars, layout=scene_and_layout()[1])
+    assert code == 0 and not any("--footprint-shape" in part["command"] for part in plan["parts"])
+
+
+def test_the_plans_shape_flag_takes_its_choices_from_the_rules_own_constant():
+    import argparse
+
+    import scripts.select_checkpoint as sc
+    from autofly_ue5.expert.footprint_contact import SHAPES
+
+    sub = next(a for a in sc.build_arg_parser()._actions if isinstance(a, argparse._SubParsersAction))
+    action = next(a for a in sub.choices["plan"]._actions if "--footprint-shape" in a.option_strings)
+    assert action.choices is SHAPES and action.default is None

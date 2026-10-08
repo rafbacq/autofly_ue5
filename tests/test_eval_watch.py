@@ -61,3 +61,77 @@ def test_a_failed_evaluation_is_reported_and_retried_next_time(tmp_path):
     calls = []
     assert evaluate_pending(root, every=50_000, episodes=20, instance=4, scene="s01d", scene_config="c.jsonc",
                             run_gate=_fake_gate(calls), log=lines.append) == [50_000]
+
+
+def test_a_shape_handed_to_the_watch_reaches_every_gate_and_none_reaches_none(tmp_path):
+    # The footprint shape a run trains under (2026-10-08): its eval watch scores the same rule. Without one nothing is
+    # passed, as every earlier watch's command line had it, and the gate reads the checkpoint's run itself.
+    from scripts.eval_watch import build_arg_parser, evaluate_pending
+    from scripts.m2_gate import build_arg_parser as gate_parser
+
+    root = _run(tmp_path, [50_000])
+    calls = []
+    evaluate_pending(root, every=50_000, episodes=20, instance=4, scene="s02", scene_config="c.jsonc",
+                     run_gate=_fake_gate(calls), log=lambda line: None, footprint_shape="circle")
+    assert calls[0][calls[0].index("--footprint-shape") + 1] == "circle"
+    assert gate_parser().parse_args(calls[0]).footprint_shape == "circle"
+    other = _run(tmp_path / "other", [50_000])
+    evaluate_pending(other, every=50_000, episodes=20, instance=4, scene="s02", scene_config="c.jsonc",
+                     run_gate=_fake_gate(calls), log=lambda line: None)
+    assert "--footprint-shape" not in calls[1]
+    argv = ["--run-root", "r", "--job", "j", "--instance", "4", "--scene", "s02", "--scene-config", "c"]
+    assert build_arg_parser().parse_args(argv).footprint_shape is None
+    assert build_arg_parser().parse_args([*argv, "--footprint-shape", "circle"]).footprint_shape == "circle"
+
+
+def _watch(tmp_path, monkeypatch, root, *argv, layout=None):
+    """eval_watch.main() for one pass (the training job's exit file already there) on the test tree scene (or
+    `layout`), with the gate faked: (exit code, the gate argv lists)."""
+    import scripts.eval_watch as ew
+    from tests.test_footprint_contact import _tree_resolved
+
+    jobs = tmp_path / "runs_dir" / "jobs"
+    jobs.mkdir(parents=True, exist_ok=True)
+    (jobs / "train.exit").write_text("0")
+    monkeypatch.setattr(ew, "RUNS_DIR", tmp_path / "runs_dir")
+    monkeypatch.setattr(ew, "resolve_scene", lambda scene_id: _tree_resolved(tmp_path, layout=layout))
+    calls = []
+    monkeypatch.setattr(ew, "_gate_subprocess", _fake_gate(calls))
+    code = ew.main(["--run-root", str(root), "--job", "train", "--instance", "4", "--scene", "s99", "--scene-config",
+                    "c.jsonc", "--poll-s", "0", *argv])
+    return code, calls
+
+
+def test_the_watch_scores_a_runs_checkpoints_under_the_shape_the_run_trains_under(tmp_path, monkeypatch, capsys):
+    # The run's sessions.json names its shape (expert/run_shape.py): the watch passes it to every gate, unasked.
+    from tests.test_run_shape import LEGACY, OUTLINE, run_root
+
+    root = run_root(tmp_path, "s02_r1", LEGACY)
+    code, calls = _watch(tmp_path, monkeypatch, root)
+    assert code == 0 and len(calls) == 1 and calls[0][calls[0].index("--footprint-shape") + 1] == "circle"
+    other = run_root(tmp_path, "s02_r2", OUTLINE)
+    code, calls = _watch(tmp_path, monkeypatch, other)
+    assert code == 0 and calls[0][calls[0].index("--footprint-shape") + 1] == "outline"
+    code, calls = _watch(tmp_path, monkeypatch, run_root(tmp_path, "s02_r3", LEGACY), "--footprint-shape", "outline")
+    assert code == 2 and calls == [] and "--footprint-shape outline contradicts" in capsys.readouterr().err
+
+
+def test_a_watch_whose_run_names_no_shape_needs_the_flag_and_a_pillar_scene_never_does(tmp_path, monkeypatch, capsys):
+    from tests.test_expert_episode import scene_and_layout
+
+    root = _run(tmp_path, [50_000])  # checkpoints, but no sessions.json
+    code, calls = _watch(tmp_path, monkeypatch, root)
+    assert code == 2 and calls == [] and "pass --footprint-shape outline or" in capsys.readouterr().err
+    code, calls = _watch(tmp_path, monkeypatch, root, "--footprint-shape", "circle")
+    assert code == 0 and calls[0][calls[0].index("--footprint-shape") + 1] == "circle"
+    code, calls = _watch(tmp_path, monkeypatch, _run(tmp_path / "pillars", [50_000]), layout=scene_and_layout()[1])
+    assert code == 0 and len(calls) == 1 and "--footprint-shape" not in calls[0]
+
+
+def test_a_watch_started_before_its_run_has_a_record_waits_for_it_instead_of_refusing(tmp_path, monkeypatch):
+    # The runbook starts the watch beside the trainer, which writes sessions.json a few seconds in; until a checkpoint
+    # is due there is nothing to score and nothing to refuse.
+    root = tmp_path / "run"
+    root.mkdir()
+    code, calls = _watch(tmp_path, monkeypatch, root)
+    assert code == 0 and calls == []

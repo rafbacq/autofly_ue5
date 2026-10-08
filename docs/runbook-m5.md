@@ -84,17 +84,24 @@ never `pkill`. `stop_sim.py` returns before the process has exited (about a minu
 ls docs/gates/m4_${ID}_gate*.json           # the newest passing record must be on the current layout
 $PY -c "import json; print(json.load(open('docs/gates/m4_s02_gate_run4.json'))['pass'])"   # s02: run 4 (2026-10-08)
 $PY -c "from autofly_ue5.scenes.resolve import resolve_scene; from autofly_ue5.expert.footprint_contact import task_contact_rules
-r = resolve_scene('$ID'); print(r.scene.split, len(r.layout.instances), 'obstacles;', task_contact_rules(r.layout))"
+r = resolve_scene('$ID'); rule = (task_contact_rules(r.layout) or {}).get('footprint')
+print(r.scene.split, len(r.layout.instances), 'obstacles;', rule and {k: v for k, v in rule.items() if 'fields' not in k})"
+$PY scripts/footprint_fields.py --check     # every mesh obstacle's outline field (assets/footprints/) matches its sources
 ls configs/$CFG
 ```
 
-The last line names the scene's kind, and the kind decides step 3's recipe. On 2026-10-08 it printed:
+The python line names the scene's kind, and the kind decides step 3's recipe. On 2026-10-08 it printed:
 
 | Kind | Scenes | Contact rule |
 |---|---|---|
-| Mesh | s02 (27 obstacles), s03 (29), s06 (40) | `{'footprint': {'contact_m': 0.9, 'obstacles': n}}` |
+| Mesh | s02 (27 obstacles), s03 (29), s04 (33), s05 (24), s06 (40) | `{'contact_m': 1.05, 'obstacles': n, 'shape': 'outline'}` |
 | Pillar or box | s07, s09 (and s01) | `None` (physical contact) |
 | Mixed | none yet | A footprint count smaller than the obstacle count |
+
+The footprint rule ends an episode 1.05 m from a mesh's outline, the horizontal projection of all its geometry
+(`2026-10-08-footprint-contact-rule.md`). s02_r1 trained under the earlier rule, 0.9 m from the footprint circle: every
+script that scores a model reads the shape from the model's own run (`expert/run_shape.py`), so its records keep the
+circle without any flag.
 
 Packaging another scene needs a window with **no simulator of ours running** (`package_sim.sh` refuses otherwise), so
 plan builds between training runs. An editor is also a foreign GPU job to a live run's relaunch guard.
@@ -115,12 +122,12 @@ N = 4 (`m2_instances.json`). A 12 h run at about 14 steps/s is about 600k steps.
 ## 2. Smoke (~20 min + a few minutes): every path, live
 
 Use the step-3 recipe for the scene's kind. This is s02's, a mesh scene. A pillar or box scene passes
-`--static-contact-m 1.1` instead of `--footprint-contact-margin 0.2`.
+`--static-contact-m 1.1` instead of `--spawn-clearance-m 1.55 --footprint-contact-margin 0.2`.
 
 ```bash
 $J start ${ID}_train_smoke -- $PY -m autofly_ue5.expert.train --scene $ID --instances $N --hours 0.33 --scene-config $CFG \
     --run-root runs/expert/${ID}_smoke --eval-freq 2000 --eval-episodes 3 --out runs/m5/${ID}_train_smoke.json \
-    --footprint-contact-margin 0.2 --altitude-margin-penalty 0.2 1.0
+    --spawn-clearance-m 1.55 --footprint-contact-margin 0.2 --altitude-margin-penalty 0.2 1.0
 $J wait ${ID}_train_smoke 600           # repeat until it finishes
 $J start ${ID}_gate_smoke -- $PY -m scripts.m2_gate --scene $ID --run-root runs/expert/${ID}_smoke --scene-config $CFG \
     --episodes 3 --conditions deterministic --instance $((N + 1)) --out runs/m5/${ID}_gate_smoke.json
@@ -132,14 +139,17 @@ Read the training smoke:
 ```bash
 $PY -c "import json; t=json.load(open('runs/m5/${ID}_train_smoke.json')); i=t['identity']
 print(t['status'], t['obs_config'], i['scene'], 'host', t['host']['ok'], 'faults_ok', t['faults_ok'])
-print(t['contact_rules'], t['collision_sources'], {k: v for k, v in i.items() if 'contact' in k or 'altitude' in k})"
+print(t['contact_rules'], t['collision_sources'], {k: v for k, v in i.items() if 'contact' in k or 'altitude' in k or 'clearance' in k})"
 ```
 
 - `status` is `ok`. `obs_config` is `{"depth_frames": 1, "depth_dtype": "float32"}`: a static scene sees one frame.
 - `host.ok` and `faults_ok` are true.
-- **Mesh scene:** `contact_rules` names the footprint rule and its obstacle count. The identity holds
-  `footprint_contact: {contact_m: 0.9, training_margin_m: 0.2}` and the altitude cost.
-  `collision_sources` shows `footprint_margin`, `footprint` and perhaps a few `sim` (s02: 48 / 3 / 1).
+- **Mesh scene:** `contact_rules` names the footprint rule, its obstacle count, its shape (`outline`) and the outline
+  fields it measured with. The identity holds `footprint_contact: {contact_m: 1.05, training_margin_m: 0.2, shape:
+  outline, fields: {<asset>: <field sha256>, ...}}`, `training_spawn_clearance_m: 1.55` and the altitude cost; the
+  config holds `footprint_shape: outline` and `training_spawn_clearance_m: 1.55` beside the scene's own
+  `spawn_clearance_m: 1.4`. `collision_sources` shows `footprint_margin`, `footprint` and perhaps a few `sim` (s02's
+  circle smoke: 48 / 3 / 1).
 - **Pillar or box scene:** `contact_rules` is `None`, the identity holds `static_contact_m: 1.1`, and
   `collision_sources` shows `static_margin`.
 
@@ -150,9 +160,10 @@ $PY -c "import json; g=json.load(open('runs/m5/${ID}_gate_smoke.json')); print(g
 [print(n, e['outcome'], e['collision_source'], (e.get('footprint_contact') or {}).get('gap_m')) for n, c in g['checkpoints'].items() for e in c['deterministic']['per_episode']]"
 ```
 
-On a mesh scene, every collision says `footprint` and carries `footprint_contact` with a gap between about 0.5 and
-0.9 m. s02's were 0.85–0.89 m. The gate scores the task's 0.9 m, never the training margin. Success means nothing at
-this length.
+The gate's log says which footprint shape it scored and where it read it (`footprint shape: outline (from the run's
+identity)`). On a mesh scene, every collision says `footprint` and carries `footprint_contact` with its `shape` and a
+gap between about 0.65 and 1.05 m (the outline; a circle run's were 0.5–0.9 m, s02's circle smoke 0.85–0.89 m). The
+gate scores the task's 1.05 m, never the training margin. Success means nothing at this length.
 
 ## 3. The 12 h run, with watchers
 
@@ -160,7 +171,7 @@ this length.
 
 | | Mesh scene (trees, rocks) | Pillar or box scene | Why |
 |---|---|---|---|
-| Contact margin | `--footprint-contact-margin 0.2` | `--static-contact-m 1.1` | See below. |
+| Contact margin | `--spawn-clearance-m 1.55 --footprint-contact-margin 0.2` | `--static-contact-m 1.1` | See below. |
 | Altitude | `--altitude-margin-penalty 0.2 1.0` | the same | A V: 0 at 2.0 m, 0.2 per step at the band's edges. Run 5's flat cost let the deterministic policy drift out of the band. |
 | Buffer | `--buffer-size 250000` | the same | Runs 3–6. Always from scratch: never warm-start SAC with a fresh buffer (run 2). |
 | Evaluation | `--eval-freq 1000000000` | the same | No in-training evaluation, which would pause all N workers. The eval watch scores checkpoints beside training instead. |
@@ -170,10 +181,15 @@ this length.
 reached about 0.3 m inside it (MEMORY.md, 2026-10-05). So training ends episodes some way outside the line the gate
 scores. The expert observes, and the gate scores, the task's own rule.
 
-- **Mesh scenes: `--footprint-contact-margin 0.2`.** The task rule ends an episode 0.9 m from a mesh's footprint
-  circle, because a crash into wood or rock can wedge the simulator's actor beyond any teleport. Training adds 0.2 m on
-  top of that, for a boundary of 1.1 m. That is also the most the trainer allows: starts keep 1.4 m from every circle,
-  and a reset may land 0.3 m off. 0.2 m is half a full-speed step, so about half of the endings on a full-speed
+- **Mesh scenes: `--spawn-clearance-m 1.55 --footprint-contact-margin 0.2`.** The task rule ends an episode 1.05 m from
+  a mesh's outline, because a crash into wood or rock can wedge the simulator's actor beyond any teleport (0.63 m of
+  measured collision reach, a full-speed step and a turn's chord bow). Training adds 0.2 m on top of that, for a
+  boundary of 1.25 m. A boundary may reach no farther than a start can be: starts keep the scene's 1.4 m from every
+  circle and a reset may land 0.3 m off, which leaves the outline 0.05 m. So the training workers keep their own starts
+  1.55 m out (`--spawn-clearance-m`, training only: the evaluation env, the gate and the collector keep the scene's own,
+  so the gate's 200 episodes stay those every run is compared on). A wider margin needs a wider clearance by as much
+  (0.5 m: 1.85 m); on s02, 2,000 seeds drew every start at 1.55, 1.85 and 1.9 m, and fewer than 1 % of the scene's own
+  starts lie within 1.9 m of a circle. 0.2 m is half a full-speed step, so about half of the endings on a full-speed
   approach cross both lines in one step and count as `footprint` (the task rule's), not `footprint_margin`.
 - **Pillar and box scenes: `--static-contact-m 1.1`.** Engine primitives never wedge, so the task rule there is
   physical contact. Run 6's 1.1 m static boundary took the gate's static collisions from 10 (run 5) to 0. 1.1 m is the
@@ -182,17 +198,18 @@ scores. The expert observes, and the gate scores, the task's own rule.
   1.1 m.
 - **Mixed scenes:** pass both flags. The static boundary covers only the solids, and the footprint rule covers the
   meshes (`expert/env.py`). The trainer refuses `--static-contact-m` on a scene that has only meshes, and
-  `--footprint-contact-margin` on a scene with no mesh.
+  `--footprint-contact-margin` on a scene with no mesh. Both ceilings follow `--spawn-clearance-m` when it is given.
 
 ```bash
 $J start ${ID}_r1_train -- $PY -m autofly_ue5.expert.train --scene $ID --instances $N --hours 12 --scene-config $CFG \
     --run-root $RUN --out docs/gates/m5_${ID}_train.json --eval-freq 1000000000 --buffer-size 250000 \
-    --footprint-contact-margin 0.2 --altitude-margin-penalty 0.2 1.0
-#   pillar or box scene: --static-contact-m 1.1 in place of --footprint-contact-margin 0.2
+    --spawn-clearance-m 1.55 --footprint-contact-margin 0.2 --altitude-margin-penalty 0.2 1.0
+#   pillar or box scene: --static-contact-m 1.1 in place of --spawn-clearance-m 1.55 --footprint-contact-margin 0.2
 $J start ${ID}_r1_watch -- $PY scripts/watch_training.py --run-root $RUN --job ${ID}_r1_train --interval 300 \
     --png $RUN/progress.png
 $J start ${ID}_r1_evalwatch -- env -u PYTHONPATH DISPLAY=:1 SDL_VIDEODRIVER=x11 .venv/bin/python scripts/eval_watch.py \
     --run-root $RUN --job ${ID}_r1_train --every 50000 --instance $N --scene $ID --scene-config $CFG
+#   no --footprint-shape: the watch reads the run's own from $RUN/sessions.json once the trainer has written it
 ```
 
 **The failure alarm: arm it before anything else, and keep it armed until training ends** (MEMORY.md, 2026-10-03: a
@@ -226,8 +243,8 @@ faults: none   relaunches 0   mover-inferred collisions 0   footprint endings 2 
 - **`last 200`** covers the last 200 *training* episodes. They are stochastic and scored under the training rules, so
   training success runs below what the gate will see. Returns include the altitude cost.
 - **`(collisions: …)`**, over the same 200 episodes:
-  - `footprint`: endings at the task's 0.9 m.
-  - `footprint_margin`: endings that only the 0.2 m margin caused, at 0.9–1.1 m. Expect these high early and falling.
+  - `footprint`: endings at the task's 1.05 m (0.9 m on a circle run such as s02_r1).
+  - `footprint_margin`: endings that only the 0.2 m margin caused, at 1.05–1.25 m. Expect these high early and falling.
   - `static_margin`: the same for the 1.1 m static boundary on a pillar or box scene.
   - `sim`: physical contact.
 - **`footprint endings N (+M at the training margin)`** counts the job log's `FOOTPRINT instance k: <tag> (<asset>) at
@@ -235,14 +252,14 @@ faults: none   relaunches 0   mover-inferred collisions 0   footprint endings 2 
 - **`sim` on a mesh scene is the backstop firing.** Each one is a `SIM-CONTACT` line in the training log:
 
   ```bash
-  grep SIM-CONTACT runs/jobs/${ID}_r1_train.log    # "... nearest circle <tag> (<asset>) <gap> m away, forward <v> m/s"
+  grep SIM-CONTACT runs/jobs/${ID}_r1_train.log    # "... nearest outline <tag> (<asset>) <gap> m away, forward <v> m/s"
   ```
 
-  The gap tells what was hit:
-  - A small gap (well under the 1.4 m start clearance) is wood or rock outside its circle.
-  - A large gap is a spawned target or distractor (placed 1.4 m or more from every circle), or something else outside
-    every circle.
-  - A gap of 0 or less is a body inside a circle: the rule did not fire.
+  The gap is to the nearest model's outline (to its circle on a circle run), and it tells what was hit:
+  - A gap inside the rule's 1.05 m, down to 0, is wood or rock the rule did not stop: a rule miss.
+  - A large gap, or "beyond its field's reach" (3 m and more at unit scale), is a spawned target or distractor (placed
+    1.4 m or more from every circle), or something else away from every model.
+  - On a circle run: a small gap is wood or rock outside its circle, and a gap of 0 or less a body inside a circle.
 
   s02_r1's first three were 10.95–15.76 m from the nearest tree, so not wood. What they did hit is not diagnosed yet.
   Watch `outcomes/collision_sim` on every mesh run: a rising count of small-gap contacts would mean wedged actors.
@@ -284,6 +301,7 @@ The seeds. Validation episodes come from `SELECTION_SEED_BASE` = 500e6 (`expert/
 ```bash
 $PY scripts/select_checkpoint.py plan --run-root $RUN --every 20000 --min-steps <k> --slots 0 1 2 3 4 \
     --episodes 40 --scene $ID --scene-config $CFG --launch      # jobs select_s1_<slot>, launched 30 s apart
+#   on a mesh scene the plan writes the run's footprint shape (from $RUN/sessions.json) into every part's command
 $J wait select_s1_<slot> 600                                     # each slot; repeat until all have finished
 $PY scripts/select_checkpoint.py rank --run-root $RUN            # exits 0 only when every part is in
 ```
@@ -335,6 +353,9 @@ $J start ${ID}_avg_eval_<k> -- env -u PYTHONPATH DISPLAY=:1 SDL_VIDEODRIVER=x11 
 #   <name>=<path>: e.g. avg_250k_end=$RUN/averaged/avg_250k_end.zip, or step_240000=$RUN/checkpoints/rl_model_240000_steps.zip
 ```
 
+- No `--footprint-shape` anywhere in step 4: the gate reads each model's run (`final.zip`, `averaged/`, `checkpoints/`,
+  `best/` all sit in or under the run root) and scores the shape it trained under; models of runs that trained under
+  different shapes are refused together.
 - `select_checkpoint.py` sees only its own stage plans, so a later `plan` must use a `--seed-offset` clear of
   2000–2099.
 - To compare two of them on the same seeds: `$PY runs/m2d_diag/paired_compare.py <stage3 A> <name A> <stage3 B> <name
@@ -368,15 +389,20 @@ EOF
 ```
 
 - The bar is 0.95 deterministic over 200 episodes, as in M2 and M2d.
-- On a mesh scene a `footprint` collision carries its tree or rock, gap, bearing and speed. A `sim` collision carries
-  the nearest circle (`footprint_nearest`); read it as in step 3.
+- On a mesh scene a `footprint` collision carries its tree or rock, the shape, the gap (and the circle's gap beside it),
+  bearing and speed. A `sim` collision carries the nearest model (`footprint_nearest`); read it as in step 3.
+- **Scoring a model under the other shape is deliberate.** A circle-trained run's pick is flown under the outline only
+  as a separately named record on the same 200 episodes, with `--footprint-shape outline --against-trained-shape
+  --out docs/gates/m5_${ID}_gate_outline.json`; its `contact_rules` names `trained_shape: circle`. Without
+  `--against-trained-shape` the gate refuses a flag that contradicts the run.
 - **A failed gate stays failed.** No lowered bar, no re-gating hunting for a seed, no second model on the same episodes
   without a confirmation. The levers are the user's to choose:
   - more hours (`--resume`);
   - a new run with a changed recipe;
-  - for a tree expert that ends gate flights at the 0.9 m rule, a scene-level `spawn_clearance_m`: starts farther from
-    circles allow a wider margin. It changes the scene file, so the layout is regenerated and the M4 gate re-run
-    (`2026-10-08-footprint-contact-rule.md`, "Known limits");
+  - for a tree expert that ends gate flights at the 1.05 m rule, a wider training margin with a wider training
+    clearance (`--spawn-clearance-m`, e.g. 1.85 m for a 0.5 m margin). It is training only, so the gate's episodes stay
+    the same 200; a scene file's own `spawn_clearance_m` would change them for the same seeds
+    (`2026-10-08-footprint-contact-rule.md`);
   - acceptance below the bar, as s01d was accepted at 0.935 (`2026-10-07-s01d-accepted-at-0.935.md`).
 
 ### 4e. Confirmation (only when a second model is gated on the same episodes)
@@ -402,7 +428,8 @@ $J start ${ID}_render -- $PY -m scripts.render_episodes --scene $ID --model <nam
 ```
 
 Each episode gives an MP4 (RGB, depth, top-down map) and a map PNG. `summary.json` compares each replay with the gate's
-outcome. Replays are not bit-exact, so judge the 200-episode rate, never one replay.
+outcome. Replays are not bit-exact, so judge the 200-episode rate, never one replay. A replay flies the footprint shape
+its gate record scored (without `--gate`: the shape the checkpoint's run trained under).
 
 ### 4g. The closeout
 
@@ -420,7 +447,9 @@ concern per commit, when the user agrees.
 
 Collection waits for an expert that passed its gate or was accepted by the user. The collector flies it
 **stochastically** (the default; `--deterministic` is for comparison only), with **a0 = sector8** built in (no flag),
-under the task's own rules. On a mesh scene a footprint ending is a reject (collision), like any other collision. Only
+under the task's own rules: on a mesh scene, the footprint shape the expert's run trained under, read from its
+sessions.json (the record and every episode's provenance name it). A footprint ending is a reject (collision), like any
+other collision. Only
 successful, collision-free episodes enter the store, and the rest go to `data/rejects/<name>/` with their reasons.
 
 **Seed slices.** Each collection run takes its own slice of 1e6 collection seeds (`--seed-slice k` →

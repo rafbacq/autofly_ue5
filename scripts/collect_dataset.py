@@ -10,6 +10,10 @@ is recorded as M3's gate.
 - Seeds come from `--seed-slice` k of the collection range (400e6 + k * 1e6), disjoint from training, evaluation, the
   gate and the probes. One slice per (scene, collection run); 99 is for smokes and diagnostics.
 - Stochastic by default (spec §9 step 5; docs/decisions/2026-10-02-m2-closeout.md); `--deterministic` for comparison.
+- A mesh scene's footprint rule (expert/footprint_contact.py) is the shape the expert's run trained under, read from its
+  sessions.json (expert/run_shape.py), as the gate reads it. `--footprint-shape` names it only for a model outside any
+  run, and is refused where it contradicts the run's unless `--against-trained-shape` says that is the point. Recorded
+  as `contact_rules` in the record and every episode's provenance (a pillar scene has none).
 - `--targets assets/targets.json` (plan 5 C5): each episode's target and distractors are drawn from the scene split's
   pool and the instruction names the target; the card lists the pool's names with status "pool". Without it, M3's way:
   the orange cylinder under `--target-name` (default "orange cylinder", a placeholder in the card). Not both.
@@ -42,7 +46,9 @@ from autofly_ue5.collect.collector import POOL_NAME_STATUS, collect  # noqa: E40
 from autofly_ue5.dataset.raw import RawDatasetWriter  # noqa: E402
 from autofly_ue5.dataset.rlds import VERSION, export_rlds  # noqa: E402
 from autofly_ue5.dataset.targets import TargetPool  # noqa: E402
+from autofly_ue5.expert.footprint_contact import SHAPES, task_contact_rules  # noqa: E402
 from autofly_ue5.expert.reward import REWARD_VERSION  # noqa: E402
+from autofly_ue5.expert.run_shape import scored_shape  # noqa: E402
 from autofly_ue5.expert.seeds import COLLECTION_SEED_BASE, collection_seed_base  # noqa: E402
 from autofly_ue5.expert.train import sha256_of  # noqa: E402
 from autofly_ue5.expert.vec import teardown  # noqa: E402
@@ -108,12 +114,21 @@ def run(*, scene: str, model_path: Path, scene_config: str, name: str, n_episode
         target_name: str | None = None, targets: Path | None = None, seed_base: int = COLLECTION_SEED_BASE,
         check_python: Path | None = None, device: str = "auto", sim_factory: Callable[[], Any] | None = None,
         load_model: Callable[[Path], Any] | None = None, obs_config_reader: Callable[[Path], Any] | None = None,
-        sim_root: Path = SIM_RUN_DIR, platform: dict | None = None) -> dict[str, Any]:
+        sim_root: Path = SIM_RUN_DIR, platform: dict | None = None, footprint_shape: str | None = None,
+        against_trained_shape: bool = False) -> dict[str, Any]:
     run_started = time.strftime("%Y-%m-%d %H:%M:%S")
     run_start_epoch = time.time()
     xid_before = xid_count(run_started)
     boot_before = boot_id()
     resolved = resolve_scene(scene)
+    # A mesh scene's footprint rule: the shape the expert's run trained under, `footprint_shape` only where the run
+    # names none or `against_trained_shape` says so (expert/run_shape.py), and the outline's fields; read before
+    # anything is claimed or launched. None on a pillar scene, whose record and provenance stay M3's, key for key.
+    footprint_shape, trained_shape = scored_shape(resolved.layout, {"the expert": Path(model_path)}, footprint_shape,
+                                                  against_trained=against_trained_shape)
+    contact_rules = task_contact_rules(resolved.layout, shape=footprint_shape)
+    if contact_rules is not None and trained_shape not in (None, footprint_shape):
+        contact_rules["footprint"]["trained_shape"] = trained_shape
     # The target pool (plan 5 C5), read and checked against the scene's split before anything is claimed or launched.
     pool = TargetPool.load(targets) if targets is not None else None
     if pool is not None and target_name is not None:
@@ -142,6 +157,8 @@ def run(*, scene: str, model_path: Path, scene_config: str, name: str, n_episode
                   "collector_tree_dirty": record["collector_tree_dirty"], "reward_version": REWARD_VERSION,
                   "dataset": name}
     record["platform"] = provenance["platform"]
+    if contact_rules is not None:  # what ended (or would have ended) each episode at a tree, and measured how
+        record["contact_rules"] = provenance["contact_rules"] = contact_rules
     if pool_record is not None:  # only with a pool: a pool-free pilot's record and provenance are M3's, key for key
         record["target_pool"] = provenance["target_pool"] = pool_record
         card = {"target_names": {pool_name: POOL_NAME_STATUS for pool_name in pool_record["names"]}}
@@ -156,7 +173,7 @@ def run(*, scene: str, model_path: Path, scene_config: str, name: str, n_episode
         writer = RawDatasetWriter(data_root, name, scene=resolved.scene, provenance=provenance, card=card)
         model = load_model(model_path)
         env = build_eval_env(scene, instance=instance, sim_factory=sim_factory, seed_base=seed_base, sim_root=sim_root,
-                             obs_config=obs_config, target_pool=pool)
+                             obs_config=obs_config, target_pool=pool, footprint_shape=footprint_shape)
         t0 = time.monotonic()
         before = env.get_fault_summary()
         try:
@@ -240,6 +257,14 @@ def build_arg_parser() -> argparse.ArgumentParser:
     p.add_argument("--targets", type=Path, default=None,
                    help="the target pool (assets/targets.json, plan 5 C5): each episode draws its target and distractors "
                         "from the scene split's usable entries, and the instruction names the target")
+    p.add_argument("--footprint-shape", choices=SHAPES, default=None,
+                   help="on a scene with mesh obstacles, what the footprint rule measures to: the model's outline or its "
+                        "footprint circle. Default: the shape the expert's run trained under (its sessions.json, "
+                        "expert/run_shape.py); needed only for a model outside any run, refused when it contradicts the "
+                        "run's. Recorded in the record and each episode's provenance")
+    p.add_argument("--against-trained-shape", action="store_true",
+                   help="collect under --footprint-shape although the expert's run trained under the other shape; "
+                        "contact_rules then names the shape it trained under as trained_shape")
     p.add_argument("--deterministic", action="store_true")
     p.add_argument("--check-python", type=Path, default=None, help="a python with tensorflow-datasets, to read it back")
     p.add_argument("--device", default="auto")
@@ -255,10 +280,15 @@ def main(argv: list[str] | None = None) -> int:
         busy = slot_busy(args.instance, args.sim_root)
         if busy:
             raise ValueError(f"{busy}; pass a free --instance")
-        resolve_scene(args.scene)
-        scene_config_record(args.scene_config)
         if not args.model.is_file():
             raise FileNotFoundError(f"no checkpoint at {args.model}")
+        # The expert's footprint shape (its run's, the flag's where it names none, or against it on purpose), and a mesh
+        # asset without an outline field under the outline: offline, before anything launches.
+        layout = resolve_scene(args.scene).layout
+        footprint_shape, _trained = scored_shape(layout, {"the expert": args.model}, args.footprint_shape,
+                                                 against_trained=args.against_trained_shape)
+        task_contact_rules(layout, shape=footprint_shape)
+        scene_config_record(args.scene_config)
         if (args.data_root / args.name / "manifest.json").exists():
             raise FileExistsError(f"{args.data_root / args.name} already holds a dataset; pick a new --name")
         checkpoint_obs_config(args.model)  # offline: an unreadable checkpoint is refused before anything launches
@@ -274,7 +304,7 @@ def main(argv: list[str] | None = None) -> int:
                  n_episodes=args.episodes, instance=args.instance, out_path=out_path, data_root=args.data_root,
                  deterministic=args.deterministic, max_attempts=args.max_attempts, target_name=args.target_name,
                  targets=args.targets, check_python=args.check_python, device=args.device, sim_root=args.sim_root,
-                 seed_base=seed_base)
+                 seed_base=seed_base, footprint_shape=footprint_shape, against_trained_shape=args.against_trained_shape)
     print(json.dumps({"status": record["status"], "pass": record["pass"], "error": record["error"],
                       "kept": (record["collection"] or {}).get("kept"),
                       "validator_pass": (record["validation"] or {}).get("pass")}, indent=2))

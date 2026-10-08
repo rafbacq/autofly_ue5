@@ -12,6 +12,7 @@ SCENES_DIR = ROOT / "scenes"
 ASSET_REGISTRY = ROOT / "assets" / "registry.json"
 ASSET_SOURCES = ROOT / "assets" / "sources.json"  # what scripts/fetch_assets.py downloaded, and where
 ASSET_MEASUREMENTS = ROOT / "assets" / "measurements.json"  # scripts/measure_assets.py: per glTF node
+ASSET_FOOTPRINTS = ROOT / "assets" / "footprints"  # scripts/footprint_fields.py: each mesh obstacle's outline field
 RUNS_DIR = ROOT / "runs"
 JOBS_DIR = RUNS_DIR / "jobs"
 FIXTURES_DIR = ROOT / "tests" / "fixtures"

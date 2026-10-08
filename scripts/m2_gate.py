@@ -65,7 +65,8 @@ from autofly_ue5.expert.evaluate import (  # noqa: E402
 from autofly_ue5.expert.faults import KNOWN_FAULT_NAMES  # noqa: E402
 from autofly_ue5.expert.obs import ObsConfig, obs_config_from_space  # noqa: E402
 from autofly_ue5.expert.resilient import ResilientAutoFlyEnv  # noqa: E402
-from autofly_ue5.expert.footprint_contact import task_contact_rules  # noqa: E402
+from autofly_ue5.expert.footprint_contact import DEFAULT_SHAPE, SHAPES, task_contact_rules  # noqa: E402
+from autofly_ue5.expert.run_shape import scored_shape  # noqa: E402
 from autofly_ue5.expert.reward import REWARD_VERSION, reward_config_for_scene  # noqa: E402
 from autofly_ue5.expert.seeds import EVAL_SEED_BASE  # noqa: E402
 from autofly_ue5.expert.train import sha256_of  # noqa: E402
@@ -169,15 +170,17 @@ def _load_throughput_projection(instances_path: Path = INSTANCES_PATH) -> dict |
 # --------------------------------------------------------------------------------------------------------
 def build_eval_env(scene: str, *, instance: int, sim_factory: Callable[[], Any], seed_base: int = EVAL_SEED_BASE,
                    sim_root: Path = SIM_RUN_DIR, obs_config: ObsConfig | None = None,
-                   target_pool: TargetPool | None = None) -> ResilientAutoFlyEnv:
+                   target_pool: TargetPool | None = None, footprint_shape: str = DEFAULT_SHAPE) -> ResilientAutoFlyEnv:
     # seed_base: every gate episode is an explicit reset(seed=...); the counter base only matters for a stray
     # seed=None reset, which then still draws from the gate's own range. target_pool: the collector's (plan 5 C5,
-    # scripts/collect_dataset.py --targets); the gate passes none and scores the orange cylinder.
+    # scripts/collect_dataset.py --targets); the gate passes none and scores the orange cylinder. footprint_shape: what
+    # a mesh scene's footprint rule measures to (expert/footprint_contact.py; "circle" to score s02_r1's models under
+    # the rule they trained on).
     resolved = resolve_scene(scene)
     scene_file, layout, map_path = resolved.scene, resolved.layout, resolved.map_path
     route_client_log(instance_dir(instance, sim_root) / "client.log")
     base = AutoFlyEnv(scene_file, layout, sim_factory, map_path=map_path, instance=instance, seed_base=seed_base,
-                      obs_config=obs_config, target_pool=target_pool)
+                      obs_config=obs_config, target_pool=target_pool, footprint_shape=footprint_shape)
     return ResilientAutoFlyEnv(base, instance=instance, sim_root=sim_root)
 
 
@@ -208,6 +211,8 @@ def run(
     scene_config: str | None = None,
     instances_path: Path | None = None,
     obs_config_reader: Callable[[Path], ObsConfig] | None = None,
+    footprint_shape: str | None = None,
+    against_trained_shape: bool = False,
 ) -> dict[str, Any]:
     load_model = load_model or (lambda p: default_sac_loader(p, device=device))
     obs_config_reader = obs_config_reader or checkpoint_obs_config
@@ -217,9 +222,16 @@ def run(
     # the coefficients mean_return is scored with (spec §8's, plus the scene's own since 2026-10-03)
     resolved_for_record = resolve_scene(scene)
     reward_config = json.loads(json.dumps(dataclasses.asdict(reward_config_for_scene(resolved_for_record.scene))))
+    # A mesh scene's footprint shape: the one the models' runs trained under, `footprint_shape` only where none names
+    # one or `against_trained_shape` says so (expert/run_shape.py). Refused (ValueError) before anything is written.
+    footprint_shape, trained_shape = scored_shape(resolved_for_record.layout, model_paths, footprint_shape,
+                                                  against_trained=against_trained_shape)
     # The task's contact rules beyond the simulator's collision event (None: physical contact only): a mesh scene's
-    # footprint rule (expert/footprint_contact.py), which this gate scores, so the record says what it measured.
-    contact_rules = task_contact_rules(resolved_for_record.layout)
+    # footprint rule (expert/footprint_contact.py), which this gate scores, so the record says what it measured: its
+    # shape and, for the outline, the fields; and, scored against the runs' shape, the shape they trained under.
+    contact_rules = task_contact_rules(resolved_for_record.layout, shape=footprint_shape)
+    if contact_rules is not None and trained_shape not in (None, footprint_shape):
+        contact_rules["footprint"]["trained_shape"] = trained_shape
     xid_before = xid_count(run_started)
     boot_before = boot_id()
 
@@ -321,7 +333,7 @@ def run(
                              f"gate them in separate runs")
         obs_config = next(iter(configs.values()), None)
         env = build_eval_env(scene, instance=instance, sim_factory=sim_factory, seed_base=seed_base, sim_root=sim_root,
-                             obs_config=obs_config)
+                             obs_config=obs_config, footprint_shape=footprint_shape)
         _write()  # an honest "everything not_run yet" record exists on disk even if launch itself fails
         for name, cond in combos:
             path = model_paths[name]
@@ -406,6 +418,15 @@ def build_arg_parser() -> argparse.ArgumentParser:
     p.add_argument("--device", default="auto")
     p.add_argument("--max-steps-per-episode", type=int, default=DEFAULT_MAX_STEPS_PER_EPISODE)
     p.add_argument("--max-fault-retries-per-episode", type=int, default=DEFAULT_MAX_FAULT_RETRIES_PER_EPISODE)
+    p.add_argument("--footprint-shape", choices=SHAPES, default=None,
+                   help="on a scene with mesh obstacles, what the footprint rule measures to: the model's outline (the "
+                        "task's rule since 2026-10-08) or its footprint circle (s02_r1's). Default: the shape the models' "
+                        "runs trained under, read from each run's sessions.json (expert/run_shape.py); needed only for a "
+                        "model outside any run, and refused when it contradicts a run's. Recorded in contact_rules")
+    p.add_argument("--against-trained-shape", action="store_true",
+                   help="score under --footprint-shape although the models' runs trained under the other shape (e.g. "
+                        "s02_r1's pick under the outline, as a separately named record); contact_rules then names the "
+                        "shape they trained under as trained_shape")
     return p
 
 
@@ -415,13 +436,23 @@ def main(argv: list[str] | None = None) -> int:
         out_path = args.out if args.out is not None else default_evidence_path(args.scene, "gate")
         refuse_existing_evidence(out_path)
         resolved = resolve_scene(args.scene)
+        model_paths = parse_model_args(args.model, args.scene, run_root=args.run_root)
+        # Offline, before anything launches: the shape the models' runs trained under (or the flag where none names
+        # one, or against them on purpose), and a mesh asset without an outline field under the outline.
+        footprint_shape, trained_shape = scored_shape(resolved.layout, model_paths, args.footprint_shape,
+                                                      against_trained=args.against_trained_shape)
+        if task_contact_rules(resolved.layout, shape=footprint_shape) is not None:
+            source = ("the flag" if trained_shape is None else
+                      "the run's identity" if args.footprint_shape is None else
+                      "the flag, as the run's identity" if trained_shape == footprint_shape else
+                      f"the flag, against the {trained_shape} the runs trained under")
+            print(f"footprint shape: {footprint_shape} (from {source})", file=sys.stderr)
         busy = slot_busy(args.instance, args.sim_root)
         if busy:
             raise ValueError(f"{busy}; pass a free --instance")
     except (FileNotFoundError, FileExistsError, ValueError) as err:
         print(f"refusing to start: {err}", file=sys.stderr)
         return 2
-    model_paths = parse_model_args(args.model, args.scene, run_root=args.run_root)
     scene_config = args.scene_config or resolved.default_scene_config
     gate = run(
         scene=args.scene, model_paths=model_paths, conditions=list(args.conditions), n_episodes=args.episodes,
@@ -429,7 +460,8 @@ def main(argv: list[str] | None = None) -> int:
         max_steps_per_episode=args.max_steps_per_episode,
         max_fault_retries_per_episode=args.max_fault_retries_per_episode,
         sim_factory=scene_config_factory(scene_config, resolved.movable_objects, run_root=args.sim_root),
-        scene_config=scene_config, sim_root=args.sim_root,
+        scene_config=scene_config, sim_root=args.sim_root, footprint_shape=footprint_shape,
+        against_trained_shape=args.against_trained_shape,
     )
     print(json.dumps(
         {"status": gate["status"], "pass": gate["pass"],

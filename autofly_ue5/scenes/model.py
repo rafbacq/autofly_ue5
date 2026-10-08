@@ -19,6 +19,16 @@ SCHEMA_PATH = Path(__file__).with_name("scene.schema.json")
 # (max speed x one step) short of this, so no mover is ever placed inside the drone (spec §6.5).
 DRONE_HALF_SPAN_M = 0.48
 
+# How far from the drone's centre a physical collision registers: farther than the rotor tips, because the UE collision of
+# the drone's meshes, swept each tick, reaches past the rotor discs. Measured twice on pillars: the mover probe's scripted
+# flight collided with the centre 0.51 m from the surface (docs/gates/m2d_mover_probe.json, check d1;
+# docs/decisions/2026-10-02-dynamic-obstacles.md), and run 5's gate static collisions ended 0.52-0.63 m from it, drone
+# centre to pillar surface (docs/decisions/2026-10-06-s01d-r6-plan.md, measuring the gate of
+# docs/decisions/2026-10-05-s01d-r5-margins.md). A geometric rule that keeps the body off a surface it has no slack
+# against measures to this: the footprint rule's outline (expert/footprint_contact.py). DRONE_HALF_SPAN_M stays the
+# mover invariant's.
+DRONE_COLLISION_REACH_M = 0.63
+
 
 class SceneFileError(ValueError):
     """A scene file failed schema or consistency validation."""

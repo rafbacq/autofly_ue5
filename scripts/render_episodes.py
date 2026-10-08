@@ -47,6 +47,8 @@ import cv2  # noqa: E402
 import numpy as np  # noqa: E402
 
 from autofly_ue5.expert.evaluate import DEFAULT_MAX_FAULT_RETRIES_PER_EPISODE, DEFAULT_MAX_STEPS_PER_EPISODE  # noqa: E402
+from autofly_ue5.expert.footprint_contact import DEFAULT_SHAPE, SHAPES, check_shape  # noqa: E402
+from autofly_ue5.expert.run_shape import LEGACY_SHAPE, scored_shape  # noqa: E402
 from autofly_ue5.expert.obs import DEPTH_CLIP_M  # noqa: E402
 from autofly_ue5.expert.reward import RewardConfig  # noqa: E402
 from autofly_ue5.expert.seeds import EVAL_SEED_BASE  # noqa: E402
@@ -242,6 +244,23 @@ def gate_record(gate: dict | None, checkpoint_name: str, condition: str) -> tupl
         return None, {}
     per_episode = (checkpoint.get(condition) or {}).get("per_episode") or []
     return checkpoint.get("sha256"), {int(e["seed"]): e for e in per_episode}
+
+
+def replay_footprint_shape(gate: dict | None, requested: str | None, *, layout: Layout | None = None,
+                           checkpoint: Path | None = None) -> str:
+    """The footprint shape to replay a gate's episodes under: the one its record scored (a mesh-scene gate recorded
+    before the rule had shapes, 2026-10-08 afternoon, scored the circle). A request the record contradicts is refused:
+    it would replay other episodes. Without a footprint rule in the record: given the scene's `layout` and the
+    `checkpoint`, the shape its run trained under, as the gate reads it (expert/run_shape.py: a request contradicting
+    it is refused, and one is needed where the run names none); else `requested` or the default."""
+    footprint = ((gate or {}).get("contact_rules") or {}).get("footprint")
+    scored = None if footprint is None else footprint.get("shape", LEGACY_SHAPE)
+    if scored is not None and requested is not None and requested != scored:
+        raise ValueError(f"the gate record scored the footprint {scored}; replaying under the {requested} would fly "
+                         f"other episodes")
+    if scored is None and layout is not None and checkpoint is not None:
+        return scored_shape(layout, {"the checkpoint": Path(checkpoint)}, requested)[0]
+    return check_shape(scored or requested or DEFAULT_SHAPE)
 
 
 def compare_with_gate(rec: EpisodeRecording, gate_episode: dict | None) -> dict:
@@ -527,7 +546,7 @@ def run(*, scene: str, checkpoint_name: str, checkpoint_path: Path, episodes: li
         load_model: Callable[[Path], Any], scene_config: str | None = None,
         max_steps: int = DEFAULT_MAX_STEPS_PER_EPISODE, max_fault_retries: int = DEFAULT_MAX_FAULT_RETRIES_PER_EPISODE,
         fps: float = 1.0 / CONTROL_DT_S, scale: int = 2, hold_s: float = 2.0, sim_root: Path = SIM_RUN_DIR,
-        obs_config_reader: Callable[[Path], Any] | None = None) -> dict:
+        obs_config_reader: Callable[[Path], Any] | None = None, footprint_shape: str | None = None) -> dict:
     out_dir, checkpoint_path = Path(out_dir), Path(checkpoint_path)
     summary_path = out_dir / "summary.json"
     if summary_path.exists():
@@ -544,6 +563,8 @@ def run(*, scene: str, checkpoint_name: str, checkpoint_path: Path, episodes: li
         raise ValueError(f"{gate_path} is a gate record of scene {gate['scene']}, not {scene}: its episodes are not "
                          f"these seeds' episodes")
     _scene_file, layout = scene_and_layout(scene)
+    # a mesh scene's rule, as its gate scored it (or, without a gate record, as the checkpoint's run trained under it)
+    footprint_shape = replay_footprint_shape(gate, footprint_shape, layout=layout, checkpoint=checkpoint_path)
     obs_config = (obs_config_reader or checkpoint_obs_config)(checkpoint_path)  # fly it on what it was trained on
     gate_sha, gate_episodes = gate_record(gate, checkpoint_name, condition)
     sha = sha256_of(checkpoint_path)
@@ -558,6 +579,7 @@ def run(*, scene: str, checkpoint_name: str, checkpoint_path: Path, episodes: li
                        "matches_gate_sha256": None if gate_sha is None else gate_sha == sha},
         "condition": condition,
         "obs_config": obs_config.to_json(),
+        "footprint_shape": footprint_shape,
         "gate": str(gate_path) if gate_path is not None and Path(gate_path).is_file() else None,
         "seed_base": seed_base,
         "episodes_requested": list(episodes),
@@ -587,7 +609,8 @@ def run(*, scene: str, checkpoint_name: str, checkpoint_path: Path, episodes: li
     try:
         model = load_model(checkpoint_path)
         env = build_eval_env(scene, instance=instance, sim_factory=lambda: RecordingSimulator(sim_factory(), recorder),
-                             seed_base=seed_base, sim_root=sim_root, obs_config=obs_config)
+                             seed_base=seed_base, sim_root=sim_root, obs_config=obs_config,
+                             footprint_shape=footprint_shape)
         for index in episodes:
             seed = seed_base + index
             print(f"=== episode {index} (seed {seed}) ===", file=sys.stderr)
@@ -674,6 +697,9 @@ def build_arg_parser() -> argparse.ArgumentParser:
     p.add_argument("--fps", type=float, default=1.0 / CONTROL_DT_S, help="default: real time (one step is 0.2 s)")
     p.add_argument("--scale", type=int, default=2, help="video panels are 256 x scale pixels")
     p.add_argument("--hold-s", type=float, default=2.0, help="seconds the last frame stays on screen")
+    p.add_argument("--footprint-shape", choices=SHAPES, default=None,
+                   help="a mesh scene's footprint shape; default: the one the gate record scored, else the one the "
+                        "checkpoint's run trained under (expert/run_shape.py), and a flag contradicting either is refused")
     return p
 
 
@@ -710,7 +736,7 @@ def main(argv: list[str] | None = None) -> int:
                   sim_factory=scene_config_factory(scene_config, resolved.movable_objects, run_root=args.sim_root),
                   sim_root=args.sim_root,
                   load_model=lambda path: default_sac_loader(path, device=args.device), scene_config=scene_config,
-                  fps=args.fps, scale=args.scale, hold_s=args.hold_s)
+                  fps=args.fps, scale=args.scale, hold_s=args.hold_s, footprint_shape=args.footprint_shape)
     print(json.dumps({"status": summary["status"], "error": summary["error"], "out_dir": str(args.out_dir),
                       "n_compared": summary["n_compared"], "n_matching_gate": summary["n_matching_gate"]}, indent=2))
     return 0 if summary["status"] == "ok" else 1
