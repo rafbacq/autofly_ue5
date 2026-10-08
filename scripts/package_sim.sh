@@ -20,6 +20,8 @@ if ls "$ROOT"/runs/sim/inst*/pid.json > /dev/null 2>&1; then
     if kill -0 "$PID" 2>/dev/null; then echo "simulator $rec (pid $PID) is running; packaging would replace its binary"; exit 1; fi
   done
 fi
+# Targets and runtime colours are spawned by name, referenced by no map: only +DirectoriesToAlwaysCook cooks them.
+env -u PYTHONPATH python3 "$ROOT/scripts/ensure_cook_dirs.py" --check || exit 1
 FREE_GB=$(df --output=avail -BG "$ROOT" | tail -1 | tr -dc 0-9)
 test "$FREE_GB" -ge 80 || { echo "only ${FREE_GB} GB free, need 80"; exit 1; }
 set +e

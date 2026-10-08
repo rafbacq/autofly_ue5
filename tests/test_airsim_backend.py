@@ -844,3 +844,37 @@ def test_a_move_refused_twice_is_a_recoverable_fault_not_the_end_of_the_run():
     # An object the server cannot find at all is still a wrong level or a bug.
     with pytest.raises(ObjectPoseError, match="No objects of name"):
         make_sim(api=REFUSING_API, movable_objects={"obs_0042"}).set_object_poses({"obs_0042": Pose(0.0, 0.0, -5.0, 0.0)})
+
+
+class ListingWorld(FakeWorld):
+    """A world whose spawn table the server lists by full regex match (WorldSimApi.cpp listSimAssets)."""
+
+    ASSETS = ("Cylinder", "Cone", "tgt_sedan")
+    fail_with = None
+
+    def list_assets(self, name_regex=".*"):
+        import re
+
+        if self.fail_with is not None:
+            raise RuntimeError(self.fail_with)
+        return [a for a in self.ASSETS if re.fullmatch(name_regex, a)]
+
+
+LISTING_API = PasApi(client_cls=FakeClient, world_cls=ListingWorld, drone_cls=FakeDrone, pose_cls=dict, yaw_mode_max_dof=0)
+
+
+def test_list_assets_returns_the_spawn_table_s_short_names():
+    sim = make_sim(api=LISTING_API)
+    assert sim.list_assets() == ["Cylinder", "Cone", "tgt_sedan"]
+    assert sim.list_assets("^tgt_.*$") == ["tgt_sedan"]
+
+
+def test_list_assets_types_a_request_that_timed_out():
+    from autofly_ue5.sim.types import SimConnectionLostError, SimRequestTimeoutError
+
+    sim = make_sim(api=LISTING_API)
+    sim._world.fail_with = "Fatal Timeout: no reply"
+    with pytest.raises(SimRequestTimeoutError):
+        sim.list_assets()
+    with pytest.raises(SimConnectionLostError):
+        sim.list_assets()

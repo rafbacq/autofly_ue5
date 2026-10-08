@@ -193,3 +193,27 @@ def test_fake_depth_is_off_by_default_and_renders_its_pillars_when_asked():
     # the pillar stands 4 m tall on the ground: looking 1.5 m up from 6 m away is still pillar, the top row (6 m up) is sky
     assert np.isfinite(depth[128 - int(1.5 / 6.0 * 128), 128]) and np.isinf(depth[0, 128])
     assert sim.object_bounds("obstacle_0") == ((6.9, 0.0, -2.0), (1.0, 1.0, 4.0)) and sim.object_bounds("obstacle_7") is None
+
+
+# --------------------------------------------------------------------------------------------------------
+# The runtime spawn table (plan 5 C6): Project AirSim spawns only a cooked asset it finds by short name, and lists them.
+# --------------------------------------------------------------------------------------------------------
+def test_fake_lists_its_spawn_table_by_full_match_and_refuses_an_asset_it_does_not_hold():
+    # Server: ListAssets std::regex_match()es each short name (UnrealHelpers.cpp ListMatchingAssets); SpawnObject raises
+    # "There were no objects with name X found in the Registry" for a name not in its maps (WorldSimApi.cpp spawnObject).
+    sim = FakeSimulator(assets=["Cylinder", "Cone", "tgt_sedan", "tgt_sedan_old"])
+    sim.launch("/Game/AutoFly/Maps/S01", 0)
+    assert sim.list_assets("tgt_sedan") == ["tgt_sedan"], "a full match, not a search"
+    assert sim.list_assets("^tgt_.*$") == ["tgt_sedan", "tgt_sedan_old"]
+    assert sim.list_assets() == ["Cone", "Cylinder", "tgt_sedan", "tgt_sedan_old"]
+    assert sim.spawn("t", "tgt_sedan", Pose(5.0, 0.0, 0.0, 0.0), (1.0, 1.0, 1.0)) == "t"
+    with pytest.raises(RuntimeError, match="no objects with name tgt_van found in the Registry"):
+        sim.spawn("t2", "tgt_van", Pose(5.0, 0.0, 0.0, 0.0), (1.0, 1.0, 1.0))
+    assert sim.object_bounds("t2") is None
+
+
+def test_a_fake_without_a_spawn_table_spawns_any_short_name_and_lists_nothing():
+    sim = FakeSimulator()
+    sim.launch("/Game/AutoFly/Maps/S01", 0)
+    assert sim.list_assets() == []
+    assert sim.spawn("t", "anything", Pose(5.0, 0.0, 0.0, 0.0), (1.0, 1.0, 1.0)) == "t"

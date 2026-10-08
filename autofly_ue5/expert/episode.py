@@ -374,7 +374,9 @@ def _spawn_asset_name(ue_path: str) -> str:
     return ue_path.rsplit("/", 1)[-1]
 
 
-RUNTIME_SPAWNABLE_MATERIAL_KINDS = ("engine",)
+# "base_material": a base UMaterial made for the runtime (plan 5 C6: /Game/AutoFly/Materials/Runtime/M_Red ..., the scene
+# palette's colours, autofly_ue5/scenes/ue/create_runtime_materials.py); in the registry only once the editor made them.
+RUNTIME_SPAWNABLE_MATERIAL_KINDS = ("engine", "base_material")
 
 
 def _runtime_material_path(registry, name: str | None) -> str | None:
@@ -388,7 +390,9 @@ def _runtime_material_path(registry, name: str | None) -> str | None:
 
     So a `color_instance` material -- which is exactly what our registry builds for the scene palette, e.g.
     "white" -> MI_White -- can never be used at runtime, even though `build_level.py` uses it happily at
-    EDITOR build time. Those are different code paths with different class requirements. Rather than fail
+    EDITOR build time. Those are different code paths with different class requirements. The palette's colours for
+    runtime spawns are separate base materials (kind "base_material", "runtime_red" -> /Game/AutoFly/Materials/Runtime/
+    M_Red; plan 5 C6). Rather than fail
     the spawn, return None: `Simulator.spawn()` then skips `set_object_material` entirely
     (`airsim_backend.py:247`) and the object keeps its mesh's default material. For distractors that is the
     right look anyway -- they are meant to read as more of the obstacle field, not as the target.

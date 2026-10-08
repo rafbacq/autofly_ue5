@@ -23,7 +23,9 @@ def check(ok, what):
 def make_material(entry, ass):
     if entry["kind"] == "mesh_default":  # an imported model keeps the materials its import gave it
         return None
-    if entry["kind"] in ("engine", "textured"):  # textured: a Material asset scripts/import_assets.py built from an ambientCG set
+    # textured: a Material asset scripts/import_assets.py built from an ambientCG set; base_material: one of the runtime
+    # colours (create_runtime_materials.py), a plain UMaterial like the engine's
+    if entry["kind"] in ("engine", "textured", "base_material"):
         material = unreal.load_asset(entry["ue_path"])
         check(material is not None, entry["kind"] + " material " + entry["ue_path"])
         return material

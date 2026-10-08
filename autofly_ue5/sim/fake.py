@@ -2,7 +2,8 @@
 
 import hashlib
 import math
-from typing import Mapping
+import re
+from typing import Iterable, Mapping
 
 import numpy as np
 
@@ -21,11 +22,15 @@ from autofly_ue5.sim.types import (
 
 class FakeSimulator:
     """`obstacles`: fixed (x, y, radius) circles. `scene_objects`: named objects a built level carries, {name: (pose,
-    radius)} -- movable with set_object_poses and collided with wherever they are now, like s01's tagged pillars."""
+    radius)} -- movable with set_object_poses and collided with wherever they are now, like s01's tagged pillars.
+    `assets`: the runtime spawn table's short names (the cooked static meshes): spawn() refuses any other and
+    list_assets() lists them, as the server does. None: the table is not modelled (any short name spawns, none is listed)."""
 
     def __init__(self, obstacles: list[tuple[float, float, float]] | None = None, image_size: int = 256,
                  reset_steps: int = 4, scene_objects: Mapping[str, tuple[Pose, float]] | None = None, *,
-                 render_depth: bool = False, obstacle_height_m: float = 10.0, camera_offset_m: float = 0.40) -> None:
+                 render_depth: bool = False, obstacle_height_m: float = 10.0, camera_offset_m: float = 0.40,
+                 assets: Iterable[str] | None = None) -> None:
+        self._assets = None if assets is None else tuple(sorted(set(assets)))
         self._obstacles = list(obstacles or [])
         # Opt-in planar depth of the obstacle cylinders (standing on the ground, obstacle_height_m tall) from a 90 deg
         # pinhole camera camera_offset_m ahead of the body, for the live checks' offline tests. Off by default: the
@@ -114,12 +119,20 @@ class FakeSimulator:
                 f"material={material!r} is a material instance (MI_), not a base UMaterial; the real backend's "
                 f"set_object_material() cannot load it (expert/episode.py _runtime_material_path)"
             )
+        if self._assets is not None and asset not in self._assets:
+            # WorldSimApi.cpp spawnObject: the asset maps hold only cooked assets; a name not in them raises
+            raise RuntimeError(f"There were no objects with name {asset} found in the Registry")
         unique, k = name, 1
         while unique in self._objects:
             unique = f"{name}{k}"
             k += 1
         self._objects[unique] = (asset, pose, tuple(scale), material)
         return unique
+
+    def list_assets(self, pattern: str = ".*") -> list[str]:
+        """The spawn table's short names that fully match `pattern` (the server's std::regex_match)."""
+        self._require_launched()
+        return [a for a in (self._assets or ()) if re.fullmatch(pattern, a)]
 
     def destroy(self, name: str) -> None:
         if name not in self._objects:

@@ -16,8 +16,11 @@ which `load_meshes` reads too.
 
 from __future__ import annotations
 
+import base64
 import json
+import shutil
 import struct
+import urllib.parse
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -350,3 +353,385 @@ def split_by_opacity(path: Path, out_dir: Path) -> dict[str, Path | None]:
     if out["solid"] is None:
         raise ValueError(f"{path}: no opaque primitive at all")
     return out
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# One model as one mesh (plan 5 C6): a target is spawned at runtime as ONE static mesh -- Project AirSim's SpawnObject
+# places one asset by its short name -- while a kit model is a body and its wheels, a character its limbs, a Poly Haven
+# cabinet its doors: several nodes, each in its own frame. The obstacle import keeps nodes apart on purpose (a variant set
+# is several meshes), so a target is first written as a single-node, single-mesh glTF with every node's transform baked
+# into its vertices, and Interchange imports that as one static mesh.
+# ---------------------------------------------------------------------------------------------------------------------
+
+COMPONENT_DTYPES = {5120: "<i1", 5121: "<u1", 5122: "<i2", 5123: "<u2", 5125: "<u4", 5126: "<f4"}
+NORMALIZED_DIVISORS = {5120: 127.0, 5121: 255.0, 5122: 32767.0, 5123: 65535.0}
+TYPE_COMPONENTS = {"SCALAR": 1, "VEC2": 2, "VEC3": 3, "VEC4": 4, "MAT2": 4, "MAT3": 9, "MAT4": 16}
+KEPT_ATTRIBUTES = ("POSITION", "NORMAL", "TANGENT", "TEXCOORD_", "COLOR_")  # skin weights go once the skin is posed
+# What only a translucent material does: once BLEND becomes MASK these would ask Interchange for a translucent master
+# (transmission, volume: ThinTranslucent) or an untested masked variant (clear coat) for a few glass triangles.
+BLEND_ONLY_EXTENSIONS = ("KHR_materials_transmission", "KHR_materials_volume", "KHR_materials_clearcoat")
+MERGE_GENERATOR = "autofly_ue5 scenes/gltf.py merge_to_single_mesh"
+IMAGE_EXTENSIONS = {"image/png": ".png", "image/jpeg": ".jpg", "image/webp": ".webp", "image/ktx2": ".ktx2"}
+
+
+def _decode_data_uri(uri: str) -> bytes:
+    header, _, payload = uri.partition(",")
+    if not header.endswith(";base64"):
+        raise ValueError(f"only base64 data URIs are supported, got {header[:40]!r}")
+    return base64.b64decode(payload)
+
+
+def _load_document(path: Path) -> tuple[dict, list[bytes]]:
+    """A glTF's JSON and its buffers (a .glb's BIN chunk, external .bin files, or base64 data URIs)."""
+    path = Path(path)
+    binary = None
+    if path.suffix.lower() == ".glb":
+        doc, binary = _read_glb(path)
+    else:
+        doc = json.loads(path.read_text())
+    buffers = []
+    for i, b in enumerate(doc.get("buffers", [])):
+        uri = b.get("uri")
+        if uri is None:
+            if i != 0 or binary is None:
+                raise ValueError(f"{path}: buffer {i} has no uri and is not a GLB's BIN chunk")
+            buffers.append(binary)
+        elif uri.startswith("data:"):
+            buffers.append(_decode_data_uri(uri))
+        else:
+            buffers.append(_inside(path.parent, uri).read_bytes())
+    return doc, buffers
+
+
+def _inside(folder: Path, uri: str) -> Path:
+    """`uri` resolved under `folder`, refusing one that leaves it (an absolute path, `..`): the downloads are untrusted."""
+    relative = Path(urllib.parse.unquote(uri))
+    if relative.is_absolute() or ".." in relative.parts:
+        raise ValueError(f"URI {uri!r} leaves the model's folder")
+    return folder / relative
+
+
+def _read_accessor(doc: dict, buffers: list[bytes], index: int) -> np.ndarray:
+    """Any accessor as a (count, components) array: float64 for floats and normalized integers (glTF 2.0 §3.11), int64
+    for plain integers. Strided views are read row by row."""
+    acc = doc["accessors"][index]
+    if "sparse" in acc:
+        raise ValueError(f"accessor {index}: sparse accessors are not supported")
+    n_comp = TYPE_COMPONENTS[acc["type"]]
+    component = acc["componentType"]
+    dtype = np.dtype(COMPONENT_DTYPES[component])
+    count = acc["count"]
+    if "bufferView" not in acc:
+        out = np.zeros((count, n_comp), dtype)
+    else:
+        view = doc["bufferViews"][acc["bufferView"]]
+        data = buffers[view["buffer"]]
+        start = view.get("byteOffset", 0) + acc.get("byteOffset", 0)
+        element = dtype.itemsize * n_comp
+        stride = view.get("byteStride") or element
+        if stride == element:
+            out = np.frombuffer(data, dtype=dtype, count=count * n_comp, offset=start).reshape(count, n_comp)
+        else:
+            rows = np.frombuffer(data, dtype=np.uint8, count=stride * (count - 1) + element, offset=start) if count else np.zeros(0, np.uint8)
+            raw = np.lib.stride_tricks.as_strided(rows, shape=(count, element), strides=(stride, 1)).copy()
+            out = raw.view(dtype).reshape(count, n_comp)
+    if component == FLOAT32:
+        return out.astype(np.float64)
+    if acc.get("normalized"):
+        return np.maximum(out.astype(np.float64) / NORMALIZED_DIVISORS[component], -1.0)
+    return out.astype(np.int64)
+
+
+def _world_matrices(doc: dict) -> dict[int, np.ndarray]:
+    scene = doc["scenes"][doc.get("scene", 0)]
+    world: dict[int, np.ndarray] = {}
+
+    def visit(index: int, parent: np.ndarray) -> None:
+        world[index] = parent @ _node_matrix(doc["nodes"][index])
+        for child in doc["nodes"][index].get("children", []):
+            visit(child, world[index])
+
+    for root in scene.get("nodes", []):
+        visit(root, np.eye(4))
+    return world
+
+
+def _skin_matrices(doc: dict, buffers: list[bytes], skin: dict, world: dict[int, np.ndarray]) -> np.ndarray:
+    """(joints, 4, 4): each joint's world transform times its inverse bind matrix (glTF 2.0 §3.7.3)."""
+    n = len(skin["joints"])
+    if "inverseBindMatrices" in skin:
+        ibm = _read_accessor(doc, buffers, skin["inverseBindMatrices"]).reshape(n, 4, 4).transpose(0, 2, 1)  # column-major
+    else:
+        ibm = np.tile(np.eye(4), (n, 1, 1))
+    return np.stack([world[j] @ ibm[k] for k, j in enumerate(skin["joints"])])
+
+
+def _transform_attributes(attrs: dict[str, np.ndarray], linear: np.ndarray, offset: np.ndarray) -> tuple[dict, np.ndarray]:
+    """Positions, normals and tangents under (linear, offset), each (3, 3) and (3,) or per vertex (n, 3, 3) and (n, 3).
+    Returns the new attributes and each vertex's determinant sign (a mirror re-winds its triangles)."""
+    out = dict(attrs)
+    per_vertex = linear.ndim == 3
+    p = attrs["POSITION"]
+    out["POSITION"] = (np.einsum("vij,vj->vi", linear, p) if per_vertex else p @ linear.T) + offset
+    det = np.linalg.det(linear)
+    if "NORMAL" in attrs:
+        inv_t = np.linalg.inv(linear).transpose(0, 2, 1) if per_vertex else np.linalg.inv(linear).T
+        n = np.einsum("vij,vj->vi", inv_t, attrs["NORMAL"]) if per_vertex else attrs["NORMAL"] @ inv_t.T
+        out["NORMAL"] = n / np.maximum(np.linalg.norm(n, axis=1, keepdims=True), 1e-12)
+    if "TANGENT" in attrs:
+        t = attrs["TANGENT"]
+        xyz = np.einsum("vij,vj->vi", linear, t[:, :3]) if per_vertex else t[:, :3] @ linear.T
+        xyz = xyz / np.maximum(np.linalg.norm(xyz, axis=1, keepdims=True), 1e-12)
+        w = t[:, 3:4] * np.sign(det).reshape(-1, 1) if per_vertex else t[:, 3:4] * np.sign(det)
+        out["TANGENT"] = np.concatenate([xyz, w], axis=1)
+    signs = np.sign(det) if per_vertex else np.full(len(p), np.sign(det))
+    return out, signs
+
+
+def _texture_refs(obj):
+    """Every {"index": i, ...} texture reference under a material (baseColorTexture, normalTexture, extension textures)."""
+    if isinstance(obj, dict):
+        for key, value in obj.items():
+            if isinstance(value, dict) and key.endswith("Texture") and "index" in value:
+                yield value
+            yield from _texture_refs(value)
+    elif isinstance(obj, list):
+        for value in obj:
+            yield from _texture_refs(value)
+
+
+def _extensions_used(obj) -> set[str]:
+    found: set[str] = set()
+    if isinstance(obj, dict):
+        for key, value in obj.items():
+            if key == "extensions" and isinstance(value, dict):
+                found.update(value)
+            found |= _extensions_used(value)
+    elif isinstance(obj, list):
+        for value in obj:
+            found |= _extensions_used(value)
+    return found
+
+
+def merge_to_single_mesh(path: Path, out_dir: Path, *, name: str, nodes: list[str] | None = None, recentre: bool = True,
+                         alpha_cutoff: float = 0.5) -> dict:
+    """Write `<out_dir>/<name>.gltf` (+ `.bin`, + the images it uses, copied) holding one node and one mesh, both named
+    `name`, made of every mesh node of the file (or only those named in `nodes`) with its world transform baked in.
+
+    - Every primitive is kept, grouped by material and attribute set (one primitive per group); POSITION, NORMAL (by the
+      inverse transpose), TANGENT (by the linear part; its handedness sign flips under a mirror), TEXCOORD_n and COLOR_n
+      are carried, and a mirrored node's triangles are re-wound so they still face out.
+    - A skinned mesh is posed by its joints (the rest pose of the file's node transforms), its own node transform ignored
+      as glTF requires; skins, joints, weights, animations and morph targets are not written: the result is static.
+    - `recentre`: the vertices are moved so the model's lowest point is at y = 0 and its x-z box centre on the origin,
+      the "base" pivot a spawn stands on the ground at the sampled point; the shift is returned.
+    - Materials are made importable as an opaque-or-masked static mesh: alpha BLEND becomes MASK at `alpha_cutoff`
+      (a translucent surface writes no depth; s02 2026-10-07) and loses the extensions only a translucent material has;
+      KHR_materials_unlit is dropped and the material made non-metallic (an unlit surface's emissive colour renders near
+      black under the scenes' -11 EV exposure, and glTF's default metallicFactor is 1). Each change is returned.
+    - Only the materials, textures, samplers and images the kept primitives use are written.
+
+    Returns a summary: the paths, the node names merged, vertex and triangle counts, the shift, the extents (glTF x, y
+    up, z), the material rewrites, the share of triangles whose material was not opaque, and what was left out."""
+    path = Path(path)
+    out_dir = Path(out_dir)
+    doc, buffers = _load_document(path)
+    world = _world_matrices(doc)
+    mesh_nodes = [i for i in world if "mesh" in doc["nodes"][i]]
+    names = [doc["nodes"][i].get("name", f"node_{i}") for i in mesh_nodes]
+    if nodes is not None:
+        missing = [n for n in nodes if n not in names]
+        if missing:
+            raise ValueError(f"{path}: nodes {missing} not found among the mesh nodes {names}")
+        selected = [i for i, n in zip(mesh_nodes, names) if n in nodes]
+    else:
+        selected = mesh_nodes
+    if not selected:
+        raise ValueError(f"{path}: no mesh node to merge")
+    materials_in = doc.get("materials", [])
+    groups: dict[tuple, dict] = {}
+    dropped: set[str] = set()
+    skinned: list[str] = []
+    morph = False
+    non_opaque = 0
+    for index in selected:
+        node = doc["nodes"][index]
+        mesh = doc["meshes"][node["mesh"]]
+        joint_matrices = None
+        if "skin" in node:
+            joint_matrices = _skin_matrices(doc, buffers, doc["skins"][node["skin"]], world)
+            skinned.append(node.get("name", f"node_{index}"))
+        for k, prim in enumerate(mesh["primitives"]):
+            mode = prim.get("mode", TRIANGLES)
+            if mode != TRIANGLES:
+                raise ValueError(f"{path}: mesh {mesh.get('name')!r} primitive {k} has mode {mode}; only triangles (4) "
+                                 f"make a static mesh")
+            morph = morph or "targets" in prim
+            attrs = {}
+            for attr, acc in prim["attributes"].items():
+                if attr.startswith(KEPT_ATTRIBUTES):
+                    attrs[attr] = _read_accessor(doc, buffers, acc)
+                elif not attr.startswith(("JOINTS_", "WEIGHTS_")):
+                    dropped.add(attr)
+            count = len(attrs["POSITION"])
+            indices = (_read_accessor(doc, buffers, prim["indices"]).ravel() if "indices" in prim
+                       else np.arange(count, dtype=np.int64))
+            tris = indices[: len(indices) - len(indices) % 3].reshape(-1, 3)
+            if joint_matrices is not None:
+                weights = np.zeros((count, len(joint_matrices)))
+                s = 0
+                while f"JOINTS_{s}" in prim["attributes"]:
+                    j = _read_accessor(doc, buffers, prim["attributes"][f"JOINTS_{s}"])
+                    w = _read_accessor(doc, buffers, prim["attributes"][f"WEIGHTS_{s}"])
+                    np.add.at(weights, (np.repeat(np.arange(count), j.shape[1]), j.ravel()), w.ravel())
+                    s += 1
+                total = weights.sum(axis=1, keepdims=True)
+                weights = np.where(total > 0, weights / np.where(total > 0, total, 1.0), 0.0)
+                m = np.einsum("vj,jab->vab", weights, joint_matrices)
+                m[total[:, 0] <= 0] = np.eye(4)  # no weight at all: the vertex stays as modelled (a zero matrix is singular)
+                attrs, signs = _transform_attributes(attrs, m[:, :3, :3], m[:, :3, 3])
+            else:
+                w = world[index]
+                attrs, signs = _transform_attributes(attrs, w[:3, :3], w[:3, 3])
+            flip = signs[tris[:, 0]] < 0
+            tris = np.where(flip[:, None], tris[:, [0, 2, 1]], tris)
+            material = prim.get("material")
+            if material is not None and materials_in[material].get("alphaMode", "OPAQUE") != "OPAQUE":
+                non_opaque += len(tris)
+            key = (material if material is not None else -1, tuple(sorted((a, v.shape[1]) for a, v in attrs.items())))
+            group = groups.setdefault(key, {"material": material, "attrs": {a: [] for a in attrs}, "tris": [], "count": 0})
+            for a, v in attrs.items():
+                group["attrs"][a].append(v)
+            group["tris"].append(tris + group["count"])
+            group["count"] += count
+    all_positions = np.concatenate([np.concatenate(g["attrs"]["POSITION"]) for g in groups.values()])
+    lo, hi = all_positions.min(axis=0), all_positions.max(axis=0)
+    shift = np.array([-(lo[0] + hi[0]) / 2.0, -lo[1], -(lo[2] + hi[2]) / 2.0]) if recentre else np.zeros(3)
+
+    # materials, textures, samplers, images: only what the kept primitives use, in order of first use
+    material_map: dict[int, int] = {}
+    for group in groups.values():
+        if group["material"] is not None and group["material"] not in material_map:
+            material_map[group["material"]] = len(material_map)
+    materials_out = [json.loads(json.dumps(materials_in[i])) for i in material_map]
+    texture_map: dict[int, int] = {}
+    for material in materials_out:
+        for ref in _texture_refs(material):
+            texture_map.setdefault(ref["index"], len(texture_map))
+            ref["index"] = texture_map[ref["index"]]
+    textures_out = [json.loads(json.dumps(doc["textures"][i])) for i in texture_map]
+    sampler_map: dict[int, int] = {}
+    image_map: dict[int, int] = {}
+    for texture in textures_out:
+        if "sampler" in texture:
+            texture["sampler"] = sampler_map.setdefault(texture["sampler"], len(sampler_map))
+        if "source" in texture:
+            texture["source"] = image_map.setdefault(texture["source"], len(image_map))
+        for ext in (texture.get("extensions") or {}).values():
+            if isinstance(ext, dict) and "source" in ext:
+                ext["source"] = image_map.setdefault(ext["source"], len(image_map))
+    samplers_out = [dict(doc["samplers"][i]) for i in sampler_map]
+    out_dir.mkdir(parents=True, exist_ok=True)
+    images_out = []
+    for k, i in enumerate(image_map):
+        image = dict(doc["images"][i])
+        uri = image.get("uri")
+        if uri is not None and not uri.startswith("data:"):
+            target = _inside(out_dir, uri)
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(_inside(path.parent, uri), target)
+        else:
+            if uri is not None:
+                data = _decode_data_uri(uri)
+                mime = uri[5:].split(";")[0]
+            else:
+                view = doc["bufferViews"][image["bufferView"]]
+                data = buffers[view["buffer"]][view.get("byteOffset", 0): view.get("byteOffset", 0) + view["byteLength"]]
+                mime = image.get("mimeType", "")
+            uri = f"images/{name}_{k}{IMAGE_EXTENSIONS.get(mime, '.bin')}"
+            (out_dir / "images").mkdir(parents=True, exist_ok=True)
+            (out_dir / uri).write_bytes(data)
+            image.pop("bufferView", None)
+            image["uri"] = uri
+        images_out.append(image)
+
+    rewrites = []
+    for material in materials_out:
+        label = material.get("name", "material")
+        extensions = material.get("extensions") or {}
+        if material.get("alphaMode") == "BLEND":
+            material["alphaMode"] = "MASK"
+            material["alphaCutoff"] = float(alpha_cutoff)
+            removed = [e for e in BLEND_ONLY_EXTENSIONS if e in extensions]
+            for e in removed:
+                extensions.pop(e)
+            rewrites.append({"material": label, "change": "alphaMode BLEND -> MASK", "alpha_cutoff": float(alpha_cutoff),
+                             "removed_extensions": removed})
+        if "KHR_materials_unlit" in extensions:
+            extensions.pop("KHR_materials_unlit")
+            pbr = material.setdefault("pbrMetallicRoughness", {})
+            pbr.setdefault("metallicFactor", 0.0)
+            rewrites.append({"material": label, "change": "KHR_materials_unlit -> lit", "metallic_factor": pbr["metallicFactor"]})
+        if "extensions" in material and not material["extensions"]:
+            del material["extensions"]
+
+    blob = bytearray()
+    views: list[dict] = []
+    accessors: list[dict] = []
+
+    def add(array: np.ndarray, dtype: str, type_: str, component: int, target: int, minmax: bool = False) -> int:
+        while len(blob) % 4:
+            blob.extend(b"\0")
+        data = np.ascontiguousarray(array, dtype=dtype)
+        views.append({"buffer": 0, "byteOffset": len(blob), "byteLength": data.nbytes, "target": target})
+        blob.extend(data.tobytes())
+        acc = {"bufferView": len(views) - 1, "componentType": component, "count": int(len(data)), "type": type_}
+        if minmax:
+            acc["min"] = [float(v) for v in data.min(axis=0)]
+            acc["max"] = [float(v) for v in data.max(axis=0)]
+        accessors.append(acc)
+        return len(accessors) - 1
+
+    primitives = []
+    vertices = triangles = 0
+    for group in groups.values():
+        attributes = {}
+        for attr, parts in group["attrs"].items():
+            values = np.concatenate(parts)
+            if attr == "POSITION":
+                values = values + shift
+            n_comp = values.shape[1]
+            attributes[attr] = add(values, "<f4", {2: "VEC2", 3: "VEC3", 4: "VEC4"}[n_comp], FLOAT32, 34962,
+                                   minmax=attr == "POSITION")
+        tris = np.concatenate(group["tris"])
+        prim = {"attributes": attributes, "indices": add(tris.reshape(-1), "<u4", "SCALAR", 5125, 34963), "mode": TRIANGLES}
+        if group["material"] is not None:
+            prim["material"] = material_map[group["material"]]
+        primitives.append(prim)
+        vertices += group["count"]
+        triangles += len(tris)
+
+    out = {"asset": {"version": "2.0", "generator": MERGE_GENERATOR}, "scene": 0, "scenes": [{"name": name, "nodes": [0]}],
+           "nodes": [{"name": name, "mesh": 0}], "meshes": [{"name": name, "primitives": primitives}]}
+    for key, value in (("materials", materials_out), ("textures", textures_out), ("samplers", samplers_out), ("images", images_out)):
+        if value:
+            out[key] = value
+    used = sorted(_extensions_used({k: out.get(k, []) for k in ("materials", "textures", "samplers", "images")}))
+    if used:
+        out["extensionsUsed"] = used
+    required = sorted(set(doc.get("extensionsRequired", [])) & set(used))
+    if required:
+        out["extensionsRequired"] = required
+    out.update(accessors=accessors, bufferViews=views, buffers=[{"uri": f"{name}.bin", "byteLength": len(blob)}])
+    (out_dir / f"{name}.bin").write_bytes(bytes(blob))
+    gltf_path = out_dir / f"{name}.gltf"
+    gltf_path.write_text(json.dumps(out, indent=1) + "\n")
+    extent = hi - lo
+    return {"path": str(gltf_path), "name": name, "source": str(path),
+            "nodes": [doc["nodes"][i].get("name", f"node_{i}") for i in selected],
+            "vertices": int(vertices), "triangles": int(triangles), "primitives": len(primitives),
+            "materials": [m.get("name") for m in materials_out], "images": [i["uri"] for i in images_out],
+            "translation_m": [round(float(v), 6) for v in shift], "extent_m": [round(float(v), 6) for v in extent],
+            "rewrites": rewrites, "non_opaque_triangle_share": round(non_opaque / max(triangles, 1), 6),
+            "skinned_nodes": skinned, "dropped_attributes": sorted(dropped),
+            "left_out": {"animations": len(doc.get("animations", [])), "skins": len(doc.get("skins", [])), "morph_targets": morph}}

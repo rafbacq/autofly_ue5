@@ -1,0 +1,13 @@
+{
+  "format": "autofly_ue5_registry_patch/1",
+  "description": "Base UMaterials of the scene palette's colours, for runtime spawns (spec 7.1: Project AirSim's setMaterial loads only a base UMaterial; the palette's MI_* instances spawn grey). Not in assets/registry.json until the editor has made them: autofly_ue5/scenes/ue/create_runtime_materials.py creates them (scripts/ue_editor_run.py), and scripts/apply_runtime_materials.py merges these entries once its report shows each one made, base-class, the right colour and compiled (docs/runbook-targets.md).",
+  "editor_script": "autofly_ue5/scenes/ue/create_runtime_materials.py",
+  "apply": "scripts/apply_runtime_materials.py",
+  "materials": {
+    "runtime_red": {"kind": "base_material", "ue_path": "/Game/AutoFly/Materials/Runtime/M_Red", "rgba": [0.8, 0.1, 0.1, 1.0], "palette": "red"},
+    "runtime_blue": {"kind": "base_material", "ue_path": "/Game/AutoFly/Materials/Runtime/M_Blue", "rgba": [0.1, 0.25, 0.85, 1.0], "palette": "blue"},
+    "runtime_yellow": {"kind": "base_material", "ue_path": "/Game/AutoFly/Materials/Runtime/M_Yellow", "rgba": [0.9, 0.8, 0.1, 1.0], "palette": "yellow"},
+    "runtime_green": {"kind": "base_material", "ue_path": "/Game/AutoFly/Materials/Runtime/M_Green", "rgba": [0.1, 0.6, 0.2, 1.0], "palette": "green"},
+    "runtime_white": {"kind": "base_material", "ue_path": "/Game/AutoFly/Materials/Runtime/M_White", "rgba": [0.9, 0.9, 0.9, 1.0], "palette": "white"}
+  }
+}

@@ -14,6 +14,8 @@ from autofly_ue5.paths import ROOT
 TARGETS = ROOT / "assets" / "targets.json"
 REGISTRY = ROOT / "assets" / "registry.json"
 SOURCES = ROOT / "assets" / "sources.json"
+# The runtime colours' registry entries wait here until the editor has made the materials (scripts/apply_runtime_materials.py)
+PENDING_MATERIALS = ROOT / "assets" / "pending" / "runtime_materials.registry.json"
 
 # Fig. 3c: vehicles 22 %, geometry 20 %, furniture 18 %, equipment 18 %, human 17 %, others 5 %
 MIX_PERCENT = {"vehicle": 22, "geometry": 20, "furniture": 18, "equipment": 18, "human": 17, "other": 5}
@@ -50,21 +52,29 @@ def test_names_are_unique_lower_case_instruction_phrases(pool):
     assert all(re.fullmatch(r"[a-z]+( [a-z]+)*", n) for n in names), [n for n in names if not re.fullmatch(r"[a-z]+( [a-z]+)*", n)]
 
 
-def test_every_entry_has_the_plan_s_fields(pool):
+def test_every_entry_has_the_plan_s_fields(pool, registry):
     for t in pool:
         assert t["status"] in STATUSES, t["name"]
         assert len(t["scale"]) == 3 and all(s > 0 for s in t["scale"]), t["name"]
         assert isinstance(t["source"], dict) and {"source", "id", "licence", "page"} <= set(t["source"]), t["name"]
-        if t["status"] != "primitive":
-            assert t["asset"] is None, f"{t['name']}: nothing is imported yet, so no registry key"
+        if t["status"] != "primitive" and t["asset"] is not None:
+            # set by `scripts/import_assets.py apply --targets` (docs/runbook-targets.md), never by hand
+            entry = registry["assets"].get(t["asset"])
+            assert entry is not None and entry["role"] == "target", f"{t['name']}: {t['asset']} is not an imported target"
+            assert entry["ue_path"] == f"/Game/AutoFly/Targets/{t['asset']}/{t['asset']}", t["name"]
+        if t["status"] == "imported":
+            assert t["asset"] is not None, t["name"]
 
 
 def test_primitives_resolve_in_the_registry(pool, registry):
+    """A primitive's material is in the registry, or waits in the runtime colours' pending patch (merged into the registry
+    once the editor has made the base materials)."""
+    pending = json.loads(PENDING_MATERIALS.read_text())["materials"]
     primitives = [t for t in pool if t["status"] == "primitive"]
     assert primitives and all(t["category"] == "geometry" for t in primitives)
     for t in primitives:
         assert t["asset"] in registry["assets"], t["name"]
-        assert t["material"] in registry["materials"], t["name"]
+        assert t["material"] in registry["materials"] or t["material"] in pending, t["name"]
 
 
 def test_downloaded_targets_are_cc0_with_a_page_and_a_fetch_record(pool):

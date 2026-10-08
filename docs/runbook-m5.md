@@ -439,7 +439,8 @@ the pool loader refuses `assets/targets.json` (`'blue cylinder': material 'blue'
 UMaterial`). Until C6 imports the targets and gives them base materials, the collector refuses `--targets` at startup,
 before anything launches. Without the flag the target is M3's orange cylinder, a placeholder (`--target-name`), and the
 card says so. Whether to collect at scale before the pool works is the user's call: every instruction would name the
-orange cylinder.
+orange cylinder. `docs/runbook-targets.md` is the editor window that makes the pool usable (runtime base materials, the
+48 model targets imported, the cook list, a repackage and a live probe of every target).
 
 ### 5a. Smoke (~3 min): never into evidence
 

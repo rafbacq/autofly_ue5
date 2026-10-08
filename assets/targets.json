@@ -413,7 +413,7 @@
         1.0,
         2.0
       ],
-      "material": "blue",
+      "material": "runtime_blue",
       "status": "primitive",
       "source": {
         "source": "engine",
@@ -428,7 +428,7 @@
         2.0
       ],
       "pivot": "center",
-      "note": "blue is a MaterialInstance (MI_Blue), which a runtime spawn cannot apply (spec 7.1): it renders grey until C6 adds a base UMaterial M_Blue under /Game/AutoFly/Materials"
+      "note": "runtime_blue: the base UMaterial /Game/AutoFly/Materials/Runtime/M_Blue (the palette's MI_Blue is an instance, which a runtime spawn cannot apply, spec 7.1); usable once scripts/apply_runtime_materials.py has merged assets/pending/runtime_materials.registry.json (docs/runbook-targets.md)"
     },
     {
       "name": "red cylinder",
@@ -440,7 +440,7 @@
         1.0,
         2.0
       ],
-      "material": "red",
+      "material": "runtime_red",
       "status": "primitive",
       "source": {
         "source": "engine",
@@ -455,7 +455,7 @@
         2.0
       ],
       "pivot": "center",
-      "note": "red is a MaterialInstance (MI_Red), which a runtime spawn cannot apply (spec 7.1): it renders grey until C6 adds a base UMaterial M_Red under /Game/AutoFly/Materials"
+      "note": "runtime_red: the base UMaterial /Game/AutoFly/Materials/Runtime/M_Red (the palette's MI_Red is an instance, which a runtime spawn cannot apply, spec 7.1); usable once scripts/apply_runtime_materials.py has merged assets/pending/runtime_materials.registry.json (docs/runbook-targets.md)"
     },
     {
       "name": "yellow cylinder",
@@ -467,7 +467,7 @@
         1.0,
         2.0
       ],
-      "material": "yellow",
+      "material": "runtime_yellow",
       "status": "primitive",
       "source": {
         "source": "engine",
@@ -482,7 +482,7 @@
         2.0
       ],
       "pivot": "center",
-      "note": "yellow is a MaterialInstance (MI_Yellow), which a runtime spawn cannot apply (spec 7.1): it renders grey until C6 adds a base UMaterial M_Yellow under /Game/AutoFly/Materials"
+      "note": "runtime_yellow: the base UMaterial /Game/AutoFly/Materials/Runtime/M_Yellow (the palette's MI_Yellow is an instance, which a runtime spawn cannot apply, spec 7.1); usable once scripts/apply_runtime_materials.py has merged assets/pending/runtime_materials.registry.json (docs/runbook-targets.md)"
     },
     {
       "name": "red cube",
@@ -494,7 +494,7 @@
         1.2,
         1.2
       ],
-      "material": "red",
+      "material": "runtime_red",
       "status": "primitive",
       "source": {
         "source": "engine",
@@ -509,7 +509,7 @@
         1.2
       ],
       "pivot": "center",
-      "note": "red is a MaterialInstance (MI_Red), which a runtime spawn cannot apply (spec 7.1): it renders grey until C6 adds a base UMaterial M_Red under /Game/AutoFly/Materials"
+      "note": "runtime_red: the base UMaterial /Game/AutoFly/Materials/Runtime/M_Red (the palette's MI_Red is an instance, which a runtime spawn cannot apply, spec 7.1); usable once scripts/apply_runtime_materials.py has merged assets/pending/runtime_materials.registry.json (docs/runbook-targets.md)"
     },
     {
       "name": "green cube",
@@ -521,7 +521,7 @@
         1.2,
         1.2
       ],
-      "material": "green",
+      "material": "runtime_green",
       "status": "primitive",
       "source": {
         "source": "engine",
@@ -536,7 +536,7 @@
         1.2
       ],
       "pivot": "center",
-      "note": "green is a MaterialInstance (MI_Green), which a runtime spawn cannot apply (spec 7.1): it renders grey until C6 adds a base UMaterial M_Green under /Game/AutoFly/Materials"
+      "note": "runtime_green: the base UMaterial /Game/AutoFly/Materials/Runtime/M_Green (the palette's MI_Green is an instance, which a runtime spawn cannot apply, spec 7.1); usable once scripts/apply_runtime_materials.py has merged assets/pending/runtime_materials.registry.json (docs/runbook-targets.md)"
     },
     {
       "name": "yellow cube",
@@ -548,7 +548,7 @@
         1.2,
         1.2
       ],
-      "material": "yellow",
+      "material": "runtime_yellow",
       "status": "primitive",
       "source": {
         "source": "engine",
@@ -563,7 +563,7 @@
         1.2
       ],
       "pivot": "center",
-      "note": "yellow is a MaterialInstance (MI_Yellow), which a runtime spawn cannot apply (spec 7.1): it renders grey until C6 adds a base UMaterial M_Yellow under /Game/AutoFly/Materials"
+      "note": "runtime_yellow: the base UMaterial /Game/AutoFly/Materials/Runtime/M_Yellow (the palette's MI_Yellow is an instance, which a runtime spawn cannot apply, spec 7.1); usable once scripts/apply_runtime_materials.py has merged assets/pending/runtime_materials.registry.json (docs/runbook-targets.md)"
     },
     {
       "name": "blue cone",
@@ -575,7 +575,7 @@
         1.0,
         1.5
       ],
-      "material": "blue",
+      "material": "runtime_blue",
       "status": "primitive",
       "source": {
         "source": "engine",
@@ -590,7 +590,7 @@
         1.5
       ],
       "pivot": "center",
-      "note": "blue is a MaterialInstance (MI_Blue), which a runtime spawn cannot apply (spec 7.1): it renders grey until C6 adds a base UMaterial M_Blue under /Game/AutoFly/Materials"
+      "note": "runtime_blue: the base UMaterial /Game/AutoFly/Materials/Runtime/M_Blue (the palette's MI_Blue is an instance, which a runtime spawn cannot apply, spec 7.1); usable once scripts/apply_runtime_materials.py has merged assets/pending/runtime_materials.registry.json (docs/runbook-targets.md)"
     },
     {
       "name": "orange cone",
@@ -628,7 +628,7 @@
         1.2,
         1.2
       ],
-      "material": "yellow",
+      "material": "runtime_yellow",
       "status": "primitive",
       "source": {
         "source": "engine",
@@ -643,7 +643,7 @@
         1.2
       ],
       "pivot": "center",
-      "note": "yellow is a MaterialInstance (MI_Yellow), which a runtime spawn cannot apply (spec 7.1): it renders grey until C6 adds a base UMaterial M_Yellow under /Game/AutoFly/Materials"
+      "note": "runtime_yellow: the base UMaterial /Game/AutoFly/Materials/Runtime/M_Yellow (the palette's MI_Yellow is an instance, which a runtime spawn cannot apply, spec 7.1); usable once scripts/apply_runtime_materials.py has merged assets/pending/runtime_materials.registry.json (docs/runbook-targets.md)"
     },
     {
       "name": "green sphere",
@@ -655,7 +655,7 @@
         1.2,
         1.2
       ],
-      "material": "green",
+      "material": "runtime_green",
       "status": "primitive",
       "source": {
         "source": "engine",
@@ -670,7 +670,7 @@
         1.2
       ],
       "pivot": "center",
-      "note": "green is a MaterialInstance (MI_Green), which a runtime spawn cannot apply (spec 7.1): it renders grey until C6 adds a base UMaterial M_Green under /Game/AutoFly/Materials"
+      "note": "runtime_green: the base UMaterial /Game/AutoFly/Materials/Runtime/M_Green (the palette's MI_Green is an instance, which a runtime spawn cannot apply, spec 7.1); usable once scripts/apply_runtime_materials.py has merged assets/pending/runtime_materials.registry.json (docs/runbook-targets.md)"
     },
     {
       "name": "green cone",
@@ -682,7 +682,7 @@
         1.0,
         1.5
       ],
-      "material": "green",
+      "material": "runtime_green",
       "status": "primitive",
       "source": {
         "source": "engine",
@@ -697,7 +697,7 @@
         1.5
       ],
       "pivot": "center",
-      "note": "green is a MaterialInstance (MI_Green), which a runtime spawn cannot apply (spec 7.1): it renders grey until C6 adds a base UMaterial M_Green under /Game/AutoFly/Materials"
+      "note": "runtime_green: the base UMaterial /Game/AutoFly/Materials/Runtime/M_Green (the palette's MI_Green is an instance, which a runtime spawn cannot apply, spec 7.1); usable once scripts/apply_runtime_materials.py has merged assets/pending/runtime_materials.registry.json (docs/runbook-targets.md)"
     },
     {
       "name": "beige sofa",

@@ -396,6 +396,17 @@ class ProjectAirSimSimulator:
         if not self._world.destroy_object(name):
             raise ObjectNotFoundError(f"destroy_object({name!r}) found no such object")
 
+    def list_assets(self, pattern: str = ".*") -> list[str]:
+        """The short names in the runtime spawn table that fully match `pattern` (the server std::regex_match()es each one,
+        UnrealHelpers.cpp ListMatchingAssets): every cooked static mesh, skeletal mesh and blueprint, which is what
+        spawn() can place. Backend-only, like get_object_poses: scripts/probe_targets.py checks the target pool against
+        it (plan 5 C6)."""
+        self._require_connected()
+        try:
+            return [str(name) for name in (self._world.list_assets(pattern) or [])]
+        except RuntimeError as err:
+            raise self._typed_request_error(err, "list_assets") from err
+
     def object_bounds(self, name: str) -> tuple[tuple[float, float, float], tuple[float, float, float]] | None:
         self._require_connected()
         box = self._world.get_3d_bounding_box(name, BOX_ALIGNMENT_WORLD_AXIS)

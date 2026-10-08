@@ -44,7 +44,8 @@ def test_build_scene_writes_the_layout_and_level_spec(tmp_path):
 
 
 ENTRY_POINTS_HOLDING_A_SIMULATOR = ["autofly_ue5/expert/train.py", "autofly_ue5/validate/live_m1.py",
-                                    "scripts/m2_gate.py", "scripts/measure_instances.py", "scripts/probe_crash_reset.py"]
+                                    "scripts/m2_gate.py", "scripts/measure_instances.py", "scripts/probe_crash_reset.py",
+                                    "scripts/probe_targets.py"]
 
 
 @pytest.mark.parametrize("path", ENTRY_POINTS_HOLDING_A_SIMULATOR)
