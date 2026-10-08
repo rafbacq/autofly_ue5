@@ -93,6 +93,9 @@ class SceneFile:
     # needs a wider training margin than the default 1.4 m allows; None: the default (expert.episode.
     # scene_spawn_clearance_m). The layout is still accepted at 1.4 m, so the schema refuses anything less.
     spawn_clearance_m: float | None = None
+    # The level's manual exposure bias (EV) when its ground needs its own (plan 5 C7, 2026-10-08: snow); None: the
+    # calibrated -11 EV of scenes/level_spec.EXPOSURE_BIAS_EV, so every level built before keeps its spec byte for byte.
+    exposure_bias_ev: float | None = None
 
 
 @dataclass(frozen=True)
@@ -264,6 +267,7 @@ def load_scene_file(path: Path) -> SceneFile:
         dynamic=_dynamic_spec(data["dynamic"], path) if "dynamic" in data else None,
         reward=tuple(sorted((name, float(value)) for name, value in data.get("reward", {}).items())),
         spawn_clearance_m=float(data["spawn_clearance_m"]) if "spawn_clearance_m" in data else None,
+        exposure_bias_ev=float(data["exposure_bias_ev"]) if "exposure_bias_ev" in data else None,
     )
 
 

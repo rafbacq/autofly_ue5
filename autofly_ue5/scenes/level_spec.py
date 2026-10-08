@@ -104,7 +104,7 @@ def layout_to_level_spec(layout: Layout, scene: SceneFile, registry: AssetRegist
         "exposure": {
             "tag": EXPOSURE_TAG,
             "method": "manual",
-            "bias_ev": EXPOSURE_BIAS_EV,
+            "bias_ev": scene.exposure_bias_ev if scene.exposure_bias_ev is not None else EXPOSURE_BIAS_EV,
             "apply_physical_camera_exposure": EXPOSURE_APPLY_PHYSICAL_CAMERA,
         },
         "materials": materials,

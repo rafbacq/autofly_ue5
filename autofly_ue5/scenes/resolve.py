@@ -22,10 +22,10 @@ from autofly_ue5.scenes.level_spec import map_path_for
 from autofly_ue5.scenes.model import Bounds, Instance, Layout, SceneFile, SceneFileError, load_scene_file
 
 # What a scene that reuses a level must share with its base: everything the built level or the episode geometry
-# depends on (spawn_clearance_m: where its episodes may begin). id, split, instruction_obstacle and the dynamic block
-# may differ.
+# depends on (spawn_clearance_m: where its episodes may begin; exposure_bias_ev: how its level renders). id, split,
+# instruction_obstacle and the dynamic block may differ.
 STATIC_FIELDS = ("seed", "bounds", "ground", "obstacle_groups", "start_band", "target_band", "altitude_band",
-                 "spawn_clearance_m")
+                 "spawn_clearance_m", "exposure_bias_ev")
 
 
 @dataclass(frozen=True)

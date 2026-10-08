@@ -111,3 +111,48 @@ def test_a_model_with_alpha_cards_spawns_two_actors_at_one_transform():
     # an entry without parts spawns one colliding actor, as before
     plain = layout_to_level_spec(Layout("s02", 1, Bounds(-35, 35, -35, 35), (dataclasses.replace(inst, asset="cylinder", material="white"),)), SCENE, REGISTRY)["actors"]
     assert len(plain) == 1 and plain[0]["collision"] is True
+
+
+# --------------------------------------------------------------------------------------------------------
+# A scene's own exposure (plan 5 C7, 2026-10-08): snow is several times brighter than s01's grid floor, and the
+# manual exposure's image multiplier is exactly 2**bias_ev, so a snow scene sets its own bias. Without the field every
+# level spec keeps -11 EV, byte for byte.
+# --------------------------------------------------------------------------------------------------------
+def _scene_with(tmp_path, **fields):
+    import json
+
+    data = json.loads((SCENES_DIR / "s01_white_pillars.json").read_text())
+    data.update(fields)
+    path = tmp_path / "s01_white_pillars.json"
+    path.write_text(json.dumps(data))
+    return load_scene_file(path)
+
+
+def test_a_scene_without_its_own_exposure_keeps_the_calibrated_minus_11_ev():
+    assert SCENE.exposure_bias_ev is None
+    spec = layout_to_level_spec(Layout("s01", 1001, SCENE.bounds, ()), SCENE, REGISTRY)
+    assert spec["exposure"]["bias_ev"] == EXPOSURE_BIAS_EV == -11.0
+
+
+def test_a_scene_with_its_own_exposure_carries_it_into_the_level_spec(tmp_path):
+    scene = _scene_with(tmp_path, exposure_bias_ev=-12.5)
+    assert scene.exposure_bias_ev == -12.5
+    spec = layout_to_level_spec(Layout("s01", 1001, scene.bounds, ()), scene, REGISTRY)
+    assert spec["exposure"]["bias_ev"] == -12.5
+    assert spec["exposure"]["method"] == "manual" and spec["exposure"]["apply_physical_camera_exposure"] is False
+
+
+@pytest.mark.parametrize("value", [-20.5, -2.0, "dark"])
+def test_an_exposure_outside_what_was_ever_measured_is_refused(tmp_path, value):
+    # The s01 calibration measured -15 EV (mean 14) to -11 EV (mean 109); a value far outside [-16, -6] is a typo
+    # (e.g. a sign error), not a calibration.
+    from autofly_ue5.scenes.model import SceneFileError
+
+    with pytest.raises(SceneFileError):
+        _scene_with(tmp_path, exposure_bias_ev=value)
+
+
+def test_a_scene_reusing_a_level_must_match_its_exposure():
+    from autofly_ue5.scenes.resolve import STATIC_FIELDS
+
+    assert "exposure_bias_ev" in STATIC_FIELDS
