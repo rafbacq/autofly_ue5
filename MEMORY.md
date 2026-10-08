@@ -314,14 +314,14 @@ stale "fact". Standing rules live in `CLAUDE.md`; this file is the reasoning and
 
 ## Open questions
 
-- What gets s01d from 0.885 to 0.95? Run 5 (mover input, r_bounds 10, a 0.3 m training contact margin, an altitude
-  margin) gated 0.885. Its 23 failures were 10 static, 7 mover, 5 altitude and 1 lateral. Run 6 (2026-10-06) trains
-  each boundary 0.5 m outside the task's failure line. It gated 0.920, and the mean of its checkpoints gated 0.935. 12 h
-  more and a wider mean flew 0.925 over 400 episodes, so the expert is at about 0.93. Mover near misses (about 4.5%)
-  resisted every lever. Untried: a closing penalty, a lower entropy target, a lateral margin. The user chooses
-  (`docs/decisions/2026-10-06-s01d-r6-plan.md`).
+- *(closed 2026-10-07)* What gets s01d from 0.885 to 0.95? Runs 5 and 6 took it to 0.935 (the mean of run 6's
+  250k–550k checkpoints), and 12 h more flew 0.925 over 400 episodes. Mover near misses (about 4.5%) resisted every
+  lever. **The user accepted the 0.935 expert for collection on 2026-10-07; the gate stays failed**
+  (`docs/decisions/2026-10-07-s01d-accepted-at-0.935.md`). Untried, recorded there: a closing penalty, a lower
+  entropy target, a lateral margin.
 
 Settled:
+- s01d's expert is the 0.935 mean (2026-10-07, accepted by the user; see above). Stochastic collection, as s01's.
 - a0's aligned start costs the s01 expert nothing (2026-10-03, `docs/gates/m3_a0_probe.json`): 50/50 with a0, 49/50
   without, over the same 50 seeds. The first smoke's 3 of 5 was chance.
 - Moving a baked pillar works live (2026-10-02, `docs/gates/m2d_mover_probe.json`): moves land within 3e-6 m, show in
