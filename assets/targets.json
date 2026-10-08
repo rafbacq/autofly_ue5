@@ -1,0 +1,1680 @@
+{
+  "version": 1,
+  "targets": [
+    {
+      "name": "covered car",
+      "category": "vehicle",
+      "seen": true,
+      "asset": null,
+      "scale": [
+        0.913,
+        0.913,
+        0.913
+      ],
+      "material": null,
+      "status": "candidate",
+      "source": {
+        "source": "polyhaven",
+        "id": "covered_car",
+        "file": "covered_car_1k.gltf",
+        "licence": "CC0-1.0",
+        "page": "https://polyhaven.com/a/covered_car"
+      },
+      "height_m": 1.288,
+      "extent_m": [
+        1.633,
+        3.999,
+        1.288
+      ],
+      "pivot": "base",
+      "note": "4.38 m long as modelled; scaled to 4 m (the pool's largest size)"
+    },
+    {
+      "name": "red sedan",
+      "category": "vehicle",
+      "seen": true,
+      "asset": null,
+      "scale": [
+        1.568,
+        1.568,
+        1.568
+      ],
+      "material": null,
+      "status": "placeholder",
+      "source": {
+        "source": "kenney",
+        "id": "kenney_car-kit",
+        "model": "sedan",
+        "file": "Models/GLB format/sedan.glb",
+        "licence": "CC0-1.0",
+        "page": "https://kenney.nl/assets/car-kit"
+      },
+      "height_m": 2.038,
+      "extent_m": [
+        2.352,
+        3.998,
+        2.038
+      ],
+      "pivot": "base",
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+    },
+    {
+      "name": "green hatchback",
+      "category": "vehicle",
+      "seen": true,
+      "asset": null,
+      "scale": [
+        1.333,
+        1.333,
+        1.333
+      ],
+      "material": null,
+      "status": "placeholder",
+      "source": {
+        "source": "kenney",
+        "id": "kenney_car-kit",
+        "model": "hatchback-sports",
+        "file": "Models/GLB format/hatchback-sports.glb",
+        "licence": "CC0-1.0",
+        "page": "https://kenney.nl/assets/car-kit"
+      },
+      "height_m": 1.466,
+      "extent_m": [
+        1.733,
+        3.799,
+        1.466
+      ],
+      "pivot": "base",
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+    },
+    {
+      "name": "blue van",
+      "category": "vehicle",
+      "seen": true,
+      "asset": null,
+      "scale": [
+        1.454,
+        1.454,
+        1.454
+      ],
+      "material": null,
+      "status": "placeholder",
+      "source": {
+        "source": "kenney",
+        "id": "kenney_car-kit",
+        "model": "van",
+        "file": "Models/GLB format/van.glb",
+        "licence": "CC0-1.0",
+        "page": "https://kenney.nl/assets/car-kit"
+      },
+      "height_m": 1.963,
+      "extent_m": [
+        2.181,
+        3.998,
+        1.963
+      ],
+      "pivot": "base",
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+    },
+    {
+      "name": "yellow taxi",
+      "category": "vehicle",
+      "seen": true,
+      "asset": null,
+      "scale": [
+        1.454,
+        1.454,
+        1.454
+      ],
+      "material": null,
+      "status": "placeholder",
+      "source": {
+        "source": "kenney",
+        "id": "kenney_car-kit",
+        "model": "taxi",
+        "file": "Models/GLB format/taxi.glb",
+        "licence": "CC0-1.0",
+        "page": "https://kenney.nl/assets/car-kit"
+      },
+      "height_m": 2.181,
+      "extent_m": [
+        2.181,
+        3.998,
+        2.181
+      ],
+      "pivot": "base",
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+    },
+    {
+      "name": "police car",
+      "category": "vehicle",
+      "seen": true,
+      "asset": null,
+      "scale": [
+        1.29,
+        1.29,
+        1.29
+      ],
+      "material": null,
+      "status": "placeholder",
+      "source": {
+        "source": "kenney",
+        "id": "kenney_car-kit",
+        "model": "police",
+        "file": "Models/GLB format/police.glb",
+        "licence": "CC0-1.0",
+        "page": "https://kenney.nl/assets/car-kit"
+      },
+      "height_m": 1.677,
+      "extent_m": [
+        1.935,
+        3.999,
+        1.677
+      ],
+      "pivot": "base",
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+    },
+    {
+      "name": "ambulance",
+      "category": "vehicle",
+      "seen": true,
+      "asset": null,
+      "scale": [
+        1.23,
+        1.23,
+        1.23
+      ],
+      "material": null,
+      "status": "placeholder",
+      "source": {
+        "source": "kenney",
+        "id": "kenney_car-kit",
+        "model": "ambulance",
+        "file": "Models/GLB format/ambulance.glb",
+        "licence": "CC0-1.0",
+        "page": "https://kenney.nl/assets/car-kit"
+      },
+      "height_m": 2.214,
+      "extent_m": [
+        1.845,
+        3.998,
+        2.214
+      ],
+      "pivot": "base",
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+    },
+    {
+      "name": "red fire truck",
+      "category": "vehicle",
+      "seen": true,
+      "asset": null,
+      "scale": [
+        1.176,
+        1.176,
+        1.176
+      ],
+      "material": null,
+      "status": "placeholder",
+      "source": {
+        "source": "kenney",
+        "id": "kenney_car-kit",
+        "model": "firetruck",
+        "file": "Models/GLB format/firetruck.glb",
+        "licence": "CC0-1.0",
+        "page": "https://kenney.nl/assets/car-kit"
+      },
+      "height_m": 1.999,
+      "extent_m": [
+        1.764,
+        3.998,
+        1.999
+      ],
+      "pivot": "base",
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+    },
+    {
+      "name": "green garbage truck",
+      "category": "vehicle",
+      "seen": true,
+      "asset": null,
+      "scale": [
+        1.159,
+        1.159,
+        1.159
+      ],
+      "material": null,
+      "status": "placeholder",
+      "source": {
+        "source": "kenney",
+        "id": "kenney_car-kit",
+        "model": "garbage-truck",
+        "file": "Models/GLB format/garbage-truck.glb",
+        "licence": "CC0-1.0",
+        "page": "https://kenney.nl/assets/car-kit"
+      },
+      "height_m": 1.854,
+      "extent_m": [
+        1.854,
+        3.999,
+        1.854
+      ],
+      "pivot": "base",
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+    },
+    {
+      "name": "yellow suv",
+      "category": "vehicle",
+      "seen": true,
+      "asset": null,
+      "scale": [
+        1.403,
+        1.403,
+        1.403
+      ],
+      "material": null,
+      "status": "placeholder",
+      "source": {
+        "source": "kenney",
+        "id": "kenney_car-kit",
+        "model": "suv-luxury",
+        "file": "Models/GLB format/suv-luxury.glb",
+        "licence": "CC0-1.0",
+        "page": "https://kenney.nl/assets/car-kit"
+      },
+      "height_m": 1.824,
+      "extent_m": [
+        2.104,
+        3.999,
+        1.824
+      ],
+      "pivot": "base",
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+    },
+    {
+      "name": "white pickup truck",
+      "category": "vehicle",
+      "seen": true,
+      "asset": null,
+      "scale": [
+        1.457,
+        1.457,
+        1.457
+      ],
+      "material": null,
+      "status": "placeholder",
+      "source": {
+        "source": "kenney",
+        "id": "kenney_car-kit",
+        "model": "truck-flat",
+        "file": "Models/GLB format/truck-flat.glb",
+        "licence": "CC0-1.0",
+        "page": "https://kenney.nl/assets/car-kit"
+      },
+      "height_m": 1.894,
+      "extent_m": [
+        2.186,
+        4.0,
+        1.894
+      ],
+      "pivot": "base",
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+    },
+    {
+      "name": "crane",
+      "category": "vehicle",
+      "seen": false,
+      "asset": null,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "material": null,
+      "status": "placeholder",
+      "source": {
+        "source": "kenney",
+        "id": "kenney_factory-kit",
+        "model": "crane",
+        "file": "Models/GLB format/crane.glb",
+        "licence": "CC0-1.0",
+        "page": "https://kenney.nl/assets/factory-kit"
+      },
+      "height_m": 3.553,
+      "extent_m": [
+        1.926,
+        3.68,
+        3.553
+      ],
+      "pivot": "base",
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model; a jib crane from Kenney's Factory Kit, the only CC0 crane found (the paper's may be a construction crane)"
+    },
+    {
+      "name": "green front loader",
+      "category": "vehicle",
+      "seen": false,
+      "asset": null,
+      "scale": [
+        1.416,
+        1.416,
+        1.416
+      ],
+      "material": null,
+      "status": "placeholder",
+      "source": {
+        "source": "kenney",
+        "id": "kenney_car-kit",
+        "model": "tractor-shovel",
+        "file": "Models/GLB format/tractor-shovel.glb",
+        "licence": "CC0-1.0",
+        "page": "https://kenney.nl/assets/car-kit"
+      },
+      "height_m": 2.141,
+      "extent_m": [
+        2.351,
+        3.498,
+        2.141
+      ],
+      "pivot": "base",
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+    },
+    {
+      "name": "orange cylinder",
+      "category": "geometry",
+      "seen": true,
+      "asset": "cylinder",
+      "scale": [
+        1.0,
+        1.0,
+        2.0
+      ],
+      "material": "orange",
+      "status": "primitive",
+      "source": {
+        "source": "engine",
+        "id": "/Engine/BasicShapes/Cylinder",
+        "licence": "Unreal Engine EULA",
+        "page": null
+      },
+      "height_m": 2.0,
+      "extent_m": [
+        1.0,
+        1.0,
+        2.0
+      ],
+      "pivot": "center"
+    },
+    {
+      "name": "blue cylinder",
+      "category": "geometry",
+      "seen": true,
+      "asset": "cylinder",
+      "scale": [
+        1.0,
+        1.0,
+        2.0
+      ],
+      "material": "blue",
+      "status": "primitive",
+      "source": {
+        "source": "engine",
+        "id": "/Engine/BasicShapes/Cylinder",
+        "licence": "Unreal Engine EULA",
+        "page": null
+      },
+      "height_m": 2.0,
+      "extent_m": [
+        1.0,
+        1.0,
+        2.0
+      ],
+      "pivot": "center",
+      "note": "blue is a MaterialInstance (MI_Blue), which a runtime spawn cannot apply (spec 7.1): it renders grey until C6 adds a base UMaterial M_Blue under /Game/AutoFly/Materials"
+    },
+    {
+      "name": "red cylinder",
+      "category": "geometry",
+      "seen": true,
+      "asset": "cylinder",
+      "scale": [
+        1.0,
+        1.0,
+        2.0
+      ],
+      "material": "red",
+      "status": "primitive",
+      "source": {
+        "source": "engine",
+        "id": "/Engine/BasicShapes/Cylinder",
+        "licence": "Unreal Engine EULA",
+        "page": null
+      },
+      "height_m": 2.0,
+      "extent_m": [
+        1.0,
+        1.0,
+        2.0
+      ],
+      "pivot": "center",
+      "note": "red is a MaterialInstance (MI_Red), which a runtime spawn cannot apply (spec 7.1): it renders grey until C6 adds a base UMaterial M_Red under /Game/AutoFly/Materials"
+    },
+    {
+      "name": "yellow cylinder",
+      "category": "geometry",
+      "seen": true,
+      "asset": "cylinder",
+      "scale": [
+        1.0,
+        1.0,
+        2.0
+      ],
+      "material": "yellow",
+      "status": "primitive",
+      "source": {
+        "source": "engine",
+        "id": "/Engine/BasicShapes/Cylinder",
+        "licence": "Unreal Engine EULA",
+        "page": null
+      },
+      "height_m": 2.0,
+      "extent_m": [
+        1.0,
+        1.0,
+        2.0
+      ],
+      "pivot": "center",
+      "note": "yellow is a MaterialInstance (MI_Yellow), which a runtime spawn cannot apply (spec 7.1): it renders grey until C6 adds a base UMaterial M_Yellow under /Game/AutoFly/Materials"
+    },
+    {
+      "name": "red cube",
+      "category": "geometry",
+      "seen": true,
+      "asset": "cube",
+      "scale": [
+        1.2,
+        1.2,
+        1.2
+      ],
+      "material": "red",
+      "status": "primitive",
+      "source": {
+        "source": "engine",
+        "id": "/Engine/BasicShapes/Cube",
+        "licence": "Unreal Engine EULA",
+        "page": null
+      },
+      "height_m": 1.2,
+      "extent_m": [
+        1.2,
+        1.2,
+        1.2
+      ],
+      "pivot": "center",
+      "note": "red is a MaterialInstance (MI_Red), which a runtime spawn cannot apply (spec 7.1): it renders grey until C6 adds a base UMaterial M_Red under /Game/AutoFly/Materials"
+    },
+    {
+      "name": "green cube",
+      "category": "geometry",
+      "seen": true,
+      "asset": "cube",
+      "scale": [
+        1.2,
+        1.2,
+        1.2
+      ],
+      "material": "green",
+      "status": "primitive",
+      "source": {
+        "source": "engine",
+        "id": "/Engine/BasicShapes/Cube",
+        "licence": "Unreal Engine EULA",
+        "page": null
+      },
+      "height_m": 1.2,
+      "extent_m": [
+        1.2,
+        1.2,
+        1.2
+      ],
+      "pivot": "center",
+      "note": "green is a MaterialInstance (MI_Green), which a runtime spawn cannot apply (spec 7.1): it renders grey until C6 adds a base UMaterial M_Green under /Game/AutoFly/Materials"
+    },
+    {
+      "name": "yellow cube",
+      "category": "geometry",
+      "seen": true,
+      "asset": "cube",
+      "scale": [
+        1.2,
+        1.2,
+        1.2
+      ],
+      "material": "yellow",
+      "status": "primitive",
+      "source": {
+        "source": "engine",
+        "id": "/Engine/BasicShapes/Cube",
+        "licence": "Unreal Engine EULA",
+        "page": null
+      },
+      "height_m": 1.2,
+      "extent_m": [
+        1.2,
+        1.2,
+        1.2
+      ],
+      "pivot": "center",
+      "note": "yellow is a MaterialInstance (MI_Yellow), which a runtime spawn cannot apply (spec 7.1): it renders grey until C6 adds a base UMaterial M_Yellow under /Game/AutoFly/Materials"
+    },
+    {
+      "name": "blue cone",
+      "category": "geometry",
+      "seen": true,
+      "asset": "cone",
+      "scale": [
+        1.0,
+        1.0,
+        1.5
+      ],
+      "material": "blue",
+      "status": "primitive",
+      "source": {
+        "source": "engine",
+        "id": "/Engine/BasicShapes/Cone",
+        "licence": "Unreal Engine EULA",
+        "page": null
+      },
+      "height_m": 1.5,
+      "extent_m": [
+        1.0,
+        1.0,
+        1.5
+      ],
+      "pivot": "center",
+      "note": "blue is a MaterialInstance (MI_Blue), which a runtime spawn cannot apply (spec 7.1): it renders grey until C6 adds a base UMaterial M_Blue under /Game/AutoFly/Materials"
+    },
+    {
+      "name": "orange cone",
+      "category": "geometry",
+      "seen": true,
+      "asset": "cone",
+      "scale": [
+        1.0,
+        1.0,
+        1.5
+      ],
+      "material": "orange",
+      "status": "primitive",
+      "source": {
+        "source": "engine",
+        "id": "/Engine/BasicShapes/Cone",
+        "licence": "Unreal Engine EULA",
+        "page": null
+      },
+      "height_m": 1.5,
+      "extent_m": [
+        1.0,
+        1.0,
+        1.5
+      ],
+      "pivot": "center"
+    },
+    {
+      "name": "yellow sphere",
+      "category": "geometry",
+      "seen": true,
+      "asset": "sphere",
+      "scale": [
+        1.2,
+        1.2,
+        1.2
+      ],
+      "material": "yellow",
+      "status": "primitive",
+      "source": {
+        "source": "engine",
+        "id": "/Engine/BasicShapes/Sphere",
+        "licence": "Unreal Engine EULA",
+        "page": null
+      },
+      "height_m": 1.2,
+      "extent_m": [
+        1.2,
+        1.2,
+        1.2
+      ],
+      "pivot": "center",
+      "note": "yellow is a MaterialInstance (MI_Yellow), which a runtime spawn cannot apply (spec 7.1): it renders grey until C6 adds a base UMaterial M_Yellow under /Game/AutoFly/Materials"
+    },
+    {
+      "name": "green sphere",
+      "category": "geometry",
+      "seen": true,
+      "asset": "sphere",
+      "scale": [
+        1.2,
+        1.2,
+        1.2
+      ],
+      "material": "green",
+      "status": "primitive",
+      "source": {
+        "source": "engine",
+        "id": "/Engine/BasicShapes/Sphere",
+        "licence": "Unreal Engine EULA",
+        "page": null
+      },
+      "height_m": 1.2,
+      "extent_m": [
+        1.2,
+        1.2,
+        1.2
+      ],
+      "pivot": "center",
+      "note": "green is a MaterialInstance (MI_Green), which a runtime spawn cannot apply (spec 7.1): it renders grey until C6 adds a base UMaterial M_Green under /Game/AutoFly/Materials"
+    },
+    {
+      "name": "green cone",
+      "category": "geometry",
+      "seen": false,
+      "asset": "cone",
+      "scale": [
+        1.0,
+        1.0,
+        1.5
+      ],
+      "material": "green",
+      "status": "primitive",
+      "source": {
+        "source": "engine",
+        "id": "/Engine/BasicShapes/Cone",
+        "licence": "Unreal Engine EULA",
+        "page": null
+      },
+      "height_m": 1.5,
+      "extent_m": [
+        1.0,
+        1.0,
+        1.5
+      ],
+      "pivot": "center",
+      "note": "green is a MaterialInstance (MI_Green), which a runtime spawn cannot apply (spec 7.1): it renders grey until C6 adds a base UMaterial M_Green under /Game/AutoFly/Materials"
+    },
+    {
+      "name": "beige sofa",
+      "category": "furniture",
+      "seen": true,
+      "asset": null,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "material": null,
+      "status": "candidate",
+      "source": {
+        "source": "polyhaven",
+        "id": "Sofa_01",
+        "file": "Sofa_01_1k.gltf",
+        "licence": "CC0-1.0",
+        "page": "https://polyhaven.com/a/Sofa_01"
+      },
+      "height_m": 0.796,
+      "extent_m": [
+        1.571,
+        0.658,
+        0.796
+      ],
+      "pivot": "base"
+    },
+    {
+      "name": "black leather sofa",
+      "category": "furniture",
+      "seen": true,
+      "asset": null,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "material": null,
+      "status": "candidate",
+      "source": {
+        "source": "polyhaven",
+        "id": "sofa_02",
+        "file": "sofa_02_1k.gltf",
+        "licence": "CC0-1.0",
+        "page": "https://polyhaven.com/a/sofa_02"
+      },
+      "height_m": 0.71,
+      "extent_m": [
+        1.807,
+        0.818,
+        0.71
+      ],
+      "pivot": "base"
+    },
+    {
+      "name": "grey armchair",
+      "category": "furniture",
+      "seen": true,
+      "asset": null,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "material": null,
+      "status": "candidate",
+      "source": {
+        "source": "polyhaven",
+        "id": "ArmChair_01",
+        "file": "ArmChair_01_1k.gltf",
+        "licence": "CC0-1.0",
+        "page": "https://polyhaven.com/a/ArmChair_01"
+      },
+      "height_m": 1.065,
+      "extent_m": [
+        0.848,
+        0.766,
+        1.065
+      ],
+      "pivot": "base"
+    },
+    {
+      "name": "green armchair",
+      "category": "furniture",
+      "seen": true,
+      "asset": null,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "material": null,
+      "status": "candidate",
+      "source": {
+        "source": "polyhaven",
+        "id": "GreenChair_01",
+        "file": "GreenChair_01_1k.gltf",
+        "licence": "CC0-1.0",
+        "page": "https://polyhaven.com/a/GreenChair_01"
+      },
+      "height_m": 1.058,
+      "extent_m": [
+        0.673,
+        0.664,
+        1.058
+      ],
+      "pivot": "base"
+    },
+    {
+      "name": "white plastic chair",
+      "category": "furniture",
+      "seen": true,
+      "asset": null,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "material": null,
+      "status": "candidate",
+      "source": {
+        "source": "polyhaven",
+        "id": "plastic_monobloc_chair_01",
+        "file": "plastic_monobloc_chair_01_1k.gltf",
+        "licence": "CC0-1.0",
+        "page": "https://polyhaven.com/a/plastic_monobloc_chair_01"
+      },
+      "height_m": 0.88,
+      "extent_m": [
+        0.642,
+        0.628,
+        0.88
+      ],
+      "pivot": "base"
+    },
+    {
+      "name": "blue school chair",
+      "category": "furniture",
+      "seen": true,
+      "asset": null,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "material": null,
+      "status": "candidate",
+      "source": {
+        "source": "polyhaven",
+        "id": "SchoolChair_01",
+        "file": "SchoolChair_01_1k.gltf",
+        "licence": "CC0-1.0",
+        "page": "https://polyhaven.com/a/SchoolChair_01"
+      },
+      "height_m": 1.006,
+      "extent_m": [
+        0.566,
+        0.675,
+        1.006
+      ],
+      "pivot": "base"
+    },
+    {
+      "name": "red wooden bench",
+      "category": "furniture",
+      "seen": true,
+      "asset": null,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "material": null,
+      "status": "candidate",
+      "source": {
+        "source": "polyhaven",
+        "id": "painted_wooden_bench",
+        "file": "painted_wooden_bench_1k.gltf",
+        "licence": "CC0-1.0",
+        "page": "https://polyhaven.com/a/painted_wooden_bench"
+      },
+      "height_m": 0.889,
+      "extent_m": [
+        1.165,
+        0.496,
+        0.889
+      ],
+      "pivot": "base"
+    },
+    {
+      "name": "round wooden table",
+      "category": "furniture",
+      "seen": true,
+      "asset": null,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "material": null,
+      "status": "candidate",
+      "source": {
+        "source": "polyhaven",
+        "id": "round_wooden_table_01",
+        "file": "round_wooden_table_01_1k.gltf",
+        "licence": "CC0-1.0",
+        "page": "https://polyhaven.com/a/round_wooden_table_01"
+      },
+      "height_m": 1.005,
+      "extent_m": [
+        1.399,
+        1.399,
+        1.005
+      ],
+      "pivot": "base"
+    },
+    {
+      "name": "white cabinet",
+      "category": "furniture",
+      "seen": true,
+      "asset": null,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "material": null,
+      "status": "candidate",
+      "source": {
+        "source": "polyhaven",
+        "id": "painted_wooden_cabinet",
+        "file": "painted_wooden_cabinet_1k.gltf",
+        "licence": "CC0-1.0",
+        "page": "https://polyhaven.com/a/painted_wooden_cabinet"
+      },
+      "height_m": 1.182,
+      "extent_m": [
+        1.195,
+        0.617,
+        1.182
+      ],
+      "pivot": "base"
+    },
+    {
+      "name": "grandfather clock",
+      "category": "furniture",
+      "seen": false,
+      "asset": null,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "material": null,
+      "status": "candidate",
+      "source": {
+        "source": "polyhaven",
+        "id": "vintage_grandfather_clock_01",
+        "file": "vintage_grandfather_clock_01_1k.gltf",
+        "licence": "CC0-1.0",
+        "page": "https://polyhaven.com/a/vintage_grandfather_clock_01"
+      },
+      "height_m": 2.191,
+      "extent_m": [
+        0.626,
+        0.427,
+        2.191
+      ],
+      "pivot": "base"
+    },
+    {
+      "name": "wooden picnic table",
+      "category": "furniture",
+      "seen": false,
+      "asset": null,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "material": null,
+      "status": "candidate",
+      "source": {
+        "source": "polyhaven",
+        "id": "wooden_picnic_table",
+        "file": "wooden_picnic_table_1k.gltf",
+        "licence": "CC0-1.0",
+        "page": "https://polyhaven.com/a/wooden_picnic_table"
+      },
+      "height_m": 0.746,
+      "extent_m": [
+        2.241,
+        3.022,
+        0.746
+      ],
+      "pivot": "base"
+    },
+    {
+      "name": "red barrel",
+      "category": "equipment",
+      "seen": true,
+      "asset": null,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "material": null,
+      "status": "candidate",
+      "source": {
+        "source": "polyhaven",
+        "id": "Barrel_01",
+        "file": "Barrel_01_1k.gltf",
+        "licence": "CC0-1.0",
+        "page": "https://polyhaven.com/a/Barrel_01"
+      },
+      "height_m": 0.88,
+      "extent_m": [
+        0.563,
+        0.563,
+        0.88
+      ],
+      "pivot": "base"
+    },
+    {
+      "name": "blue barrel",
+      "category": "equipment",
+      "seen": true,
+      "asset": null,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "material": null,
+      "status": "candidate",
+      "source": {
+        "source": "polyhaven",
+        "id": "Barrel_02",
+        "file": "Barrel_02_1k.gltf",
+        "licence": "CC0-1.0",
+        "page": "https://polyhaven.com/a/Barrel_02"
+      },
+      "height_m": 0.88,
+      "extent_m": [
+        0.488,
+        0.485,
+        0.88
+      ],
+      "pivot": "base"
+    },
+    {
+      "name": "wooden barrel",
+      "category": "equipment",
+      "seen": true,
+      "asset": null,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "material": null,
+      "status": "candidate",
+      "source": {
+        "source": "polyhaven",
+        "id": "wine_barrel_01",
+        "file": "wine_barrel_01_1k.gltf",
+        "licence": "CC0-1.0",
+        "page": "https://polyhaven.com/a/wine_barrel_01"
+      },
+      "height_m": 0.871,
+      "extent_m": [
+        0.742,
+        0.756,
+        0.871
+      ],
+      "pivot": "base"
+    },
+    {
+      "name": "green suitcase",
+      "category": "equipment",
+      "seen": true,
+      "asset": null,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "material": null,
+      "status": "candidate",
+      "source": {
+        "source": "polyhaven",
+        "id": "vintage_suitcase",
+        "file": "vintage_suitcase_1k.gltf",
+        "licence": "CC0-1.0",
+        "page": "https://polyhaven.com/a/vintage_suitcase",
+        "nodes": [
+          "vintage_suitcase_01_bottom",
+          "vintage_suitcase_01_clasp",
+          "vintage_suitcase_01_handle",
+          "vintage_suitcase_01_top"
+        ]
+      },
+      "height_m": 0.568,
+      "extent_m": [
+        0.694,
+        0.239,
+        0.568
+      ],
+      "pivot": "base"
+    },
+    {
+      "name": "old television",
+      "category": "equipment",
+      "seen": true,
+      "asset": null,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "material": null,
+      "status": "candidate",
+      "source": {
+        "source": "polyhaven",
+        "id": "Television_01",
+        "file": "Television_01_1k.gltf",
+        "licence": "CC0-1.0",
+        "page": "https://polyhaven.com/a/Television_01"
+      },
+      "height_m": 0.457,
+      "extent_m": [
+        0.6,
+        0.471,
+        0.457
+      ],
+      "pivot": "base"
+    },
+    {
+      "name": "red fire extinguisher",
+      "category": "equipment",
+      "seen": true,
+      "asset": null,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "material": null,
+      "status": "candidate",
+      "source": {
+        "source": "polyhaven",
+        "id": "korean_fire_extinguisher_01",
+        "file": "korean_fire_extinguisher_01_1k.gltf",
+        "licence": "CC0-1.0",
+        "page": "https://polyhaven.com/a/korean_fire_extinguisher_01"
+      },
+      "height_m": 0.659,
+      "extent_m": [
+        0.28,
+        0.367,
+        0.659
+      ],
+      "pivot": "base"
+    },
+    {
+      "name": "yellow generator",
+      "category": "equipment",
+      "seen": true,
+      "asset": null,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "material": null,
+      "status": "candidate",
+      "source": {
+        "source": "polyhaven",
+        "id": "portable_generator",
+        "file": "portable_generator_1k.gltf",
+        "licence": "CC0-1.0",
+        "page": "https://polyhaven.com/a/portable_generator"
+      },
+      "height_m": 0.577,
+      "extent_m": [
+        0.818,
+        0.564,
+        0.577
+      ],
+      "pivot": "base"
+    },
+    {
+      "name": "red tool chest",
+      "category": "equipment",
+      "seen": true,
+      "asset": null,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "material": null,
+      "status": "candidate",
+      "source": {
+        "source": "polyhaven",
+        "id": "metal_tool_chest",
+        "file": "metal_tool_chest_1k.gltf",
+        "licence": "CC0-1.0",
+        "page": "https://polyhaven.com/a/metal_tool_chest"
+      },
+      "height_m": 0.652,
+      "extent_m": [
+        0.685,
+        0.407,
+        0.652
+      ],
+      "pivot": "base"
+    },
+    {
+      "name": "yellow wet floor sign",
+      "category": "equipment",
+      "seen": true,
+      "asset": null,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "material": null,
+      "status": "candidate",
+      "source": {
+        "source": "polyhaven",
+        "id": "WetFloorSign_01",
+        "file": "WetFloorSign_01_1k.gltf",
+        "licence": "CC0-1.0",
+        "page": "https://polyhaven.com/a/WetFloorSign_01"
+      },
+      "height_m": 0.629,
+      "extent_m": [
+        0.3,
+        0.358,
+        0.629
+      ],
+      "pivot": "base"
+    },
+    {
+      "name": "orange traffic cone",
+      "category": "equipment",
+      "seen": false,
+      "asset": null,
+      "scale": [
+        1.512,
+        1.512,
+        1.512
+      ],
+      "material": null,
+      "status": "placeholder",
+      "source": {
+        "source": "kenney",
+        "id": "kenney_car-kit",
+        "model": "cone",
+        "file": "Models/GLB format/cone.glb",
+        "licence": "CC0-1.0",
+        "page": "https://kenney.nl/assets/car-kit"
+      },
+      "height_m": 0.9,
+      "extent_m": [
+        0.72,
+        0.72,
+        0.9
+      ],
+      "pivot": "base",
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+    },
+    {
+      "name": "wooden ladder",
+      "category": "equipment",
+      "seen": false,
+      "asset": null,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "material": null,
+      "status": "candidate",
+      "source": {
+        "source": "polyhaven",
+        "id": "wooden_ladder_02",
+        "file": "wooden_ladder_02_1k.gltf",
+        "licence": "CC0-1.0",
+        "page": "https://polyhaven.com/a/wooden_ladder_02"
+      },
+      "height_m": 1.722,
+      "extent_m": [
+        0.99,
+        0.618,
+        1.722
+      ],
+      "pivot": "base"
+    },
+    {
+      "name": "man in brown jacket",
+      "category": "human",
+      "seen": true,
+      "asset": null,
+      "scale": [
+        0.648,
+        0.648,
+        0.648
+      ],
+      "material": null,
+      "status": "placeholder",
+      "source": {
+        "source": "kenney",
+        "id": "kenney_blocky-characters",
+        "model": "character-a",
+        "file": "Models/GLB format/character-a.glb",
+        "licence": "CC0-1.0",
+        "page": "https://kenney.nl/assets/blocky-characters"
+      },
+      "height_m": 1.75,
+      "extent_m": [
+        1.037,
+        0.518,
+        1.75
+      ],
+      "pivot": "base",
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+    },
+    {
+      "name": "man in red shirt",
+      "category": "human",
+      "seen": true,
+      "asset": null,
+      "scale": [
+        0.648,
+        0.648,
+        0.648
+      ],
+      "material": null,
+      "status": "placeholder",
+      "source": {
+        "source": "kenney",
+        "id": "kenney_blocky-characters",
+        "model": "character-b",
+        "file": "Models/GLB format/character-b.glb",
+        "licence": "CC0-1.0",
+        "page": "https://kenney.nl/assets/blocky-characters"
+      },
+      "height_m": 1.75,
+      "extent_m": [
+        1.037,
+        0.518,
+        1.75
+      ],
+      "pivot": "base",
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+    },
+    {
+      "name": "bald man in green shirt",
+      "category": "human",
+      "seen": true,
+      "asset": null,
+      "scale": [
+        0.648,
+        0.648,
+        0.648
+      ],
+      "material": null,
+      "status": "placeholder",
+      "source": {
+        "source": "kenney",
+        "id": "kenney_blocky-characters",
+        "model": "character-c",
+        "file": "Models/GLB format/character-c.glb",
+        "licence": "CC0-1.0",
+        "page": "https://kenney.nl/assets/blocky-characters"
+      },
+      "height_m": 1.75,
+      "extent_m": [
+        1.037,
+        0.518,
+        1.75
+      ],
+      "pivot": "base",
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+    },
+    {
+      "name": "person in purple shirt",
+      "category": "human",
+      "seen": true,
+      "asset": null,
+      "scale": [
+        0.611,
+        0.611,
+        0.611
+      ],
+      "material": null,
+      "status": "placeholder",
+      "source": {
+        "source": "kenney",
+        "id": "kenney_blocky-characters",
+        "model": "character-e",
+        "file": "Models/GLB format/character-e.glb",
+        "licence": "CC0-1.0",
+        "page": "https://kenney.nl/assets/blocky-characters"
+      },
+      "height_m": 1.65,
+      "extent_m": [
+        0.978,
+        0.489,
+        1.65
+      ],
+      "pivot": "base",
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+    },
+    {
+      "name": "doctor in white coat",
+      "category": "human",
+      "seen": true,
+      "asset": null,
+      "scale": [
+        0.648,
+        0.648,
+        0.648
+      ],
+      "material": null,
+      "status": "placeholder",
+      "source": {
+        "source": "kenney",
+        "id": "kenney_blocky-characters",
+        "model": "character-i",
+        "file": "Models/GLB format/character-i.glb",
+        "licence": "CC0-1.0",
+        "page": "https://kenney.nl/assets/blocky-characters"
+      },
+      "height_m": 1.75,
+      "extent_m": [
+        1.037,
+        0.518,
+        1.75
+      ],
+      "pivot": "base",
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+    },
+    {
+      "name": "police officer",
+      "category": "human",
+      "seen": true,
+      "asset": null,
+      "scale": [
+        0.666,
+        0.666,
+        0.666
+      ],
+      "material": null,
+      "status": "placeholder",
+      "source": {
+        "source": "kenney",
+        "id": "kenney_blocky-characters",
+        "model": "character-j",
+        "file": "Models/GLB format/character-j.glb",
+        "licence": "CC0-1.0",
+        "page": "https://kenney.nl/assets/blocky-characters"
+      },
+      "height_m": 1.798,
+      "extent_m": [
+        1.066,
+        0.533,
+        1.798
+      ],
+      "pivot": "base",
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+    },
+    {
+      "name": "man in blue jacket",
+      "category": "human",
+      "seen": true,
+      "asset": null,
+      "scale": [
+        0.648,
+        0.648,
+        0.648
+      ],
+      "material": null,
+      "status": "placeholder",
+      "source": {
+        "source": "kenney",
+        "id": "kenney_blocky-characters",
+        "model": "character-p",
+        "file": "Models/GLB format/character-p.glb",
+        "licence": "CC0-1.0",
+        "page": "https://kenney.nl/assets/blocky-characters"
+      },
+      "height_m": 1.75,
+      "extent_m": [
+        1.037,
+        0.518,
+        1.75
+      ],
+      "pivot": "base",
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+    },
+    {
+      "name": "man in black suit",
+      "category": "human",
+      "seen": true,
+      "asset": null,
+      "scale": [
+        0.666,
+        0.666,
+        0.666
+      ],
+      "material": null,
+      "status": "placeholder",
+      "source": {
+        "source": "kenney",
+        "id": "kenney_blocky-characters",
+        "model": "character-q",
+        "file": "Models/GLB format/character-q.glb",
+        "licence": "CC0-1.0",
+        "page": "https://kenney.nl/assets/blocky-characters"
+      },
+      "height_m": 1.798,
+      "extent_m": [
+        1.066,
+        0.533,
+        1.798
+      ],
+      "pivot": "base",
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+    },
+    {
+      "name": "girl in yellow shirt",
+      "category": "human",
+      "seen": true,
+      "asset": null,
+      "scale": [
+        1.797,
+        1.797,
+        1.797
+      ],
+      "material": null,
+      "status": "placeholder",
+      "source": {
+        "source": "kenney",
+        "id": "kenney_mini-characters",
+        "model": "character-female-b",
+        "file": "Models/GLB format/character-female-b.glb",
+        "licence": "CC0-1.0",
+        "page": "https://kenney.nl/assets/mini-characters"
+      },
+      "height_m": 1.3,
+      "extent_m": [
+        1.379,
+        0.752,
+        1.3
+      ],
+      "pivot": "base",
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+    },
+    {
+      "name": "woman in grey suit",
+      "category": "human",
+      "seen": false,
+      "asset": null,
+      "scale": [
+        2.127,
+        2.127,
+        2.127
+      ],
+      "material": null,
+      "status": "placeholder",
+      "source": {
+        "source": "kenney",
+        "id": "kenney_mini-characters",
+        "model": "character-female-d",
+        "file": "Models/GLB format/character-female-d.glb",
+        "licence": "CC0-1.0",
+        "page": "https://kenney.nl/assets/mini-characters"
+      },
+      "height_m": 1.649,
+      "extent_m": [
+        1.632,
+        1.062,
+        1.649
+      ],
+      "pivot": "base",
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+    },
+    {
+      "name": "bronze whale statue",
+      "category": "other",
+      "seen": true,
+      "asset": null,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "material": null,
+      "status": "candidate",
+      "source": {
+        "source": "polyhaven",
+        "id": "bronze_whale_statue",
+        "file": "bronze_whale_statue_1k.gltf",
+        "licence": "CC0-1.0",
+        "page": "https://polyhaven.com/a/bronze_whale_statue"
+      },
+      "height_m": 1.073,
+      "extent_m": [
+        0.932,
+        1.366,
+        1.073
+      ],
+      "pivot": "base"
+    },
+    {
+      "name": "tiger",
+      "category": "other",
+      "seen": false,
+      "asset": null,
+      "scale": [
+        0.85,
+        0.85,
+        0.85
+      ],
+      "material": null,
+      "status": "placeholder",
+      "source": {
+        "source": "kenney",
+        "id": "kenney_cube-pets",
+        "model": "animal-tiger",
+        "file": "Models/GLB format/animal-tiger.glb",
+        "licence": "CC0-1.0",
+        "page": "https://kenney.nl/assets/cube-pets"
+      },
+      "height_m": 1.454,
+      "extent_m": [
+        1.147,
+        1.614,
+        1.454
+      ],
+      "pivot": "base",
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+    },
+    {
+      "name": "elephant",
+      "category": "other",
+      "seen": false,
+      "asset": null,
+      "scale": [
+        1.8,
+        1.8,
+        1.8
+      ],
+      "material": null,
+      "status": "placeholder",
+      "source": {
+        "source": "kenney",
+        "id": "kenney_cube-pets",
+        "model": "animal-elephant",
+        "file": "Models/GLB format/animal-elephant.glb",
+        "licence": "CC0-1.0",
+        "page": "https://kenney.nl/assets/cube-pets"
+      },
+      "height_m": 2.576,
+      "extent_m": [
+        3.38,
+        3.015,
+        2.576
+      ],
+      "pivot": "base",
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+    }
+  ]
+}

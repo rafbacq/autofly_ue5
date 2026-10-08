@@ -1,6 +1,6 @@
 {
   "format": "autofly_ue5_asset_measurements/1",
-  "measured": "2026-10-07 21:51:56",
+  "measured": "2026-10-08 03:15:01",
   "sources": "/home/nvidiasims/research_uav/autofly_ue5/assets/sources.json",
   "band_m": [
     1.0,
@@ -8,6 +8,454 @@
   ],
   "frame": "glTF: x right, y up, z towards the viewer; metres",
   "meshes": [
+    {
+      "asset": "ArmChair_01",
+      "source": "polyhaven",
+      "file": "ArmChair_01_1k.gltf",
+      "node": "ArmChair_01",
+      "mesh": "Cylinder.001",
+      "node_transformed": false,
+      "vertices": 3758,
+      "triangles": 5626,
+      "extent_m": [
+        0.8484,
+        1.0651,
+        0.7658
+      ],
+      "base_m": -0.0004,
+      "top_m": 1.0647,
+      "height_m": 1.0651,
+      "pivot_offset_xz_m": [
+        0.0,
+        -0.0344
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.1418,
+      "band_radius_m": 0.4508,
+      "band_centre_offset_m": 0.378,
+      "band_radius_about_centre_m": 0.248,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.532,
+        0.5194,
+        0.4897,
+        0.4949,
+        0.4508
+      ],
+      "ground_radius_m": 0.532,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.8484,
+            1.0651,
+            0.7658
+          ],
+          "base_m": -0.0004,
+          "top_m": 1.0647,
+          "centre_m": [
+            0.0,
+            0.5321,
+            -0.0344
+          ],
+          "triangles": 5626
+        },
+        "cards": null
+      }
+    },
+    {
+      "asset": "Barrel_01",
+      "source": "polyhaven",
+      "file": "Barrel_01_1k.gltf",
+      "node": "Barrel_01",
+      "mesh": "Mesh",
+      "node_transformed": false,
+      "vertices": 2052,
+      "triangles": 2682,
+      "extent_m": [
+        0.563,
+        0.88,
+        0.563
+      ],
+      "base_m": -0.0066,
+      "top_m": 0.8734,
+      "height_m": 0.88,
+      "pivot_offset_xz_m": [
+        -0.0,
+        0.0
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.282,
+        0.2819,
+        0.2819,
+        0.282
+      ],
+      "ground_radius_m": 0.282,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.563,
+            0.88,
+            0.563
+          ],
+          "base_m": -0.0066,
+          "top_m": 0.8734,
+          "centre_m": [
+            -0.0,
+            0.4334,
+            0.0
+          ],
+          "triangles": 2682
+        },
+        "cards": null
+      }
+    },
+    {
+      "asset": "Barrel_02",
+      "source": "polyhaven",
+      "file": "Barrel_02_1k.gltf",
+      "node": "Barrel_02",
+      "mesh": "Mesh",
+      "node_transformed": false,
+      "vertices": 1916,
+      "triangles": 2688,
+      "extent_m": [
+        0.4882,
+        0.88,
+        0.4846
+      ],
+      "base_m": 0.0046,
+      "top_m": 0.8846,
+      "height_m": 0.88,
+      "pivot_offset_xz_m": [
+        0.0,
+        -0.0
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.2441,
+        0.2418,
+        0.2441,
+        0.2324
+      ],
+      "ground_radius_m": 0.2441,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.4882,
+            0.88,
+            0.4846
+          ],
+          "base_m": 0.0046,
+          "top_m": 0.8846,
+          "centre_m": [
+            0.0,
+            0.4446,
+            -0.0
+          ],
+          "triangles": 2688
+        },
+        "cards": null
+      }
+    },
+    {
+      "asset": "GreenChair_01",
+      "source": "polyhaven",
+      "file": "GreenChair_01_1k.gltf",
+      "node": "GreenChair_01",
+      "mesh": "classic-chair.003",
+      "node_transformed": false,
+      "vertices": 2934,
+      "triangles": 4213,
+      "extent_m": [
+        0.6731,
+        1.0585,
+        0.6644
+      ],
+      "base_m": -0.0005,
+      "top_m": 1.058,
+      "height_m": 1.0585,
+      "pivot_offset_xz_m": [
+        -0.0005,
+        -0.0459
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0852,
+      "band_radius_m": 0.3955,
+      "band_centre_offset_m": 0.358,
+      "band_radius_about_centre_m": 0.1368,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.4203,
+        0.4205,
+        0.4053,
+        0.4376,
+        0.3955
+      ],
+      "ground_radius_m": 0.4376,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.6731,
+            1.0585,
+            0.6644
+          ],
+          "base_m": -0.0005,
+          "top_m": 1.058,
+          "centre_m": [
+            -0.0005,
+            0.5287,
+            -0.0459
+          ],
+          "triangles": 4213
+        },
+        "cards": null
+      }
+    },
+    {
+      "asset": "SchoolChair_01",
+      "source": "polyhaven",
+      "file": "SchoolChair_01_1k.gltf",
+      "node": "SchoolChair_01",
+      "mesh": "Mesh",
+      "node_transformed": false,
+      "vertices": 3265,
+      "triangles": 5072,
+      "extent_m": [
+        0.5659,
+        1.006,
+        0.6753
+      ],
+      "base_m": -0.0017,
+      "top_m": 1.0043,
+      "height_m": 1.006,
+      "pivot_offset_xz_m": [
+        -0.0,
+        0.0
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0077,
+      "band_radius_m": 0.272,
+      "band_centre_offset_m": 0.2237,
+      "band_radius_about_centre_m": 0.1585,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.4334,
+        0.3753,
+        0.3693,
+        0.3121,
+        0.272
+      ],
+      "ground_radius_m": 0.4334,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.5659,
+            1.006,
+            0.6753
+          ],
+          "base_m": -0.0017,
+          "top_m": 1.0043,
+          "centre_m": [
+            -0.0,
+            0.5013,
+            0.0
+          ],
+          "triangles": 5072
+        },
+        "cards": null
+      }
+    },
+    {
+      "asset": "Sofa_01",
+      "source": "polyhaven",
+      "file": "Sofa_01_1k.gltf",
+      "node": "Sofa_01",
+      "mesh": "Line1789534131.002",
+      "node_transformed": false,
+      "vertices": 2708,
+      "triangles": 4101,
+      "extent_m": [
+        1.5715,
+        0.7965,
+        0.658
+      ],
+      "base_m": -0.0006,
+      "top_m": 0.7959,
+      "height_m": 0.7965,
+      "pivot_offset_xz_m": [
+        0.0076,
+        -0.0322
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.8356,
+        0.8151,
+        0.8098,
+        0.3988
+      ],
+      "ground_radius_m": 0.8356,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            1.5715,
+            0.7965,
+            0.658
+          ],
+          "base_m": -0.0006,
+          "top_m": 0.7959,
+          "centre_m": [
+            0.0076,
+            0.3977,
+            -0.0322
+          ],
+          "triangles": 4101
+        },
+        "cards": null
+      }
+    },
+    {
+      "asset": "Television_01",
+      "source": "polyhaven",
+      "file": "Television_01_1k.gltf",
+      "node": "Television_01",
+      "mesh": "Cube.021",
+      "node_transformed": false,
+      "vertices": 1976,
+      "triangles": 1918,
+      "extent_m": [
+        0.6,
+        0.4568,
+        0.4708
+      ],
+      "base_m": -0.0,
+      "top_m": 0.4568,
+      "height_m": 0.4568,
+      "pivot_offset_xz_m": [
+        0.0,
+        -0.023
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.3788,
+        0.3619
+      ],
+      "ground_radius_m": 0.3788,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.6,
+            0.4568,
+            0.4708
+          ],
+          "base_m": -0.0,
+          "top_m": 0.4568,
+          "centre_m": [
+            0.0,
+            0.2284,
+            -0.023
+          ],
+          "triangles": 1918
+        },
+        "cards": null
+      }
+    },
+    {
+      "asset": "WetFloorSign_01",
+      "source": "polyhaven",
+      "file": "WetFloorSign_01_1k.gltf",
+      "node": "WetFloorSign_01",
+      "mesh": "Mesh",
+      "node_transformed": false,
+      "vertices": 254,
+      "triangles": 228,
+      "extent_m": [
+        0.3001,
+        0.6295,
+        0.3585
+      ],
+      "base_m": 0.0022,
+      "top_m": 0.6317,
+      "height_m": 0.6295,
+      "pivot_offset_xz_m": [
+        -0.0,
+        -0.014
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.2447,
+        0.1985,
+        0.1635
+      ],
+      "ground_radius_m": 0.2447,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.3001,
+            0.6295,
+            0.3585
+          ],
+          "base_m": 0.0022,
+          "top_m": 0.6317,
+          "centre_m": [
+            -0.0,
+            0.3169,
+            -0.014
+          ],
+          "triangles": 228
+        },
+        "cards": null
+      }
+    },
     {
       "asset": "boulder_01",
       "source": "polyhaven",
@@ -60,6 +508,337 @@
             -0.0333
           ],
           "triangles": 66122
+        },
+        "cards": null
+      }
+    },
+    {
+      "asset": "bronze_whale_statue",
+      "source": "polyhaven",
+      "file": "bronze_whale_statue_1k.gltf",
+      "node": "bronze_whale_statue",
+      "mesh": "Mesh.007",
+      "node_transformed": false,
+      "vertices": 2483,
+      "triangles": 3816,
+      "extent_m": [
+        0.932,
+        1.0729,
+        1.3659
+      ],
+      "base_m": -0.0001,
+      "top_m": 1.0728,
+      "height_m": 1.0729,
+      "pivot_offset_xz_m": [
+        -0.0419,
+        -0.1336
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0705,
+      "band_radius_m": 0.8855,
+      "band_centre_offset_m": 0.7985,
+      "band_radius_about_centre_m": 0.3143,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.2378,
+        0.5582,
+        0.7252,
+        0.8657,
+        0.8855
+      ],
+      "ground_radius_m": 0.8855,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.932,
+            1.0729,
+            1.3659
+          ],
+          "base_m": -0.0001,
+          "top_m": 1.0728,
+          "centre_m": [
+            -0.0419,
+            0.5363,
+            -0.1336
+          ],
+          "triangles": 3816
+        },
+        "cards": null
+      }
+    },
+    {
+      "asset": "covered_car",
+      "source": "polyhaven",
+      "file": "covered_car_1k.gltf",
+      "node": "covered_car_wheel_01",
+      "mesh": "wheel_01",
+      "node_transformed": true,
+      "vertices": 1620,
+      "triangles": 2016,
+      "extent_m": [
+        0.161,
+        0.5982,
+        0.5982
+      ],
+      "base_m": -0.2991,
+      "top_m": 0.2991,
+      "height_m": 0.5982,
+      "pivot_offset_xz_m": [
+        0.0,
+        0.0
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.2998,
+        0.1647
+      ],
+      "ground_radius_m": 0.2998,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.161,
+            0.5982,
+            0.5982
+          ],
+          "base_m": -0.2991,
+          "top_m": 0.2991,
+          "centre_m": [
+            0.0,
+            -0.0,
+            0.0
+          ],
+          "triangles": 2016
+        },
+        "cards": null
+      }
+    },
+    {
+      "asset": "covered_car",
+      "source": "polyhaven",
+      "file": "covered_car_1k.gltf",
+      "node": "covered_car_wheel_02",
+      "mesh": "wheel_02",
+      "node_transformed": true,
+      "vertices": 1620,
+      "triangles": 2016,
+      "extent_m": [
+        0.161,
+        0.6,
+        0.6
+      ],
+      "base_m": -0.3,
+      "top_m": 0.3,
+      "height_m": 0.6,
+      "pivot_offset_xz_m": [
+        -0.0,
+        0.0
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.3007,
+        0.1668
+      ],
+      "ground_radius_m": 0.3007,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.161,
+            0.6,
+            0.6
+          ],
+          "base_m": -0.3,
+          "top_m": 0.3,
+          "centre_m": [
+            -0.0,
+            0.0,
+            0.0
+          ],
+          "triangles": 2016
+        },
+        "cards": null
+      }
+    },
+    {
+      "asset": "covered_car",
+      "source": "polyhaven",
+      "file": "covered_car_1k.gltf",
+      "node": "covered_car_wheel_03",
+      "mesh": "wheel_03",
+      "node_transformed": true,
+      "vertices": 1620,
+      "triangles": 2016,
+      "extent_m": [
+        0.161,
+        0.5999,
+        0.5999
+      ],
+      "base_m": -0.3,
+      "top_m": 0.3,
+      "height_m": 0.5999,
+      "pivot_offset_xz_m": [
+        -0.0,
+        0.0
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.3006,
+        0.1665
+      ],
+      "ground_radius_m": 0.3006,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.161,
+            0.5999,
+            0.5999
+          ],
+          "base_m": -0.3,
+          "top_m": 0.3,
+          "centre_m": [
+            -0.0,
+            0.0,
+            0.0
+          ],
+          "triangles": 2016
+        },
+        "cards": null
+      }
+    },
+    {
+      "asset": "covered_car",
+      "source": "polyhaven",
+      "file": "covered_car_1k.gltf",
+      "node": "covered_car_wheel_04",
+      "mesh": "wheel_04",
+      "node_transformed": true,
+      "vertices": 1620,
+      "triangles": 2016,
+      "extent_m": [
+        0.161,
+        0.6,
+        0.6
+      ],
+      "base_m": -0.3,
+      "top_m": 0.3,
+      "height_m": 0.6,
+      "pivot_offset_xz_m": [
+        0.0,
+        0.0
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.3007,
+        0.1668
+      ],
+      "ground_radius_m": 0.3007,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.161,
+            0.6,
+            0.6
+          ],
+          "base_m": -0.3,
+          "top_m": 0.3,
+          "centre_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "triangles": 2016
+        },
+        "cards": null
+      }
+    },
+    {
+      "asset": "covered_car",
+      "source": "polyhaven",
+      "file": "covered_car_1k.gltf",
+      "node": "covered_car",
+      "mesh": "car_cover",
+      "node_transformed": true,
+      "vertices": 4242,
+      "triangles": 4528,
+      "extent_m": [
+        1.789,
+        1.2854,
+        4.3803
+      ],
+      "base_m": 0.1258,
+      "top_m": 1.4111,
+      "height_m": 1.2854,
+      "pivot_offset_xz_m": [
+        0.0102,
+        -0.0138
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0769,
+      "band_radius_m": 2.0271,
+      "band_centre_offset_m": 0.5201,
+      "band_radius_about_centre_m": 1.5432,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        2.0474,
+        2.2971,
+        2.2895,
+        2.2536,
+        2.0271,
+        1.5326
+      ],
+      "ground_radius_m": 2.2971,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            1.789,
+            1.2854,
+            4.3803
+          ],
+          "base_m": 0.1258,
+          "top_m": 1.4111,
+          "centre_m": [
+            0.0102,
+            0.7684,
+            -0.0138
+          ],
+          "triangles": 4528
         },
         "cards": null
       }
@@ -219,6 +998,447 @@
           ],
           "triangles": 1408704
         }
+      }
+    },
+    {
+      "asset": "korean_fire_extinguisher_01",
+      "source": "polyhaven",
+      "file": "korean_fire_extinguisher_01_1k.gltf",
+      "node": "korean_fire_extinguisher_01",
+      "mesh": "02_low",
+      "node_transformed": false,
+      "vertices": 6875,
+      "triangles": 9913,
+      "extent_m": [
+        0.28,
+        0.6593,
+        0.3674
+      ],
+      "base_m": -0.0,
+      "top_m": 0.6593,
+      "height_m": 0.6593,
+      "pivot_offset_xz_m": [
+        0.0,
+        0.0605
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.2812,
+        0.1325,
+        0.1306
+      ],
+      "ground_radius_m": 0.2812,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.28,
+            0.6593,
+            0.3674
+          ],
+          "base_m": -0.0,
+          "top_m": 0.6593,
+          "centre_m": [
+            0.0,
+            0.3296,
+            0.0605
+          ],
+          "triangles": 9561
+        },
+        "cards": {
+          "extent_m": [
+            0.1039,
+            0.1203,
+            0.1493
+          ],
+          "base_m": 0.4768,
+          "top_m": 0.5971,
+          "centre_m": [
+            -0.0308,
+            0.537,
+            -0.0026
+          ],
+          "triangles": 352
+        }
+      }
+    },
+    {
+      "asset": "metal_tool_chest",
+      "source": "polyhaven",
+      "file": "metal_tool_chest_1k.gltf",
+      "node": "metal_tool_chest_chest",
+      "mesh": "Cube.031",
+      "node_transformed": true,
+      "vertices": 5568,
+      "triangles": 5910,
+      "extent_m": [
+        0.6854,
+        0.3479,
+        0.3157
+      ],
+      "base_m": -0.19,
+      "top_m": 0.1579,
+      "height_m": 0.3479,
+      "pivot_offset_xz_m": [
+        -0.0,
+        -0.0031
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.3634
+      ],
+      "ground_radius_m": 0.3634,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.6854,
+            0.3479,
+            0.3157
+          ],
+          "base_m": -0.19,
+          "top_m": 0.1579,
+          "centre_m": [
+            -0.0,
+            -0.016,
+            -0.0031
+          ],
+          "triangles": 5910
+        },
+        "cards": null
+      }
+    },
+    {
+      "asset": "metal_tool_chest",
+      "source": "polyhaven",
+      "file": "metal_tool_chest_1k.gltf",
+      "node": "metal_tool_chest_hinge_chest",
+      "mesh": "Plane.011",
+      "node_transformed": true,
+      "vertices": 915,
+      "triangles": 1218,
+      "extent_m": [
+        0.6647,
+        0.0974,
+        0.0902
+      ],
+      "base_m": -0.0071,
+      "top_m": 0.0903,
+      "height_m": 0.0974,
+      "pivot_offset_xz_m": [
+        0.0,
+        -0.038
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.3324
+      ],
+      "ground_radius_m": 0.3324,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.6647,
+            0.0974,
+            0.0902
+          ],
+          "base_m": -0.0071,
+          "top_m": 0.0903,
+          "centre_m": [
+            0.0,
+            0.0416,
+            -0.038
+          ],
+          "triangles": 1218
+        },
+        "cards": null
+      }
+    },
+    {
+      "asset": "metal_tool_chest",
+      "source": "polyhaven",
+      "file": "metal_tool_chest_1k.gltf",
+      "node": "metal_tool_chest_lid",
+      "mesh": "Cube.035",
+      "node_transformed": true,
+      "vertices": 1844,
+      "triangles": 2476,
+      "extent_m": [
+        0.6603,
+        0.3127,
+        0.0778
+      ],
+      "base_m": -0.0051,
+      "top_m": 0.3076,
+      "height_m": 0.3127,
+      "pivot_offset_xz_m": [
+        0.0,
+        -0.0296
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.3372,
+        0.3372
+      ],
+      "ground_radius_m": 0.3372,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.6603,
+            0.3127,
+            0.0778
+          ],
+          "base_m": -0.0051,
+          "top_m": 0.3076,
+          "centre_m": [
+            0.0,
+            0.1513,
+            -0.0296
+          ],
+          "triangles": 2476
+        },
+        "cards": null
+      }
+    },
+    {
+      "asset": "metal_tool_chest",
+      "source": "polyhaven",
+      "file": "metal_tool_chest_1k.gltf",
+      "node": "metal_tool_chest_handle_left",
+      "mesh": "BezierCurve.003",
+      "node_transformed": true,
+      "vertices": 333,
+      "triangles": 576,
+      "extent_m": [
+        0.0088,
+        0.0664,
+        0.1308
+      ],
+      "base_m": -0.0624,
+      "top_m": 0.004,
+      "height_m": 0.0664,
+      "pivot_offset_xz_m": [
+        0.0,
+        0.0
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.0526
+      ],
+      "ground_radius_m": 0.0654,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.0088,
+            0.0664,
+            0.1308
+          ],
+          "base_m": -0.0624,
+          "top_m": 0.004,
+          "centre_m": [
+            0.0,
+            -0.0292,
+            0.0
+          ],
+          "triangles": 576
+        },
+        "cards": null
+      }
+    },
+    {
+      "asset": "metal_tool_chest",
+      "source": "polyhaven",
+      "file": "metal_tool_chest_1k.gltf",
+      "node": "metal_tool_chest_lock",
+      "mesh": "Cylinder.001",
+      "node_transformed": true,
+      "vertices": 900,
+      "triangles": 1016,
+      "extent_m": [
+        0.0552,
+        0.0272,
+        0.0552
+      ],
+      "base_m": -0.0136,
+      "top_m": 0.0136,
+      "height_m": 0.0272,
+      "pivot_offset_xz_m": [
+        0.014,
+        -0.0012
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.0492
+      ],
+      "ground_radius_m": 0.0492,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.0552,
+            0.0272,
+            0.0552
+          ],
+          "base_m": -0.0136,
+          "top_m": 0.0136,
+          "centre_m": [
+            0.014,
+            0.0,
+            -0.0012
+          ],
+          "triangles": 1016
+        },
+        "cards": null
+      }
+    },
+    {
+      "asset": "metal_tool_chest",
+      "source": "polyhaven",
+      "file": "metal_tool_chest_1k.gltf",
+      "node": "metal_tool_chest_hinge_lid",
+      "mesh": "Plane.001",
+      "node_transformed": true,
+      "vertices": 1180,
+      "triangles": 1588,
+      "extent_m": [
+        0.6642,
+        0.108,
+        0.108
+      ],
+      "base_m": -0.1009,
+      "top_m": 0.0071,
+      "height_m": 0.108,
+      "pivot_offset_xz_m": [
+        -0.0,
+        0.0469
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.3322
+      ],
+      "ground_radius_m": 0.3347,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.6642,
+            0.108,
+            0.108
+          ],
+          "base_m": -0.1009,
+          "top_m": 0.0071,
+          "centre_m": [
+            -0.0,
+            -0.0469,
+            0.0469
+          ],
+          "triangles": 1588
+        },
+        "cards": null
+      }
+    },
+    {
+      "asset": "metal_tool_chest",
+      "source": "polyhaven",
+      "file": "metal_tool_chest_1k.gltf",
+      "node": "metal_tool_chest_handle_right",
+      "mesh": "BezierCurve.001",
+      "node_transformed": true,
+      "vertices": 333,
+      "triangles": 576,
+      "extent_m": [
+        0.0088,
+        0.0664,
+        0.1308
+      ],
+      "base_m": -0.0624,
+      "top_m": 0.004,
+      "height_m": 0.0664,
+      "pivot_offset_xz_m": [
+        -0.0,
+        0.0
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.0526
+      ],
+      "ground_radius_m": 0.0654,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.0088,
+            0.0664,
+            0.1308
+          ],
+          "base_m": -0.0624,
+          "top_m": 0.004,
+          "centre_m": [
+            -0.0,
+            -0.0292,
+            0.0
+          ],
+          "triangles": 576
+        },
+        "cards": null
       }
     },
     {
@@ -506,6 +1726,617 @@
       }
     },
     {
+      "asset": "painted_wooden_bench",
+      "source": "polyhaven",
+      "file": "painted_wooden_bench_1k.gltf",
+      "node": "painted_wooden_bench",
+      "mesh": "bench.002",
+      "node_transformed": false,
+      "vertices": 677,
+      "triangles": 630,
+      "extent_m": [
+        1.1649,
+        0.8893,
+        0.4965
+      ],
+      "base_m": -0.0005,
+      "top_m": 0.8888,
+      "height_m": 0.8893,
+      "pivot_offset_xz_m": [
+        0.0064,
+        -0.0054
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.636,
+        0.6361,
+        0.641,
+        0.641
+      ],
+      "ground_radius_m": 0.641,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            1.1649,
+            0.8893,
+            0.4965
+          ],
+          "base_m": -0.0005,
+          "top_m": 0.8888,
+          "centre_m": [
+            0.0064,
+            0.4441,
+            -0.0054
+          ],
+          "triangles": 630
+        },
+        "cards": null
+      }
+    },
+    {
+      "asset": "painted_wooden_cabinet",
+      "source": "polyhaven",
+      "file": "painted_wooden_cabinet_1k.gltf",
+      "node": "painted_wooden_cabinet",
+      "mesh": "commode.014",
+      "node_transformed": false,
+      "vertices": 1033,
+      "triangles": 1093,
+      "extent_m": [
+        1.1947,
+        1.1819,
+        0.5465
+      ],
+      "base_m": -0.0004,
+      "top_m": 1.1815,
+      "height_m": 1.1819,
+      "pivot_offset_xz_m": [
+        0.0026,
+        -0.0092
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.1442,
+      "band_radius_m": 0.6623,
+      "band_centre_offset_m": 0.0095,
+      "band_radius_about_centre_m": 0.6569,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.6311,
+        0.6299,
+        0.6299,
+        0.6299,
+        0.6623
+      ],
+      "ground_radius_m": 0.6623,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            1.1947,
+            1.1819,
+            0.5465
+          ],
+          "base_m": -0.0004,
+          "top_m": 1.1815,
+          "centre_m": [
+            0.0026,
+            0.5906,
+            -0.0092
+          ],
+          "triangles": 1093
+        },
+        "cards": null
+      }
+    },
+    {
+      "asset": "painted_wooden_cabinet",
+      "source": "polyhaven",
+      "file": "painted_wooden_cabinet_1k.gltf",
+      "node": "painted_wooden_cabinet_door_02",
+      "mesh": "commode.015",
+      "node_transformed": true,
+      "vertices": 317,
+      "triangles": 404,
+      "extent_m": [
+        0.5592,
+        0.7256,
+        0.0524
+      ],
+      "base_m": -0.3794,
+      "top_m": 0.3462,
+      "height_m": 0.7256,
+      "pivot_offset_xz_m": [
+        -0.2835,
+        0.0236
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.5635,
+        0.5635
+      ],
+      "ground_radius_m": 0.5635,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.5592,
+            0.7256,
+            0.0524
+          ],
+          "base_m": -0.3794,
+          "top_m": 0.3462,
+          "centre_m": [
+            -0.2835,
+            -0.0166,
+            0.0236
+          ],
+          "triangles": 404
+        },
+        "cards": null
+      }
+    },
+    {
+      "asset": "painted_wooden_cabinet",
+      "source": "polyhaven",
+      "file": "painted_wooden_cabinet_1k.gltf",
+      "node": "painted_wooden_cabinet_door_01",
+      "mesh": "commode.016",
+      "node_transformed": true,
+      "vertices": 106,
+      "triangles": 80,
+      "extent_m": [
+        0.5658,
+        0.7256,
+        0.0242
+      ],
+      "base_m": -0.3785,
+      "top_m": 0.3472,
+      "height_m": 0.7256,
+      "pivot_offset_xz_m": [
+        0.2878,
+        0.0095
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.5703,
+        0.57
+      ],
+      "ground_radius_m": 0.5707,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.5658,
+            0.7256,
+            0.0242
+          ],
+          "base_m": -0.3785,
+          "top_m": 0.3472,
+          "centre_m": [
+            0.2878,
+            -0.0156,
+            0.0095
+          ],
+          "triangles": 80
+        },
+        "cards": null
+      }
+    },
+    {
+      "asset": "painted_wooden_cabinet",
+      "source": "polyhaven",
+      "file": "painted_wooden_cabinet_1k.gltf",
+      "node": "painted_wooden_cabinet_drawer_02",
+      "mesh": "commode.017",
+      "node_transformed": true,
+      "vertices": 284,
+      "triangles": 325,
+      "extent_m": [
+        0.5104,
+        0.2189,
+        0.4225
+      ],
+      "base_m": -0.1336,
+      "top_m": 0.0853,
+      "height_m": 0.2189,
+      "pivot_offset_xz_m": [
+        -0.0008,
+        -0.1686
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.4581
+      ],
+      "ground_radius_m": 0.4581,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.5104,
+            0.2189,
+            0.4225
+          ],
+          "base_m": -0.1336,
+          "top_m": 0.0853,
+          "centre_m": [
+            -0.0008,
+            -0.0242,
+            -0.1686
+          ],
+          "triangles": 325
+        },
+        "cards": null
+      }
+    },
+    {
+      "asset": "painted_wooden_cabinet",
+      "source": "polyhaven",
+      "file": "painted_wooden_cabinet_1k.gltf",
+      "node": "painted_wooden_cabinet_drawer_01",
+      "mesh": "commode.018",
+      "node_transformed": true,
+      "vertices": 282,
+      "triangles": 325,
+      "extent_m": [
+        0.5104,
+        0.2189,
+        0.4225
+      ],
+      "base_m": -0.1336,
+      "top_m": 0.0853,
+      "height_m": 0.2189,
+      "pivot_offset_xz_m": [
+        0.0042,
+        -0.1686
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.46
+      ],
+      "ground_radius_m": 0.46,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.5104,
+            0.2189,
+            0.4225
+          ],
+          "base_m": -0.1336,
+          "top_m": 0.0853,
+          "centre_m": [
+            0.0042,
+            -0.0242,
+            -0.1686
+          ],
+          "triangles": 325
+        },
+        "cards": null
+      }
+    },
+    {
+      "asset": "plastic_monobloc_chair_01",
+      "source": "polyhaven",
+      "file": "plastic_monobloc_chair_01_1k.gltf",
+      "node": "plastic_monobloc_chair_01",
+      "mesh": "Plane.002",
+      "node_transformed": false,
+      "vertices": 3271,
+      "triangles": 3356,
+      "extent_m": [
+        0.6419,
+        0.8798,
+        0.6276
+      ],
+      "base_m": -0.0,
+      "top_m": 0.8798,
+      "height_m": 0.8798,
+      "pivot_offset_xz_m": [
+        0.0,
+        -0.0222
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.4244,
+        0.3768,
+        0.3451,
+        0.3495
+      ],
+      "ground_radius_m": 0.4244,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.6419,
+            0.8798,
+            0.6276
+          ],
+          "base_m": -0.0,
+          "top_m": 0.8798,
+          "centre_m": [
+            0.0,
+            0.4399,
+            -0.0222
+          ],
+          "triangles": 3356
+        },
+        "cards": null
+      }
+    },
+    {
+      "asset": "portable_generator",
+      "source": "polyhaven",
+      "file": "portable_generator_1k.gltf",
+      "node": "portable_generator",
+      "mesh": "Cube.023",
+      "node_transformed": false,
+      "vertices": 24251,
+      "triangles": 26299,
+      "extent_m": [
+        0.8183,
+        0.5769,
+        0.564
+      ],
+      "base_m": 0.0001,
+      "top_m": 0.577,
+      "height_m": 0.5769,
+      "pivot_offset_xz_m": [
+        -0.0053,
+        0.0
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.4854,
+        0.484,
+        0.4494
+      ],
+      "ground_radius_m": 0.4854,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.8183,
+            0.5769,
+            0.564
+          ],
+          "base_m": 0.0001,
+          "top_m": 0.577,
+          "centre_m": [
+            -0.0053,
+            0.2885,
+            0.0
+          ],
+          "triangles": 26245
+        },
+        "cards": {
+          "extent_m": [
+            0.053,
+            0.0525,
+            0.0159
+          ],
+          "base_m": 0.4034,
+          "top_m": 0.4559,
+          "centre_m": [
+            0.0923,
+            0.4297,
+            0.2376
+          ],
+          "triangles": 54
+        }
+      }
+    },
+    {
+      "asset": "portable_generator",
+      "source": "polyhaven",
+      "file": "portable_generator_1k.gltf",
+      "node": "portable_generator_dial",
+      "mesh": "Cylinder.061",
+      "node_transformed": true,
+      "vertices": 43,
+      "triangles": 38,
+      "extent_m": [
+        0.0105,
+        0.0304,
+        0.0053
+      ],
+      "base_m": -0.0033,
+      "top_m": 0.0271,
+      "height_m": 0.0304,
+      "pivot_offset_xz_m": [
+        0.002,
+        0.0007
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.0072
+      ],
+      "ground_radius_m": 0.0072,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.0105,
+            0.0304,
+            0.0053
+          ],
+          "base_m": -0.0033,
+          "top_m": 0.0271,
+          "centre_m": [
+            0.002,
+            0.0119,
+            0.0007
+          ],
+          "triangles": 38
+        },
+        "cards": null
+      }
+    },
+    {
+      "asset": "portable_generator",
+      "source": "polyhaven",
+      "file": "portable_generator_1k.gltf",
+      "node": "portable_generator_switch",
+      "mesh": "Cube.050",
+      "node_transformed": true,
+      "vertices": 50,
+      "triangles": 32,
+      "extent_m": [
+        0.0266,
+        0.02,
+        0.0382
+      ],
+      "base_m": -0.0091,
+      "top_m": 0.0109,
+      "height_m": 0.02,
+      "pivot_offset_xz_m": [
+        0.0,
+        -0.0022
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.0215
+      ],
+      "ground_radius_m": 0.0215,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.0266,
+            0.02,
+            0.0382
+          ],
+          "base_m": -0.0091,
+          "top_m": 0.0109,
+          "centre_m": [
+            0.0,
+            0.0009,
+            -0.0022
+          ],
+          "triangles": 32
+        },
+        "cards": null
+      }
+    },
+    {
+      "asset": "portable_generator",
+      "source": "polyhaven",
+      "file": "portable_generator_1k.gltf",
+      "node": "portable_generator_toggle",
+      "mesh": "Cube.057",
+      "node_transformed": true,
+      "vertices": 64,
+      "triangles": 50,
+      "extent_m": [
+        0.0081,
+        0.008,
+        0.0142
+      ],
+      "base_m": -0.004,
+      "top_m": 0.004,
+      "height_m": 0.008,
+      "pivot_offset_xz_m": [
+        0.0,
+        0.0058
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.0135
+      ],
+      "ground_radius_m": 0.0135,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.0081,
+            0.008,
+            0.0142
+          ],
+          "base_m": -0.004,
+          "top_m": 0.004,
+          "centre_m": [
+            0.0,
+            0.0,
+            0.0058
+          ],
+          "triangles": 50
+        },
+        "cards": null
+      }
+    },
+    {
       "asset": "quiver_tree_01",
       "source": "polyhaven",
       "file": "quiver_tree_01_2k.gltf",
@@ -580,6 +2411,119 @@
           ],
           "triangles": 113154
         }
+      }
+    },
+    {
+      "asset": "round_wooden_table_01",
+      "source": "polyhaven",
+      "file": "round_wooden_table_01_1k.gltf",
+      "node": "round_wooden_table_01",
+      "mesh": "Cylinder",
+      "node_transformed": false,
+      "vertices": 5148,
+      "triangles": 7928,
+      "extent_m": [
+        1.3993,
+        1.005,
+        1.3993
+      ],
+      "base_m": -0.0013,
+      "top_m": 1.0037,
+      "height_m": 1.005,
+      "pivot_offset_xz_m": [
+        0.0,
+        0.0
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0484,
+      "band_radius_m": 0.6919,
+      "band_centre_offset_m": 0.0,
+      "band_radius_about_centre_m": 0.6919,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.6571,
+        0.3155,
+        0.0869,
+        0.6997,
+        0.6919
+      ],
+      "ground_radius_m": 0.6997,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            1.3993,
+            1.005,
+            1.3993
+          ],
+          "base_m": -0.0013,
+          "top_m": 1.0037,
+          "centre_m": [
+            0.0,
+            0.5012,
+            0.0
+          ],
+          "triangles": 7928
+        },
+        "cards": null
+      }
+    },
+    {
+      "asset": "round_wooden_table_01",
+      "source": "polyhaven",
+      "file": "round_wooden_table_01_1k.gltf",
+      "node": "round_wooden_table_01_bolts",
+      "mesh": "Cylinder.007",
+      "node_transformed": false,
+      "vertices": 816,
+      "triangles": 712,
+      "extent_m": [
+        0.3039,
+        0.0157,
+        0.2775
+      ],
+      "base_m": 0.9201,
+      "top_m": 0.9358,
+      "height_m": 0.0157,
+      "pivot_offset_xz_m": [
+        0.0161,
+        -0.0073
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        null,
+        null,
+        null,
+        0.1962
+      ],
+      "ground_radius_m": 0.1962,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.3039,
+            0.0157,
+            0.2775
+          ],
+          "base_m": 0.9201,
+          "top_m": 0.9358,
+          "centre_m": [
+            0.0161,
+            0.928,
+            -0.0073
+          ],
+          "triangles": 712
+        },
+        "cards": null
       }
     },
     {
@@ -1372,6 +3316,115 @@
       }
     },
     {
+      "asset": "sofa_02",
+      "source": "polyhaven",
+      "file": "sofa_02_1k.gltf",
+      "node": "sofa_02_Base",
+      "mesh": "Plane.001",
+      "node_transformed": true,
+      "vertices": 1616,
+      "triangles": 2344,
+      "extent_m": [
+        1.8072,
+        0.7095,
+        0.811
+      ],
+      "base_m": -0.0,
+      "top_m": 0.7095,
+      "height_m": 0.7095,
+      "pivot_offset_xz_m": [
+        -0.0,
+        -0.1034
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.8572,
+        0.8524,
+        0.9118
+      ],
+      "ground_radius_m": 0.9118,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            1.8072,
+            0.7095,
+            0.811
+          ],
+          "base_m": -0.0,
+          "top_m": 0.7095,
+          "centre_m": [
+            -0.0,
+            0.3547,
+            -0.1034
+          ],
+          "triangles": 2344
+        },
+        "cards": null
+      }
+    },
+    {
+      "asset": "sofa_02",
+      "source": "polyhaven",
+      "file": "sofa_02_1k.gltf",
+      "node": "sofa_02_Seat",
+      "mesh": "Mesh.007",
+      "node_transformed": true,
+      "vertices": 212,
+      "triangles": 384,
+      "extent_m": [
+        1.4161,
+        0.1638,
+        0.5276
+      ],
+      "base_m": 0.2466,
+      "top_m": 0.4104,
+      "height_m": 0.1638,
+      "pivot_offset_xz_m": [
+        0.0018,
+        0.045
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.7505,
+        0.759
+      ],
+      "ground_radius_m": 0.759,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            1.4161,
+            0.1638,
+            0.5276
+          ],
+          "base_m": 0.2466,
+          "top_m": 0.4104,
+          "centre_m": [
+            0.0018,
+            0.3285,
+            0.045
+          ],
+          "triangles": 384
+        },
+        "cards": null
+      }
+    },
+    {
       "asset": "tree_small_02",
       "source": "polyhaven",
       "file": "tree_small_02_2k.gltf",
@@ -1455,6 +3508,3056 @@
           "triangles": 1939380
         }
       }
+    },
+    {
+      "asset": "vintage_grandfather_clock_01",
+      "source": "polyhaven",
+      "file": "vintage_grandfather_clock_01_1k.gltf",
+      "node": "vintage_grandfather_clock_01_body",
+      "mesh": "Cylinder.001",
+      "node_transformed": true,
+      "vertices": 8730,
+      "triangles": 8382,
+      "extent_m": [
+        0.4266,
+        2.1906,
+        0.6256
+      ],
+      "base_m": -0.0001,
+      "top_m": 2.1905,
+      "height_m": 2.1906,
+      "pivot_offset_xz_m": [
+        0.0251,
+        0.0
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.6946,
+      "band_radius_m": 0.3783,
+      "band_centre_offset_m": 0.0124,
+      "band_radius_about_centre_m": 0.3716,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.3526,
+        0.3283,
+        0.2853,
+        0.2853,
+        0.2853,
+        0.3285,
+        0.3285,
+        0.336,
+        0.3783
+      ],
+      "ground_radius_m": 0.3783,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.4266,
+            2.1906,
+            0.6256
+          ],
+          "base_m": -0.0001,
+          "top_m": 2.1905,
+          "centre_m": [
+            0.0251,
+            1.0952,
+            0.0
+          ],
+          "triangles": 8363
+        },
+        "cards": {
+          "extent_m": [
+            0.0,
+            0.4868,
+            0.3741
+          ],
+          "base_m": 1.5594,
+          "top_m": 2.0461,
+          "centre_m": [
+            0.1448,
+            1.8028,
+            0.0
+          ],
+          "triangles": 19
+        }
+      }
+    },
+    {
+      "asset": "vintage_grandfather_clock_01",
+      "source": "polyhaven",
+      "file": "vintage_grandfather_clock_01_1k.gltf",
+      "node": "vintage_grandfather_clock_01_minute_hand",
+      "mesh": "Cylinder.007",
+      "node_transformed": true,
+      "vertices": 90,
+      "triangles": 116,
+      "extent_m": [
+        0.0097,
+        0.1656,
+        0.0
+      ],
+      "base_m": -0.0079,
+      "top_m": 0.1577,
+      "height_m": 0.1656,
+      "pivot_offset_xz_m": [
+        0.0003,
+        -0.0075
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.0091
+      ],
+      "ground_radius_m": 0.0091,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.0097,
+            0.1656,
+            0.0
+          ],
+          "base_m": -0.0079,
+          "top_m": 0.1577,
+          "centre_m": [
+            0.0003,
+            0.0749,
+            -0.0075
+          ],
+          "triangles": 116
+        },
+        "cards": null
+      }
+    },
+    {
+      "asset": "vintage_grandfather_clock_01",
+      "source": "polyhaven",
+      "file": "vintage_grandfather_clock_01_1k.gltf",
+      "node": "vintage_grandfather_clock_01_houd_hand",
+      "mesh": "Cylinder.008",
+      "node_transformed": true,
+      "vertices": 105,
+      "triangles": 84,
+      "extent_m": [
+        0.077,
+        0.0504,
+        0.0004
+      ],
+      "base_m": -0.0018,
+      "top_m": 0.0486,
+      "height_m": 0.0504,
+      "pivot_offset_xz_m": [
+        -0.0375,
+        -0.0071
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.0764
+      ],
+      "ground_radius_m": 0.0764,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.077,
+            0.0504,
+            0.0004
+          ],
+          "base_m": -0.0018,
+          "top_m": 0.0486,
+          "centre_m": [
+            -0.0375,
+            0.0234,
+            -0.0071
+          ],
+          "triangles": 84
+        },
+        "cards": null
+      }
+    },
+    {
+      "asset": "vintage_suitcase",
+      "source": "polyhaven",
+      "file": "vintage_suitcase_1k.gltf",
+      "node": "vintage_suitcase_01_bottom",
+      "mesh": "handle_mount.003",
+      "node_transformed": true,
+      "vertices": 3263,
+      "triangles": 3864,
+      "extent_m": [
+        0.4371,
+        0.3523,
+        0.0858
+      ],
+      "base_m": -0.3432,
+      "top_m": 0.0091,
+      "height_m": 0.3523,
+      "pivot_offset_xz_m": [
+        -0.0004,
+        0.042
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.1911
+      ],
+      "ground_radius_m": 0.2279,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.4371,
+            0.3523,
+            0.0858
+          ],
+          "base_m": -0.3432,
+          "top_m": 0.0091,
+          "centre_m": [
+            -0.0004,
+            -0.167,
+            0.042
+          ],
+          "triangles": 3864
+        },
+        "cards": null
+      }
+    },
+    {
+      "asset": "vintage_suitcase",
+      "source": "polyhaven",
+      "file": "vintage_suitcase_1k.gltf",
+      "node": "vintage_suitcase_01_clasp",
+      "mesh": "latch.001",
+      "node_transformed": true,
+      "vertices": 400,
+      "triangles": 448,
+      "extent_m": [
+        0.2878,
+        0.0029,
+        0.0408
+      ],
+      "base_m": -0.0012,
+      "top_m": 0.0016,
+      "height_m": 0.0029,
+      "pivot_offset_xz_m": [
+        0.0,
+        -0.019
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.147
+      ],
+      "ground_radius_m": 0.147,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.2878,
+            0.0029,
+            0.0408
+          ],
+          "base_m": -0.0012,
+          "top_m": 0.0016,
+          "centre_m": [
+            0.0,
+            0.0002,
+            -0.019
+          ],
+          "triangles": 448
+        },
+        "cards": null
+      }
+    },
+    {
+      "asset": "vintage_suitcase",
+      "source": "polyhaven",
+      "file": "vintage_suitcase_1k.gltf",
+      "node": "vintage_suitcase_01_handle",
+      "mesh": "Handle.001",
+      "node_transformed": true,
+      "vertices": 716,
+      "triangles": 1216,
+      "extent_m": [
+        0.1255,
+        0.0199,
+        0.0556
+      ],
+      "base_m": -0.0125,
+      "top_m": 0.0073,
+      "height_m": 0.0199,
+      "pivot_offset_xz_m": [
+        0.0,
+        0.0232
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.0636
+      ],
+      "ground_radius_m": 0.0637,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.1255,
+            0.0199,
+            0.0556
+          ],
+          "base_m": -0.0125,
+          "top_m": 0.0073,
+          "centre_m": [
+            0.0,
+            -0.0026,
+            0.0232
+          ],
+          "triangles": 1216
+        },
+        "cards": null
+      }
+    },
+    {
+      "asset": "vintage_suitcase",
+      "source": "polyhaven",
+      "file": "vintage_suitcase_1k.gltf",
+      "node": "vintage_suitcase_01_top",
+      "mesh": "hinge_top.001",
+      "node_transformed": true,
+      "vertices": 2159,
+      "triangles": 2709,
+      "extent_m": [
+        0.4371,
+        0.343,
+        0.0669
+      ],
+      "base_m": -0.3338,
+      "top_m": 0.0091,
+      "height_m": 0.343,
+      "pivot_offset_xz_m": [
+        -0.0004,
+        -0.0323
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.1899
+      ],
+      "ground_radius_m": 0.2227,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.4371,
+            0.343,
+            0.0669
+          ],
+          "base_m": -0.3338,
+          "top_m": 0.0091,
+          "centre_m": [
+            -0.0004,
+            -0.1624,
+            -0.0323
+          ],
+          "triangles": 2709
+        },
+        "cards": null
+      }
+    },
+    {
+      "asset": "vintage_suitcase",
+      "source": "polyhaven",
+      "file": "vintage_suitcase_1k.gltf",
+      "node": "vintage_suitcase_02_bottom",
+      "mesh": "handle_mount.001",
+      "node_transformed": true,
+      "vertices": 3263,
+      "triangles": 3864,
+      "extent_m": [
+        0.4371,
+        0.3523,
+        0.0858
+      ],
+      "base_m": -0.3432,
+      "top_m": 0.0091,
+      "height_m": 0.3523,
+      "pivot_offset_xz_m": [
+        -0.0004,
+        0.042
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.1911
+      ],
+      "ground_radius_m": 0.2279,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.4371,
+            0.3523,
+            0.0858
+          ],
+          "base_m": -0.3432,
+          "top_m": 0.0091,
+          "centre_m": [
+            -0.0004,
+            -0.167,
+            0.042
+          ],
+          "triangles": 3864
+        },
+        "cards": null
+      }
+    },
+    {
+      "asset": "vintage_suitcase",
+      "source": "polyhaven",
+      "file": "vintage_suitcase_1k.gltf",
+      "node": "vintage_suitcase_02_clasp",
+      "mesh": "latch.002",
+      "node_transformed": true,
+      "vertices": 400,
+      "triangles": 448,
+      "extent_m": [
+        0.2878,
+        0.0029,
+        0.0408
+      ],
+      "base_m": -0.0012,
+      "top_m": 0.0016,
+      "height_m": 0.0029,
+      "pivot_offset_xz_m": [
+        0.0,
+        -0.019
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.147
+      ],
+      "ground_radius_m": 0.147,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.2878,
+            0.0029,
+            0.0408
+          ],
+          "base_m": -0.0012,
+          "top_m": 0.0016,
+          "centre_m": [
+            0.0,
+            0.0002,
+            -0.019
+          ],
+          "triangles": 448
+        },
+        "cards": null
+      }
+    },
+    {
+      "asset": "vintage_suitcase",
+      "source": "polyhaven",
+      "file": "vintage_suitcase_1k.gltf",
+      "node": "vintage_suitcase_02_handle",
+      "mesh": "Handle.002",
+      "node_transformed": true,
+      "vertices": 716,
+      "triangles": 1216,
+      "extent_m": [
+        0.1255,
+        0.0199,
+        0.0556
+      ],
+      "base_m": -0.0125,
+      "top_m": 0.0073,
+      "height_m": 0.0199,
+      "pivot_offset_xz_m": [
+        0.0,
+        0.0232
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.0636
+      ],
+      "ground_radius_m": 0.0637,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.1255,
+            0.0199,
+            0.0556
+          ],
+          "base_m": -0.0125,
+          "top_m": 0.0073,
+          "centre_m": [
+            0.0,
+            -0.0026,
+            0.0232
+          ],
+          "triangles": 1216
+        },
+        "cards": null
+      }
+    },
+    {
+      "asset": "vintage_suitcase",
+      "source": "polyhaven",
+      "file": "vintage_suitcase_1k.gltf",
+      "node": "vintage_suitcase_02_top",
+      "mesh": "hinge_top.002",
+      "node_transformed": true,
+      "vertices": 2159,
+      "triangles": 2709,
+      "extent_m": [
+        0.4371,
+        0.343,
+        0.0669
+      ],
+      "base_m": -0.3338,
+      "top_m": 0.0091,
+      "height_m": 0.343,
+      "pivot_offset_xz_m": [
+        -0.0004,
+        -0.0323
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.1899
+      ],
+      "ground_radius_m": 0.2227,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.4371,
+            0.343,
+            0.0669
+          ],
+          "base_m": -0.3338,
+          "top_m": 0.0091,
+          "centre_m": [
+            -0.0004,
+            -0.1624,
+            -0.0323
+          ],
+          "triangles": 2709
+        },
+        "cards": null
+      }
+    },
+    {
+      "asset": "wine_barrel_01",
+      "source": "polyhaven",
+      "file": "wine_barrel_01_1k.gltf",
+      "node": "wine_barrel_01_Lid",
+      "mesh": "DiameterSmall.012",
+      "node_transformed": false,
+      "vertices": 288,
+      "triangles": 224,
+      "extent_m": [
+        0.5787,
+        0.0153,
+        0.5788
+      ],
+      "base_m": 0.822,
+      "top_m": 0.8373,
+      "height_m": 0.0153,
+      "pivot_offset_xz_m": [
+        0.0,
+        -0.0
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        null,
+        null,
+        null,
+        0.2894
+      ],
+      "ground_radius_m": 0.2894,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.5787,
+            0.0153,
+            0.5788
+          ],
+          "base_m": 0.822,
+          "top_m": 0.8373,
+          "centre_m": [
+            0.0,
+            0.8297,
+            -0.0
+          ],
+          "triangles": 224
+        },
+        "cards": null
+      }
+    },
+    {
+      "asset": "wine_barrel_01",
+      "source": "polyhaven",
+      "file": "wine_barrel_01_1k.gltf",
+      "node": "wine_barrel_01_bung",
+      "mesh": "Cylinder.014",
+      "node_transformed": false,
+      "vertices": 113,
+      "triangles": 168,
+      "extent_m": [
+        0.0524,
+        0.0524,
+        0.0422
+      ],
+      "base_m": 0.4101,
+      "top_m": 0.4625,
+      "height_m": 0.0524,
+      "pivot_offset_xz_m": [
+        0.0024,
+        0.364
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        null,
+        0.3856
+      ],
+      "ground_radius_m": 0.3856,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.0524,
+            0.0524,
+            0.0422
+          ],
+          "base_m": 0.4101,
+          "top_m": 0.4625,
+          "centre_m": [
+            0.0024,
+            0.4363,
+            0.364
+          ],
+          "triangles": 168
+        },
+        "cards": null
+      }
+    },
+    {
+      "asset": "wine_barrel_01",
+      "source": "polyhaven",
+      "file": "wine_barrel_01_1k.gltf",
+      "node": "wine_barrel_01",
+      "mesh": "Plane.006",
+      "node_transformed": false,
+      "vertices": 9342,
+      "triangles": 10204,
+      "extent_m": [
+        0.7419,
+        0.8713,
+        0.7419
+      ],
+      "base_m": 0.0007,
+      "top_m": 0.8719,
+      "height_m": 0.8713,
+      "pivot_offset_xz_m": [
+        0.0,
+        -0.0
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.3532,
+        0.3742,
+        0.3712,
+        0.3295
+      ],
+      "ground_radius_m": 0.3742,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.7419,
+            0.8713,
+            0.7419
+          ],
+          "base_m": 0.0007,
+          "top_m": 0.8719,
+          "centre_m": [
+            0.0,
+            0.4363,
+            -0.0
+          ],
+          "triangles": 10204
+        },
+        "cards": null
+      }
+    },
+    {
+      "asset": "wine_barrel_01",
+      "source": "polyhaven",
+      "file": "wine_barrel_01_1k.gltf",
+      "node": "wine_barrel_01_base",
+      "mesh": "DiameterSmall.004",
+      "node_transformed": false,
+      "vertices": 288,
+      "triangles": 224,
+      "extent_m": [
+        0.5787,
+        0.0153,
+        0.5788
+      ],
+      "base_m": 0.0352,
+      "top_m": 0.0505,
+      "height_m": 0.0153,
+      "pivot_offset_xz_m": [
+        0.0,
+        -0.0
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.2894
+      ],
+      "ground_radius_m": 0.2894,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.5787,
+            0.0153,
+            0.5788
+          ],
+          "base_m": 0.0352,
+          "top_m": 0.0505,
+          "centre_m": [
+            0.0,
+            0.0429,
+            -0.0
+          ],
+          "triangles": 224
+        },
+        "cards": null
+      }
+    },
+    {
+      "asset": "wooden_ladder_02",
+      "source": "polyhaven",
+      "file": "wooden_ladder_02_1k.gltf",
+      "node": "wooden_ladder_02",
+      "mesh": "Cube.001",
+      "node_transformed": false,
+      "vertices": 4348,
+      "triangles": 6126,
+      "extent_m": [
+        0.9895,
+        1.7222,
+        0.6181
+      ],
+      "base_m": -0.0016,
+      "top_m": 1.7206,
+      "height_m": 1.7222,
+      "pivot_offset_xz_m": [
+        -0.0423,
+        -0.003
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.5497,
+      "band_radius_m": 0.3711,
+      "band_centre_offset_m": 0.0034,
+      "band_radius_about_centre_m": 0.3678,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.6043,
+        0.5584,
+        0.4882,
+        0.4096,
+        0.3559,
+        0.3172,
+        0.3711
+      ],
+      "ground_radius_m": 0.6043,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.9895,
+            1.7222,
+            0.6181
+          ],
+          "base_m": -0.0016,
+          "top_m": 1.7206,
+          "centre_m": [
+            -0.0423,
+            0.8595,
+            -0.003
+          ],
+          "triangles": 6126
+        },
+        "cards": null
+      }
+    },
+    {
+      "asset": "wooden_picnic_table",
+      "source": "polyhaven",
+      "file": "wooden_picnic_table_1k.gltf",
+      "node": "wooden_picnic_table",
+      "mesh": "Cube.003",
+      "node_transformed": false,
+      "vertices": 6808,
+      "triangles": 10210,
+      "extent_m": [
+        2.241,
+        0.746,
+        3.0223
+      ],
+      "base_m": -0.0003,
+      "top_m": 0.7457,
+      "height_m": 0.746,
+      "pivot_offset_xz_m": [
+        -0.0008,
+        0.0096
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        1.7857,
+        1.8855,
+        1.5857
+      ],
+      "ground_radius_m": 1.8855,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            2.241,
+            0.746,
+            3.0223
+          ],
+          "base_m": -0.0003,
+          "top_m": 0.7457,
+          "centre_m": [
+            -0.0008,
+            0.3727,
+            0.0096
+          ],
+          "triangles": 10210
+        },
+        "cards": null
+      }
+    }
+  ],
+  "models": [
+    {
+      "asset": "ArmChair_01",
+      "source": "polyhaven",
+      "model": "ArmChair_01",
+      "file": "ArmChair_01_1k.gltf",
+      "nodes": [
+        "ArmChair_01"
+      ],
+      "vertices": 3758,
+      "triangles": 5626,
+      "extent_m": [
+        0.8484,
+        1.0651,
+        0.7658
+      ],
+      "base_m": -0.0004,
+      "top_m": 1.0647,
+      "height_m": 1.0651,
+      "pivot_offset_xz_m": [
+        0.0,
+        -0.0344
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.1418,
+      "band_radius_m": 0.4508,
+      "band_centre_offset_m": 0.378,
+      "band_radius_about_centre_m": 0.248,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.532,
+        0.5194,
+        0.4897,
+        0.4949,
+        0.4508
+      ],
+      "ground_radius_m": 0.532
+    },
+    {
+      "asset": "Barrel_01",
+      "source": "polyhaven",
+      "model": "Barrel_01",
+      "file": "Barrel_01_1k.gltf",
+      "nodes": [
+        "Barrel_01"
+      ],
+      "vertices": 2052,
+      "triangles": 2682,
+      "extent_m": [
+        0.563,
+        0.88,
+        0.563
+      ],
+      "base_m": -0.0066,
+      "top_m": 0.8734,
+      "height_m": 0.88,
+      "pivot_offset_xz_m": [
+        -0.0,
+        0.0
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.282,
+        0.2819,
+        0.2819,
+        0.282
+      ],
+      "ground_radius_m": 0.282
+    },
+    {
+      "asset": "Barrel_02",
+      "source": "polyhaven",
+      "model": "Barrel_02",
+      "file": "Barrel_02_1k.gltf",
+      "nodes": [
+        "Barrel_02"
+      ],
+      "vertices": 1916,
+      "triangles": 2688,
+      "extent_m": [
+        0.4882,
+        0.88,
+        0.4846
+      ],
+      "base_m": 0.0046,
+      "top_m": 0.8846,
+      "height_m": 0.88,
+      "pivot_offset_xz_m": [
+        0.0,
+        -0.0
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.2441,
+        0.2418,
+        0.2441,
+        0.2324
+      ],
+      "ground_radius_m": 0.2441
+    },
+    {
+      "asset": "GreenChair_01",
+      "source": "polyhaven",
+      "model": "GreenChair_01",
+      "file": "GreenChair_01_1k.gltf",
+      "nodes": [
+        "GreenChair_01"
+      ],
+      "vertices": 2934,
+      "triangles": 4213,
+      "extent_m": [
+        0.6731,
+        1.0585,
+        0.6644
+      ],
+      "base_m": -0.0005,
+      "top_m": 1.058,
+      "height_m": 1.0585,
+      "pivot_offset_xz_m": [
+        -0.0005,
+        -0.0459
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0852,
+      "band_radius_m": 0.3955,
+      "band_centre_offset_m": 0.358,
+      "band_radius_about_centre_m": 0.1368,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.4203,
+        0.4205,
+        0.4053,
+        0.4376,
+        0.3955
+      ],
+      "ground_radius_m": 0.4376
+    },
+    {
+      "asset": "SchoolChair_01",
+      "source": "polyhaven",
+      "model": "SchoolChair_01",
+      "file": "SchoolChair_01_1k.gltf",
+      "nodes": [
+        "SchoolChair_01"
+      ],
+      "vertices": 3265,
+      "triangles": 5072,
+      "extent_m": [
+        0.5659,
+        1.006,
+        0.6753
+      ],
+      "base_m": -0.0017,
+      "top_m": 1.0043,
+      "height_m": 1.006,
+      "pivot_offset_xz_m": [
+        -0.0,
+        0.0
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0077,
+      "band_radius_m": 0.272,
+      "band_centre_offset_m": 0.2237,
+      "band_radius_about_centre_m": 0.1585,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.4334,
+        0.3753,
+        0.3693,
+        0.3121,
+        0.272
+      ],
+      "ground_radius_m": 0.4334
+    },
+    {
+      "asset": "Sofa_01",
+      "source": "polyhaven",
+      "model": "Sofa_01",
+      "file": "Sofa_01_1k.gltf",
+      "nodes": [
+        "Sofa_01"
+      ],
+      "vertices": 2708,
+      "triangles": 4101,
+      "extent_m": [
+        1.5715,
+        0.7965,
+        0.658
+      ],
+      "base_m": -0.0006,
+      "top_m": 0.7959,
+      "height_m": 0.7965,
+      "pivot_offset_xz_m": [
+        0.0076,
+        -0.0322
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.8356,
+        0.8151,
+        0.8098,
+        0.3988
+      ],
+      "ground_radius_m": 0.8356
+    },
+    {
+      "asset": "Television_01",
+      "source": "polyhaven",
+      "model": "Television_01",
+      "file": "Television_01_1k.gltf",
+      "nodes": [
+        "Television_01"
+      ],
+      "vertices": 1976,
+      "triangles": 1918,
+      "extent_m": [
+        0.6,
+        0.4568,
+        0.4708
+      ],
+      "base_m": -0.0,
+      "top_m": 0.4568,
+      "height_m": 0.4568,
+      "pivot_offset_xz_m": [
+        0.0,
+        -0.023
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.3788,
+        0.3619
+      ],
+      "ground_radius_m": 0.3788
+    },
+    {
+      "asset": "WetFloorSign_01",
+      "source": "polyhaven",
+      "model": "WetFloorSign_01",
+      "file": "WetFloorSign_01_1k.gltf",
+      "nodes": [
+        "WetFloorSign_01"
+      ],
+      "vertices": 254,
+      "triangles": 228,
+      "extent_m": [
+        0.3001,
+        0.6295,
+        0.3585
+      ],
+      "base_m": 0.0022,
+      "top_m": 0.6317,
+      "height_m": 0.6295,
+      "pivot_offset_xz_m": [
+        -0.0,
+        -0.014
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.2447,
+        0.1985,
+        0.1635
+      ],
+      "ground_radius_m": 0.2447
+    },
+    {
+      "asset": "bronze_whale_statue",
+      "source": "polyhaven",
+      "model": "bronze_whale_statue",
+      "file": "bronze_whale_statue_1k.gltf",
+      "nodes": [
+        "bronze_whale_statue"
+      ],
+      "vertices": 2483,
+      "triangles": 3816,
+      "extent_m": [
+        0.932,
+        1.0729,
+        1.3659
+      ],
+      "base_m": -0.0001,
+      "top_m": 1.0728,
+      "height_m": 1.0729,
+      "pivot_offset_xz_m": [
+        -0.0419,
+        -0.1336
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0705,
+      "band_radius_m": 0.8855,
+      "band_centre_offset_m": 0.7985,
+      "band_radius_about_centre_m": 0.3143,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.2378,
+        0.5582,
+        0.7252,
+        0.8657,
+        0.8855
+      ],
+      "ground_radius_m": 0.8855
+    },
+    {
+      "asset": "covered_car",
+      "source": "polyhaven",
+      "model": "covered_car",
+      "file": "covered_car_1k.gltf",
+      "nodes": [
+        "covered_car_wheel_01",
+        "covered_car_wheel_02",
+        "covered_car_wheel_03",
+        "covered_car_wheel_04",
+        "covered_car"
+      ],
+      "vertices": 10722,
+      "triangles": 12592,
+      "extent_m": [
+        1.789,
+        1.4111,
+        4.3803
+      ],
+      "base_m": 0.0,
+      "top_m": 1.4111,
+      "height_m": 1.4111,
+      "pivot_offset_xz_m": [
+        0.0478,
+        0.0238
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0304,
+      "band_radius_m": 2.002,
+      "band_centre_offset_m": 0.4841,
+      "band_radius_about_centre_m": 1.5432,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        2.0261,
+        2.2728,
+        2.2652,
+        2.2292,
+        2.002,
+        1.5114
+      ],
+      "ground_radius_m": 2.2728
+    },
+    {
+      "asset": "kenney_blocky-characters",
+      "source": "kenney",
+      "model": "character-a",
+      "file": "Models/GLB format/character-a.glb",
+      "nodes": [
+        "leg-left",
+        "leg-right",
+        "torso",
+        "arm-left",
+        "arm-right",
+        "head"
+      ],
+      "vertices": 143,
+      "triangles": 72,
+      "extent_m": [
+        1.6,
+        2.7,
+        0.8
+      ],
+      "base_m": 0.0,
+      "top_m": 2.7,
+      "height_m": 2.7,
+      "pivot_offset_xz_m": [
+        -0.0,
+        0.0
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.6643,
+      "band_radius_m": 0.8544,
+      "band_centre_offset_m": 0.0,
+      "band_radius_about_centre_m": 0.8544,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.4472,
+        0.4472,
+        0.4472,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.5657,
+        0.5657,
+        0.5657
+      ],
+      "ground_radius_m": 0.8544
+    },
+    {
+      "asset": "kenney_blocky-characters",
+      "source": "kenney",
+      "model": "character-b",
+      "file": "Models/GLB format/character-b.glb",
+      "nodes": [
+        "leg-left",
+        "leg-right",
+        "torso",
+        "arm-left",
+        "arm-right",
+        "head"
+      ],
+      "vertices": 143,
+      "triangles": 72,
+      "extent_m": [
+        1.6,
+        2.7,
+        0.8
+      ],
+      "base_m": 0.0,
+      "top_m": 2.7,
+      "height_m": 2.7,
+      "pivot_offset_xz_m": [
+        0.0,
+        0.0
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.6643,
+      "band_radius_m": 0.8544,
+      "band_centre_offset_m": 0.0,
+      "band_radius_about_centre_m": 0.8544,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.4472,
+        0.4472,
+        0.4472,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.5657,
+        0.5657,
+        0.5657
+      ],
+      "ground_radius_m": 0.8544
+    },
+    {
+      "asset": "kenney_blocky-characters",
+      "source": "kenney",
+      "model": "character-c",
+      "file": "Models/GLB format/character-c.glb",
+      "nodes": [
+        "leg-left",
+        "leg-right",
+        "torso",
+        "arm-left",
+        "arm-right",
+        "head"
+      ],
+      "vertices": 143,
+      "triangles": 72,
+      "extent_m": [
+        1.6,
+        2.7,
+        0.8
+      ],
+      "base_m": 0.0,
+      "top_m": 2.7,
+      "height_m": 2.7,
+      "pivot_offset_xz_m": [
+        -0.0,
+        0.0
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.6643,
+      "band_radius_m": 0.8544,
+      "band_centre_offset_m": 0.0,
+      "band_radius_about_centre_m": 0.8544,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.4472,
+        0.4472,
+        0.4472,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.5657,
+        0.5657,
+        0.5657
+      ],
+      "ground_radius_m": 0.8544
+    },
+    {
+      "asset": "kenney_blocky-characters",
+      "source": "kenney",
+      "model": "character-e",
+      "file": "Models/GLB format/character-e.glb",
+      "nodes": [
+        "leg-left",
+        "leg-right",
+        "torso",
+        "arm-left",
+        "arm-right",
+        "head"
+      ],
+      "vertices": 143,
+      "triangles": 72,
+      "extent_m": [
+        1.6,
+        2.7,
+        0.8
+      ],
+      "base_m": 0.0,
+      "top_m": 2.7,
+      "height_m": 2.7,
+      "pivot_offset_xz_m": [
+        0.0,
+        0.0
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.6643,
+      "band_radius_m": 0.8544,
+      "band_centre_offset_m": 0.0,
+      "band_radius_about_centre_m": 0.8544,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.4472,
+        0.4472,
+        0.4472,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.5657,
+        0.5657,
+        0.5657
+      ],
+      "ground_radius_m": 0.8544
+    },
+    {
+      "asset": "kenney_blocky-characters",
+      "source": "kenney",
+      "model": "character-i",
+      "file": "Models/GLB format/character-i.glb",
+      "nodes": [
+        "leg-left",
+        "leg-right",
+        "torso",
+        "arm-left",
+        "arm-right",
+        "head"
+      ],
+      "vertices": 143,
+      "triangles": 72,
+      "extent_m": [
+        1.6,
+        2.7,
+        0.8
+      ],
+      "base_m": 0.0,
+      "top_m": 2.7,
+      "height_m": 2.7,
+      "pivot_offset_xz_m": [
+        -0.0,
+        0.0
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.6643,
+      "band_radius_m": 0.8544,
+      "band_centre_offset_m": 0.0,
+      "band_radius_about_centre_m": 0.8544,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.4472,
+        0.4472,
+        0.4472,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.5657,
+        0.5657,
+        0.5657
+      ],
+      "ground_radius_m": 0.8544
+    },
+    {
+      "asset": "kenney_blocky-characters",
+      "source": "kenney",
+      "model": "character-j",
+      "file": "Models/GLB format/character-j.glb",
+      "nodes": [
+        "leg-left",
+        "leg-right",
+        "torso",
+        "arm-left",
+        "arm-right",
+        "head"
+      ],
+      "vertices": 143,
+      "triangles": 72,
+      "extent_m": [
+        1.6,
+        2.7,
+        0.8
+      ],
+      "base_m": 0.0,
+      "top_m": 2.7,
+      "height_m": 2.7,
+      "pivot_offset_xz_m": [
+        -0.0,
+        0.0
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.6643,
+      "band_radius_m": 0.8544,
+      "band_centre_offset_m": 0.0,
+      "band_radius_about_centre_m": 0.8544,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.4472,
+        0.4472,
+        0.4472,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.5657,
+        0.5657,
+        0.5657
+      ],
+      "ground_radius_m": 0.8544
+    },
+    {
+      "asset": "kenney_blocky-characters",
+      "source": "kenney",
+      "model": "character-p",
+      "file": "Models/GLB format/character-p.glb",
+      "nodes": [
+        "leg-left",
+        "leg-right",
+        "torso",
+        "arm-left",
+        "arm-right",
+        "head"
+      ],
+      "vertices": 143,
+      "triangles": 72,
+      "extent_m": [
+        1.6,
+        2.7,
+        0.8
+      ],
+      "base_m": 0.0,
+      "top_m": 2.7,
+      "height_m": 2.7,
+      "pivot_offset_xz_m": [
+        -0.0,
+        0.0
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.6643,
+      "band_radius_m": 0.8544,
+      "band_centre_offset_m": 0.0,
+      "band_radius_about_centre_m": 0.8544,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.4472,
+        0.4472,
+        0.4472,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.5657,
+        0.5657,
+        0.5657
+      ],
+      "ground_radius_m": 0.8544
+    },
+    {
+      "asset": "kenney_blocky-characters",
+      "source": "kenney",
+      "model": "character-q",
+      "file": "Models/GLB format/character-q.glb",
+      "nodes": [
+        "leg-left",
+        "leg-right",
+        "torso",
+        "arm-left",
+        "arm-right",
+        "head"
+      ],
+      "vertices": 143,
+      "triangles": 72,
+      "extent_m": [
+        1.6,
+        2.7,
+        0.8
+      ],
+      "base_m": 0.0,
+      "top_m": 2.7,
+      "height_m": 2.7,
+      "pivot_offset_xz_m": [
+        0.0,
+        0.0
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.6643,
+      "band_radius_m": 0.8544,
+      "band_centre_offset_m": 0.0,
+      "band_radius_about_centre_m": 0.8544,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.4472,
+        0.4472,
+        0.4472,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.5657,
+        0.5657,
+        0.5657
+      ],
+      "ground_radius_m": 0.8544
+    },
+    {
+      "asset": "kenney_car-kit",
+      "source": "kenney",
+      "model": "sedan",
+      "file": "Models/GLB format/sedan.glb",
+      "nodes": [
+        "wheel-front-right",
+        "body",
+        "wheel-back-left",
+        "wheel-back-right",
+        "wheel-front-left"
+      ],
+      "vertices": 3184,
+      "triangles": 2032,
+      "extent_m": [
+        1.5,
+        1.3,
+        2.55
+      ],
+      "base_m": -0.0,
+      "top_m": 1.3,
+      "height_m": 1.3,
+      "pivot_offset_xz_m": [
+        0.0,
+        -0.025
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0107,
+      "band_radius_m": 0.842,
+      "band_centre_offset_m": 0.14,
+      "band_radius_about_centre_m": 0.7355,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        1.3695,
+        1.3695,
+        1.3657,
+        1.1413,
+        0.842,
+        0.7325
+      ],
+      "ground_radius_m": 1.3695
+    },
+    {
+      "asset": "kenney_car-kit",
+      "source": "kenney",
+      "model": "hatchback-sports",
+      "file": "Models/GLB format/hatchback-sports.glb",
+      "nodes": [
+        "wheel-front-right",
+        "wheel-front-left",
+        "wheel-back-right",
+        "wheel-back-left",
+        "body"
+      ],
+      "vertices": 3709,
+      "triangles": 2088,
+      "extent_m": [
+        1.3,
+        1.1,
+        2.85
+      ],
+      "base_m": -0.0,
+      "top_m": 1.1,
+      "height_m": 1.1,
+      "pivot_offset_xz_m": [
+        0.0,
+        -0.025
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0086,
+      "band_radius_m": 1.0505,
+      "band_centre_offset_m": 0.3132,
+      "band_radius_about_centre_m": 0.7857,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        1.4593,
+        1.5047,
+        1.4116,
+        1.4116,
+        1.0505
+      ],
+      "ground_radius_m": 1.5047
+    },
+    {
+      "asset": "kenney_car-kit",
+      "source": "kenney",
+      "model": "van",
+      "file": "Models/GLB format/van.glb",
+      "nodes": [
+        "wheel-front-right",
+        "wheel-front-left",
+        "wheel-back-right",
+        "wheel-back-left",
+        "body"
+      ],
+      "vertices": 3250,
+      "triangles": 2082,
+      "extent_m": [
+        1.5,
+        1.35,
+        2.75
+      ],
+      "base_m": -0.0,
+      "top_m": 1.35,
+      "height_m": 1.35,
+      "pivot_offset_xz_m": [
+        0.0,
+        -0.025
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.016,
+      "band_radius_m": 1.3686,
+      "band_centre_offset_m": 0.25,
+      "band_radius_about_centre_m": 1.1404,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        1.4593,
+        1.4593,
+        1.4577,
+        1.4577,
+        1.3686,
+        1.2572
+      ],
+      "ground_radius_m": 1.4593
+    },
+    {
+      "asset": "kenney_car-kit",
+      "source": "kenney",
+      "model": "taxi",
+      "file": "Models/GLB format/taxi.glb",
+      "nodes": [
+        "body",
+        "wheel-front-right",
+        "wheel-front-left",
+        "wheel-back-left",
+        "wheel-back-right"
+      ],
+      "vertices": 3250,
+      "triangles": 2072,
+      "extent_m": [
+        1.5,
+        1.5,
+        2.75
+      ],
+      "base_m": -0.0,
+      "top_m": 1.5,
+      "height_m": 1.5,
+      "pivot_offset_xz_m": [
+        0.0,
+        -0.025
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0197,
+      "band_radius_m": 0.9236,
+      "band_centre_offset_m": 0.14,
+      "band_radius_about_centre_m": 0.8106,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        1.4593,
+        1.4593,
+        1.4577,
+        1.3657,
+        0.9236,
+        0.8127
+      ],
+      "ground_radius_m": 1.4593
+    },
+    {
+      "asset": "kenney_car-kit",
+      "source": "kenney",
+      "model": "police",
+      "file": "Models/GLB format/police.glb",
+      "nodes": [
+        "wheel-back-left",
+        "wheel-front-left",
+        "wheel-back-right",
+        "body",
+        "grill",
+        "wheel-front-right"
+      ],
+      "vertices": 3606,
+      "triangles": 2304,
+      "extent_m": [
+        1.5,
+        1.3,
+        3.1
+      ],
+      "base_m": -0.0,
+      "top_m": 1.3,
+      "height_m": 1.3,
+      "pivot_offset_xz_m": [
+        0.0,
+        -0.0
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0255,
+      "band_radius_m": 0.9434,
+      "band_centre_offset_m": 0.15,
+      "band_radius_about_centre_m": 0.8201,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        1.5598,
+        1.5977,
+        1.5977,
+        1.5977,
+        0.9434,
+        0.3812
+      ],
+      "ground_radius_m": 1.5977
+    },
+    {
+      "asset": "kenney_car-kit",
+      "source": "kenney",
+      "model": "ambulance",
+      "file": "Models/GLB format/ambulance.glb",
+      "nodes": [
+        "body",
+        "wheel-front-right",
+        "wheel-front-left",
+        "wheel-back-right",
+        "wheel-back-left",
+        "door-right",
+        "door-left"
+      ],
+      "vertices": 4328,
+      "triangles": 2804,
+      "extent_m": [
+        1.5,
+        1.8,
+        3.25
+      ],
+      "base_m": -0.0,
+      "top_m": 1.8,
+      "height_m": 1.8,
+      "pivot_offset_xz_m": [
+        0.0,
+        -0.025
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0832,
+      "band_radius_m": 1.727,
+      "band_centre_offset_m": 0.29,
+      "band_radius_about_centre_m": 1.4624,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        1.658,
+        1.727,
+        1.727,
+        1.727,
+        1.727,
+        1.727,
+        1.727,
+        1.3034
+      ],
+      "ground_radius_m": 1.727
+    },
+    {
+      "asset": "kenney_car-kit",
+      "source": "kenney",
+      "model": "firetruck",
+      "file": "Models/GLB format/firetruck.glb",
+      "nodes": [
+        "body",
+        "grill",
+        "wheel-front-right",
+        "wheel-front-left",
+        "wheel-back-right",
+        "wheel-back-left"
+      ],
+      "vertices": 4338,
+      "triangles": 2767,
+      "extent_m": [
+        1.5,
+        1.7,
+        3.4
+      ],
+      "base_m": -0.0,
+      "top_m": 1.7,
+      "height_m": 1.7,
+      "pivot_offset_xz_m": [
+        -0.0,
+        -0.0
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.1033,
+      "band_radius_m": 1.7923,
+      "band_centre_offset_m": 0.1237,
+      "band_radius_about_centre_m": 1.6792,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        1.7077,
+        1.7923,
+        1.7923,
+        1.7923,
+        1.7923,
+        1.7923,
+        1.7923
+      ],
+      "ground_radius_m": 1.7923
+    },
+    {
+      "asset": "kenney_car-kit",
+      "source": "kenney",
+      "model": "garbage-truck",
+      "file": "Models/GLB format/garbage-truck.glb",
+      "nodes": [
+        "arm",
+        "wheel-front-left",
+        "wheel-front-right",
+        "wheel-back-right",
+        "wheel-back-left",
+        "body",
+        "trash"
+      ],
+      "vertices": 5003,
+      "triangles": 3124,
+      "extent_m": [
+        1.6,
+        1.6,
+        3.45
+      ],
+      "base_m": -0.0,
+      "top_m": 1.6,
+      "height_m": 1.6,
+      "pivot_offset_xz_m": [
+        0.0,
+        0.025
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.1397,
+      "band_radius_m": 1.6919,
+      "band_centre_offset_m": 0.0704,
+      "band_radius_about_centre_m": 1.7262,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        1.7868,
+        1.7868,
+        1.7007,
+        1.7926,
+        1.6919,
+        1.3567,
+        1.1102
+      ],
+      "ground_radius_m": 1.7926
+    },
+    {
+      "asset": "kenney_car-kit",
+      "source": "kenney",
+      "model": "suv-luxury",
+      "file": "Models/GLB format/suv-luxury.glb",
+      "nodes": [
+        "wheel-back-right",
+        "wheel-front-right",
+        "wheel-front-left",
+        "body",
+        "wheel-back-left"
+      ],
+      "vertices": 3254,
+      "triangles": 2086,
+      "extent_m": [
+        1.5,
+        1.3,
+        2.85
+      ],
+      "base_m": -0.0,
+      "top_m": 1.3,
+      "height_m": 1.3,
+      "pivot_offset_xz_m": [
+        0.0,
+        0.025
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0197,
+      "band_radius_m": 1.4151,
+      "band_centre_offset_m": 0.37,
+      "band_radius_about_centre_m": 1.0782,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        1.5047,
+        1.5047,
+        1.5042,
+        1.5042,
+        1.4151,
+        1.3038
+      ],
+      "ground_radius_m": 1.5047
+    },
+    {
+      "asset": "kenney_car-kit",
+      "source": "kenney",
+      "model": "truck-flat",
+      "file": "Models/GLB format/truck-flat.glb",
+      "nodes": [
+        "wheel-front-left",
+        "wheel-front-right",
+        "wheel-back-right",
+        "wheel-back-left",
+        "body"
+      ],
+      "vertices": 3868,
+      "triangles": 2488,
+      "extent_m": [
+        1.5,
+        1.3,
+        2.7451
+      ],
+      "base_m": -0.0,
+      "top_m": 1.3,
+      "height_m": 1.3,
+      "pivot_offset_xz_m": [
+        0.0,
+        -0.0
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0062,
+      "band_radius_m": 0.9593,
+      "band_centre_offset_m": 0.4426,
+      "band_radius_about_centre_m": 0.6301,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        1.4345,
+        1.4345,
+        1.4793,
+        1.4793,
+        0.9593,
+        0.766
+      ],
+      "ground_radius_m": 1.4793
+    },
+    {
+      "asset": "kenney_car-kit",
+      "source": "kenney",
+      "model": "tractor-shovel",
+      "file": "Models/GLB format/tractor-shovel.glb",
+      "nodes": [
+        "wheel-back-left",
+        "body",
+        "shovel",
+        "wheel-back-right",
+        "wheel-front-left",
+        "wheel-front-right"
+      ],
+      "vertices": 4130,
+      "triangles": 2646,
+      "extent_m": [
+        1.6606,
+        1.512,
+        2.4701
+      ],
+      "base_m": -0.0,
+      "top_m": 1.512,
+      "height_m": 1.512,
+      "pivot_offset_xz_m": [
+        0.0,
+        0.0
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0228,
+      "band_radius_m": 1.1132,
+      "band_centre_offset_m": 0.4056,
+      "band_radius_about_centre_m": 0.7678,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        1.398,
+        1.345,
+        1.4337,
+        1.364,
+        1.1132,
+        1.0749,
+        1.0749
+      ],
+      "ground_radius_m": 1.4337
+    },
+    {
+      "asset": "kenney_car-kit",
+      "source": "kenney",
+      "model": "cone",
+      "file": "Models/GLB format/cone.glb",
+      "nodes": [
+        "cone"
+      ],
+      "vertices": 288,
+      "triangles": 172,
+      "extent_m": [
+        0.4762,
+        0.5952,
+        0.4762
+      ],
+      "base_m": 0.0,
+      "top_m": 0.5952,
+      "height_m": 0.5952,
+      "pivot_offset_xz_m": [
+        0.0,
+        0.0
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.3034,
+        0.1505,
+        0.0891
+      ],
+      "ground_radius_m": 0.3034
+    },
+    {
+      "asset": "kenney_cube-pets",
+      "source": "kenney",
+      "model": "animal-tiger",
+      "file": "Models/GLB format/animal-tiger.glb",
+      "nodes": [
+        "leg-front-right",
+        "body",
+        "tail",
+        "leg-back-left",
+        "leg-back-right",
+        "leg-front-left"
+      ],
+      "vertices": 1577,
+      "triangles": 951,
+      "extent_m": [
+        1.35,
+        1.71,
+        1.8993
+      ],
+      "base_m": -0.0,
+      "top_m": 1.71,
+      "height_m": 1.71,
+      "pivot_offset_xz_m": [
+        0.0,
+        -0.154
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.4477,
+      "band_radius_m": 1.1047,
+      "band_centre_offset_m": 0.2343,
+      "band_radius_about_centre_m": 0.9777,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.5878,
+        0.7252,
+        0.7581,
+        0.8223,
+        1.0423,
+        1.1047,
+        1.0968
+      ],
+      "ground_radius_m": 1.1047
+    },
+    {
+      "asset": "kenney_cube-pets",
+      "source": "kenney",
+      "model": "animal-elephant",
+      "file": "Models/GLB format/animal-elephant.glb",
+      "nodes": [
+        "body",
+        "tail",
+        "leg-back-left",
+        "leg-front-left",
+        "leg-back-right",
+        "leg-front-right"
+      ],
+      "vertices": 1130,
+      "triangles": 676,
+      "extent_m": [
+        1.8779,
+        1.4312,
+        1.6752
+      ],
+      "base_m": -0.0,
+      "top_m": 1.4312,
+      "height_m": 1.4312,
+      "pivot_offset_xz_m": [
+        0.0,
+        0.2126
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.3097,
+      "band_radius_m": 0.9353,
+      "band_centre_offset_m": 0.0177,
+      "band_radius_about_centre_m": 0.932,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        1.0455,
+        1.0522,
+        1.0429,
+        0.9557,
+        0.9353,
+        0.7071
+      ],
+      "ground_radius_m": 1.0522
+    },
+    {
+      "asset": "kenney_factory-kit",
+      "source": "kenney",
+      "model": "crane",
+      "file": "Models/GLB format/crane.glb",
+      "nodes": [
+        "crane",
+        "arm"
+      ],
+      "vertices": 980,
+      "triangles": 564,
+      "extent_m": [
+        1.926,
+        3.5533,
+        3.6803
+      ],
+      "base_m": -0.0,
+      "top_m": 3.5533,
+      "height_m": 3.5533,
+      "pivot_offset_xz_m": [
+        0.0,
+        -1.15
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.3388,
+      "band_radius_m": 0.6924,
+      "band_centre_offset_m": 0.0,
+      "band_radius_about_centre_m": 0.6924,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.9711,
+        0.8663,
+        0.8663,
+        0.7873,
+        0.6924,
+        0.5977,
+        0.5033,
+        0.3838,
+        0.3148,
+        0.2353,
+        0.3,
+        0.3,
+        2.9922,
+        2.9922,
+        0.419
+      ],
+      "ground_radius_m": 2.9922
+    },
+    {
+      "asset": "kenney_mini-characters",
+      "source": "kenney",
+      "model": "character-female-b",
+      "file": "Models/GLB format/character-female-b.glb",
+      "nodes": [
+        "body-mesh",
+        "head-mesh"
+      ],
+      "vertices": 1322,
+      "triangles": 742,
+      "extent_m": [
+        0.7672,
+        0.7234,
+        0.4185
+      ],
+      "base_m": 0.0,
+      "top_m": 0.7234,
+      "height_m": 0.7234,
+      "pivot_offset_xz_m": [
+        0.0,
+        -0.0016
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.3845,
+        0.3845,
+        0.2824
+      ],
+      "ground_radius_m": 0.3845
+    },
+    {
+      "asset": "kenney_mini-characters",
+      "source": "kenney",
+      "model": "character-female-d",
+      "file": "Models/GLB format/character-female-d.glb",
+      "nodes": [
+        "body-mesh",
+        "head-mesh"
+      ],
+      "vertices": 1401,
+      "triangles": 797,
+      "extent_m": [
+        0.7672,
+        0.7755,
+        0.4995
+      ],
+      "base_m": 0.0,
+      "top_m": 0.7755,
+      "height_m": 0.7755,
+      "pivot_offset_xz_m": [
+        0.0,
+        -0.0421
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.3845,
+        0.3845,
+        0.2919,
+        0.2189
+      ],
+      "ground_radius_m": 0.3845
+    },
+    {
+      "asset": "korean_fire_extinguisher_01",
+      "source": "polyhaven",
+      "model": "korean_fire_extinguisher_01",
+      "file": "korean_fire_extinguisher_01_1k.gltf",
+      "nodes": [
+        "korean_fire_extinguisher_01"
+      ],
+      "vertices": 6875,
+      "triangles": 9913,
+      "extent_m": [
+        0.28,
+        0.6593,
+        0.3674
+      ],
+      "base_m": -0.0,
+      "top_m": 0.6593,
+      "height_m": 0.6593,
+      "pivot_offset_xz_m": [
+        0.0,
+        0.0605
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.2812,
+        0.1325,
+        0.1306
+      ],
+      "ground_radius_m": 0.2812
+    },
+    {
+      "asset": "metal_tool_chest",
+      "source": "polyhaven",
+      "model": "metal_tool_chest",
+      "file": "metal_tool_chest_1k.gltf",
+      "nodes": [
+        "metal_tool_chest_chest",
+        "metal_tool_chest_hinge_chest",
+        "metal_tool_chest_lid",
+        "metal_tool_chest_handle_left",
+        "metal_tool_chest_lock",
+        "metal_tool_chest_hinge_lid",
+        "metal_tool_chest_handle_right"
+      ],
+      "vertices": 11073,
+      "triangles": 13360,
+      "extent_m": [
+        0.6854,
+        0.6518,
+        0.4072
+      ],
+      "base_m": 0.0008,
+      "top_m": 0.6526,
+      "height_m": 0.6518,
+      "pivot_offset_xz_m": [
+        -0.0267,
+        0.0062
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.3991,
+        0.4078,
+        0.4078
+      ],
+      "ground_radius_m": 0.4078
+    },
+    {
+      "asset": "painted_wooden_bench",
+      "source": "polyhaven",
+      "model": "painted_wooden_bench",
+      "file": "painted_wooden_bench_1k.gltf",
+      "nodes": [
+        "painted_wooden_bench"
+      ],
+      "vertices": 677,
+      "triangles": 630,
+      "extent_m": [
+        1.1649,
+        0.8893,
+        0.4965
+      ],
+      "base_m": -0.0005,
+      "top_m": 0.8888,
+      "height_m": 0.8893,
+      "pivot_offset_xz_m": [
+        0.0064,
+        -0.0054
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.636,
+        0.6361,
+        0.641,
+        0.641
+      ],
+      "ground_radius_m": 0.641
+    },
+    {
+      "asset": "painted_wooden_cabinet",
+      "source": "polyhaven",
+      "model": "painted_wooden_cabinet",
+      "file": "painted_wooden_cabinet_1k.gltf",
+      "nodes": [
+        "painted_wooden_cabinet",
+        "painted_wooden_cabinet_door_02",
+        "painted_wooden_cabinet_door_01",
+        "painted_wooden_cabinet_drawer_02",
+        "painted_wooden_cabinet_drawer_01"
+      ],
+      "vertices": 2022,
+      "triangles": 2227,
+      "extent_m": [
+        1.1947,
+        1.1819,
+        0.6166
+      ],
+      "base_m": -0.0004,
+      "top_m": 1.1815,
+      "height_m": 1.1819,
+      "pivot_offset_xz_m": [
+        0.0026,
+        0.0259
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.2903,
+      "band_radius_m": 0.6623,
+      "band_centre_offset_m": 0.0261,
+      "band_radius_about_centre_m": 0.6722,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.6311,
+        0.6299,
+        0.6299,
+        0.6299,
+        0.6623
+      ],
+      "ground_radius_m": 0.6623
+    },
+    {
+      "asset": "plastic_monobloc_chair_01",
+      "source": "polyhaven",
+      "model": "plastic_monobloc_chair_01",
+      "file": "plastic_monobloc_chair_01_1k.gltf",
+      "nodes": [
+        "plastic_monobloc_chair_01"
+      ],
+      "vertices": 3271,
+      "triangles": 3356,
+      "extent_m": [
+        0.6419,
+        0.8798,
+        0.6276
+      ],
+      "base_m": -0.0,
+      "top_m": 0.8798,
+      "height_m": 0.8798,
+      "pivot_offset_xz_m": [
+        0.0,
+        -0.0222
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.4244,
+        0.3768,
+        0.3451,
+        0.3495
+      ],
+      "ground_radius_m": 0.4244
+    },
+    {
+      "asset": "portable_generator",
+      "source": "polyhaven",
+      "model": "portable_generator",
+      "file": "portable_generator_1k.gltf",
+      "nodes": [
+        "portable_generator",
+        "portable_generator_dial",
+        "portable_generator_switch",
+        "portable_generator_toggle"
+      ],
+      "vertices": 24408,
+      "triangles": 26419,
+      "extent_m": [
+        0.8183,
+        0.5769,
+        0.564
+      ],
+      "base_m": 0.0001,
+      "top_m": 0.577,
+      "height_m": 0.5769,
+      "pivot_offset_xz_m": [
+        -0.0053,
+        0.0
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.4854,
+        0.484,
+        0.4494
+      ],
+      "ground_radius_m": 0.4854
+    },
+    {
+      "asset": "round_wooden_table_01",
+      "source": "polyhaven",
+      "model": "round_wooden_table_01",
+      "file": "round_wooden_table_01_1k.gltf",
+      "nodes": [
+        "round_wooden_table_01",
+        "round_wooden_table_01_bolts"
+      ],
+      "vertices": 5964,
+      "triangles": 8640,
+      "extent_m": [
+        1.3993,
+        1.005,
+        1.3993
+      ],
+      "base_m": -0.0013,
+      "top_m": 1.0037,
+      "height_m": 1.005,
+      "pivot_offset_xz_m": [
+        0.0,
+        0.0
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0418,
+      "band_radius_m": 0.6919,
+      "band_centre_offset_m": 0.0,
+      "band_radius_about_centre_m": 0.6919,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.6571,
+        0.3155,
+        0.0869,
+        0.6997,
+        0.6919
+      ],
+      "ground_radius_m": 0.6997
+    },
+    {
+      "asset": "sofa_02",
+      "source": "polyhaven",
+      "model": "sofa_02",
+      "file": "sofa_02_1k.gltf",
+      "nodes": [
+        "sofa_02_Base",
+        "sofa_02_Seat"
+      ],
+      "vertices": 1828,
+      "triangles": 2728,
+      "extent_m": [
+        1.8072,
+        0.7095,
+        0.8178
+      ],
+      "base_m": 0.0002,
+      "top_m": 0.7097,
+      "height_m": 0.7095,
+      "pivot_offset_xz_m": [
+        0.0003,
+        -0.0688
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.8688,
+        0.8521,
+        0.9204
+      ],
+      "ground_radius_m": 0.9204
+    },
+    {
+      "asset": "vintage_grandfather_clock_01",
+      "source": "polyhaven",
+      "model": "vintage_grandfather_clock_01",
+      "file": "vintage_grandfather_clock_01_1k.gltf",
+      "nodes": [
+        "vintage_grandfather_clock_01_body",
+        "vintage_grandfather_clock_01_minute_hand",
+        "vintage_grandfather_clock_01_houd_hand"
+      ],
+      "vertices": 8925,
+      "triangles": 8582,
+      "extent_m": [
+        0.6256,
+        2.1906,
+        0.4266
+      ],
+      "base_m": -0.0001,
+      "top_m": 2.1905,
+      "height_m": 2.1906,
+      "pivot_offset_xz_m": [
+        0.0628,
+        -0.0377
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.7013,
+      "band_radius_m": 0.4517,
+      "band_centre_offset_m": 0.0805,
+      "band_radius_about_centre_m": 0.3716,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.4386,
+        0.4151,
+        0.3727,
+        0.3727,
+        0.3727,
+        0.4154,
+        0.4154,
+        0.4181,
+        0.4517
+      ],
+      "ground_radius_m": 0.4517
+    },
+    {
+      "asset": "vintage_suitcase",
+      "source": "polyhaven",
+      "model": "vintage_suitcase",
+      "file": "vintage_suitcase_1k.gltf",
+      "nodes": [
+        "vintage_suitcase_01_bottom",
+        "vintage_suitcase_01_clasp",
+        "vintage_suitcase_01_handle",
+        "vintage_suitcase_01_top",
+        "vintage_suitcase_02_bottom",
+        "vintage_suitcase_02_clasp",
+        "vintage_suitcase_02_handle",
+        "vintage_suitcase_02_top"
+      ],
+      "vertices": 13076,
+      "triangles": 16474,
+      "extent_m": [
+        1.6082,
+        0.5679,
+        0.2392
+      ],
+      "base_m": -0.0001,
+      "top_m": 0.5678,
+      "height_m": 0.5679,
+      "pivot_offset_xz_m": [
+        0.0007,
+        -0.0092
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.8094,
+        0.8092,
+        0.8081
+      ],
+      "ground_radius_m": 0.8094
+    },
+    {
+      "asset": "wine_barrel_01",
+      "source": "polyhaven",
+      "model": "wine_barrel_01",
+      "file": "wine_barrel_01_1k.gltf",
+      "nodes": [
+        "wine_barrel_01_Lid",
+        "wine_barrel_01_bung",
+        "wine_barrel_01",
+        "wine_barrel_01_base"
+      ],
+      "vertices": 10031,
+      "triangles": 10820,
+      "extent_m": [
+        0.7419,
+        0.8713,
+        0.756
+      ],
+      "base_m": 0.0007,
+      "top_m": 0.8719,
+      "height_m": 0.8713,
+      "pivot_offset_xz_m": [
+        0.0,
+        0.0071
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.3532,
+        0.3856,
+        0.3712,
+        0.3295
+      ],
+      "ground_radius_m": 0.3856
+    },
+    {
+      "asset": "wooden_ladder_02",
+      "source": "polyhaven",
+      "model": "wooden_ladder_02",
+      "file": "wooden_ladder_02_1k.gltf",
+      "nodes": [
+        "wooden_ladder_02"
+      ],
+      "vertices": 4348,
+      "triangles": 6126,
+      "extent_m": [
+        0.9895,
+        1.7222,
+        0.6181
+      ],
+      "base_m": -0.0016,
+      "top_m": 1.7206,
+      "height_m": 1.7222,
+      "pivot_offset_xz_m": [
+        -0.0423,
+        -0.003
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.5497,
+      "band_radius_m": 0.3711,
+      "band_centre_offset_m": 0.0034,
+      "band_radius_about_centre_m": 0.3678,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.6043,
+        0.5584,
+        0.4882,
+        0.4096,
+        0.3559,
+        0.3172,
+        0.3711
+      ],
+      "ground_radius_m": 0.6043
+    },
+    {
+      "asset": "wooden_picnic_table",
+      "source": "polyhaven",
+      "model": "wooden_picnic_table",
+      "file": "wooden_picnic_table_1k.gltf",
+      "nodes": [
+        "wooden_picnic_table"
+      ],
+      "vertices": 6808,
+      "triangles": 10210,
+      "extent_m": [
+        2.241,
+        0.746,
+        3.0223
+      ],
+      "base_m": -0.0003,
+      "top_m": 0.7457,
+      "height_m": 0.746,
+      "pivot_offset_xz_m": [
+        -0.0008,
+        0.0096
+      ],
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_vertex_share": 0.0,
+      "band_radius_m": null,
+      "band_centre_offset_m": null,
+      "band_radius_about_centre_m": null,
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        1.7857,
+        1.8855,
+        1.5857
+      ],
+      "ground_radius_m": 1.8855
     }
   ]
 }

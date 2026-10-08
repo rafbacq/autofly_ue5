@@ -11,6 +11,14 @@ The list is curated here, not configured: which asset stands in for which of spe
 with its reasons (sizes from the API on 2026-10-07; a tree or rock must have mass in the 1-3 m flight band, so rocks
 under 0.3 m and 20 m firs are left out). Vehicles and buildings are not here: the survey found no CC0 source that
 is not low-poly cartoon, so they come from Fab under its Standard License, through the user's account (decision U1).
+
+The target pool (plan 5, C5; `assets/targets.json`) adds Poly Haven furniture and equipment, photoreal, at 1k: a target
+fills at most ~100 of the camera's 256 px at the 5 m success radius, and a 1k texture on a 1-2 m object gives 500-1000
+texels per metre, while every imported texture stays resident (never streamed). Vehicles, people and the paper's
+unseen animals and crane have no photoreal CC0 source, so Kenney's low-poly kits (CC0, a zip per kit linked from its
+asset page, GLB models) stand in for them as placeholders until a Fab session with the user (survey 2026-10-08).
+Quaternius (also CC0) was surveyed too: its packs are Google Drive folders, not direct downloads, and its vehicles and
+posed humans come as FBX/OBJ/Blend only, so it is not used.
 """
 
 from __future__ import annotations
@@ -25,6 +33,7 @@ if str(_ROOT) not in sys.path:
 import argparse  # noqa: E402
 import hashlib  # noqa: E402
 import json  # noqa: E402
+import re  # noqa: E402
 import time  # noqa: E402
 import urllib.request  # noqa: E402
 import zipfile  # noqa: E402
@@ -79,15 +88,87 @@ ASSETS: list[dict] = [
      "why": "old cobbles: the coloured poles' paving"},
     {"id": "Ground037", "source": "ambientcg", "kind": "material", "resolution": "2K-JPG", "use": ["s11"],
      "why": "damp earth: a light ground for the city blocks"},
+    # Target pool (assets/targets.json; spec §6.4, Fig. 9 and 3c). Poly Haven dimensions (x, y, z; z up) and the 1k glTF's
+    # size from its API on 2026-10-08. Furniture: the paper's sofas and chairs, then tables, a bench, cabinets.
+    {"id": "Sofa_01", "source": "polyhaven", "kind": "model", "resolution": "1k", "use": ["targets"],
+     "why": "beige sofa, 1.57 x 0.66 x 0.80 m, 0.5 MB"},
+    {"id": "sofa_02", "source": "polyhaven", "kind": "model", "resolution": "1k", "use": ["targets"],
+     "why": "black leather sofa, 1.81 x 0.82 x 0.71 m, 0.4 MB"},
+    {"id": "ArmChair_01", "source": "polyhaven", "kind": "model", "resolution": "1k", "use": ["targets"],
+     "why": "grey upholstered armchair, 0.85 x 0.77 x 1.07 m, 0.8 MB"},
+    {"id": "GreenChair_01", "source": "polyhaven", "kind": "model", "resolution": "1k", "use": ["targets"],
+     "why": "green upholstered armchair, 0.67 x 0.66 x 1.06 m, 0.6 MB"},
+    {"id": "plastic_monobloc_chair_01", "source": "polyhaven", "kind": "model", "resolution": "1k", "use": ["targets"],
+     "why": "white plastic garden chair, 0.64 x 0.63 x 0.88 m, 2.0 MB"},
+    {"id": "SchoolChair_01", "source": "polyhaven", "kind": "model", "resolution": "1k", "use": ["targets"],
+     "why": "blue school chair, 0.57 x 0.68 x 1.01 m, 0.5 MB"},
+    {"id": "painted_wooden_bench", "source": "polyhaven", "kind": "model", "resolution": "1k", "use": ["targets"],
+     "why": "red painted wooden bench, 1.16 x 0.50 x 0.89 m, 2.0 MB"},
+    {"id": "round_wooden_table_01", "source": "polyhaven", "kind": "model", "resolution": "1k", "use": ["targets"],
+     "why": "round wooden table, 1.40 x 1.40 x 1.01 m, 0.6 MB"},
+    {"id": "painted_wooden_cabinet", "source": "polyhaven", "kind": "model", "resolution": "1k", "use": ["targets"],
+     "why": "white painted cabinet, 1.19 x 0.62 x 1.18 m, 1.9 MB"},
+    {"id": "vintage_grandfather_clock_01", "source": "polyhaven", "kind": "model", "resolution": "1k", "use": ["targets"],
+     "why": "grandfather clock, 1.00 x 0.80 x 2.19 m, 2.4 MB: an unseen furniture target (no CC0 playground slide exists)"},
+    {"id": "wooden_picnic_table", "source": "polyhaven", "kind": "model", "resolution": "1k", "use": ["targets"],
+     "why": "wooden picnic table, 2.24 x 3.02 x 0.75 m, 4.3 MB: an unseen furniture target"},
+    # Equipment: the paper's barrels, suitcases, TV, ladder; things a yard or a street holds.
+    {"id": "Barrel_01", "source": "polyhaven", "kind": "model", "resolution": "1k", "use": ["targets"],
+     "why": "red oil drum, 0.56 x 0.56 x 0.88 m, 0.7 MB"},
+    {"id": "Barrel_02", "source": "polyhaven", "kind": "model", "resolution": "1k", "use": ["targets"],
+     "why": "blue plastic drum, 0.49 x 0.48 x 0.88 m, 0.4 MB"},
+    {"id": "wine_barrel_01", "source": "polyhaven", "kind": "model", "resolution": "1k", "use": ["targets"],
+     "why": "wooden barrel, 0.74 x 0.76 x 0.87 m, 0.9 MB"},
+    {"id": "vintage_suitcase", "source": "polyhaven", "kind": "model", "resolution": "1k", "use": ["targets"],
+     "why": "green leather suitcase, 1.61 x 0.24 x 0.57 m for the set of variants, 4.3 MB"},
+    {"id": "Television_01", "source": "polyhaven", "kind": "model", "resolution": "1k", "use": ["targets"],
+     "why": "old CRT television, 0.60 x 0.47 x 0.46 m, 0.5 MB"},
+    {"id": "korean_fire_extinguisher_01", "source": "polyhaven", "kind": "model", "resolution": "1k", "use": ["targets"],
+     "why": "red fire extinguisher on its stand, 0.28 x 0.37 x 0.66 m, 1.6 MB"},
+    {"id": "portable_generator", "source": "polyhaven", "kind": "model", "resolution": "1k", "use": ["targets"],
+     "why": "yellow portable generator, 0.82 x 0.56 x 0.58 m, 3.4 MB"},
+    {"id": "metal_tool_chest", "source": "polyhaven", "kind": "model", "resolution": "1k", "use": ["targets"],
+     "why": "red tool chest, 0.69 x 0.41 x 0.65 m, 2.4 MB"},
+    {"id": "WetFloorSign_01", "source": "polyhaven", "kind": "model", "resolution": "1k", "use": ["targets"],
+     "why": "yellow wet floor sign, 0.30 x 0.36 x 0.63 m, 0.3 MB"},
+    {"id": "wooden_ladder_02", "source": "polyhaven", "kind": "model", "resolution": "1k", "use": ["targets"],
+     "why": "wooden step ladder, 0.99 x 0.62 x 1.72 m, 2.3 MB: the paper's unseen ladder"},
+    # Vehicle and other: the only photoreal CC0 car (under a cover), and a statue for the 5 % "others" (ocean_buoy, the
+    # first choice, hangs 0.81 m of ballast below its pivot: spawned on its pivot it would stand half buried).
+    {"id": "covered_car", "source": "polyhaven", "kind": "model", "resolution": "1k", "use": ["targets"],
+     "why": "car under a dark fabric cover, 1.79 x 4.38 x 1.41 m, 2.3 MB: Poly Haven's only car, scaled to 4 m long"},
+    {"id": "bronze_whale_statue", "source": "polyhaven", "kind": "model", "resolution": "1k", "use": ["targets"],
+     "why": "bronze whale statue on a plinth, 0.93 x 1.37 x 1.07 m, 2.2 MB"},
+    # Low-poly placeholders (Kenney, CC0): vehicles, people, the unseen tiger, elephant, crane and traffic cone. Sizes in
+    # Kenney units are scaled to real ones in targets.json; a Fab session with the user may replace them.
+    {"id": "kenney_car-kit", "source": "kenney", "kind": "model_pack", "kit": "car-kit", "resolution": "GLB", "use": ["targets"],
+     "models": ["sedan", "hatchback-sports", "van", "taxi", "police", "ambulance", "firetruck", "garbage-truck", "suv-luxury",
+                "truck-flat", "tractor-shovel", "cone"],
+     "why": "Car Kit, 4.8 MB: ten road vehicles in one style, a front loader and a traffic cone (both unseen)"},
+    {"id": "kenney_factory-kit", "source": "kenney", "kind": "model_pack", "kit": "factory-kit", "resolution": "GLB", "use": ["targets"],
+     "models": ["crane"], "why": "Factory Kit, 4.5 MB: a jib crane, the paper's unseen crane (the only CC0 crane found)"},
+    {"id": "kenney_blocky-characters", "source": "kenney", "kind": "model_pack", "kit": "blocky-characters", "resolution": "GLB",
+     "use": ["targets"], "models": ["character-a", "character-b", "character-c", "character-e", "character-i", "character-j",
+                                    "character-p", "character-q"],
+     "why": "Blocky Characters, 2.1 MB: adult-proportioned people in distinct clothes (no robots or zombies)"},
+    {"id": "kenney_mini-characters", "source": "kenney", "kind": "model_pack", "kit": "mini-characters", "resolution": "GLB",
+     "use": ["targets"], "models": ["character-female-b", "character-female-d"],
+     "why": "Mini Characters, 2.4 MB: two people in a second style, one of them the unseen person"},
+    {"id": "kenney_cube-pets", "source": "kenney", "kind": "model_pack", "kit": "cube-pets", "resolution": "GLB", "use": ["targets"],
+     "models": ["animal-tiger", "animal-elephant"], "why": "Cube Pets, 2.8 MB: the paper's unseen tiger and elephant"},
 ]
 
 
 class Web:
-    """The network, as the script uses it; tests pass a fake with the same two methods."""
+    """The network, as the script uses it; tests pass a fake with the same three methods."""
 
     def json(self, url: str) -> dict:
         with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": USER_AGENT}), timeout=60) as r:
             return json.loads(r.read())
+
+    def text(self, url: str) -> str:
+        with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": USER_AGENT}), timeout=60) as r:
+            return r.read().decode("utf-8", "replace")
 
     def download(self, url: str, dest: Path) -> None:
         dest.parent.mkdir(parents=True, exist_ok=True)
@@ -171,6 +252,60 @@ def _ambientcg(entry: dict, downloads: Path, web, previous: dict | None, log) ->
                        "unpacked": sorted(members)}]}
 
 
+KENNEY_LICENCE_MARK = "Creative Commons Zero, CC0"
+
+
+def _safe_members(zip_path: Path) -> list[str]:
+    """The zip's file members, refusing any that would land outside the folder it is unpacked into."""
+    with zipfile.ZipFile(zip_path) as z:
+        members = [m for m in z.namelist() if not m.endswith("/")]
+    for m in members:
+        parts = Path(m).parts
+        if m.startswith(("/", "\\")) or ".." in parts or (parts and ":" in parts[0]):
+            raise ValueError(f"{zip_path}: member {m!r} would unpack outside its folder; refused")
+    return members
+
+
+def _kenney(entry: dict, downloads: Path, web, previous: dict | None, log) -> dict:
+    """A Kenney kit: the zip linked from its asset page (the link carries a hash that changes with each kit version, so
+    it is read from the page, not pinned), unpacked beside itself. Its own License.txt must say CC0, and every model the
+    entry names must be in it as `Models/GLB format/<name>.glb`; each is recorded with its sha256."""
+    page = f"https://kenney.nl/assets/{entry['kit']}"
+    root = downloads / "kenney" / entry["id"]
+    prev_zip = ((previous or {}).get("files") or [None])[0]
+    if prev_zip and (root / prev_zip["path"]).is_file() and _sha256(root / prev_zip["path"]) == prev_zip["sha256"]:
+        url, name, sha = prev_zip["url"], prev_zip["path"], prev_zip["sha256"]
+    else:
+        links = re.findall(r"https://kenney\.nl/media/pages/assets/" + re.escape(entry["kit"]) + r"/[^\"'\s<>]+?\.zip", web.text(page))
+        if not links:
+            raise ValueError(f"{page}: no download link for the kit's zip on its page; fetch it in a browser and record "
+                             f"the entry as status 'manual'")
+        url = links[0]
+        name = url.rsplit("/", 1)[-1]
+        sha = _fetch_file(web, url, root / name, md5=None, known_sha256=None, log=log)
+    members = _safe_members(root / name)
+    with zipfile.ZipFile(root / name) as z:
+        licence_files = [m for m in members if m.rsplit("/", 1)[-1].lower() == "license.txt"]
+        licence_text = z.read(licence_files[0]).decode("utf-8", "replace") if licence_files else ""
+        if KENNEY_LICENCE_MARK not in licence_text:
+            raise ValueError(f"{url}: the kit's License.txt does not say {KENNEY_LICENCE_MARK!r} (CC0); refused")
+        wanted = {m: f"Models/GLB format/{m}.glb" for m in entry["models"]}
+        missing = [m for m, path in wanted.items() if path not in members]
+        if missing:
+            raise ValueError(f"{url}: no model {missing} in the kit (expected Models/GLB format/<name>.glb)")
+        if not all((root / m).is_file() for m in members):
+            z.extractall(root)
+    version = next((line.strip() for line in licence_text.splitlines() if line.strip()), None)
+    return {**entry, "licence": LICENCE, "licence_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+            "licence_file": licence_files[0], "kit_version": version, "authors": {"Kenney": "All"}, "page": page,
+            "files": [{"path": name, "url": url, "size": (root / name).stat().st_size, "md5": None, "sha256": sha,
+                       "unpacked_files": len(members)}],
+            "models": [{"name": m, "path": path, "sha256": _sha256(root / path)} for m, path in wanted.items()]}
+
+
+FETCHERS = {"polyhaven": _polyhaven, "ambientcg": _ambientcg, "kenney": _kenney}
+
+
 def fetch_all(entries: list[dict], downloads: Path, record_path: Path, *, web=None, log=print) -> dict:
     """Fetch every entry, check it, and write the record (merging with an existing one, so a partial run resumes)."""
     web = web or Web()
@@ -181,8 +316,7 @@ def fetch_all(entries: list[dict], downloads: Path, record_path: Path, *, web=No
     results = []
     for entry in entries:
         log(f"{entry['source']}/{entry['id']} ({entry['kind']}, {entry['resolution']}) for {', '.join(entry['use'])}")
-        fetch = _polyhaven if entry["source"] == "polyhaven" else _ambientcg
-        results.append(fetch(entry, downloads, web, previous.get(entry["id"]), log))
+        results.append(FETCHERS[entry["source"]](entry, downloads, web, previous.get(entry["id"]), log))
     merged = {**previous, **{a["id"]: a for a in results}}
     record = {"format": "autofly_ue5_asset_sources/1", "fetched": time.strftime("%Y-%m-%d %H:%M:%S"),
               "downloads_dir": str(downloads), "assets": [merged[k] for k in sorted(merged)]}

@@ -53,6 +53,26 @@ def _report(ok=True):
                        "textures": {"color": "/Game/AutoFly/Materials/Ground/Textures/Paving1/Paving1_2K-JPG_Color"}}]}
 
 
+def test_the_target_pool_s_downloads_are_not_planned_as_obstacles_or_grounds(tmp_path):
+    """The target pool's models (plan 5, C5: `use` ["targets"]) and Kenney kits (`kind` "model_pack") sit in the same
+    sources record. This import makes nature obstacles (role "obstacle", a footprint circle) and ground materials, so it
+    leaves them to the targets' own import step instead of importing a sofa as an obstacle or a kit as a ground."""
+    from scripts.import_assets import plan_import
+
+    sources = _sources(tmp_path)
+    (tmp_path / "downloads" / "polyhaven" / "sofa_x").mkdir(parents=True)
+    (tmp_path / "downloads" / "polyhaven" / "sofa_x" / "sofa_x_1k.gltf").write_text("{}")
+    sources["assets"] += [
+        {"id": "sofa_x", "source": "polyhaven", "kind": "model", "resolution": "1k", "use": ["targets"], "licence": "CC0-1.0",
+         "files": [{"path": "sofa_x_1k.gltf", "sha256": "c"}]},
+        {"id": "kenney_demo-kit", "source": "kenney", "kind": "model_pack", "resolution": "GLB", "use": ["targets"],
+         "licence": "CC0-1.0", "files": [{"path": "kenney_demo-kit.zip", "sha256": "d"}], "models": [{"name": "car", "path": "x.glb"}]}]
+    measurements = _measurements()
+    measurements["meshes"].append({**measurements["meshes"][1], "asset": "sofa_x", "node": "sofa_x"})
+    spec = plan_import(sources, measurements)
+    assert [m["id"] for m in spec["models"]] == ["tree_x"] and [m["id"] for m in spec["materials"]] == ["Paving1"]
+
+
 def test_the_plan_names_every_node_and_the_four_texture_maps_with_the_tiling(tmp_path):
     from scripts.import_assets import plan_import
 

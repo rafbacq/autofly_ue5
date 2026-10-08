@@ -8,12 +8,16 @@ its origin (Poly Haven plants and rocks stand on y = 0); UE's importer turns tha
 build (C3) checks the overall bounds against these numbers.
 
 Some Poly Haven "assets" are sets of variants laid side by side as separate nodes (searsia_lucida_a..f): each node is
-measured on its own, in the mesh's own frame, because each becomes its own static mesh.
+measured on its own, in the mesh's own frame, because each becomes its own static mesh. A low-poly kit model (Kenney's
+cars, characters and animals, the target pool's stand-ins) is the opposite: one object built of parts (a body and its
+wheels, a torso and its limbs), so `combine` measures it whole, in the file's frame. Those kits ship binary glTF (GLB),
+which `load_meshes` reads too.
 """
 
 from __future__ import annotations
 
 import json
+import struct
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -82,15 +86,49 @@ def _node_matrix(node: dict) -> np.ndarray:
     return m
 
 
+GLB_MAGIC, GLB_JSON, GLB_BIN = b"glTF", b"JSON", b"BIN\0"
+
+
+def _read_glb(path: Path) -> tuple[dict, bytes | None]:
+    """The JSON chunk and the BIN chunk (None if absent) of a binary glTF: a 12-byte header (magic, version 2, length),
+    then chunks of (length, type, data) padded to 4 bytes (glTF 2.0 spec, section 4.4)."""
+    data = path.read_bytes()
+    if len(data) < 20 or data[:4] != GLB_MAGIC:
+        raise ValueError(f"{path}: not a GLB (binary glTF) file: magic {data[:4]!r}")
+    _magic, version, length = struct.unpack_from("<4sII", data, 0)
+    if version != 2 or length > len(data):
+        raise ValueError(f"{path}: GLB version {version}, length {length} of {len(data)} bytes: not a glTF 2.0 container")
+    gltf, binary, offset = None, None, 12
+    while offset + 8 <= length:
+        chunk_length, chunk_type = struct.unpack_from("<I4s", data, offset)
+        chunk = data[offset + 8: offset + 8 + chunk_length]
+        if chunk_type == GLB_JSON and gltf is None:
+            gltf = json.loads(chunk)
+        elif chunk_type == GLB_BIN and binary is None:
+            binary = chunk
+        offset += 8 + chunk_length
+    if gltf is None:
+        raise ValueError(f"{path}: GLB without a JSON chunk")
+    return gltf, binary
+
+
 def load_meshes(path: Path) -> list[MeshGeometry]:
-    """Every node that carries a mesh, in scene order, with its triangles and vertices (local and world)."""
+    """Every node that carries a mesh, in scene order, with its triangles and vertices (local and world). A `.glb` is
+    read from its own chunks: its first buffer, without a uri, is the BIN chunk."""
     path = Path(path)
-    gltf = json.loads(path.read_text())
+    binary = None
+    if path.suffix.lower() == ".glb":
+        gltf, binary = _read_glb(path)
+    else:
+        gltf = json.loads(path.read_text())
     buffers = []
-    for b in gltf.get("buffers", []):
+    for i, b in enumerate(gltf.get("buffers", [])):
         uri = b.get("uri")
+        if uri is None and i == 0 and binary is not None:
+            buffers.append(binary)
+            continue
         if uri is None or uri.startswith("data:"):
-            raise ValueError(f"{path}: only external .bin buffers are supported")
+            raise ValueError(f"{path}: only external .bin buffers (or a GLB's own BIN chunk) are supported")
         buffers.append((path.parent / uri).read_bytes())
     scene = gltf["scenes"][gltf.get("scene", 0)]
     out: list[MeshGeometry] = []
@@ -130,6 +168,23 @@ def load_meshes(path: Path) -> list[MeshGeometry]:
     for root in scene.get("nodes", []):
         visit(root, np.eye(4))
     return out
+
+
+def combine(meshes: list[MeshGeometry], *, name: str) -> MeshGeometry:
+    """All of a file's nodes as one mesh in the file's (scene) frame: each node's world-transformed vertices become the
+    combined mesh's own. What a target from a low-poly kit is -- one object of several parts -- and what its spawn scale
+    and height are taken from."""
+    if not meshes:
+        raise ValueError(f"{name}: no mesh to combine")
+    vertices, triangles, opaque, offset = [], [], [], 0
+    for m in meshes:
+        vertices.append(m.vertices)
+        triangles.append(m.triangles + offset)
+        opaque.append(m.triangle_opaque if m.triangle_opaque is not None else np.ones(len(m.triangles), bool))
+        offset += len(m.vertices)
+    v = np.concatenate(vertices)
+    return MeshGeometry(name=name, mesh_name=name, local_vertices=v, vertices=v.copy(), triangles=np.concatenate(triangles),
+                        transformed=False, triangle_opaque=np.concatenate(opaque))
 
 
 def _band_points(vertices: np.ndarray, triangles: np.ndarray, lo: float, hi: float) -> np.ndarray:

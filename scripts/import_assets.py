@@ -74,7 +74,11 @@ def plan_import(sources: dict, measurements: dict, *, assets_root: str = ASSETS_
     """A model whose measurements show alpha cards (leaves, twigs: `parts.cards`) is split into two glTF files
     (`gltf.split_by_opacity`, under `split_dir`): the editor imports the solid part under the registry key, with
     collision, and the cards part as `<key>_cards`, without. The drone's collision mesh is then wood and rock only,
-    while the depth camera sees both (2026-10-07: a crash into a canopy wedged the actor among the cards)."""
+    while the depth camera sees both (2026-10-07: a crash into a canopy wedged the actor among the cards).
+
+    Only scene assets are planned: obstacle models and ground materials. The target pool's downloads (plan 5, C5: `use`
+    only ["targets"], and Kenney kits, `kind` "model_pack") are imported by the targets' own step, since this one
+    writes obstacle entries (role "obstacle", a footprint circle) and would take a kit for a ground material."""
     downloads = Path(sources["downloads_dir"])
     split_dir = Path(split_dir) if split_dir is not None else WORK_DIR / "split"
     by_asset: dict[str, list[dict]] = {}
@@ -82,6 +86,8 @@ def plan_import(sources: dict, measurements: dict, *, assets_root: str = ASSETS_
         by_asset.setdefault(m["asset"], []).append(m)
     models, materials = [], []
     for asset in sources["assets"]:
+        if not set(asset.get("use", [])) - {"targets"}:
+            continue
         if asset["kind"] == "model":
             gltf = next(f["path"] for f in asset["files"] if f["path"].endswith(".gltf"))
             nodes = by_asset.get(asset["id"], [])
@@ -99,7 +105,7 @@ def plan_import(sources: dict, measurements: dict, *, assets_root: str = ASSETS_
                 parts = split_by_opacity(gltf_path, split_dir / asset["id"])
                 model["gltf"], model["gltf_cards"] = str(parts["solid"]), str(parts["cards"])
             models.append(model)
-        else:
+        elif asset["kind"] == "material":
             folder = downloads / asset["source"] / asset["id"]
             prefix = f"{asset['id']}_{asset['resolution']}"
             textures = {kind: str(folder / f"{prefix}{suffix}") for kind, suffix in TEXTURE_MAPS.items()}

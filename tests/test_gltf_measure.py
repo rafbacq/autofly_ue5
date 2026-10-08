@@ -244,3 +244,88 @@ def test_a_gltf_splits_into_its_solid_and_card_primitives(tmp_path):
     _write_gltf(rock_dir / "rock.gltf", [("rock", rock, None)])
     rock_parts = split_by_opacity(rock_dir / "rock.gltf", tmp_path / "split3")
     assert rock_parts["cards"] is None and len(load_meshes(rock_parts["solid"])) == 1
+
+
+def _to_glb(gltf_path, glb_path) -> None:
+    """Pack a .gltf + its one .bin into the binary container (GLB): a 12-byte header, a JSON chunk and a BIN chunk, each
+    padded to 4 bytes, the buffer carrying no uri. Kenney's kits ship their models this way (plan 5, C5)."""
+    import struct
+
+    gltf = json.loads(gltf_path.read_text())
+    blob = (gltf_path.parent / gltf["buffers"][0]["uri"]).read_bytes()
+    del gltf["buffers"][0]["uri"]
+    text = json.dumps(gltf).encode()
+    text += b" " * (-len(text) % 4)
+    blob += b"\0" * (-len(blob) % 4)
+    body = struct.pack("<I4s", len(text), b"JSON") + text + struct.pack("<I4s", len(blob), b"BIN\0") + blob
+    glb_path.write_bytes(struct.pack("<4sII", b"glTF", 2, 12 + len(body)) + body)
+
+
+def test_a_glb_is_read_like_the_gltf_it_packs(tmp_path):
+    from autofly_ue5.scenes.gltf import load_meshes
+
+    _write_gltf(tmp_path / "model.gltf", [("trunk", _column(0.2, 4.0), None),
+                                          ("moved", _column(0.5, 1.0), {"translation": [10.0, 0.0, 0.0]})],
+                alpha_modes={"moved": "BLEND"})
+    _to_glb(tmp_path / "model.gltf", tmp_path / "model.glb")
+    (tmp_path / "model.bin").unlink()  # the GLB carries its own buffer
+    meshes = load_meshes(tmp_path / "model.glb")
+    assert [m.name for m in meshes] == ["trunk", "moved"]
+    assert meshes[0].vertices[:, 1].max() == pytest.approx(4.0) and meshes[1].vertices[:, 0].max() == pytest.approx(10.5)
+    assert meshes[0].triangle_opaque.all() and not meshes[1].triangle_opaque.any()
+
+
+def test_a_file_that_is_not_a_glb_is_refused(tmp_path):
+    from autofly_ue5.scenes.gltf import load_meshes
+
+    (tmp_path / "fake.glb").write_bytes(b"PK\x03\x04 not a glTF container at all")
+    with pytest.raises(ValueError, match="GLB"):
+        load_meshes(tmp_path / "fake.glb")
+
+
+def test_a_whole_model_is_measured_in_the_scene_frame(tmp_path):
+    """A low-poly car is a body node plus wheel nodes placed by their translations: as a target it is one object, so its
+    size is that of every node together, in the file's own frame."""
+    from autofly_ue5.scenes.gltf import combine, load_meshes, measure
+
+    _write_gltf(tmp_path / "car.gltf", [("body", _column(1.0, 1.0, base=0.3), None),
+                                        ("wheel", _column(0.3, 0.2), {"translation": [0.0, 0.0, 1.5]})])
+    whole = combine(load_meshes(tmp_path / "car.gltf"), name="car")
+    m = measure(whole)
+    assert whole.name == "car" and len(whole.triangles) == 256 and whole.transformed is False
+    assert m["extent_m"] == pytest.approx([2.0, 1.3, 2.8], abs=1e-3), "z from the body's -1.0 to the wheel's 1.5 + 0.3"
+    assert m["height_m"] == pytest.approx(1.3) and m["base_m"] == pytest.approx(0.0)
+
+
+def test_the_measurement_script_measures_targets_whole_and_leaves_the_per_node_records_alone(tmp_path):
+    """A target is one object: a kit model (Kenney's GLBs: a body and its wheels, a torso and its limbs) or a Poly Haven
+    model for the target pool gets one record of all its nodes together, under `models`. `meshes` stays one record per
+    node of a Poly Haven model, exactly as before: `scripts/import_assets.py` imports every one of those as a static mesh,
+    so a whole-file record there would be imported as a node."""
+    from scripts.measure_assets import measure_sources
+
+    downloads = tmp_path / "downloads"
+    kit = downloads / "kenney" / "kenney_demo-kit" / "Models" / "GLB format"
+    kit.mkdir(parents=True)
+    _write_gltf(kit / "car.gltf", [("body", _column(1.0, 1.0, base=0.3), None),
+                                   ("wheel", _column(0.3, 0.2), {"translation": [0.0, 0.0, 1.5]})])
+    _to_glb(kit / "car.gltf", kit / "car.glb")
+    (downloads / "polyhaven" / "sofa").mkdir(parents=True)
+    _write_gltf(downloads / "polyhaven" / "sofa" / "sofa_1k.gltf", [("frame", _column(1.0, 0.8), None),
+                                                                     ("cushion", _column(0.5, 0.2, base=0.4), None)])
+    (downloads / "polyhaven" / "rock").mkdir(parents=True)
+    _write_gltf(downloads / "polyhaven" / "rock" / "rock_2k.gltf", [("rock_a", _column(0.6, 1.5), None)])
+    sources = {"format": "autofly_ue5_asset_sources/1", "downloads_dir": str(downloads), "assets": [
+        {"id": "kenney_demo-kit", "source": "kenney", "kind": "model_pack", "use": ["targets"],
+         "files": [{"path": "kenney_demo-kit.zip", "sha256": "z"}],
+         "models": [{"name": "car", "path": "Models/GLB format/car.glb", "sha256": "c"}]},
+        {"id": "sofa", "source": "polyhaven", "kind": "model", "use": ["targets"], "files": [{"path": "sofa_1k.gltf", "sha256": "s"}]},
+        {"id": "rock", "source": "polyhaven", "kind": "model", "use": ["s03"], "files": [{"path": "rock_2k.gltf", "sha256": "r"}]}]}
+    (tmp_path / "sources.json").write_text(json.dumps(sources))
+    report = measure_sources(tmp_path / "sources.json", band_m=(1.0, 3.0))
+    assert [(m["asset"], m["node"]) for m in report["meshes"]] == [("sofa", "frame"), ("sofa", "cushion"), ("rock", "rock_a")]
+    assert [(m["asset"], m["model"], m["file"], m["nodes"]) for m in report["models"]] == [
+        ("kenney_demo-kit", "car", "Models/GLB format/car.glb", ["body", "wheel"]), ("sofa", "sofa", "sofa_1k.gltf", ["frame", "cushion"])]
+    car, sofa = report["models"]
+    assert car["extent_m"] == pytest.approx([2.0, 1.3, 2.8], abs=1e-3) and car["height_m"] == pytest.approx(1.3)
+    assert sofa["height_m"] == pytest.approx(0.8) and sofa["extent_m"] == pytest.approx([2.0, 0.8, 2.0], abs=1e-3)

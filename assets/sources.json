@@ -1,8 +1,198 @@
 {
   "format": "autofly_ue5_asset_sources/1",
-  "fetched": "2026-10-07 17:28:36",
+  "fetched": "2026-10-08 03:14:48",
   "downloads_dir": "/home/nvidiasims/research_uav/autofly_ue5/downloads",
   "assets": [
+    {
+      "id": "ArmChair_01",
+      "source": "polyhaven",
+      "kind": "model",
+      "resolution": "1k",
+      "use": [
+        "targets"
+      ],
+      "why": "grey upholstered armchair, 0.85 x 0.77 x 1.07 m, 0.8 MB",
+      "licence": "CC0-1.0",
+      "licence_url": "https://polyhaven.com/license",
+      "name": "Arm Chair 01",
+      "authors": {
+        "Kirill Sannikov": "All"
+      },
+      "categories": [
+        "furniture",
+        "seating"
+      ],
+      "dimensions_m": [
+        0.848,
+        0.766,
+        1.065
+      ],
+      "page": "https://polyhaven.com/a/ArmChair_01",
+      "files": [
+        {
+          "path": "ArmChair_01_1k.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/ArmChair_01/ArmChair_01_1k.gltf",
+          "size": 2643,
+          "md5": "39d1e4b0ffdde688c98335c9621e3aae",
+          "sha256": "91e39d5b35f36c8074b7b6432f6fd77f5f1a257c4d6af3924c0b263eb674286b"
+        },
+        {
+          "path": "ArmChair_01.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/ArmChair_01/ArmChair_01.bin",
+          "size": 154012,
+          "md5": "fbd842795fdec75d94f1335c28acfc0e",
+          "sha256": "42a4206ea8bb3f7c3c1500ca3e408e084e8687cd3cc9cbf095b3344e215e0db6"
+        },
+        {
+          "path": "textures/Armchair_01_arm_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/ArmChair_01/Armchair_01_arm_1k.jpg",
+          "size": 138327,
+          "md5": "2ea528244dd6fc0deb2af1a555c0a312",
+          "sha256": "d272c68e8180f2a381314ac0cef5a9165d15d951a0558cb40a17af71cf6a51c6"
+        },
+        {
+          "path": "textures/Armchair_01_diff_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/ArmChair_01/Armchair_01_diff_1k.jpg",
+          "size": 184246,
+          "md5": "9166f2c24f2114a5fa5513950ed9b9ae",
+          "sha256": "db30fc9ab61ac50c91ab7573583d2855a2910df1ecade02b89e3e8ab8d4e4c2d"
+        },
+        {
+          "path": "textures/Armchair_01_nor_gl_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/ArmChair_01/Armchair_01_nor_gl_1k.jpg",
+          "size": 289916,
+          "md5": "8541821edd6dcb319b7f9841d849fbbe",
+          "sha256": "f5e4a43a12e79537e53e27c2bd4c5296b3e191cd6b301afce9fafd9d38238dde"
+        }
+      ]
+    },
+    {
+      "id": "Barrel_01",
+      "source": "polyhaven",
+      "kind": "model",
+      "resolution": "1k",
+      "use": [
+        "targets"
+      ],
+      "why": "red oil drum, 0.56 x 0.56 x 0.88 m, 0.7 MB",
+      "licence": "CC0-1.0",
+      "licence_url": "https://polyhaven.com/license",
+      "name": "Barrel_01",
+      "authors": {
+        "Jorge Camacho": "All"
+      },
+      "categories": [
+        "industrial",
+        "containers"
+      ],
+      "dimensions_m": [
+        0.563,
+        0.563,
+        0.88
+      ],
+      "page": "https://polyhaven.com/a/Barrel_01",
+      "files": [
+        {
+          "path": "Barrel_01_1k.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/Barrel_01/Barrel_01_1k.gltf",
+          "size": 2711,
+          "md5": "45c109401126ea3e5df2fe2c6b6f6d39",
+          "sha256": "e084945dedd6a3379c6f3e97842cac89df7169797707e123a5e5b42c135d6888"
+        },
+        {
+          "path": "Barrel_01.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/Barrel_01/Barrel_01.bin",
+          "size": 81756,
+          "md5": "e9f1036a183a1747aea6d40c556d7410",
+          "sha256": "fe8369c1ac796059b62a091c0db7367dc420aa2cee212672e48f991f4208da98"
+        },
+        {
+          "path": "textures/Barrel_01_explosive_arm_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/Barrel_01/Barrel_01_explosive_arm_1k.jpg",
+          "size": 243594,
+          "md5": "ccfe5da162b909fe98f4780e41cc1233",
+          "sha256": "eab507df7719f0e7a3615bd22bb7bc0c09fed83bfc44e72a51451f8069c2d374"
+        },
+        {
+          "path": "textures/Barrel_01_explosive_diff_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/Barrel_01/Barrel_01_explosive_diff_1k.jpg",
+          "size": 179308,
+          "md5": "a36cd738a17cab52dc4c264a03b2848b",
+          "sha256": "a7e5a7b03bbe0c9c56bf1ac09b24121a5d19148428e9e6eac326c803fc297098"
+        },
+        {
+          "path": "textures/Barrel_01_explosive_nor_gl_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/Barrel_01/Barrel_01_explosive_nor_gl_1k.jpg",
+          "size": 185578,
+          "md5": "f49be8d1ab465c944380b9d565c6ab47",
+          "sha256": "fa4750d64c6f568c8de3e36bc631348710329cf2d6d9c8c87bd2e47a96bc4fcb"
+        }
+      ]
+    },
+    {
+      "id": "Barrel_02",
+      "source": "polyhaven",
+      "kind": "model",
+      "resolution": "1k",
+      "use": [
+        "targets"
+      ],
+      "why": "blue plastic drum, 0.49 x 0.48 x 0.88 m, 0.4 MB",
+      "licence": "CC0-1.0",
+      "licence_url": "https://polyhaven.com/license",
+      "name": "Barrel 02",
+      "authors": {
+        "Jorge Camacho": "All"
+      },
+      "categories": [
+        "industrial",
+        "containers",
+        "collection: the_shed"
+      ],
+      "dimensions_m": [
+        0.488,
+        0.485,
+        0.88
+      ],
+      "page": "https://polyhaven.com/a/Barrel_02",
+      "files": [
+        {
+          "path": "Barrel_02_1k.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/Barrel_02/Barrel_02_1k.gltf",
+          "size": 2639,
+          "md5": "f95584ab7cc325d8be4884ca2935e019",
+          "sha256": "82204368af4d7211c440e7ebcd30979f48ba349d4439f3bf0212f86d4ba5d9d8"
+        },
+        {
+          "path": "Barrel_02.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/Barrel_02/Barrel_02.bin",
+          "size": 77440,
+          "md5": "7340fa43610b7a983a1b352574427b64",
+          "sha256": "a9a848743a7616710e2b3aee0b61c6fb69abc3910a150856ad21776a6089f29a"
+        },
+        {
+          "path": "textures/Barrel_02_arm_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/Barrel_02/Barrel_02_arm_1k.jpg",
+          "size": 166615,
+          "md5": "2c4ab82215e0bc4d0b173c79bc18f15a",
+          "sha256": "bd69aa2c5c069482cb48a14aed1f3a1d079bd868d865247206427df5a53202e3"
+        },
+        {
+          "path": "textures/Barrel_02_diff_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/Barrel_02/Barrel_02_diff_1k.jpg",
+          "size": 74005,
+          "md5": "7d879597fa5cae9ef9095b259ccaf9fb",
+          "sha256": "2dd828ce25b5b6b0ffc9b7901d1778767f1897be1c8004f4ec047fc91742cf12"
+        },
+        {
+          "path": "textures/Barrel_02_nor_gl_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/Barrel_02/Barrel_02_nor_gl_1k.jpg",
+          "size": 100819,
+          "md5": "fa1022a8d9206af8c1997db0a9597170",
+          "sha256": "f7029669d04979d20bbe1a80d34e689aff4b1ebe1bcc37a3ee62c8e384229a77"
+        }
+      ]
+    },
     {
       "id": "Grass004",
       "source": "ambientcg",
@@ -109,6 +299,69 @@
             "Gravel022_2K-JPG_NormalGL.jpg",
             "Gravel022_2K-JPG_Roughness.jpg"
           ]
+        }
+      ]
+    },
+    {
+      "id": "GreenChair_01",
+      "source": "polyhaven",
+      "kind": "model",
+      "resolution": "1k",
+      "use": [
+        "targets"
+      ],
+      "why": "green upholstered armchair, 0.67 x 0.66 x 1.06 m, 0.6 MB",
+      "licence": "CC0-1.0",
+      "licence_url": "https://polyhaven.com/license",
+      "name": "Green Chair 01",
+      "authors": {
+        "Kirill Sannikov": "All"
+      },
+      "categories": [
+        "furniture",
+        "seating"
+      ],
+      "dimensions_m": [
+        0.673,
+        0.664,
+        1.059
+      ],
+      "page": "https://polyhaven.com/a/GreenChair_01",
+      "files": [
+        {
+          "path": "GreenChair_01_1k.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/GreenChair_01/GreenChair_01_1k.gltf",
+          "size": 2695,
+          "md5": "a891e84c1aa77d8f163609b347c1b421",
+          "sha256": "d1e4946ac99ab9e64c82d802fe5cd49d962750e34b8d284762b3fe2b00ba8a45"
+        },
+        {
+          "path": "GreenChair_01.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/GreenChair_01/GreenChair_01.bin",
+          "size": 119168,
+          "md5": "9c84856d32c4d61b87fb5eba1f8339a3",
+          "sha256": "9070a41bcf38005997fe71a49e50b942b427ec05938413c9dc204df0b781e410"
+        },
+        {
+          "path": "textures/GreenChair_01_arm_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/GreenChair_01/GreenChair_01_arm_1k.jpg",
+          "size": 140947,
+          "md5": "b986c428c4db443ed08f7925a08531f1",
+          "sha256": "d522e08441f3d54977e085b9e54de125efea7e963d3f433a5bd74cad031d2178"
+        },
+        {
+          "path": "textures/GreenChair_01_diff_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/GreenChair_01/GreenChair_01_diff_1k.jpg",
+          "size": 131727,
+          "md5": "7304f991bdcd2c534243bc7e86c62c43",
+          "sha256": "fb7ec456b37dc95fb73d0b08bfa2802c304a40263517d05e674657ad356cfac4"
+        },
+        {
+          "path": "textures/GreenChair_01_nor_gl_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/GreenChair_01/GreenChair_01_nor_gl_1k.jpg",
+          "size": 213507,
+          "md5": "19a8e67d3bf9153e9f68a28f1507aaee",
+          "sha256": "008b49786f8395301b15b398856f56bd04357096ce542da76f1a3dcad8c28fc8"
         }
       ]
     },
@@ -266,6 +519,69 @@
       ]
     },
     {
+      "id": "SchoolChair_01",
+      "source": "polyhaven",
+      "kind": "model",
+      "resolution": "1k",
+      "use": [
+        "targets"
+      ],
+      "why": "blue school chair, 0.57 x 0.68 x 1.01 m, 0.5 MB",
+      "licence": "CC0-1.0",
+      "licence_url": "https://polyhaven.com/license",
+      "name": "School Chair 01",
+      "authors": {
+        "Ethan Place": "All"
+      },
+      "categories": [
+        "furniture",
+        "seating"
+      ],
+      "dimensions_m": [
+        0.566,
+        0.675,
+        1.006
+      ],
+      "page": "https://polyhaven.com/a/SchoolChair_01",
+      "files": [
+        {
+          "path": "SchoolChair_01_1k.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/SchoolChair_01/SchoolChair_01_1k.gltf",
+          "size": 2695,
+          "md5": "dea922d55d029fb99085b50196d1eec0",
+          "sha256": "1db6aca4bf379c2d568b2068492dcfcda15d764c0c3d98a970055af25b46281e"
+        },
+        {
+          "path": "SchoolChair_01.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/SchoolChair_01/SchoolChair_01.bin",
+          "size": 134912,
+          "md5": "d1f13f71f9f9979cde18c798e25dd9d3",
+          "sha256": "7d64d556ba88d3962778085b9a190f1adb0d84e667bca8ef032c0ae34b31a9fe"
+        },
+        {
+          "path": "textures/SchoolChair_01_arm_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/SchoolChair_01/SchoolChair_01_arm_1k.jpg",
+          "size": 104994,
+          "md5": "559daea007902aae5b5d5623a34b3a13",
+          "sha256": "ff773eb01c9d59130dc3cc0274951ac626d73fa1b2f7eee519af4ca80835568b"
+        },
+        {
+          "path": "textures/SchoolChair_01_diff_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/SchoolChair_01/SchoolChair_01_diff_1k.jpg",
+          "size": 52590,
+          "md5": "2d5c9c77d97ba2edd5084a9d72b5dd63",
+          "sha256": "f10ae4dbddfb056ef716770ebd96e0eff0aa6f0b5ad0f263ff51c5cade6e1d8f"
+        },
+        {
+          "path": "textures/SchoolChair_01_nor_gl_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/SchoolChair_01/SchoolChair_01_nor_gl_1k.jpg",
+          "size": 189532,
+          "md5": "223a0e5d115fb86cf1ae675fe73dc04a",
+          "sha256": "4ee930562ad26e8c98af75e8aa6577d01cb56f6d22628f4e95c385e5364f0623"
+        }
+      ]
+    },
+    {
       "id": "Snow006",
       "source": "ambientcg",
       "kind": "material",
@@ -315,6 +631,197 @@
             "Snow006_2K-JPG_NormalGL.jpg",
             "Snow006_2K-JPG_Roughness.jpg"
           ]
+        }
+      ]
+    },
+    {
+      "id": "Sofa_01",
+      "source": "polyhaven",
+      "kind": "model",
+      "resolution": "1k",
+      "use": [
+        "targets"
+      ],
+      "why": "beige sofa, 1.57 x 0.66 x 0.80 m, 0.5 MB",
+      "licence": "CC0-1.0",
+      "licence_url": "https://polyhaven.com/license",
+      "name": "Sofa 01",
+      "authors": {
+        "Kirill Sannikov": "All"
+      },
+      "categories": [
+        "furniture",
+        "seating"
+      ],
+      "dimensions_m": [
+        1.571,
+        0.658,
+        0.797
+      ],
+      "page": "https://polyhaven.com/a/Sofa_01",
+      "files": [
+        {
+          "path": "Sofa_01_1k.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/Sofa_01/Sofa_01_1k.gltf",
+          "size": 2636,
+          "md5": "b5f8106d38a9e8dcb52b883663bbeed1",
+          "sha256": "dc9d331a24fc8994606ae5a283826cb28feb3166782f59d006d0f10cc92cc830"
+        },
+        {
+          "path": "Sofa_01.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/Sofa_01/Sofa_01.bin",
+          "size": 111264,
+          "md5": "77b6d42bd17eed825d5d65c769c71f0c",
+          "sha256": "c8af86de6db09a6d49703e0e51cf8acafa23fb2ee945e66a48225dced3a154e1"
+        },
+        {
+          "path": "textures/Sofa_01_arm_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/Sofa_01/Sofa_01_arm_1k.jpg",
+          "size": 114593,
+          "md5": "c7b757edd1f5fb506341be0063b9a3eb",
+          "sha256": "fc5db69e4cf5cf9f881b2d134fae69c4e3b1a96378f131752ef48060bf0c5e39"
+        },
+        {
+          "path": "textures/Sofa_01_diff_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/Sofa_01/Sofa_01_diff_1k.jpg",
+          "size": 134925,
+          "md5": "a4d07c6c0fd696cb6fa4bd5bad1debc3",
+          "sha256": "1772047e7887a9ec44878e0720eda0829abfa744dec6ca03b492a31c4dc51cab"
+        },
+        {
+          "path": "textures/Sofa_01_nor_gl_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/Sofa_01/Sofa_01_nor_gl_1k.jpg",
+          "size": 154517,
+          "md5": "7e4aca2b86e09375d25182c7bd4580db",
+          "sha256": "1d89009f9fba3b6967d63cb718606b3049d2423bc031da12ee228718a0571e84"
+        }
+      ]
+    },
+    {
+      "id": "Television_01",
+      "source": "polyhaven",
+      "kind": "model",
+      "resolution": "1k",
+      "use": [
+        "targets"
+      ],
+      "why": "old CRT television, 0.60 x 0.47 x 0.46 m, 0.5 MB",
+      "licence": "CC0-1.0",
+      "licence_url": "https://polyhaven.com/license",
+      "name": "Television 01",
+      "authors": {
+        "Gabriel Radi\u0107": "All"
+      },
+      "categories": [
+        "props",
+        "electronics",
+        "collection: the_shed"
+      ],
+      "dimensions_m": [
+        0.6,
+        0.471,
+        0.457
+      ],
+      "page": "https://polyhaven.com/a/Television_01",
+      "files": [
+        {
+          "path": "Television_01_1k.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/Television_01/Television_01_1k.gltf",
+          "size": 2933,
+          "md5": "9456aa7effd3cb41a0e753d74293b1c3",
+          "sha256": "ef4376366ea956519c1a1d06146a8e8cc2bb0fcbd5c6b9f919a54ce31d05d530"
+        },
+        {
+          "path": "Television_01.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/Television_01/Television_01.bin",
+          "size": 90548,
+          "md5": "d28775c3746a6e7b0afa5fd217acbc44",
+          "sha256": "fc32dd3e6722cfa093910d8b5b4e6173b0c92a13d58b55b8e9c6007a9218b0a0"
+        },
+        {
+          "path": "textures/Television_01_arm_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/Television_01/Television_01_arm_1k.jpg",
+          "size": 190774,
+          "md5": "b83392294cc663520e448f698b86da56",
+          "sha256": "b55594884fec13e47e22d1fdc3c89a528728454f65a7c26b482d9f3ec9200015"
+        },
+        {
+          "path": "textures/Television_01_diff_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/Television_01/Television_01_diff_1k.jpg",
+          "size": 102231,
+          "md5": "bf1b3d0563c279557acfed2402c421b1",
+          "sha256": "38e45263d115ab2832a4a2e99f93f03ff5f49c0aa0d5256528677a77c3ca4568"
+        },
+        {
+          "path": "textures/Television_01_nor_gl_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/Television_01/Television_01_nor_gl_1k.jpg",
+          "size": 144808,
+          "md5": "3adb4f6549cc69edf82ccd8daa8e13cd",
+          "sha256": "289519da9f2fa5aeca0246bbb6d42ea1b03e5f54865d8881d3b1e0b3116d300f"
+        }
+      ]
+    },
+    {
+      "id": "WetFloorSign_01",
+      "source": "polyhaven",
+      "kind": "model",
+      "resolution": "1k",
+      "use": [
+        "targets"
+      ],
+      "why": "yellow wet floor sign, 0.30 x 0.36 x 0.63 m, 0.3 MB",
+      "licence": "CC0-1.0",
+      "licence_url": "https://polyhaven.com/license",
+      "name": "Wet Floor Sign 01",
+      "authors": {
+        "Fran Calvente": "All"
+      },
+      "categories": [
+        "props",
+        "industrial",
+        "office"
+      ],
+      "dimensions_m": [
+        0.3,
+        0.359,
+        0.63
+      ],
+      "page": "https://polyhaven.com/a/WetFloorSign_01",
+      "files": [
+        {
+          "path": "WetFloorSign_01_1k.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/WetFloorSign_01/WetFloorSign_01_1k.gltf",
+          "size": 2688,
+          "md5": "d69f7dfcdf087109e5b6269bbd4b2277",
+          "sha256": "ba5b10d2de7bb60b77dc3e44a96446181a078e35597947a490a4b6de906059e4"
+        },
+        {
+          "path": "WetFloorSign_01.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/WetFloorSign_01/WetFloorSign_01.bin",
+          "size": 9496,
+          "md5": "2a027a15ce3f42cbc2e9392361fd180b",
+          "sha256": "d23cdec8975ac452d64ae97b08f1eecd22e38f052bd5d588d352dbc0f0373af0"
+        },
+        {
+          "path": "textures/WetFloorSign_01_arm_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/WetFloorSign_01/WetFloorSign_01_arm_1k.jpg",
+          "size": 126370,
+          "md5": "a77d2ff7c1ecf95da1830d8ec94efebb",
+          "sha256": "6cd1d7c6648c36d2d66a7ddfc620ea78374ac770a5726f879b6914366e133e1a"
+        },
+        {
+          "path": "textures/WetFloorSign_01_diff_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/WetFloorSign_01/WetFloorSign_01_diff_1k.jpg",
+          "size": 39755,
+          "md5": "831604f9f4bacc1308c4cbe4e05e575d",
+          "sha256": "01e18486a858defc0f44a73ec5037c4bee770bae88e7fed5beb6877df120fa90"
+        },
+        {
+          "path": "textures/WetFloorSign_01_nor_gl_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/WetFloorSign_01/WetFloorSign_01_nor_gl_1k.jpg",
+          "size": 88138,
+          "md5": "ee729a65845b94147710d554ffa46b5f",
+          "sha256": "62269358f3b30569783c1872613d1d70d5eda36babe5b5f04fcfd5e92de1af62"
         }
       ]
     },
@@ -381,6 +888,133 @@
           "size": 4649207,
           "md5": "73ee1783fca7605fd454f0af3e5b85fa",
           "sha256": "5174b318712ac7725cbcb55d422607f9c66d7f8d035c5412ab897b5939e2db6b"
+        }
+      ]
+    },
+    {
+      "id": "bronze_whale_statue",
+      "source": "polyhaven",
+      "kind": "model",
+      "resolution": "1k",
+      "use": [
+        "targets"
+      ],
+      "why": "bronze whale statue on a plinth, 0.93 x 1.37 x 1.07 m, 2.2 MB",
+      "licence": "CC0-1.0",
+      "licence_url": "https://polyhaven.com/license",
+      "name": "Bronze Whale Statue",
+      "authors": {
+        "Tina": "All"
+      },
+      "categories": [
+        "decorative",
+        "collection: project_lighthouse"
+      ],
+      "dimensions_m": [
+        0.932,
+        1.366,
+        1.073
+      ],
+      "page": "https://polyhaven.com/a/bronze_whale_statue",
+      "files": [
+        {
+          "path": "bronze_whale_statue_1k.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/bronze_whale_statue/bronze_whale_statue_1k.gltf",
+          "size": 3108,
+          "md5": "4a994af2d8f3323c23a25077c28b5c53",
+          "sha256": "97ff882e047f3415601437d6db43a7326a3fa1ac5bddb86ae119b74717888d18"
+        },
+        {
+          "path": "bronze_whale_statue.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/bronze_whale_statue/bronze_whale_statue.bin",
+          "size": 102352,
+          "md5": "4e6f9f30384039bb60dc244b5eeeb9d6",
+          "sha256": "675ec5711b4d7653a1bdfd4c25a7ca33652eb173eae1869de8e4759090a1fa21"
+        },
+        {
+          "path": "textures/bronze_whale_statue_arm_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/bronze_whale_statue/bronze_whale_statue_arm_1k.jpg",
+          "size": 854626,
+          "md5": "386a7521c889b8a7403646c5d4fb2481",
+          "sha256": "76ffa3b4f0e81208ddd23a13d0605a225d82b6502f5c847c270490ab96717a81"
+        },
+        {
+          "path": "textures/bronze_whale_statue_diff_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/bronze_whale_statue/bronze_whale_statue_diff_1k.jpg",
+          "size": 493169,
+          "md5": "ef35aceb26f077240f71cb4b96b7c746",
+          "sha256": "b7cc4ec674f2c49d09eb66bca291104a10c79a9b384faacb031b49df74c82655"
+        },
+        {
+          "path": "textures/bronze_whale_statue_nor_gl_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/bronze_whale_statue/bronze_whale_statue_nor_gl_1k.jpg",
+          "size": 736986,
+          "md5": "e950963915a736ee0ecf8bd76b29d9b0",
+          "sha256": "2ecf3a3065ff56da0924ebd2f1e712c49d5f8e06823839a898857141e858cc92"
+        }
+      ]
+    },
+    {
+      "id": "covered_car",
+      "source": "polyhaven",
+      "kind": "model",
+      "resolution": "1k",
+      "use": [
+        "targets"
+      ],
+      "why": "car under a dark fabric cover, 1.79 x 4.38 x 1.41 m, 2.3 MB: Poly Haven's only car, scaled to 4 m long",
+      "licence": "CC0-1.0",
+      "licence_url": "https://polyhaven.com/license",
+      "name": "Covered Car",
+      "authors": {
+        "MP": "All"
+      },
+      "categories": [
+        "props",
+        "industrial",
+        "collection: hidden_alley"
+      ],
+      "dimensions_m": [
+        1.789,
+        4.38,
+        1.411
+      ],
+      "page": "https://polyhaven.com/a/covered_car",
+      "files": [
+        {
+          "path": "covered_car_1k.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/covered_car/covered_car_1k.gltf",
+          "size": 9687,
+          "md5": "c38cd2ddf3fe2abe7ed8df2fd6020b84",
+          "sha256": "80b210b08673833a8085812b9ee71286213b2af92654886e5a1a368977265aa7"
+        },
+        {
+          "path": "covered_car.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/covered_car/covered_car.bin",
+          "size": 394464,
+          "md5": "38f16c2c092dff1191ac5383acaf2ca0",
+          "sha256": "dcbd7bf82d415e30d02c3e7056013b44729de7b712868b5ab9bf29f2b3b8bc57"
+        },
+        {
+          "path": "textures/covered_car_arm_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/covered_car/covered_car_arm_1k.jpg",
+          "size": 745781,
+          "md5": "62f9a8c8719ce46ee5464462ec6ed6fc",
+          "sha256": "e77f73234311701dd8088ec572e61d4ec7838bd28e9ea13ffe5e28f79da8e085"
+        },
+        {
+          "path": "textures/covered_car_diff_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/covered_car/covered_car_diff_1k.jpg",
+          "size": 558004,
+          "md5": "61c107225ca1cbd523d6d6e9c1775f22",
+          "sha256": "c4616a5c7c1327e4bc127b600e59d9dcb2123f8926f1570a1ca4a068d97f4d34"
+        },
+        {
+          "path": "textures/covered_car_nor_gl_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/covered_car/covered_car_nor_gl_1k.jpg",
+          "size": 641340,
+          "md5": "afc43e8dd74213483a454cdb00f0f541",
+          "sha256": "6769694abe28c53e5c35ad1cefdd462b56416e7d89a6bcf5a9d9f6c922b46d05"
         }
       ]
     },
@@ -597,6 +1231,459 @@
           "size": 4097801,
           "md5": "703e90a3d735b01f28422265c67dd1ab",
           "sha256": "03336e479c80e51d06ecf8e17cc976f457d21eef66608968b690977ad8e56f5d"
+        }
+      ]
+    },
+    {
+      "id": "kenney_blocky-characters",
+      "source": "kenney",
+      "kind": "model_pack",
+      "kit": "blocky-characters",
+      "resolution": "GLB",
+      "use": [
+        "targets"
+      ],
+      "models": [
+        {
+          "name": "character-a",
+          "path": "Models/GLB format/character-a.glb",
+          "sha256": "8ee5dae167ec589863f6bba222467eb90ace8be357a4c5abfcab289290181616"
+        },
+        {
+          "name": "character-b",
+          "path": "Models/GLB format/character-b.glb",
+          "sha256": "30ed390a741a1b285f587544819aa8a02c8f7f270e552ed742eb84785034f62a"
+        },
+        {
+          "name": "character-c",
+          "path": "Models/GLB format/character-c.glb",
+          "sha256": "ad2425ba0da5d9adff791b949bd62389ddcb09963ff89265930eab0d6484398c"
+        },
+        {
+          "name": "character-e",
+          "path": "Models/GLB format/character-e.glb",
+          "sha256": "9a12684981bc7763aebeceaffed82abfcc458d27b1ed3e169b92bebcc4870675"
+        },
+        {
+          "name": "character-i",
+          "path": "Models/GLB format/character-i.glb",
+          "sha256": "2b566d3b6261faa3e151b352396d823a285834f039ff6476db248ec6da902fe8"
+        },
+        {
+          "name": "character-j",
+          "path": "Models/GLB format/character-j.glb",
+          "sha256": "5bae1cabb44a719fba8e18a8c519f45c92531bc02a2a1324cd316ffa5903e311"
+        },
+        {
+          "name": "character-p",
+          "path": "Models/GLB format/character-p.glb",
+          "sha256": "50e18edd3003eeeca60c215a12f2c8230f9d12bc07e656eb06c3727ab0dba6cd"
+        },
+        {
+          "name": "character-q",
+          "path": "Models/GLB format/character-q.glb",
+          "sha256": "9193d03bc9ee1cfb080a1d561522f45806fe0b522b9807ef2b7c451b77547999"
+        }
+      ],
+      "why": "Blocky Characters, 2.1 MB: adult-proportioned people in distinct clothes (no robots or zombies)",
+      "licence": "CC0-1.0",
+      "licence_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "licence_file": "License.txt",
+      "kit_version": "Blocky Characters (2.0)",
+      "authors": {
+        "Kenney": "All"
+      },
+      "page": "https://kenney.nl/assets/blocky-characters",
+      "files": [
+        {
+          "path": "kenney_blocky-characters_20.zip",
+          "url": "https://kenney.nl/media/pages/assets/blocky-characters/8369c0cf30-1749547469/kenney_blocky-characters_20.zip",
+          "size": 2148510,
+          "md5": null,
+          "sha256": "5e123859aa0c1598342b600c6db197024a1d63eb9ec531398b310725f589887e",
+          "unpacked_files": 150
+        }
+      ]
+    },
+    {
+      "id": "kenney_car-kit",
+      "source": "kenney",
+      "kind": "model_pack",
+      "kit": "car-kit",
+      "resolution": "GLB",
+      "use": [
+        "targets"
+      ],
+      "models": [
+        {
+          "name": "sedan",
+          "path": "Models/GLB format/sedan.glb",
+          "sha256": "b532ea7d2c59f7f6b22b138cf1955218a2c1898f1cea932af4d3fd563c3959b7"
+        },
+        {
+          "name": "hatchback-sports",
+          "path": "Models/GLB format/hatchback-sports.glb",
+          "sha256": "bd5c9d4c3b4bdd254a66b8426563a68b1487ae7a5076df3a2488e6ffed7be64f"
+        },
+        {
+          "name": "van",
+          "path": "Models/GLB format/van.glb",
+          "sha256": "ed4ed56e8e5ed98db050af09ed2062b3b6bb7b93eab1e563cb6774b387b233a1"
+        },
+        {
+          "name": "taxi",
+          "path": "Models/GLB format/taxi.glb",
+          "sha256": "3803539718ffd3b84b515dbce8ed6b489f1ff5be58edb1903d2c5db5c584bdc7"
+        },
+        {
+          "name": "police",
+          "path": "Models/GLB format/police.glb",
+          "sha256": "a617b880594f56239b7ac4cf6fd4d74ebdae3ba6c5d842e77c76a5906eff352a"
+        },
+        {
+          "name": "ambulance",
+          "path": "Models/GLB format/ambulance.glb",
+          "sha256": "9e429e2b6202c0d78d0c38b2adbaae6b77716bb2a0f6fbb2811556e1fb31edba"
+        },
+        {
+          "name": "firetruck",
+          "path": "Models/GLB format/firetruck.glb",
+          "sha256": "c0c0a22809316536468da7e9c7f57b8ec1a8e387ec3a1cde032976c6d8a6c7a4"
+        },
+        {
+          "name": "garbage-truck",
+          "path": "Models/GLB format/garbage-truck.glb",
+          "sha256": "6f2943e0ba4c6d86eb69a9243224259d6e0f169f474228439cda0579d49d3509"
+        },
+        {
+          "name": "suv-luxury",
+          "path": "Models/GLB format/suv-luxury.glb",
+          "sha256": "9e2a79dc050189d4555a88d2e9da0f30ff946ba74f1d43b5b3bda3c193d1f7d7"
+        },
+        {
+          "name": "truck-flat",
+          "path": "Models/GLB format/truck-flat.glb",
+          "sha256": "4279862f2442e96c6603c514edf50bfb932707545695d8c4747611cd3796cf3b"
+        },
+        {
+          "name": "tractor-shovel",
+          "path": "Models/GLB format/tractor-shovel.glb",
+          "sha256": "1bc67bcc36dc563baf7b5060e2a790f67a5a0b42fbdf17c18ab933fcc8a4aa53"
+        },
+        {
+          "name": "cone",
+          "path": "Models/GLB format/cone.glb",
+          "sha256": "d6659fc365de47c5d056b14f3d3fb3e191d3a5b869c43171753621dcf14b76bd"
+        }
+      ],
+      "why": "Car Kit, 4.8 MB: ten road vehicles in one style, a front loader and a traffic cone (both unseen)",
+      "licence": "CC0-1.0",
+      "licence_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "licence_file": "License.txt",
+      "kit_version": "Car Kit (3.1)",
+      "authors": {
+        "Kenney": "All"
+      },
+      "page": "https://kenney.nl/assets/car-kit",
+      "files": [
+        {
+          "path": "kenney_car-kit.zip",
+          "url": "https://kenney.nl/media/pages/assets/car-kit/1a312ec241-1775131960/kenney_car-kit.zip",
+          "size": 4814237,
+          "md5": null,
+          "sha256": "fac7dacac5c7874348cf19729af3ef205f3d366493edaf0a827d93f4fdf3d0c4",
+          "unpacked_files": 259
+        }
+      ]
+    },
+    {
+      "id": "kenney_cube-pets",
+      "source": "kenney",
+      "kind": "model_pack",
+      "kit": "cube-pets",
+      "resolution": "GLB",
+      "use": [
+        "targets"
+      ],
+      "models": [
+        {
+          "name": "animal-tiger",
+          "path": "Models/GLB format/animal-tiger.glb",
+          "sha256": "cc70cdfd27ec6550b7a4524a3cc75fd594f94d384cac2bb68504b60d379f47d4"
+        },
+        {
+          "name": "animal-elephant",
+          "path": "Models/GLB format/animal-elephant.glb",
+          "sha256": "0831346fb8ddb8e99e42e3f92fb48858551049dc7ea49e641d90fdfc65e057be"
+        }
+      ],
+      "why": "Cube Pets, 2.8 MB: the paper's unseen tiger and elephant",
+      "licence": "CC0-1.0",
+      "licence_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "licence_file": "License.txt",
+      "kit_version": "Cube Pets (2.0)",
+      "authors": {
+        "Kenney": "All"
+      },
+      "page": "https://kenney.nl/assets/cube-pets",
+      "files": [
+        {
+          "path": "kenney_cube-pets_1.0.zip",
+          "url": "https://kenney.nl/media/pages/assets/cube-pets/44e58e945f-1774520254/kenney_cube-pets_1.0.zip",
+          "size": 2812444,
+          "md5": null,
+          "sha256": "b3bdc99a2ec92c687b875718c5d01e9231d2711ed0e2845f295b474bb42a1283",
+          "unpacked_files": 129
+        }
+      ]
+    },
+    {
+      "id": "kenney_factory-kit",
+      "source": "kenney",
+      "kind": "model_pack",
+      "kit": "factory-kit",
+      "resolution": "GLB",
+      "use": [
+        "targets"
+      ],
+      "models": [
+        {
+          "name": "crane",
+          "path": "Models/GLB format/crane.glb",
+          "sha256": "ceaf20fb976ce0415d2b3d40e723b6ad377845818fa4fa68b55434108b1a6880"
+        }
+      ],
+      "why": "Factory Kit, 4.5 MB: a jib crane, the paper's unseen crane (the only CC0 crane found)",
+      "licence": "CC0-1.0",
+      "licence_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "licence_file": "License.txt",
+      "kit_version": "Factory Kit (3.0)",
+      "authors": {
+        "Kenney": "All"
+      },
+      "page": "https://kenney.nl/assets/factory-kit",
+      "files": [
+        {
+          "path": "kenney_factory-kit_3.0.zip",
+          "url": "https://kenney.nl/media/pages/assets/factory-kit/edaac9d4f6-1777639602/kenney_factory-kit_3.0.zip",
+          "size": 4511890,
+          "md5": null,
+          "sha256": "7e31fb2308e90304672bd15cd18fa9d9f02c03731a8cbc57a8e3e1c181dfb0a7",
+          "unpacked_files": 727
+        }
+      ]
+    },
+    {
+      "id": "kenney_mini-characters",
+      "source": "kenney",
+      "kind": "model_pack",
+      "kit": "mini-characters",
+      "resolution": "GLB",
+      "use": [
+        "targets"
+      ],
+      "models": [
+        {
+          "name": "character-female-b",
+          "path": "Models/GLB format/character-female-b.glb",
+          "sha256": "2288438e7baf9acc91a870c82dc00d66710bb486592cfc3474ef8ed93a03863a"
+        },
+        {
+          "name": "character-female-d",
+          "path": "Models/GLB format/character-female-d.glb",
+          "sha256": "67f61708743bd34f91a4c2ba8160b61bf2e7d4ec2ca6647dfe99873422561410"
+        }
+      ],
+      "why": "Mini Characters, 2.4 MB: two people in a second style, one of them the unseen person",
+      "licence": "CC0-1.0",
+      "licence_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "licence_file": "License.txt",
+      "kit_version": "Mini Characters (1.0)",
+      "authors": {
+        "Kenney": "All"
+      },
+      "page": "https://kenney.nl/assets/mini-characters",
+      "files": [
+        {
+          "path": "kenney_mini-characters.zip",
+          "url": "https://kenney.nl/media/pages/assets/mini-characters/bfc7e272b4-1774770718/kenney_mini-characters.zip",
+          "size": 2403059,
+          "md5": null,
+          "sha256": "9e1d48e6d7b8479ebbe84df71eb5bd8e1b3f0da546dea641890dccc8a02d0999",
+          "unpacked_files": 139
+        }
+      ]
+    },
+    {
+      "id": "korean_fire_extinguisher_01",
+      "source": "polyhaven",
+      "kind": "model",
+      "resolution": "1k",
+      "use": [
+        "targets"
+      ],
+      "why": "red fire extinguisher on its stand, 0.28 x 0.37 x 0.66 m, 1.6 MB",
+      "licence": "CC0-1.0",
+      "licence_url": "https://polyhaven.com/license",
+      "name": "Korean Fire Extinguisher 01",
+      "authors": {
+        "UM JOORIN": "All"
+      },
+      "categories": [
+        "industrial",
+        "props"
+      ],
+      "dimensions_m": [
+        0.28,
+        0.367,
+        0.659
+      ],
+      "page": "https://polyhaven.com/a/korean_fire_extinguisher_01",
+      "files": [
+        {
+          "path": "korean_fire_extinguisher_01_1k.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/korean_fire_extinguisher_01/korean_fire_extinguisher_01_1k.gltf",
+          "size": 7450,
+          "md5": "842e3c682b1bd286ba90af70848a0fbf",
+          "sha256": "565f9e41909165c2bead24b722746e29ba55e8eb5e541f61fe0d1ef7e66d2ecf"
+        },
+        {
+          "path": "korean_fire_extinguisher_01.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/korean_fire_extinguisher_01/korean_fire_extinguisher_01.bin",
+          "size": 279480,
+          "md5": "e4b0452f70679815817e0b6f87ba5e52",
+          "sha256": "a460dd65b63477bb641196d77393258af0c8a6e2a64728156cb45d92658c86bd"
+        },
+        {
+          "path": "textures/korean_fire_extinguisher_01_body_arm_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/korean_fire_extinguisher_01/korean_fire_extinguisher_01_body_arm_1k.jpg",
+          "size": 209865,
+          "md5": "e4367435179d89d78d4c8f14fe6f2ee9",
+          "sha256": "2c8fa0a85d5acc5f4e784ecefd8bfd16e1aafd112e553bfcece0c81c9b129eea"
+        },
+        {
+          "path": "textures/korean_fire_extinguisher_01_body_diff_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/korean_fire_extinguisher_01/korean_fire_extinguisher_01_body_diff_1k.jpg",
+          "size": 127270,
+          "md5": "5e893385064d90ba8bef74a9625409ef",
+          "sha256": "2d874513cfb6d7485b67e936ee32e7af14992da6a5eedf980dbdfc32a2119987"
+        },
+        {
+          "path": "textures/korean_fire_extinguisher_01_body_nor_gl_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/korean_fire_extinguisher_01/korean_fire_extinguisher_01_body_nor_gl_1k.jpg",
+          "size": 95607,
+          "md5": "684dc2f34e0673fd5ecdb71a87366031",
+          "sha256": "b6ba7a7cafa04557c93dc63b44260b635863f0a95f8ba1445b75758dac3443d3"
+        },
+        {
+          "path": "textures/korean_fire_extinguisher_01_glass_arm_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/korean_fire_extinguisher_01/korean_fire_extinguisher_01_glass_arm_1k.jpg",
+          "size": 61925,
+          "md5": "377ae0f369cfa52b2589f36f6d4a3be4",
+          "sha256": "412712fddc3654d801949889f78c9ee92d8855624a1fe1057be29a38e766bda0"
+        },
+        {
+          "path": "textures/korean_fire_extinguisher_01_glass_diff_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/korean_fire_extinguisher_01/korean_fire_extinguisher_01_glass_diff_1k.jpg",
+          "size": 150097,
+          "md5": "15c48dd9f2a9b11647f5212179bc0d30",
+          "sha256": "ca7e49959126aa51e2d4ab440aeb9f7ff17a8a6d025b116f6327f2343ee041af"
+        },
+        {
+          "path": "textures/korean_fire_extinguisher_01_glass_nor_gl_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/korean_fire_extinguisher_01/korean_fire_extinguisher_01_glass_nor_gl_1k.jpg",
+          "size": 36344,
+          "md5": "1da8b9a645f7e0940ea9505879d8f489",
+          "sha256": "3b299c54cb9b6f72d4f79e6ecd2f8cfcc618292c87881de1d17892b5ca668896"
+        },
+        {
+          "path": "textures/korean_fire_extinguisher_01_paper_arm_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/korean_fire_extinguisher_01/korean_fire_extinguisher_01_paper_arm_1k.jpg",
+          "size": 221117,
+          "md5": "4d30630a842d22459188b53848538fd1",
+          "sha256": "542b45184bb0ea66cdd2f180792148c45d45862a12f1ac341f798e53029015b9"
+        },
+        {
+          "path": "textures/korean_fire_extinguisher_01_paper_diff_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/korean_fire_extinguisher_01/korean_fire_extinguisher_01_paper_diff_1k.jpg",
+          "size": 161849,
+          "md5": "bfe0fd9be862d04df812e7d3fb6d2c29",
+          "sha256": "2d56948aa72a9bad6133db3e6b17fa0df1a56cdf25db4b7e21e6ceb21999a038"
+        },
+        {
+          "path": "textures/korean_fire_extinguisher_01_paper_nor_gl_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/korean_fire_extinguisher_01/korean_fire_extinguisher_01_paper_nor_gl_1k.jpg",
+          "size": 267306,
+          "md5": "a168897334529d98a67df80a486076ed",
+          "sha256": "caaa26dd438e827e994c69605091d58ecc6a152813ece776cc561e0b24a8433a"
+        }
+      ]
+    },
+    {
+      "id": "metal_tool_chest",
+      "source": "polyhaven",
+      "kind": "model",
+      "resolution": "1k",
+      "use": [
+        "targets"
+      ],
+      "why": "red tool chest, 0.69 x 0.41 x 0.65 m, 2.4 MB",
+      "licence": "CC0-1.0",
+      "licence_url": "https://polyhaven.com/license",
+      "name": "Metal Tool Chest",
+      "authors": {
+        "Yann Kervran": "Rigging",
+        "John Hutcheson": "Modeling & Texturing"
+      },
+      "categories": [
+        "props",
+        "tools",
+        "industrial",
+        "containers",
+        "rigged",
+        "collection: the_shed"
+      ],
+      "dimensions_m": [
+        0.685,
+        0.407,
+        0.652
+      ],
+      "page": "https://polyhaven.com/a/metal_tool_chest",
+      "files": [
+        {
+          "path": "metal_tool_chest_1k.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/metal_tool_chest/metal_tool_chest_1k.gltf",
+          "size": 12256,
+          "md5": "21cb18a2e84ed49f23a98578c543e5ad",
+          "sha256": "2f66fbb723cd52382f73daec184b68d9b36842a488ecaf120e5c3a6354e9dea4"
+        },
+        {
+          "path": "metal_tool_chest.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/metal_tool_chest/metal_tool_chest.bin",
+          "size": 434496,
+          "md5": "b62c394a4f6764df8993a8965564b390",
+          "sha256": "c2bde4e96af4aad171e57e00ff78f0aa9e3b603286a2c74cd6d7c2a20c487342"
+        },
+        {
+          "path": "textures/metal_tool_chest_arm_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/metal_tool_chest/metal_tool_chest_arm_1k.jpg",
+          "size": 755794,
+          "md5": "981d128104104cdb6ab86c648e1d7f46",
+          "sha256": "d5552ee63ac9bc53527ee1bf19bcbd31d8424bcc15fe9861f79bba917e857828"
+        },
+        {
+          "path": "textures/metal_tool_chest_diff_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/metal_tool_chest/metal_tool_chest_diff_1k.jpg",
+          "size": 552016,
+          "md5": "4deaf0af07e8cadbfbd4975b49f597df",
+          "sha256": "da37ba2a8d064637c7206cb091597275986e788ce379bee58a96c949cce06511"
+        },
+        {
+          "path": "textures/metal_tool_chest_nor_gl_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/metal_tool_chest/metal_tool_chest_nor_gl_1k.jpg",
+          "size": 604781,
+          "md5": "1d53f8a77b5789f6b4e5d72a004bb5bd",
+          "sha256": "bc5a4009a544a9504849b951afd984d6ac7c5adb0d43c5a08c0a834f8e811a01"
         }
       ]
     },
@@ -929,6 +2016,267 @@
       ]
     },
     {
+      "id": "painted_wooden_bench",
+      "source": "polyhaven",
+      "kind": "model",
+      "resolution": "1k",
+      "use": [
+        "targets"
+      ],
+      "why": "red painted wooden bench, 1.16 x 0.50 x 0.89 m, 2.0 MB",
+      "licence": "CC0-1.0",
+      "licence_url": "https://polyhaven.com/license",
+      "name": "Painted Wooden Bench",
+      "authors": {
+        "Kirill Sannikov": "All"
+      },
+      "categories": [
+        "furniture",
+        "seating"
+      ],
+      "dimensions_m": [
+        1.165,
+        0.497,
+        0.889
+      ],
+      "page": "https://polyhaven.com/a/painted_wooden_bench",
+      "files": [
+        {
+          "path": "painted_wooden_bench_1k.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/painted_wooden_bench/painted_wooden_bench_1k.gltf",
+          "size": 2835,
+          "md5": "784a49250144aa5299a93c1f3b6968d7",
+          "sha256": "2289ab82f3fe3045bf18f7b9541743d2c65b9f071cb34bbe424d2bc998f3e507"
+        },
+        {
+          "path": "painted_wooden_bench.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/painted_wooden_bench/painted_wooden_bench.bin",
+          "size": 25444,
+          "md5": "ed331b50f955852f007313c1a75c2e2d",
+          "sha256": "5799bcb20924105cccd6424de8cdb8e67eb57fddc19c395befeac634a7b2e013"
+        },
+        {
+          "path": "textures/painted_wooden_bench_arm_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/painted_wooden_bench/painted_wooden_bench_arm_1k.jpg",
+          "size": 586040,
+          "md5": "754ecc7f47b1e5d032e45e22334954f1",
+          "sha256": "878785565eeff706b8f1e4db7e3d794a544e9cf0e56cee424d9a271ab4ead47e"
+        },
+        {
+          "path": "textures/painted_wooden_bench_diff_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/painted_wooden_bench/painted_wooden_bench_diff_1k.jpg",
+          "size": 545216,
+          "md5": "60c7d0f34f52b1003345d318e35f468d",
+          "sha256": "9bc533313091ee71eaca5fa6334b71d27935d9d75311f64df6a53c28a67c435c"
+        },
+        {
+          "path": "textures/painted_wooden_bench_nor_gl_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/painted_wooden_bench/painted_wooden_bench_nor_gl_1k.jpg",
+          "size": 830104,
+          "md5": "08b74bebcff262c14beae35a4f7b3405",
+          "sha256": "a0f53740d77fc61aac01de0b7e1ae6109445d1756839f739ae31fdf10c9911f2"
+        }
+      ]
+    },
+    {
+      "id": "painted_wooden_cabinet",
+      "source": "polyhaven",
+      "kind": "model",
+      "resolution": "1k",
+      "use": [
+        "targets"
+      ],
+      "why": "white painted cabinet, 1.19 x 0.62 x 1.18 m, 1.9 MB",
+      "licence": "CC0-1.0",
+      "licence_url": "https://polyhaven.com/license",
+      "name": "Painted Wooden Cabinet",
+      "authors": {
+        "Kirill Sannikov": "All"
+      },
+      "categories": [
+        "furniture",
+        "shelves"
+      ],
+      "dimensions_m": [
+        1.195,
+        0.617,
+        1.182
+      ],
+      "page": "https://polyhaven.com/a/painted_wooden_cabinet",
+      "files": [
+        {
+          "path": "painted_wooden_cabinet_1k.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/painted_wooden_cabinet/painted_wooden_cabinet_1k.gltf",
+          "size": 9253,
+          "md5": "43f7a37a61773dadbafd46ab51b97c9e",
+          "sha256": "ce04543cdb10e05fe9c2cc08e9c118b16c1c717a07bcbfac9b99859465c8d1ed"
+        },
+        {
+          "path": "painted_wooden_cabinet.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/painted_wooden_cabinet/painted_wooden_cabinet.bin",
+          "size": 78072,
+          "md5": "c86f9e483a0da1d5a9f68b08099a4166",
+          "sha256": "1023d773d84c42f2709ec297247d90b0e2833e37241fbe852e2f33b41ae10cda"
+        },
+        {
+          "path": "textures/painted_wooden_cabinet_arm_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/painted_wooden_cabinet/painted_wooden_cabinet_arm_1k.jpg",
+          "size": 622122,
+          "md5": "616ce8f1c545087c463b79e7bea952a6",
+          "sha256": "34e0bcb00a62704d85161d41e844e798d4f894e416e7769079d50a21d561d171"
+        },
+        {
+          "path": "textures/painted_wooden_cabinet_diff_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/painted_wooden_cabinet/painted_wooden_cabinet_diff_1k.jpg",
+          "size": 688654,
+          "md5": "cab7d6088249cb2687e0c79b2cdf62c5",
+          "sha256": "2dbed9f9ec8e49fc2e87de8cd86e2029a80e9001b5102b4e47c7dfa913f34d89"
+        },
+        {
+          "path": "textures/painted_wooden_cabinet_nor_gl_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/painted_wooden_cabinet/painted_wooden_cabinet_nor_gl_1k.jpg",
+          "size": 463678,
+          "md5": "e39fdc39e2fce036fd7a904ea3862671",
+          "sha256": "e94edf68faeaf68016c28da9b9f299bb38c57463acd94130ecf98dcaef790016"
+        }
+      ]
+    },
+    {
+      "id": "plastic_monobloc_chair_01",
+      "source": "polyhaven",
+      "kind": "model",
+      "resolution": "1k",
+      "use": [
+        "targets"
+      ],
+      "why": "white plastic garden chair, 0.64 x 0.63 x 0.88 m, 2.0 MB",
+      "licence": "CC0-1.0",
+      "licence_url": "https://polyhaven.com/license",
+      "name": "Plastic Monobloc Chair 01",
+      "authors": {
+        "Kuutti Siitonen": "All"
+      },
+      "categories": [
+        "furniture",
+        "seating",
+        "collection: the_shed"
+      ],
+      "dimensions_m": [
+        0.642,
+        0.628,
+        0.88
+      ],
+      "page": "https://polyhaven.com/a/plastic_monobloc_chair_01",
+      "files": [
+        {
+          "path": "plastic_monobloc_chair_01_1k.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/plastic_monobloc_chair_01/plastic_monobloc_chair_01_1k.gltf",
+          "size": 2892,
+          "md5": "b0ac94e52b406e1815af47d9d84eadb4",
+          "sha256": "899bf148139ab8d1718c25ec06112a652631f9476b5aaeeacb9eb1da9b7f1d3a"
+        },
+        {
+          "path": "plastic_monobloc_chair_01.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/plastic_monobloc_chair_01/plastic_monobloc_chair_01.bin",
+          "size": 124808,
+          "md5": "cff97136a9c4bb57c62937cbb7d33a79",
+          "sha256": "db5c778488d01d7e7d3409e2cda53ee8f6dd523a327c080000d549dd0f83b375"
+        },
+        {
+          "path": "textures/plastic_monobloc_chair_01_arm_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/plastic_monobloc_chair_01/plastic_monobloc_chair_01_arm_1k.jpg",
+          "size": 634320,
+          "md5": "ce9271797fd8893a6c84f639f952d0b9",
+          "sha256": "78a67659a19a9df9efc0ef71789de0c949a727db62ade4c4c8887cd2c803c1a2"
+        },
+        {
+          "path": "textures/plastic_monobloc_chair_01_diff_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/plastic_monobloc_chair_01/plastic_monobloc_chair_01_diff_1k.jpg",
+          "size": 560823,
+          "md5": "c36dfe0f38d6ca1632ba426c598e6764",
+          "sha256": "fdd1255a02bf684cfcff2eae75c0e3eea0db1fb5ecbfbd8c4f9beab8fd83ff6c"
+        },
+        {
+          "path": "textures/plastic_monobloc_chair_01_nor_gl_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/plastic_monobloc_chair_01/plastic_monobloc_chair_01_nor_gl_1k.jpg",
+          "size": 630024,
+          "md5": "387f81f09c0754416298398277fb2a6d",
+          "sha256": "9ffa876b37d72ae1c0aed84d4dc1f62c956c844b3efec1f786f9080c10f63c9e"
+        }
+      ]
+    },
+    {
+      "id": "portable_generator",
+      "source": "polyhaven",
+      "kind": "model",
+      "resolution": "1k",
+      "use": [
+        "targets"
+      ],
+      "why": "yellow portable generator, 0.82 x 0.56 x 0.58 m, 3.4 MB",
+      "licence": "CC0-1.0",
+      "licence_url": "https://polyhaven.com/license",
+      "name": "Portable Generator",
+      "authors": {
+        "James Ray Cock": "All"
+      },
+      "categories": [
+        "industrial",
+        "appliances",
+        "collection: project_lighthouse"
+      ],
+      "dimensions_m": [
+        0.818,
+        0.564,
+        0.577
+      ],
+      "page": "https://polyhaven.com/a/portable_generator",
+      "files": [
+        {
+          "path": "portable_generator_1k.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/portable_generator/portable_generator_1k.gltf",
+          "size": 10130,
+          "md5": "13c2380487daae6726443b9f38dd7e53",
+          "sha256": "d5afe27834f824dfe753391713c45be03479e8100831f320796030531f61b848"
+        },
+        {
+          "path": "portable_generator.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/portable_generator/portable_generator.bin",
+          "size": 939572,
+          "md5": "81b2f4c4c6d0b0d7388ae9aa1123563a",
+          "sha256": "fb7dcfedec1331ad541569e4ca8d4157284b2164084b7fe5a97928d4abc0ea2d"
+        },
+        {
+          "path": "textures/portable_generator_arm_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/portable_generator/portable_generator_arm_1k.jpg",
+          "size": 887711,
+          "md5": "7dbb8b9f0aa4e9d3ce6ad37e0326299f",
+          "sha256": "10236e967baddd90ec7d4ab68969b06fb419f98782a2796db94edc0249b0dad2"
+        },
+        {
+          "path": "textures/portable_generator_diff_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/portable_generator/portable_generator_diff_1k.jpg",
+          "size": 755079,
+          "md5": "3d572e1716148ca5d641d8a199fe9192",
+          "sha256": "32acc300105a2df2290d872889b24e1b29ff1ca2c56c0a0cf8fbba0c5966a063"
+        },
+        {
+          "path": "textures/portable_generator_nor_gl_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/portable_generator/portable_generator_nor_gl_1k.jpg",
+          "size": 818829,
+          "md5": "89a51a982488c21eddec2c6e02249591",
+          "sha256": "8a868edab1a2f5ffa50b2b1680c2c342491b3eeeac443734178c445c7286c25d"
+        },
+        {
+          "path": "textures/portable_generator_spec_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/portable_generator/portable_generator_spec_1k.jpg",
+          "size": 23119,
+          "md5": "b3044dbc984897ed902bd47a450f742f",
+          "sha256": "acf30e81c367898eb846f353d77e404f6831ac23bf071e0e718fddb8881b86cb"
+        }
+      ]
+    },
+    {
       "id": "quiver_tree_01",
       "source": "polyhaven",
       "kind": "model",
@@ -1013,6 +2361,69 @@
           "size": 4045445,
           "md5": "54bca1f06abfad95f385ee32e6dc2b5d",
           "sha256": "360292a6c8d7602dcc15d352d48690f3aac61fbbedc5fb9f6be6309abfb76075"
+        }
+      ]
+    },
+    {
+      "id": "round_wooden_table_01",
+      "source": "polyhaven",
+      "kind": "model",
+      "resolution": "1k",
+      "use": [
+        "targets"
+      ],
+      "why": "round wooden table, 1.40 x 1.40 x 1.01 m, 0.6 MB",
+      "licence": "CC0-1.0",
+      "licence_url": "https://polyhaven.com/license",
+      "name": "Round Wooden Table 01",
+      "authors": {
+        "Ulan Cabanilla": "All"
+      },
+      "categories": [
+        "furniture",
+        "table"
+      ],
+      "dimensions_m": [
+        1.399,
+        1.399,
+        1.005
+      ],
+      "page": "https://polyhaven.com/a/round_wooden_table_01",
+      "files": [
+        {
+          "path": "round_wooden_table_01_1k.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/round_wooden_table_01/round_wooden_table_01_1k.gltf",
+          "size": 4089,
+          "md5": "9a2ad4a55a88ee7493a842026d944abc",
+          "sha256": "dd09c1663b10d15a1fda12ba4f53743e8b8379b17254a78be22100d584738b48"
+        },
+        {
+          "path": "round_wooden_table_01.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/round_wooden_table_01/round_wooden_table_01.bin",
+          "size": 242688,
+          "md5": "b907851fab9d7552cef8a12858acc869",
+          "sha256": "c2635368bc86239a73fafdd8bce20b4261155ce7241e95e809a753ed4693f157"
+        },
+        {
+          "path": "textures/round_wooden_table_01_arm_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/round_wooden_table_01/round_wooden_table_01_arm_1k.jpg",
+          "size": 134854,
+          "md5": "2dc3f86e564b407141c6c216760d8bb6",
+          "sha256": "32b5056dc36e3081987c20cd03f15e73298266c1aff3e573b832e9dd0f8145b9"
+        },
+        {
+          "path": "textures/round_wooden_table_01_diff_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/round_wooden_table_01/round_wooden_table_01_diff_1k.jpg",
+          "size": 117911,
+          "md5": "4be9c5bc6b73f42541fb461c19169c56",
+          "sha256": "d83659d8d584bbadf160760b825f990c6264901e33051643d19fcd389b0d19ae"
+        },
+        {
+          "path": "textures/round_wooden_table_01_nor_gl_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/round_wooden_table_01/round_wooden_table_01_nor_gl_1k.jpg",
+          "size": 50832,
+          "md5": "3d0f124a495db5eeca16db53c188729d",
+          "sha256": "5f80ed76e2eccaea8ab7c0cc9c85d29cc9b164aabfa2403304e1ec79dc47150c"
         }
       ]
     },
@@ -1216,6 +2627,69 @@
       ]
     },
     {
+      "id": "sofa_02",
+      "source": "polyhaven",
+      "kind": "model",
+      "resolution": "1k",
+      "use": [
+        "targets"
+      ],
+      "why": "black leather sofa, 1.81 x 0.82 x 0.71 m, 0.4 MB",
+      "licence": "CC0-1.0",
+      "licence_url": "https://polyhaven.com/license",
+      "name": "Sofa 02",
+      "authors": {
+        "Kirill Sannikov": "All"
+      },
+      "categories": [
+        "furniture",
+        "seating"
+      ],
+      "dimensions_m": [
+        1.807,
+        0.818,
+        0.709
+      ],
+      "page": "https://polyhaven.com/a/sofa_02",
+      "files": [
+        {
+          "path": "sofa_02_1k.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/sofa_02/sofa_02_1k.gltf",
+          "size": 4183,
+          "md5": "ec2590dc8433a523d0fe9e507766c16f",
+          "sha256": "5df114209f9b956ccd4831eaeef469a81339ab371d0056eb6d5d29eee08eb431"
+        },
+        {
+          "path": "sofa_02.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/sofa_02/sofa_02.bin",
+          "size": 74864,
+          "md5": "024d6f57a7c2ee7915430cd6e1c2651e",
+          "sha256": "cb337e03211be0309afa1ded2b6cbb2d402c0f794aaf8828fba559d27a42d3f5"
+        },
+        {
+          "path": "textures/sofa_02_arm_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/sofa_02/sofa_02_arm_1k.jpg",
+          "size": 121752,
+          "md5": "78799d978a1117ba83dbffed9af0fa33",
+          "sha256": "f2813f32cd9ec42a9080590d0953ac9e272d9baa0b22fdb5910bf325157393c6"
+        },
+        {
+          "path": "textures/sofa_02_diff_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/sofa_02/sofa_02_diff_1k.jpg",
+          "size": 86514,
+          "md5": "0452c7d8dd3ef414d5ed3055085028a1",
+          "sha256": "4ff65c782578b52eee89cb96cc4e258ce1b6848e1a7655019af1f7207c749840"
+        },
+        {
+          "path": "textures/sofa_02_nor_gl_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/sofa_02/sofa_02_nor_gl_1k.jpg",
+          "size": 139858,
+          "md5": "968528a369bced172d34275dba5aebf1",
+          "sha256": "c97a359703a8ce1cee62cbd9dc4013b611d821afb7769810983b464ebc5d0cfe"
+        }
+      ]
+    },
+    {
       "id": "tree_small_02",
       "source": "polyhaven",
       "kind": "model",
@@ -1319,6 +2793,365 @@
           "size": 95102324,
           "md5": "7a7019a87e6fe0d7475c0fa2e08d8962",
           "sha256": "8da6c3c389ad8748286d1b7488cd827f75ebdad9d8f59ef7dfb0916df5edc634"
+        }
+      ]
+    },
+    {
+      "id": "vintage_grandfather_clock_01",
+      "source": "polyhaven",
+      "kind": "model",
+      "resolution": "1k",
+      "use": [
+        "targets"
+      ],
+      "why": "grandfather clock, 1.00 x 0.80 x 2.19 m, 2.4 MB: an unseen furniture target (no CC0 playground slide exists)",
+      "licence": "CC0-1.0",
+      "licence_url": "https://polyhaven.com/license",
+      "name": "Vintage Grandfather Clock 01",
+      "authors": {
+        "Yann Kervran": "Rigging",
+        "James Ray Cock": "Modeling & Texturing"
+      },
+      "categories": [
+        "decorative",
+        "appliances",
+        "rigged"
+      ],
+      "dimensions_m": [
+        0.997,
+        0.795,
+        2.191
+      ],
+      "page": "https://polyhaven.com/a/vintage_grandfather_clock_01",
+      "files": [
+        {
+          "path": "vintage_grandfather_clock_01_1k.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/vintage_grandfather_clock_01/vintage_grandfather_clock_01_1k.gltf",
+          "size": 8727,
+          "md5": "cc83cd8bb893afb565f8c03d480d33bd",
+          "sha256": "6fbf4d470426d301681ea0021a0fe345817d9187608792c7610aeb9981f4cd06"
+        },
+        {
+          "path": "textures/vintage_grandfather_clock_01_arm_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/vintage_grandfather_clock_01/vintage_grandfather_clock_01_arm_1k.jpg",
+          "size": 773367,
+          "md5": "e0a4a2ae73049aed8d78b50f29d27a92",
+          "sha256": "74c6224857ffd1d99999b478f1e57cef7d2c9852bcb98e4c473c14f6e17d21be"
+        },
+        {
+          "path": "textures/vintage_grandfather_clock_01_diff_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/vintage_grandfather_clock_01/vintage_grandfather_clock_01_diff_1k.jpg",
+          "size": 635877,
+          "md5": "12eaa27814638af877c35b8c32b7be81",
+          "sha256": "c8fb1b9c6b2e4b4bdbd700ea1ee7cc70cf5eafc78eeee37a0ae389fd7aa2decf"
+        },
+        {
+          "path": "textures/vintage_grandfather_clock_01_nor_gl_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/vintage_grandfather_clock_01/vintage_grandfather_clock_01_nor_gl_1k.jpg",
+          "size": 602065,
+          "md5": "b45fb7bba30b2c57dbdefed640302d5e",
+          "sha256": "d9d36a87f4e09a9cc4d005d9ba3863fbde167ac30184bef1628d0499ecde8d43"
+        },
+        {
+          "path": "vintage_grandfather_clock_01.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/vintage_grandfather_clock_01/vintage_grandfather_clock_01.bin",
+          "size": 337096,
+          "md5": "acaa3b0b8a422c99da9211f6ac4bbf2b",
+          "sha256": "c08ac0f81f4e4f00e0440c8645caf7b86604655e3b3cfbafa09465dda2829c3c"
+        }
+      ]
+    },
+    {
+      "id": "vintage_suitcase",
+      "source": "polyhaven",
+      "kind": "model",
+      "resolution": "1k",
+      "use": [
+        "targets"
+      ],
+      "why": "green leather suitcase, 1.61 x 0.24 x 0.57 m for the set of variants, 4.3 MB",
+      "licence": "CC0-1.0",
+      "licence_url": "https://polyhaven.com/license",
+      "name": "Vintage Suitcase",
+      "authors": {
+        "Maximilian Schuster": "All"
+      },
+      "categories": [
+        "decorative",
+        "props"
+      ],
+      "dimensions_m": [
+        1.608,
+        0.239,
+        0.568
+      ],
+      "page": "https://polyhaven.com/a/vintage_suitcase",
+      "files": [
+        {
+          "path": "vintage_suitcase_1k.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/vintage_suitcase/vintage_suitcase_1k.gltf",
+          "size": 15481,
+          "md5": "08c32e1963eb74610fb291520c8345b4",
+          "sha256": "5d040fdb26c5d97d5d60518ef4875cc72effcabe0a5f68f50e8970013e57a589"
+        },
+        {
+          "path": "textures/vintage_suitcase_01_arm_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/vintage_suitcase/vintage_suitcase_01_arm_1k.jpg",
+          "size": 704919,
+          "md5": "4db295f083c12d9d98d43c9bc8c76312",
+          "sha256": "cde01b9b4bee1e23060add6a4d166a48f69d3470a5b5cde35acd1e6738351796"
+        },
+        {
+          "path": "textures/vintage_suitcase_01_diff_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/vintage_suitcase/vintage_suitcase_01_diff_1k.jpg",
+          "size": 457761,
+          "md5": "8b9025506413eb45ba15518ebaa06f35",
+          "sha256": "f226a5adb38e8e50b88f05eafbc1b3716797d325b2820aca3685618eef5e5f39"
+        },
+        {
+          "path": "textures/vintage_suitcase_01_nor_gl_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/vintage_suitcase/vintage_suitcase_01_nor_gl_1k.jpg",
+          "size": 726302,
+          "md5": "7927cc4e0cbaa387a8f1478e47bdcae3",
+          "sha256": "77ea4998ae6c0d51b3ed72831216b814d8852c51c24d8bc99da83fe29b6535a5"
+        },
+        {
+          "path": "textures/vintage_suitcase_02_arm_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/vintage_suitcase/vintage_suitcase_02_arm_1k.jpg",
+          "size": 703902,
+          "md5": "bb480c03d08335160e00c1ec215134f2",
+          "sha256": "01a6da086159d09b1bce5b98a5a485b905926d1dd531c3484ee44ba77b3d9b2d"
+        },
+        {
+          "path": "textures/vintage_suitcase_02_diff_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/vintage_suitcase/vintage_suitcase_02_diff_1k.jpg",
+          "size": 491501,
+          "md5": "3793b2ab0206acf8272271468b23c7cd",
+          "sha256": "d8d82b8d08c9400f6f2a9f9736175ba0555ed6c5132cdd97a273d19be3f9db76"
+        },
+        {
+          "path": "textures/vintage_suitcase_02_nor_gl_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/vintage_suitcase/vintage_suitcase_02_nor_gl_1k.jpg",
+          "size": 727012,
+          "md5": "309c88cf867f62b285353d4f087c1c97",
+          "sha256": "e79c275b94a2383bad5037d186e8c7807e78cac18f7f439cfe51b16fbe3d8ee6"
+        },
+        {
+          "path": "vintage_suitcase.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/vintage_suitcase/vintage_suitcase.bin",
+          "size": 467856,
+          "md5": "0a7a8d06b2c579beabbd36916866a7a9",
+          "sha256": "8a29ec4465a213c8d81b2d472358eae295da3221b54bebeae699f0d2cb7a32eb"
+        }
+      ]
+    },
+    {
+      "id": "wine_barrel_01",
+      "source": "polyhaven",
+      "kind": "model",
+      "resolution": "1k",
+      "use": [
+        "targets"
+      ],
+      "why": "wooden barrel, 0.74 x 0.76 x 0.87 m, 0.9 MB",
+      "licence": "CC0-1.0",
+      "licence_url": "https://polyhaven.com/license",
+      "name": "Wine Barrel 01",
+      "authors": {
+        "James Ray Cock": "All"
+      },
+      "categories": [
+        "containers"
+      ],
+      "dimensions_m": [
+        0.742,
+        0.756,
+        0.871
+      ],
+      "page": "https://polyhaven.com/a/wine_barrel_01",
+      "files": [
+        {
+          "path": "wine_barrel_01_1k.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/wine_barrel_01/wine_barrel_01_1k.gltf",
+          "size": 6673,
+          "md5": "5397e6d959dd3ef20d1fc14436d0eb70",
+          "sha256": "503d3339677217c3241a3cdbc1c803ed1eb82d1a48f51436d1545ec5745ae8d8"
+        },
+        {
+          "path": "textures/wine_barrel_01_arm_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/wine_barrel_01/wine_barrel_01_arm_1k.jpg",
+          "size": 172531,
+          "md5": "2f0cc81ac07fdbe8c22927feac722927",
+          "sha256": "be658e1389dbe8669e847b8fc7df8affdce46d6582f01ac701555b6446a40b9d"
+        },
+        {
+          "path": "textures/wine_barrel_01_diff_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/wine_barrel_01/wine_barrel_01_diff_1k.jpg",
+          "size": 195980,
+          "md5": "fdea9538acf01a04a61626919a84b3fb",
+          "sha256": "6bea25b4fadda0636b6b7e46e0cc15153eda21ef62c823d5ee2e06a5a7589214"
+        },
+        {
+          "path": "textures/wine_barrel_01_nor_gl_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/wine_barrel_01/wine_barrel_01_nor_gl_1k.jpg",
+          "size": 163587,
+          "md5": "6b3ce558fa74d3760fa0192dfc4564a3",
+          "sha256": "86cdb0729b44d1687c75d895e6d0ef650f7580d70f3bcb52bce6fedc5fd79b6f"
+        },
+        {
+          "path": "wine_barrel_01.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/wine_barrel_01/wine_barrel_01.bin",
+          "size": 385912,
+          "md5": "84f578460020912056a1e3fbe3ec1b97",
+          "sha256": "d827c31afed824b923ea9168462c93ab3ad3a88c4a68b155bd35efb1a02cbf00"
+        }
+      ]
+    },
+    {
+      "id": "wooden_ladder_02",
+      "source": "polyhaven",
+      "kind": "model",
+      "resolution": "1k",
+      "use": [
+        "targets"
+      ],
+      "why": "wooden step ladder, 0.99 x 0.62 x 1.72 m, 2.3 MB: the paper's unseen ladder",
+      "licence": "CC0-1.0",
+      "licence_url": "https://polyhaven.com/license",
+      "name": "Wooden Ladder 02",
+      "authors": {
+        "JN_3DPRINTINGNERD": "All"
+      },
+      "categories": [
+        "collection: project_lighthouse",
+        "tools"
+      ],
+      "dimensions_m": [
+        0.99,
+        0.618,
+        1.722
+      ],
+      "page": "https://polyhaven.com/a/wooden_ladder_02",
+      "files": [
+        {
+          "path": "wooden_ladder_02_1k.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/wooden_ladder_02/wooden_ladder_02_1k.gltf",
+          "size": 2800,
+          "md5": "0b751a899654330ba1749b737f2e94ef",
+          "sha256": "8fbb14700a4d0f6e44f538538f9294e4b3395d1923c719f18cb6dba9fd20a06a"
+        },
+        {
+          "path": "textures/wooden_ladder_02_arm_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/wooden_ladder_02/wooden_ladder_02_arm_1k.jpg",
+          "size": 681051,
+          "md5": "0d11d250474a472f7b5a9ba41ed821a8",
+          "sha256": "2830f8a73e4dd25412568dea16ca5338378f2017879249f0fc64c91f8a5d8f71"
+        },
+        {
+          "path": "textures/wooden_ladder_02_diff_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/wooden_ladder_02/wooden_ladder_02_diff_1k.jpg",
+          "size": 688874,
+          "md5": "de80fb92a09963214a336657e632afc6",
+          "sha256": "3c99e631dd30fb0d707a913fd7ffcd0d9f05161f73a93870d8ff499e78338254"
+        },
+        {
+          "path": "textures/wooden_ladder_02_nor_gl_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/wooden_ladder_02/wooden_ladder_02_nor_gl_1k.jpg",
+          "size": 788043,
+          "md5": "f49bbb01e92846e97058b4da2badd5eb",
+          "sha256": "6a7308af0bcbd027812801ed34fa5193f0b4a443a672e046a99a73b15199c8cd"
+        },
+        {
+          "path": "wooden_ladder_02.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/wooden_ladder_02/wooden_ladder_02.bin",
+          "size": 175892,
+          "md5": "735a43bc397ebbc9e245c64313f7bf15",
+          "sha256": "bfbef75055bcd25fd680394fc22827817a9e78f30c21c3fde99d3d9af086d9be"
+        }
+      ]
+    },
+    {
+      "id": "wooden_picnic_table",
+      "source": "polyhaven",
+      "kind": "model",
+      "resolution": "1k",
+      "use": [
+        "targets"
+      ],
+      "why": "wooden picnic table, 2.24 x 3.02 x 0.75 m, 4.3 MB: an unseen furniture target",
+      "licence": "CC0-1.0",
+      "licence_url": "https://polyhaven.com/license",
+      "name": "Wooden Picnic Table",
+      "authors": {
+        "Ulan Cabanilla": "All"
+      },
+      "categories": [
+        "furniture",
+        "seating",
+        "table"
+      ],
+      "dimensions_m": [
+        2.241,
+        3.022,
+        0.746
+      ],
+      "page": "https://polyhaven.com/a/wooden_picnic_table",
+      "files": [
+        {
+          "path": "wooden_picnic_table_1k.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/wooden_picnic_table/wooden_picnic_table_1k.gltf",
+          "size": 5099,
+          "md5": "6da01f8a75e559f356b494059f7b0eda",
+          "sha256": "6b0dd9916fd87dba2e5baad06e20c0badf68bc68a5761a13854fa9a215c6bd50"
+        },
+        {
+          "path": "textures/wooden_picnic_table_bottom_arm_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/wooden_picnic_table/wooden_picnic_table_bottom_arm_1k.jpg",
+          "size": 699984,
+          "md5": "11af6815971a16983c1e70103cd8300e",
+          "sha256": "555226136c1d754d4aa5da42385a9152a146c5175382c77cced611a6880efd35"
+        },
+        {
+          "path": "textures/wooden_picnic_table_bottom_diff_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/wooden_picnic_table/wooden_picnic_table_bottom_diff_1k.jpg",
+          "size": 680087,
+          "md5": "496b544a3dded845915431cef92e2f7d",
+          "sha256": "887b9a57213f87196fb090419e14d00095af8fa56c93ca6cd7d0d70ef4e5fd27"
+        },
+        {
+          "path": "textures/wooden_picnic_table_bottom_nor_gl_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/wooden_picnic_table/wooden_picnic_table_bottom_nor_gl_1k.jpg",
+          "size": 548315,
+          "md5": "6b9ad57ca60a3dc5bc5e6e57acfd6cc9",
+          "sha256": "c5d6eb388eceb6d98e92ff31d3f3346d411b1bbcb15c05dc9da71e4a7e398539"
+        },
+        {
+          "path": "textures/wooden_picnic_table_top_arm_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/wooden_picnic_table/wooden_picnic_table_top_arm_1k.jpg",
+          "size": 747432,
+          "md5": "7455dbd1d31d365961ff55b7a2a67186",
+          "sha256": "50d2b7a0b15c56bf82bc0c918e6eaa5f590a6fd61d32311c8da85c414ace297d"
+        },
+        {
+          "path": "textures/wooden_picnic_table_top_diff_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/wooden_picnic_table/wooden_picnic_table_top_diff_1k.jpg",
+          "size": 722582,
+          "md5": "5ad2a2cb0ff9f55602ea0ad23096116f",
+          "sha256": "4aefdef35bf343410dbebd8577dfc968f1d6420ccddc601b19912e84b2accc0a"
+        },
+        {
+          "path": "textures/wooden_picnic_table_top_nor_gl_1k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/wooden_picnic_table/wooden_picnic_table_top_nor_gl_1k.jpg",
+          "size": 625681,
+          "md5": "cab70a224d5b87bcb6c0595e14565626",
+          "sha256": "1e65787457f9edfdd04f1ee3f777ac2d2a9d43bfbbd3cb40c1e086f939bba419"
+        },
+        {
+          "path": "wooden_picnic_table.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/wooden_picnic_table/wooden_picnic_table.bin",
+          "size": 279116,
+          "md5": "5d52db76187b9990c328f79612eafe5b",
+          "sha256": "1efd51c292843194fbd709452d56d06c9ddc770f43a013db57ca79bfc2731b01"
         }
       ]
     }

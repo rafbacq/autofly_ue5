@@ -1798,6 +1798,60 @@
       "source": "Unreal Engine 5.7.4 engine content (BasicShapes); the same mesh as 'cube', as an obstacle (s07's stacked boxes, plan 5 fact 3)",
       "licence": "Unreal Engine EULA",
       "size_and_pivot_verified_by": "scripts/build_level.sh bounds assertion (s01's ground slab is this mesh)"
+    },
+    "sphere": {
+      "ue_path": "/Engine/BasicShapes/Sphere",
+      "base_size_m": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "pivot": "center",
+      "footprint": "circle",
+      "category": "geometry",
+      "role": "target",
+      "seen": null,
+      "measured_extent_cm_at_unit_scale": [
+        50.0,
+        50.0,
+        50.0
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "source": "Unreal Engine 5.7.4 engine content (BasicShapes)",
+      "licence": "Unreal Engine EULA",
+      "cooked_because": "/Game/Geometry/OrangeBall_Blueprint and /ProjectAirSim/Blueprints/BP_Ball reference it, and both directories are +DirectoriesToAlwaysCook (ue_project/Config/DefaultGame.ini)",
+      "measured_by": "the cooked mesh's bounds (ue_project/Saved/Cooked/Linux/Engine/Content/BasicShapes/Sphere.uexp, cook of 2026-10-08 02:22): origin (0, 0, 0), half-extent 50 cm, read where Cube.uexp and Cylinder.uexp hold the 50 cm their live builds measured. The runtime spawn table (world.list_assets()) is to confirm it at plan 5 C6; no level places it yet"
+    },
+    "cone": {
+      "ue_path": "/Engine/BasicShapes/Cone",
+      "base_size_m": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "pivot": "center",
+      "footprint": "circle",
+      "category": "geometry",
+      "role": "target",
+      "seen": null,
+      "measured_extent_cm_at_unit_scale": [
+        50.0,
+        50.0,
+        50.0
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "source": "Unreal Engine 5.7.4 engine content (BasicShapes)",
+      "licence": "Unreal Engine EULA",
+      "cooked_because": "/Game/BlocksMap, which is +MapsToCook (ue_project/Config/DefaultGame.ini), references it; nothing in an always-cooked directory does, so dropping BlocksMap from the cook would drop the cone",
+      "measured_by": "the cooked mesh's bounds (ue_project/Saved/Cooked/Linux/Engine/Content/BasicShapes/Cone.uexp, cook of 2026-10-08 02:22): origin (0, 0, 0), half-extent 50 cm, read where Cube.uexp and Cylinder.uexp hold the 50 cm their live builds measured. The runtime spawn table (world.list_assets()) is to confirm it at plan 5 C6; no level places it yet"
     }
   },
   "materials": {
