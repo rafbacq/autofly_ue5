@@ -28,19 +28,22 @@ Code (`autofly_ue5/`):
 | `dataset/` | AutoFly's state[9] (`state.py`), the canonical raw store (`raw.py`), the RLDS/TFDS exporter (`rlds.py`, with TFDS-generated metadata templates in `rlds_templates/`), the target pool (`targets.py`: `assets/targets.json`, the split's usable entries, drawn by the sampler at collection time only) and the phase rebalancing (`rebalance.py`, spec §10.3: pure; the detector runs in `scripts/detect_targets.py`) |
 | `evidence.py` | Per-scene default evidence paths, and the refusal to write over `docs/gates/` |
 | `validate/` | The live checks for any built scene (`live_m1.py`: M1's gate for s01, M4's per-scene gates), the geometry of every obstacle kind for them (`obstacles.py`: cylinders, yawed boxes, glTF meshes ray-cast in their own frame), the engine-fault audit (`engine_check.py`) and the dataset validator (`dataset.py`, spec §11) |
+| `evaluation/` | Closed-loop evaluation of any policy (spec §12 M6, plan 6 item 6): the `Policy` interface a VLA implements and the reference adapters (`policy.py`: the SAC expert, a privileged scripted baseline, hover), the frozen episode files (`episodes.py`: `assets/eval_episodes/`), `run_condition` (`harness.py`) and SR/CR/PER with Wilson intervals (`metrics.py`) |
 
 Elsewhere in the repo:
 - `scripts/`: shell and Python entry points (run_job, setup, launch/stop sim, throughput, the gate for any scene, audits,
   the mover probe, renders, `watch_training.py` (the live training dashboard), M3's `collect_dataset.py` and
   `export_rlds.py`, the rebalancing's `detect_targets.py` (Grounding DINO, in `runs/tools/gdino_venv`) and
   `rebalance_dataset.py`, `dataset_stats.py` (a store's path lengths and PER), M4's `fetch_assets.py` (the CC0 list,
-  into `downloads/`, recorded in `assets/sources.json`) and `measure_assets.py` (`assets/measurements.json`), and the
+  into `downloads/`, recorded in `assets/sources.json`) and `measure_assets.py` (`assets/measurements.json`), the
+  evaluation harness's `eval_harness.py` (`write-episodes`, `run --policy hover|scripted|expert:<zip>`), and the
   status report's `results_figures.py` and `dataset_episode_video.py` (`results/<date>/`)).
 - `configs/`: Project AirSim scene configs; `*_fast` means a 1 ms real-time update rate.
 - `scenes/`: scene JSONs. `s01d_moving_pillars.json` flies s01's level (`"level": "s01"`) with 8–12 moving pillars;
   `s09_coloured_poles`, `s07_stacked_boxes`, `s02_sparse_trees` are M4's first scenes.
-- `assets/`: the CC0 model and material sources (`sources.json`), their measured geometry (`measurements.json`) and the
-  registry every scene draws from (`registry.json`). The editor-side import and material scripts are in
+- `assets/`: the CC0 model and material sources (`sources.json`), their measured geometry (`measurements.json`), the
+  registry every scene draws from (`registry.json`) and the frozen evaluation episodes (`eval_episodes/`, written once
+  by `scripts/eval_harness.py write-episodes`, never over). The editor-side import and material scripts are in
   `autofly_ue5/scenes/ue/` (`import_assets.py`, `ue_materials.py`, `fix_foliage_materials.py`, run through
   `scripts/import_assets.py` or `scripts/ue_editor_run.py`).
 - `tests/`: offline tests (the FakeSimulator plus fakes of the projectairsim API).
@@ -143,7 +146,8 @@ on `<run>/tensorboard` (bind 127.0.0.1: the host is shared).
   rewards and infos from M2's own code. A new feature draws its random numbers after every existing draw and makes no
   new simulator call on a static scene.
 - **Seeds come from `expert/seeds.py`'s ranges.** Workers use `(rank+1)·1e6 + session·1e5`, the gate 100e6, training
-  evaluation 200e6, and probes 300e6. Don't invent new bases without adding them there and to its disjointness test.
+  evaluation 200e6, probes 300e6, collection 400e6, selection 500e6 and the evaluation harness's frozen files 600e6.
+  Don't invent new bases without adding them there and to its disjointness test.
 - **Docstrings explain *why*, citing the measurement or incident that forced a choice.** Match the surrounding
   density. Keep new ones proportionate.
 - **Commits.** One concern per commit on a feature branch, with a message saying what was wrong and what changed.
