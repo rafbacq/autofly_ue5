@@ -102,6 +102,29 @@ reachability and the live checks of §11. Then M5 trains one expert per train sc
   mix, a name for instructions each. The sampler draws the target and 3-5 distractors from the split's pool *after*
   every existing draw, and the instruction names the target; s01's pool stays the orange cylinder so its golden setups
   do not move. The collector's `--target-name` placeholder goes.
+  **Design (2026-10-08, while s02's expert trains):**
+  - *The pool is a collection-time choice, not a scene field.* The expert flies on depth to a privileged target
+    position, so training and the gate keep the orange cylinder (no scene file changes, no layout re-hash, s01's
+    golden episodes untouched); `scripts/collect_dataset.py --targets assets/targets.json` (and M6's harness) pass the
+    pool to the env, which hands it to the sampler. Without a pool every draw is as today.
+  - *File format.* `{"version": 1, "targets": [{"name": "blue hatchback", "category": "vehicle", "seen": true,
+    "asset": "<registry key, null until imported>", "scale": [sx, sy, sz], "material": "<registry material or null>",
+    "status": "candidate|imported|placeholder", "source": {"source", "id", "licence", "page"}, "height_m": ...}]}`.
+    Categories: vehicle, geometry, furniture, equipment, human, other; the mix is checked by a test (22/20/18/18/17/5 %
+    of 60, within one). Unseen entries are the paper's (crane, tiger, elephant, slide, traffic cone, ladder, ...).
+  - *Draw order.* After the movers (step 9): step 10 the target entry, uniform over the split's pool (seen for `train`
+    and `test_seen`, seen plus unseen for `test_unseen`); step 11 the distractor entries, without replacement from
+    the rest, one per distractor position already drawn. A pool with fewer than 6 usable entries is refused.
+  - *Spawning.* The target's asset is spawned by its short Unreal name at the sampled position, standing on the ground
+    (centre pivot: z = -height/2; base pivot: z = 0), with the entry's scale, and the entry's material only if it is a
+    base `UMaterial` (spec §7.1), else the mesh's own. Distractors likewise. The instruction names the target.
+  - *Records.* Provenance carries the target and distractor entries; the dataset card lists target names with status
+    "pool" (no placeholder); the rebalancing detector queries the target's name.
+  - *Assets.* CC0 first: Poly Haven furniture and equipment (chairs, sofas, tables, barrels, crates, ladders, cones,
+    suitcases, TVs), engine primitives in the palette for geometry; vehicles and humans have no photoreal CC0 source
+    (survey of 2026-10-02): Quaternius / Kenney low-poly CC0 as placeholders until a Fab session with the user. Fetched
+    by `scripts/fetch_assets.py` (`use: ["targets"]`), measured by `scripts/measure_assets.py`, imported after the
+    training run frees the editor (an editor is a foreign GPU job to a live run's relaunch guard).
 - [ ] **C6. Footprints and the runtime spawn table**: footprint circles from measured extents at flight altitude;
   box extents (base x scale, yaw) for `check_map.py`, `validate/geometry.py` and `motion.py`'s `CircleFootprint`
   (fact 9); `_spawn_asset_name` checked against `world.list_assets()` for every target (spec §7.1: short names, base
