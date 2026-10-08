@@ -94,3 +94,61 @@ about 2 h. About two days of mostly unattended compute.
 - Lower kept-rates slow collection proportionally; the collector's `max_attempts` covers it.
 - Grounding DINO on the GPU is a foreign job to a simulator launch: it runs only while no simulator runs.
 - The host can freeze (MEMORY.md): every store and record is written durably and a campaign resumes per store.
+
+## Revision 1 (2026-10-08, after an independent review of this plan): what changed and why
+
+The review's points were checked against the code and adopted, except where noted.
+
+1. **One merged dataset, VLA-tested.** `rlds.export_rlds` writes one TFDS dataset per store, split "train" only, with
+   `episode_metadata` holding only the file path: 9-18 per-scene datasets would each need their own OpenVLA
+   registration and normalisation key, and none would have a validation split. So the raw stores stay per scene and
+   batch, but the export is **one** dataset (`autofly_ue5_proto`, 1.0.0): train and val splits (val about 5 % of
+   episodes, stratified by scene x target, episode ids frozen in a file), episode metadata extended with episode id,
+   scene, target name, category, seen, status and seed, and `dataset_statistics.json` in OpenVLA's schema computed on
+   train only. Done means the merged dataset loads through an OpenVLA-style RLDS pipeline (dlimp, CPU, in its own venv)
+   as well as through TFDS; a LeRobot conversion of a few episodes is optional. Exporting only the merged dataset also
+   saves the second copy of every frame per store.
+2. **A thin slice first (replaces step 1's role as a kept-rate measure).** The screening runs through the gate: no a0,
+   the orange cylinder as the only target, no settle steps, and 40 episodes give about +-0.15. It ranks the candidate
+   pilots, nothing more. The kept-rate is measured by a thin slice: about 50 kept episodes per scene under true
+   collection conditions (the pool, a0, stochastic, settle steps), reported with a Wilson lower bound, per target too
+   (to catch a target the pilot fails on more often), with a check that kept flights cross the field (detour and PER),
+   and with an automated first-frame visibility check (which replaces the separate re-probe of 2d). The merged export,
+   the statistics, the loader check and the harness are run on the thin slice before the campaign tops it up.
+3. **No dedicated trainings; the bar is a kept-rate of 0.25.** Collection runs at the same saturated 14.9 steps/s as
+   training, so 200 kept episodes cost about 1 h per scene at a kept-rate of 1.0 and 3-4 h at 0.25-0.3: a 6-8 h
+   training to lift a scene from 0.3 to 0.6 never pays for itself, and it would share the GPU with collection. Step 3 is
+   dropped; only a scene below 0.25 with every candidate would reopen it. **Done is 200 kept episodes per training
+   scene; 400 is a stretch goal** if time allows.
+4. **Privileged state.** state[0] and state[1] are the distance and the bearing to the target from its true position
+   (AutoFly's own definition, kept as the record's). A VLA that reads the state could fly from them alone. The card
+   marks them as privileged, and the harness zeroes them by default (an option includes them); baselines are reported
+   both ways.
+5. **Unseen targets are evaluated.** `TargetPool.for_split` draws unseen targets only for test_unseen scenes, which are
+   out of scope. The harness gets a split override: the test_seen layouts (s05r; s06r once gated) and seen scenes with
+   unseen targets, on a frozen evaluation episode file under a new seed base registered in `expert/seeds.py`, at the
+   task's rules, in lock-step (a policy's latency never changes the dynamics).
+6. **Rebalancing is a quality check, not a blocker.** OpenVLA and LeRobot do not use per-step weights. Its value here is
+   finding targets the detector never finds (small or low-poly ones). It runs last, while no simulator runs, and its
+   sparse search is first validated against the dense scores the s01 pilot already has (the same transition on at least
+   99 of 100 episodes).
+7. **Target exclusion by shape class, in data.** Not only the primitive matching the obstacles: barrels read as pillars
+   and poles (s01, s01d, s09), the cabinet and the tool chest as boxes (s07), spheres as painted stones (s04). A table
+   per scene, with a test; and the placeholder status goes into episode metadata so the Kenney stand-ins can be
+   filtered out later.
+8. **Language.** Two verbatim templates and one obstacle phrase per scene make every instruction a function of scene and
+   target; the card says so. Paraphrases are not added in this plan (they would leave AutoFly's record convention).
+9. **Cuts.** s06r's gate is deferred (the harness starts on s05r); `final_results` holds one auto-generated video per
+   scene rather than hand-picked sets.
+
+### Done checks (one per item)
+
+| Item | Check |
+|---|---|
+| Scenes | The gate records pass: s01-s07, s09, s01d's mover probe, s05r |
+| Targets | The thin slice's first-frame visibility check passes for every drawn target, and every target was spawned live |
+| Pilots | `pilots.json`: each scene's checkpoint sha256 and its kept-rate under collection conditions, Wilson lower bound >= 0.25, with the crossing check |
+| Dataset | The validator passes on every store; the merged dataset holds >= 200 episodes per training scene and every drawn seen target; TFDS reads it back |
+| VLA-ready | The OpenVLA-style loader iterates the merged dataset; `dataset_statistics.json` matches the schema; the expert flown through the harness lands within the CI of its kept-rate and the scripted baseline below it |
+| Rebalancing | The sparse search matches the dense scores on the s01 pilot; `rebalance.json` for the merged dataset |
+| final_results | Every link in its README resolves |
