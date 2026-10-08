@@ -1,0 +1,613 @@
+{
+  "description": "Plan 6 step 1: pilot screening. Each candidate expert flew 30-40 stochastic episodes per scene on the probe seed range (300e6 + 1000 x scene number), through scripts/m2_gate.py under the task's rules (mesh scenes: the outline footprint rule at 1.05 m). Gate conditions, not collection conditions: no a0 alignment, the orange cylinder as target, no first-use hold. It ranks candidates only; each pilot's kept-rate is measured by the thin slice (plan 6, revision 1).",
+  "date": "2026-10-08 17:52",
+  "pairs": [
+    {
+      "scene": "s02",
+      "candidate": "s01d_mean",
+      "checkpoint": "runs/expert/s01d_r6/averaged/avg_250k_550k.zip",
+      "sha256": "55e666a555800de5a1fe97c89de58a667b333d45c2cb17a4ff6ce1c3944efbfd",
+      "episodes": 30,
+      "successes": 5,
+      "success_rate": 0.1667,
+      "wilson_95": [
+        0.0734,
+        0.3356
+      ],
+      "failures": {
+        "collision/footprint": 25
+      },
+      "seed_base": 300102000,
+      "contact_rules": {
+        "footprint": {
+          "contact_m": 1.05,
+          "obstacles": 27,
+          "shape": "outline",
+          "fields": {
+            "island_tree_02": "a14f640a0176311482540d13028adeb20d22c80858eb144f103e844789a51b2e",
+            "island_tree_03": "e0879028492e7bb512da08d24115ad87aaa052d60b27ddaafe50f23b1e18110e",
+            "quiver_tree_01": "dc1a8cff4cb2a5f3920ad3a6523fce5d6797ec1614525e497616cfcf54842288",
+            "searsia_lucida_a": "3c67906a49726dae30d2fb381282c64821ce1df414606654d06562f85ef30e70",
+            "searsia_lucida_b": "051d9caa0a97a8a63c1a7d8217ce4d223a14a351e254357a837b0b4635380ce0",
+            "tree_small_02": "bd4c9ea5290b7d660a86b2947a382fb30ef8e28932b21de8612802a47d636a26"
+          },
+          "fields_manifest_sha256": "c40efeab38b4519976be685b9e30455f1cd7ebfe4c3c668dedba591d7d3bddc8"
+        }
+      },
+      "faults_ok": true,
+      "record": "runs/screening/s02__s01d_mean.json",
+      "record_sha256": "2505ef7522f55d8c031299ab5a5508c6b5c8d286b4261a60ac3c6db42e47fbaf"
+    },
+    {
+      "scene": "s02",
+      "candidate": "s02_pick",
+      "checkpoint": "runs/expert/s02_r1/averaged/avg_350k_end.zip",
+      "sha256": "0971010abb0512c2660c4dd33ad7f75e8d19acbcbb400d38935ba12c08f3ca73",
+      "episodes": 30,
+      "successes": 25,
+      "success_rate": 0.8333,
+      "wilson_95": [
+        0.6644,
+        0.9266
+      ],
+      "failures": {
+        "collision/footprint": 4,
+        "out_of_bounds/altitude_high": 1
+      },
+      "seed_base": 300102000,
+      "contact_rules": {
+        "footprint": {
+          "contact_m": 1.05,
+          "obstacles": 27,
+          "shape": "outline",
+          "fields": {
+            "island_tree_02": "a14f640a0176311482540d13028adeb20d22c80858eb144f103e844789a51b2e",
+            "island_tree_03": "e0879028492e7bb512da08d24115ad87aaa052d60b27ddaafe50f23b1e18110e",
+            "quiver_tree_01": "dc1a8cff4cb2a5f3920ad3a6523fce5d6797ec1614525e497616cfcf54842288",
+            "searsia_lucida_a": "3c67906a49726dae30d2fb381282c64821ce1df414606654d06562f85ef30e70",
+            "searsia_lucida_b": "051d9caa0a97a8a63c1a7d8217ce4d223a14a351e254357a837b0b4635380ce0",
+            "tree_small_02": "bd4c9ea5290b7d660a86b2947a382fb30ef8e28932b21de8612802a47d636a26"
+          },
+          "fields_manifest_sha256": "c40efeab38b4519976be685b9e30455f1cd7ebfe4c3c668dedba591d7d3bddc8",
+          "trained_shape": "circle"
+        }
+      },
+      "faults_ok": true,
+      "record": "runs/screening/s02__s02_pick.json",
+      "record_sha256": "cacc6f3d10f2fe5721b8de9bc24b91e6853ebe8e4ed426df3e1071e89ca8128c"
+    },
+    {
+      "scene": "s03",
+      "candidate": "s01_best",
+      "checkpoint": "runs/expert/s01_r2/best/best_model.zip",
+      "sha256": "8c2c7500041907a98d5d696b9007e30578731ff5136f63c384270c0f4fcbf8dc",
+      "episodes": 30,
+      "successes": 0,
+      "success_rate": 0.0,
+      "wilson_95": [
+        0.0,
+        0.1135
+      ],
+      "failures": {
+        "collision/footprint": 30
+      },
+      "seed_base": 300103000,
+      "contact_rules": {
+        "footprint": {
+          "contact_m": 1.05,
+          "obstacles": 29,
+          "shape": "outline",
+          "fields": {
+            "boulder_01": "a0065e1c76b5b26213aa0eb8b1f2d942d50d19fc8158486f476a7107c08fdefe",
+            "namaqualand_boulder_02": "e7e86037660a8a4bf07fd46ddac10df95cbdf15c5e40530abffb0c61c2f09161",
+            "namaqualand_boulder_03": "14c2c2c503589b37e809038ce85ca6a4afc7070a53cec624ef7929739b47d1b4",
+            "namaqualand_boulder_04": "cb48d8036b66ca55f33531abd778a787a0aead424519548613d908326aed8479",
+            "namaqualand_boulder_06": "c96cad6fa63f2708b6e1348ddf7a87e530ef49e67883760263ec9529b7fc2a58"
+          },
+          "fields_manifest_sha256": "c40efeab38b4519976be685b9e30455f1cd7ebfe4c3c668dedba591d7d3bddc8"
+        }
+      },
+      "faults_ok": true,
+      "record": "runs/screening/s03__s01_best.json",
+      "record_sha256": "1ed46c76afd7f1612822c7fca74c19cbb17f136b52b104d3fa6037cc56154f56"
+    },
+    {
+      "scene": "s03",
+      "candidate": "s01d_mean",
+      "checkpoint": "runs/expert/s01d_r6/averaged/avg_250k_550k.zip",
+      "sha256": "55e666a555800de5a1fe97c89de58a667b333d45c2cb17a4ff6ce1c3944efbfd",
+      "episodes": 30,
+      "successes": 6,
+      "success_rate": 0.2,
+      "wilson_95": [
+        0.0951,
+        0.3731
+      ],
+      "failures": {
+        "collision/footprint": 24
+      },
+      "seed_base": 300103000,
+      "contact_rules": {
+        "footprint": {
+          "contact_m": 1.05,
+          "obstacles": 29,
+          "shape": "outline",
+          "fields": {
+            "boulder_01": "a0065e1c76b5b26213aa0eb8b1f2d942d50d19fc8158486f476a7107c08fdefe",
+            "namaqualand_boulder_02": "e7e86037660a8a4bf07fd46ddac10df95cbdf15c5e40530abffb0c61c2f09161",
+            "namaqualand_boulder_03": "14c2c2c503589b37e809038ce85ca6a4afc7070a53cec624ef7929739b47d1b4",
+            "namaqualand_boulder_04": "cb48d8036b66ca55f33531abd778a787a0aead424519548613d908326aed8479",
+            "namaqualand_boulder_06": "c96cad6fa63f2708b6e1348ddf7a87e530ef49e67883760263ec9529b7fc2a58"
+          },
+          "fields_manifest_sha256": "c40efeab38b4519976be685b9e30455f1cd7ebfe4c3c668dedba591d7d3bddc8"
+        }
+      },
+      "faults_ok": true,
+      "record": "runs/screening/s03__s01d_mean.json",
+      "record_sha256": "b7df81cf75a8de32ef8df8202685b3ce2b044eeed56d9ff4048d864d5f97cb98"
+    },
+    {
+      "scene": "s03",
+      "candidate": "s02_pick",
+      "checkpoint": "runs/expert/s02_r1/averaged/avg_350k_end.zip",
+      "sha256": "0971010abb0512c2660c4dd33ad7f75e8d19acbcbb400d38935ba12c08f3ca73",
+      "episodes": 30,
+      "successes": 20,
+      "success_rate": 0.6667,
+      "wilson_95": [
+        0.4878,
+        0.8077
+      ],
+      "failures": {
+        "collision/footprint": 9,
+        "out_of_bounds/altitude_high": 1
+      },
+      "seed_base": 300103000,
+      "contact_rules": {
+        "footprint": {
+          "contact_m": 1.05,
+          "obstacles": 29,
+          "shape": "outline",
+          "fields": {
+            "boulder_01": "a0065e1c76b5b26213aa0eb8b1f2d942d50d19fc8158486f476a7107c08fdefe",
+            "namaqualand_boulder_02": "e7e86037660a8a4bf07fd46ddac10df95cbdf15c5e40530abffb0c61c2f09161",
+            "namaqualand_boulder_03": "14c2c2c503589b37e809038ce85ca6a4afc7070a53cec624ef7929739b47d1b4",
+            "namaqualand_boulder_04": "cb48d8036b66ca55f33531abd778a787a0aead424519548613d908326aed8479",
+            "namaqualand_boulder_06": "c96cad6fa63f2708b6e1348ddf7a87e530ef49e67883760263ec9529b7fc2a58"
+          },
+          "fields_manifest_sha256": "c40efeab38b4519976be685b9e30455f1cd7ebfe4c3c668dedba591d7d3bddc8",
+          "trained_shape": "circle"
+        }
+      },
+      "faults_ok": true,
+      "record": "runs/screening/s03__s02_pick.json",
+      "record_sha256": "26948d8e447fd65f0409aae6ccf557ab9e8e67cb6800808480ca429abbdc111b"
+    },
+    {
+      "scene": "s04",
+      "candidate": "s01_best",
+      "checkpoint": "runs/expert/s01_r2/best/best_model.zip",
+      "sha256": "8c2c7500041907a98d5d696b9007e30578731ff5136f63c384270c0f4fcbf8dc",
+      "episodes": 30,
+      "successes": 1,
+      "success_rate": 0.0333,
+      "wilson_95": [
+        0.0059,
+        0.1667
+      ],
+      "failures": {
+        "collision/footprint": 28,
+        "collision/sim": 1
+      },
+      "seed_base": 300104000,
+      "contact_rules": {
+        "footprint": {
+          "contact_m": 1.05,
+          "obstacles": 33,
+          "shape": "outline",
+          "fields": {
+            "boulder_01": "a0065e1c76b5b26213aa0eb8b1f2d942d50d19fc8158486f476a7107c08fdefe",
+            "namaqualand_boulder_02": "e7e86037660a8a4bf07fd46ddac10df95cbdf15c5e40530abffb0c61c2f09161",
+            "namaqualand_boulder_05": "04befa9f8012c679efe3877430dbce8bbec8a3640e606e1737447534c3403fbd",
+            "namaqualand_boulder_06": "c96cad6fa63f2708b6e1348ddf7a87e530ef49e67883760263ec9529b7fc2a58"
+          },
+          "fields_manifest_sha256": "c40efeab38b4519976be685b9e30455f1cd7ebfe4c3c668dedba591d7d3bddc8"
+        }
+      },
+      "faults_ok": true,
+      "record": "runs/screening/s04__s01_best.json",
+      "record_sha256": "9161875cc28fcd57456b011943ad865d11b36dc475c90c29023d399b862aed81"
+    },
+    {
+      "scene": "s04",
+      "candidate": "s01d_mean",
+      "checkpoint": "runs/expert/s01d_r6/averaged/avg_250k_550k.zip",
+      "sha256": "55e666a555800de5a1fe97c89de58a667b333d45c2cb17a4ff6ce1c3944efbfd",
+      "episodes": 30,
+      "successes": 3,
+      "success_rate": 0.1,
+      "wilson_95": [
+        0.0346,
+        0.2562
+      ],
+      "failures": {
+        "collision/footprint": 25,
+        "collision/sim": 1,
+        "out_of_bounds/altitude_high": 1
+      },
+      "seed_base": 300104000,
+      "contact_rules": {
+        "footprint": {
+          "contact_m": 1.05,
+          "obstacles": 33,
+          "shape": "outline",
+          "fields": {
+            "boulder_01": "a0065e1c76b5b26213aa0eb8b1f2d942d50d19fc8158486f476a7107c08fdefe",
+            "namaqualand_boulder_02": "e7e86037660a8a4bf07fd46ddac10df95cbdf15c5e40530abffb0c61c2f09161",
+            "namaqualand_boulder_05": "04befa9f8012c679efe3877430dbce8bbec8a3640e606e1737447534c3403fbd",
+            "namaqualand_boulder_06": "c96cad6fa63f2708b6e1348ddf7a87e530ef49e67883760263ec9529b7fc2a58"
+          },
+          "fields_manifest_sha256": "c40efeab38b4519976be685b9e30455f1cd7ebfe4c3c668dedba591d7d3bddc8"
+        }
+      },
+      "faults_ok": true,
+      "record": "runs/screening/s04__s01d_mean.json",
+      "record_sha256": "d323b3f5ccd763788e9cd906d105d0136185367665c60970201e92c2294eaa57"
+    },
+    {
+      "scene": "s04",
+      "candidate": "s02_pick",
+      "checkpoint": "runs/expert/s02_r1/averaged/avg_350k_end.zip",
+      "sha256": "0971010abb0512c2660c4dd33ad7f75e8d19acbcbb400d38935ba12c08f3ca73",
+      "episodes": 30,
+      "successes": 19,
+      "success_rate": 0.6333,
+      "wilson_95": [
+        0.4551,
+        0.7813
+      ],
+      "failures": {
+        "collision/footprint": 9,
+        "out_of_bounds/lateral": 2
+      },
+      "seed_base": 300104000,
+      "contact_rules": {
+        "footprint": {
+          "contact_m": 1.05,
+          "obstacles": 33,
+          "shape": "outline",
+          "fields": {
+            "boulder_01": "a0065e1c76b5b26213aa0eb8b1f2d942d50d19fc8158486f476a7107c08fdefe",
+            "namaqualand_boulder_02": "e7e86037660a8a4bf07fd46ddac10df95cbdf15c5e40530abffb0c61c2f09161",
+            "namaqualand_boulder_05": "04befa9f8012c679efe3877430dbce8bbec8a3640e606e1737447534c3403fbd",
+            "namaqualand_boulder_06": "c96cad6fa63f2708b6e1348ddf7a87e530ef49e67883760263ec9529b7fc2a58"
+          },
+          "fields_manifest_sha256": "c40efeab38b4519976be685b9e30455f1cd7ebfe4c3c668dedba591d7d3bddc8",
+          "trained_shape": "circle"
+        }
+      },
+      "faults_ok": true,
+      "record": "runs/screening/s04__s02_pick.json",
+      "record_sha256": "44acb6c879310696762f49b590389e890a94e436396daa904703a6d44c2c6632"
+    },
+    {
+      "scene": "s05",
+      "candidate": "s01_best",
+      "checkpoint": "runs/expert/s01_r2/best/best_model.zip",
+      "sha256": "8c2c7500041907a98d5d696b9007e30578731ff5136f63c384270c0f4fcbf8dc",
+      "episodes": 30,
+      "successes": 2,
+      "success_rate": 0.0667,
+      "wilson_95": [
+        0.0185,
+        0.2132
+      ],
+      "failures": {
+        "collision/footprint": 28
+      },
+      "seed_base": 300105000,
+      "contact_rules": {
+        "footprint": {
+          "contact_m": 1.05,
+          "obstacles": 24,
+          "shape": "outline",
+          "fields": {
+            "boulder_01": "a0065e1c76b5b26213aa0eb8b1f2d942d50d19fc8158486f476a7107c08fdefe",
+            "namaqualand_boulder_02": "e7e86037660a8a4bf07fd46ddac10df95cbdf15c5e40530abffb0c61c2f09161",
+            "namaqualand_boulder_03": "14c2c2c503589b37e809038ce85ca6a4afc7070a53cec624ef7929739b47d1b4",
+            "namaqualand_boulder_04": "cb48d8036b66ca55f33531abd778a787a0aead424519548613d908326aed8479"
+          },
+          "fields_manifest_sha256": "c40efeab38b4519976be685b9e30455f1cd7ebfe4c3c668dedba591d7d3bddc8"
+        }
+      },
+      "faults_ok": true,
+      "record": "runs/screening/s05__s01_best.json",
+      "record_sha256": "94beba0a746370b55e039a6ecff8ceed7eaacacf57e858664d82ec0d2182e65b"
+    },
+    {
+      "scene": "s05",
+      "candidate": "s01d_mean",
+      "checkpoint": "runs/expert/s01d_r6/averaged/avg_250k_550k.zip",
+      "sha256": "55e666a555800de5a1fe97c89de58a667b333d45c2cb17a4ff6ce1c3944efbfd",
+      "episodes": 30,
+      "successes": 8,
+      "success_rate": 0.2667,
+      "wilson_95": [
+        0.1418,
+        0.4445
+      ],
+      "failures": {
+        "collision/footprint": 22
+      },
+      "seed_base": 300105000,
+      "contact_rules": {
+        "footprint": {
+          "contact_m": 1.05,
+          "obstacles": 24,
+          "shape": "outline",
+          "fields": {
+            "boulder_01": "a0065e1c76b5b26213aa0eb8b1f2d942d50d19fc8158486f476a7107c08fdefe",
+            "namaqualand_boulder_02": "e7e86037660a8a4bf07fd46ddac10df95cbdf15c5e40530abffb0c61c2f09161",
+            "namaqualand_boulder_03": "14c2c2c503589b37e809038ce85ca6a4afc7070a53cec624ef7929739b47d1b4",
+            "namaqualand_boulder_04": "cb48d8036b66ca55f33531abd778a787a0aead424519548613d908326aed8479"
+          },
+          "fields_manifest_sha256": "c40efeab38b4519976be685b9e30455f1cd7ebfe4c3c668dedba591d7d3bddc8"
+        }
+      },
+      "faults_ok": true,
+      "record": "runs/screening/s05__s01d_mean.json",
+      "record_sha256": "3b5c381a49cf738923b81674cf48096e0a65735ea9297cb06ae4c80379f159e0"
+    },
+    {
+      "scene": "s05",
+      "candidate": "s02_pick",
+      "checkpoint": "runs/expert/s02_r1/averaged/avg_350k_end.zip",
+      "sha256": "0971010abb0512c2660c4dd33ad7f75e8d19acbcbb400d38935ba12c08f3ca73",
+      "episodes": 30,
+      "successes": 15,
+      "success_rate": 0.5,
+      "wilson_95": [
+        0.3315,
+        0.6685
+      ],
+      "failures": {
+        "collision/footprint": 10,
+        "out_of_bounds/lateral": 1,
+        "out_of_bounds/altitude_high": 3,
+        "out_of_bounds/altitude_low": 1
+      },
+      "seed_base": 300105000,
+      "contact_rules": {
+        "footprint": {
+          "contact_m": 1.05,
+          "obstacles": 24,
+          "shape": "outline",
+          "fields": {
+            "boulder_01": "a0065e1c76b5b26213aa0eb8b1f2d942d50d19fc8158486f476a7107c08fdefe",
+            "namaqualand_boulder_02": "e7e86037660a8a4bf07fd46ddac10df95cbdf15c5e40530abffb0c61c2f09161",
+            "namaqualand_boulder_03": "14c2c2c503589b37e809038ce85ca6a4afc7070a53cec624ef7929739b47d1b4",
+            "namaqualand_boulder_04": "cb48d8036b66ca55f33531abd778a787a0aead424519548613d908326aed8479"
+          },
+          "fields_manifest_sha256": "c40efeab38b4519976be685b9e30455f1cd7ebfe4c3c668dedba591d7d3bddc8",
+          "trained_shape": "circle"
+        }
+      },
+      "faults_ok": true,
+      "record": "runs/screening/s05__s02_pick.json",
+      "record_sha256": "778481baadeda75b43dc97a17e3caa257a7c3d2ab937af91d2f6026b5bedfc7c"
+    },
+    {
+      "scene": "s06",
+      "candidate": "s01d_mean",
+      "checkpoint": "runs/expert/s01d_r6/averaged/avg_250k_550k.zip",
+      "sha256": "55e666a555800de5a1fe97c89de58a667b333d45c2cb17a4ff6ce1c3944efbfd",
+      "episodes": 30,
+      "successes": 1,
+      "success_rate": 0.0333,
+      "wilson_95": [
+        0.0059,
+        0.1667
+      ],
+      "failures": {
+        "collision/footprint": 28,
+        "out_of_bounds/altitude_high": 1
+      },
+      "seed_base": 300106000,
+      "contact_rules": {
+        "footprint": {
+          "contact_m": 1.05,
+          "obstacles": 40,
+          "shape": "outline",
+          "fields": {
+            "island_tree_02": "a14f640a0176311482540d13028adeb20d22c80858eb144f103e844789a51b2e",
+            "searsia_burchellii_large": "9fdd5a597726e59e5c52db479f3c5ac8da0a851e68a32dcd8d546607ff46c87a",
+            "searsia_burchellii_medium": "f434796e358d7f6e17c18edc7b5155cdc46d9ba7eb988a6c454707252a8efcd8",
+            "searsia_burchellii_small": "f2a05139e6963fcff0a73d99fa53fdabb8cac3291a2d5d18838acd605afc1b2a",
+            "searsia_lucida_c": "168c5048b8ed5a860d4a321fdc9b8b691aca72eaf188c50810b3ae341c015f2a",
+            "tree_small_02": "bd4c9ea5290b7d660a86b2947a382fb30ef8e28932b21de8612802a47d636a26"
+          },
+          "fields_manifest_sha256": "c40efeab38b4519976be685b9e30455f1cd7ebfe4c3c668dedba591d7d3bddc8"
+        }
+      },
+      "faults_ok": true,
+      "record": "runs/screening/s06__s01d_mean.json",
+      "record_sha256": "095770d1c27612a70db3c2eaf23f626d8984589c3be091fa7b1d1c6df32da10b"
+    },
+    {
+      "scene": "s06",
+      "candidate": "s02_pick",
+      "checkpoint": "runs/expert/s02_r1/averaged/avg_350k_end.zip",
+      "sha256": "0971010abb0512c2660c4dd33ad7f75e8d19acbcbb400d38935ba12c08f3ca73",
+      "episodes": 30,
+      "successes": 8,
+      "success_rate": 0.2667,
+      "wilson_95": [
+        0.1418,
+        0.4445
+      ],
+      "failures": {
+        "collision/footprint": 17,
+        "out_of_bounds/altitude_high": 4,
+        "out_of_bounds/lateral": 1
+      },
+      "seed_base": 300106000,
+      "contact_rules": {
+        "footprint": {
+          "contact_m": 1.05,
+          "obstacles": 40,
+          "shape": "outline",
+          "fields": {
+            "island_tree_02": "a14f640a0176311482540d13028adeb20d22c80858eb144f103e844789a51b2e",
+            "searsia_burchellii_large": "9fdd5a597726e59e5c52db479f3c5ac8da0a851e68a32dcd8d546607ff46c87a",
+            "searsia_burchellii_medium": "f434796e358d7f6e17c18edc7b5155cdc46d9ba7eb988a6c454707252a8efcd8",
+            "searsia_burchellii_small": "f2a05139e6963fcff0a73d99fa53fdabb8cac3291a2d5d18838acd605afc1b2a",
+            "searsia_lucida_c": "168c5048b8ed5a860d4a321fdc9b8b691aca72eaf188c50810b3ae341c015f2a",
+            "tree_small_02": "bd4c9ea5290b7d660a86b2947a382fb30ef8e28932b21de8612802a47d636a26"
+          },
+          "fields_manifest_sha256": "c40efeab38b4519976be685b9e30455f1cd7ebfe4c3c668dedba591d7d3bddc8",
+          "trained_shape": "circle"
+        }
+      },
+      "faults_ok": true,
+      "record": "runs/screening/s06__s02_pick.json",
+      "record_sha256": "eb303257e5ebd525d1b33b3c4dd23d1f6dbaceb193af0ac3a82b2ef8f1d6302d"
+    },
+    {
+      "scene": "s07",
+      "candidate": "s01_best",
+      "checkpoint": "runs/expert/s01_r2/best/best_model.zip",
+      "sha256": "8c2c7500041907a98d5d696b9007e30578731ff5136f63c384270c0f4fcbf8dc",
+      "episodes": 40,
+      "successes": 33,
+      "success_rate": 0.825,
+      "wilson_95": [
+        0.6805,
+        0.9125
+      ],
+      "failures": {
+        "collision/sim": 4,
+        "out_of_bounds/altitude_high": 3
+      },
+      "seed_base": 300107000,
+      "contact_rules": null,
+      "faults_ok": true,
+      "record": "runs/screening/s07__s01_best.json",
+      "record_sha256": "18b8b98ea99bad77d2e96042823d49016b15534b8c48abacbdedf5fd0fe230c2"
+    },
+    {
+      "scene": "s07",
+      "candidate": "s01d_mean",
+      "checkpoint": "runs/expert/s01d_r6/averaged/avg_250k_550k.zip",
+      "sha256": "55e666a555800de5a1fe97c89de58a667b333d45c2cb17a4ff6ce1c3944efbfd",
+      "episodes": 40,
+      "successes": 40,
+      "success_rate": 1.0,
+      "wilson_95": [
+        0.9124,
+        1.0
+      ],
+      "failures": {},
+      "seed_base": 300107000,
+      "contact_rules": null,
+      "faults_ok": true,
+      "record": "runs/screening/s07__s01d_mean.json",
+      "record_sha256": "23fcc1b68a55eebdd9928c8dd099a916bc872cdfcb9d70223c98fad32f3807e5"
+    },
+    {
+      "scene": "s09",
+      "candidate": "s01_best",
+      "checkpoint": "runs/expert/s01_r2/best/best_model.zip",
+      "sha256": "8c2c7500041907a98d5d696b9007e30578731ff5136f63c384270c0f4fcbf8dc",
+      "episodes": 40,
+      "successes": 39,
+      "success_rate": 0.975,
+      "wilson_95": [
+        0.8712,
+        0.9956
+      ],
+      "failures": {
+        "collision/sim": 1
+      },
+      "seed_base": 300109000,
+      "contact_rules": null,
+      "faults_ok": true,
+      "record": "runs/screening/s09__s01_best.json",
+      "record_sha256": "9be84694234fde595f9de67a7d9290c41d51607356c5c4654fcf283b61f9b610"
+    },
+    {
+      "scene": "s09",
+      "candidate": "s01d_mean",
+      "checkpoint": "runs/expert/s01d_r6/averaged/avg_250k_550k.zip",
+      "sha256": "55e666a555800de5a1fe97c89de58a667b333d45c2cb17a4ff6ce1c3944efbfd",
+      "episodes": 40,
+      "successes": 40,
+      "success_rate": 1.0,
+      "wilson_95": [
+        0.9124,
+        1.0
+      ],
+      "failures": {},
+      "seed_base": 300109000,
+      "contact_rules": null,
+      "faults_ok": true,
+      "record": "runs/screening/s09__s01d_mean.json",
+      "record_sha256": "6895ae12badd88d3f8f29d85f4fed6106041445c61149635d3abc0e484dd80bc"
+    }
+  ],
+  "pilot_by_scene": {
+    "s02": {
+      "candidate": "s02_pick",
+      "checkpoint": "runs/expert/s02_r1/averaged/avg_350k_end.zip",
+      "sha256": "0971010abb0512c2660c4dd33ad7f75e8d19acbcbb400d38935ba12c08f3ca73",
+      "screening_success": 0.8333
+    },
+    "s03": {
+      "candidate": "s02_pick",
+      "checkpoint": "runs/expert/s02_r1/averaged/avg_350k_end.zip",
+      "sha256": "0971010abb0512c2660c4dd33ad7f75e8d19acbcbb400d38935ba12c08f3ca73",
+      "screening_success": 0.6667
+    },
+    "s04": {
+      "candidate": "s02_pick",
+      "checkpoint": "runs/expert/s02_r1/averaged/avg_350k_end.zip",
+      "sha256": "0971010abb0512c2660c4dd33ad7f75e8d19acbcbb400d38935ba12c08f3ca73",
+      "screening_success": 0.6333
+    },
+    "s05": {
+      "candidate": "s02_pick",
+      "checkpoint": "runs/expert/s02_r1/averaged/avg_350k_end.zip",
+      "sha256": "0971010abb0512c2660c4dd33ad7f75e8d19acbcbb400d38935ba12c08f3ca73",
+      "screening_success": 0.5
+    },
+    "s06": {
+      "candidate": "s02_pick",
+      "checkpoint": "runs/expert/s02_r1/averaged/avg_350k_end.zip",
+      "sha256": "0971010abb0512c2660c4dd33ad7f75e8d19acbcbb400d38935ba12c08f3ca73",
+      "screening_success": 0.2667
+    },
+    "s07": {
+      "candidate": "s01d_mean",
+      "checkpoint": "runs/expert/s01d_r6/averaged/avg_250k_550k.zip",
+      "sha256": "55e666a555800de5a1fe97c89de58a667b333d45c2cb17a4ff6ce1c3944efbfd",
+      "screening_success": 1.0
+    },
+    "s09": {
+      "candidate": "s01d_mean",
+      "checkpoint": "runs/expert/s01d_r6/averaged/avg_250k_550k.zip",
+      "sha256": "55e666a555800de5a1fe97c89de58a667b333d45c2cb17a4ff6ce1c3944efbfd",
+      "screening_success": 1.0
+    }
+  },
+  "pilots_not_screened": {
+    "s01": {
+      "candidate": "s01_best",
+      "checkpoint": "runs/expert/s01_r2/best/best_model.zip",
+      "basis": "its own scene: docs/gates/m2_gate.json, 0.98 deterministic / 0.99 stochastic"
+    },
+    "s01d": {
+      "candidate": "s01d_mean",
+      "checkpoint": "runs/expert/s01d_r6/averaged/avg_250k_550k.zip",
+      "basis": "its own scene: docs/gates/m2d_r6_swa_gate.json, 0.935 deterministic; accepted 2026-10-07"
+    }
+  }
+}
