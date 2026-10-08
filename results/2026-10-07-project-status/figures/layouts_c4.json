@@ -1,0 +1,142 @@
+{
+  "levels": "/home/nvidiasims/research_uav/autofly_ue5/runs/levels",
+  "scenes": [
+    {
+      "id": "s02",
+      "instruction_obstacle": "trees",
+      "seed": 1002,
+      "instances": 27,
+      "per_asset": {
+        "island_tree_02": 4,
+        "island_tree_03": 4,
+        "quiver_tree_01": 6,
+        "searsia_lucida_a": 4,
+        "searsia_lucida_b": 4,
+        "tree_small_02": 5
+      },
+      "radius_m": {
+        "min": 0.6099,
+        "median": 1.2239,
+        "max": 3.553
+      },
+      "height_m": {
+        "min": 1.835,
+        "median": 2.5932,
+        "max": 4.9818
+      },
+      "crossing_max": 1.1135,
+      "crossing_edge_max": {
+        "x_min": 1.1107,
+        "x_max": 1.1081,
+        "y_min": 1.1135,
+        "y_max": 1.0943
+      },
+      "crossing_bound": 1.25,
+      "crossing_accepted": true,
+      "reachability_ok": true,
+      "closest_footprints": {
+        "gap_m": 0.4022,
+        "tags": [
+          "obs_0000",
+          "obs_0007"
+        ],
+        "assets": [
+          "island_tree_02",
+          "island_tree_03"
+        ],
+        "overlapping_pairs": 0
+      }
+    },
+    {
+      "id": "s03",
+      "instruction_obstacle": "rocks",
+      "seed": 1003,
+      "instances": 29,
+      "per_asset": {
+        "boulder_01": 7,
+        "namaqualand_boulder_02": 5,
+        "namaqualand_boulder_03": 5,
+        "namaqualand_boulder_04": 5,
+        "namaqualand_boulder_06": 7
+      },
+      "radius_m": {
+        "min": 1.7598,
+        "median": 2.4856,
+        "max": 3.4169
+      },
+      "height_m": {
+        "min": 1.8755,
+        "median": 2.2287,
+        "max": 3.4608
+      },
+      "crossing_max": 1.1672,
+      "crossing_edge_max": {
+        "x_min": 1.1305,
+        "x_max": 1.1574,
+        "y_min": 1.167,
+        "y_max": 1.1672
+      },
+      "crossing_bound": 1.25,
+      "crossing_accepted": true,
+      "reachability_ok": true,
+      "closest_footprints": {
+        "gap_m": 0.7615,
+        "tags": [
+          "obs_0012",
+          "obs_0018"
+        ],
+        "assets": [
+          "boulder_01",
+          "namaqualand_boulder_02"
+        ],
+        "overlapping_pairs": 0
+      }
+    },
+    {
+      "id": "s06",
+      "instruction_obstacle": "tree clusters",
+      "seed": 1006,
+      "instances": 40,
+      "per_asset": {
+        "island_tree_02": 2,
+        "searsia_burchellii_large": 6,
+        "searsia_burchellii_medium": 9,
+        "searsia_burchellii_small": 9,
+        "searsia_lucida_c": 12,
+        "tree_small_02": 2
+      },
+      "radius_m": {
+        "min": 0.852,
+        "median": 1.3094,
+        "max": 3.5042
+      },
+      "height_m": {
+        "min": 1.6035,
+        "median": 2.0758,
+        "max": 4.9919
+      },
+      "crossing_max": 1.171,
+      "crossing_edge_max": {
+        "x_min": 1.1504,
+        "x_max": 1.171,
+        "y_min": 1.1294,
+        "y_max": 1.1669
+      },
+      "crossing_bound": 1.25,
+      "crossing_accepted": true,
+      "reachability_ok": true,
+      "closest_footprints": {
+        "gap_m": 0.799,
+        "tags": [
+          "obs_0031",
+          "obs_0032"
+        ],
+        "assets": [
+          "searsia_lucida_c",
+          "searsia_lucida_c"
+        ],
+        "overlapping_pairs": 0
+      }
+    }
+  ]
+}

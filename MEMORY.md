@@ -235,6 +235,23 @@ stale "fact". Standing rules live in `CLAUDE.md`; this file is the reasoning and
 
 ## Scene learnings
 
+- **The gate's depth probe needs a trunk; a bush offers none (2026-10-08, s06).** `validate/obstacles.choose_probes`
+  wants ≥ 12 interior opaque pixels in the camera's window from outside the obstacle's whole-reach circle; a searsia
+  bush keeps its stems inside its leaf canopy, so the first s06 (42 bushes) stopped at "no unobstructed depth probe at
+  3.0 m". Give a bush scene a few emergent trunk trees (s06 has 2 tree_small_02 + 2 island_tree_02), or build a
+  canopy probe (card pixels bounded from below plus a pre-registered share matching) before a bush-only scene.
+  Diagnose with the chooser's criteria per bearing, not by rerunning the gate.
+- **Rocks wedge the swept actor as wood does (2026-10-08, `m4_s03_gate.json`).** The crash probe's reset could not
+  free the actor in 8 attempts (every retrace stopped at zero travel). The footprint rule covers every measured model,
+  so no expert's body reaches a rock; "convex solids never wedge" holds for engine primitives only.
+- **A scene with imported assets costs under half an hour of live time (2026-10-08):** editor build about 1 min,
+  incremental packaging about 1 min (the binary's hash is unchanged, the pak's changes; regenerate
+  `runs/package/package_manifest.json` after it), snapshots 2 min, gate 8 min. Only packaging needs every simulator
+  stopped; a gate on slot 5 ran beside a 5-simulator smoke training.
+- **U4's detour bound is a density bound (2026-10-08).** s03's first draft (34 rocks) and s06's (46 with emergent
+  trees) were reachable yet over 1.25; sweeping counts in process (`scenes/build.crossing_report` on
+  `generate_layout`) finds a count that passes at the base seed in seconds. Keep the base seed; do not hunt seeds.
+
 - **Mesh scenes end episodes at the footprint circle, not at contact (2026-10-08, `expert/footprint_contact.py`).**
   The task's rule is 0.9 m from the circle (`radius_m`, the band's reach): the rule is checked after the step is
   flown, so the ending step overshoots by up to a full-speed step (0.4 m); plus the rotor reach (0.48 m) and a

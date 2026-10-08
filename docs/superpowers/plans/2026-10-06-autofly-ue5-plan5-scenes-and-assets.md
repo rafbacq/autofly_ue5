@@ -93,6 +93,11 @@ reachability and the live checks of §11. Then M5 trains one expert per train sc
   of 2-5 engine cubes, sand; 1.045), `s02_sparse_trees` (27 trees of 6 kinds, grass; 1.11), all three built, verified
   (local-bounds check to 0.002 cm), packaged with S01, and looked at through the drone's cameras
   (`scripts/scene_snapshots.py`, `results/2026-10-07-project-status/scenes/`). `scenes/build.py` applies U4.
+  Done 2026-10-08: `s03_scattered_rocks` (29 boulders scaled 1.5–3.4× into the band, grass; detour 1.167) and
+  `s06_tree_clusters` (36 searsia bushes in single-species clusters plus 4 emergent trunk trees, grass; 1.171), both
+  built, packaged, looked at and gated (`m4_s03_gate.json`, `m4_s06_gate.json`;
+  `docs/decisions/2026-10-08-c4-s03-s06.md`: rocks wedge the actor as wood does; a bush-only scene offers the gate
+  no trunk to probe). Left: s04, s05 (+ snow exposure), s08, s10, s11, s12, s05r, s06r.
 - [ ] **C5. Target pool** (`assets/targets.json`, spec §6.4): 60 instances, 50 seen / 10 unseen, the Fig. 3c category
   mix, a name for instructions each. The sampler draws the target and 3-5 distractors from the split's pool *after*
   every existing draw, and the instruction names the target; s01's pool stays the orange cylinder so its golden setups

@@ -17,7 +17,7 @@ e44a859.
 | M2d | moving pillars (s01d): expert ≥ 0.95 | **Gate failed, expert accepted** (2026-10-07): 0.775 → 0.885 → 0.920 → **0.935** over six runs against the bar of 0.95; the user accepted the 0.935 expert for collection, stochastically, and no run 7 starts (`docs/decisions/2026-10-07-s01d-accepted-at-0.935.md`) | `records/m2d_*_gate.json` |
 | M3 | collector, dataset writer, validator; 100-episode pilot | **Passed** 2026-10-03: 100 of 101 episodes kept, 17,738 records, TFDS reads them back exactly | `records/m3_gate.json` |
 | M5 (part) | dataset rebalancing (paper App. A.2.4) | **Done on the pilot** 2026-10-07 | `records/s01_pilot_rebalance.json` |
-| M4 | asset library; scenes s02–s12 | **In progress**: s09, s07 and s02 built, packaged and gated live; the footprint contact rule for mesh scenes is built (2026-10-08); the remaining scenes, the target pool and the snow exposure are next | `docs/gates/m4_*_gate.json`, `docs/superpowers/plans/…plan5…` |
+| M4 | asset library; scenes s02–s12 | **In progress**: s09, s07, s02, s03 and s06 built, packaged and gated live; the footprint contact rule for mesh scenes is built (2026-10-08); the remaining scenes, the target pool and the snow exposure are next | `docs/gates/m4_*_gate.json`, `docs/superpowers/plans/…plan5…` |
 | M6 (part) | path efficiency (the paper's PER) | **Measured on the pilot** | `records/s01_pilot_path_efficiency.json` |
 
 ## 1. The experts and their gates
@@ -136,6 +136,23 @@ step of 0.4 m. The first version of the rule, at 0.5 m, failed exactly that test
 inside the circle (gaps 0.11–0.48 m), which this figure caught and the offline tests had not. The close-up draws the
 largest tree to scale with the drone sitting on the boundary. Numbers: `figures/s02_footprint_rule.json`
 (`scripts/footprint_rule_figure.py`).
+
+## 6. Two more scenes: scattered rocks and tree clusters (C4, 2026-10-08)
+
+![layouts](figures/layouts_c4.png)
+
+s03 scatters 29 Poly Haven boulders over grass, each scaled 1.5–3.4× so that it reaches into the 1–3 m flight band
+(at natural size most of them would pass under the drone); s06 places 36 searsia bushes in single-species clusters
+with four taller trees standing above them. Both are accepted by the layout rule (worst crossing detour 1.167 and
+1.171 against the 1.25 bound; the first drafts were denser and failed it), and both passed the live gate
+(`docs/gates/m4_s03_gate.json`, `m4_s06_gate.json`: every actor within microns, depth probes on a boulder and on the
+two tree species, crashes where predicted). The crash into a boulder left the simulator's actor wedged, as wood does,
+which is exactly what the footprint rule of section 5 keeps the experts from doing
+(`docs/decisions/2026-10-08-c4-s03-s06.md`).
+
+![s03](scenes/s03_snapshots.png)
+
+![s06](scenes/s06_snapshots.png)
 
 ## Numbers worth knowing
 
