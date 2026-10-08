@@ -61,7 +61,10 @@ def test_every_entry_has_the_plan_s_fields(pool, registry):
             # set by `scripts/import_assets.py apply --targets` (docs/runbook-targets.md), never by hand
             entry = registry["assets"].get(t["asset"])
             assert entry is not None and entry["role"] == "target", f"{t['name']}: {t['asset']} is not an imported target"
-            assert entry["ue_path"] == f"/Game/AutoFly/Targets/{t['asset']}/{t['asset']}", t["name"]
+            # Interchange's live layout puts the mesh under StaticMeshes/ (2026-10-08); either way the spawn table's short
+            # name, the path's last segment, is the target's key
+            assert entry["ue_path"] in (f"/Game/AutoFly/Targets/{t['asset']}/{t['asset']}",
+                                        f"/Game/AutoFly/Targets/{t['asset']}/{t['asset']}/StaticMeshes/{t['asset']}"), t["name"]
         if t["status"] == "imported":
             assert t["asset"] is not None, t["name"]
 
