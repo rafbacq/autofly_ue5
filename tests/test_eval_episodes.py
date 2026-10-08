@@ -183,3 +183,27 @@ def test_a_file_whose_episodes_left_their_slices_or_contradict_it_is_refused(tmp
     path.write_text(json.dumps(data))
     with pytest.raises(ValueError, match=match):
         load_condition(path)
+
+
+def test_the_committed_files_are_the_frozen_evaluation():
+    # assets/eval_episodes/: written once by scripts/eval_harness.py write-episodes and committed.
+    import hashlib
+
+    from autofly_ue5.evaluation.episodes import CONDITIONS, EPISODES_DIR, load_condition
+    from autofly_ue5.paths import SCENES_DIR
+
+    seeds: list[tuple[str, int]] = []
+    for name, spec in CONDITIONS.items():
+        loaded = load_condition(EPISODES_DIR / f"{name}.json")
+        assert loaded.name == name and loaded.scene_ids == spec.scenes and loaded.episodes_per_scene == 20
+        assert {e.target_split for e in loaded.episodes} == {spec.target_split}
+        seeds += [(e.scene, e.seed) for e in loaded.episodes]
+        if name == "test_seen":
+            assert loaded.scenes["s05r"]["status_at_write"] == "ready"
+            assert loaded.scenes["s06r"]["requires_gate"] == "docs/gates/m4_s06r_gate.json"
+        for scene_id, entry in loaded.scenes.items():
+            (path,) = SCENES_DIR.glob(f"{scene_id}_*.json")
+            assert hashlib.sha256(path.read_bytes()).hexdigest() == entry["scene_sha256"], (
+                f"{path.name} changed after {name}.json was frozen: the harness will refuse {scene_id}; write a new "
+                f"condition file (a new condition slot) rather than score other episodes under this one")
+    assert len({seed for _scene, seed in seeds}) == len(seeds) == 20 * (9 + 2 + 9), "no two files share a seed"
