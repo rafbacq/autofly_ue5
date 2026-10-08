@@ -49,6 +49,12 @@ def test_depth_probes_exist_for_the_generated_s01_layout_and_match_m1_s():
     assert [(p.tag, p.pose) for p in probes] == [(p.tag, p.pose) for p in old]
 
 
+def test_s01_s_probes_are_those_of_the_fallbacks_before_the_six_metre_one():
+    # The 6 m fallback (s06r, 2026-10-08) is tried only where 6 m offers no probe: s01's probes stay M1's, pose for pose.
+    before = choose_probes(OBSTACLES, SCENE.bounds, fallback_distances_m={12.0: (10.0, 8.0)})
+    assert [(p.tag, p.distance_m, p.pose) for p in _probes()] == [(p.tag, p.distance_m, p.pose) for p in before]
+
+
 def test_gate_checks_pass_on_the_fake_simulator(tmp_path):
     sim = FakeSimulator(obstacles=[(o.x, o.y, o.radius_m) for o in OBSTACLES], image_size=256, render_depth=True)
     sim.launch("/Game/AutoFly/Maps/S01", 0)

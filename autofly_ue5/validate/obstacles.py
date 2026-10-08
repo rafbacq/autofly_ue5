@@ -518,9 +518,11 @@ def choose_probes(
 
     `fallback_distances_m` maps a distance to the shorter ones to try when no obstacle offers a probe at it: s02's
     trunks are 0.2-0.3 m across, 2-3 pixels at 12 m, too thin for an interior pixel; the probe records the distance it
-    actually stands at. Default: 12 m falls back to 10 m, then 8 m."""
+    actually stands at. Default: 12 m falls back to 10 m, then 8 m; 6 m to 5 m, then 4 m (s06r's live check, 2026-10-08,
+    found no unobstructed probe at 6 m). A distance that offers a probe never reaches its fallbacks, so s01's probes are
+    M1's."""
     if fallback_distances_m is None:
-        fallback_distances_m = {12.0: (10.0, 8.0)}
+        fallback_distances_m = {6.0: (5.0, 4.0), 12.0: (10.0, 8.0)}
 
     def overlaps(o: Obstacle, lo: float, hi: float) -> bool:
         return o.base_altitude_m <= hi and o.top_altitude_m >= lo

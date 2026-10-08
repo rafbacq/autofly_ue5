@@ -121,6 +121,22 @@ def test_probes_skip_obstacles_the_camera_flies_over_and_aim_by_footprint(tmp_pa
     assert lower[0].expected_depth_m == pytest.approx(3.0 + 0.7071 - 0.5, abs=0.01)
 
 
+@pytest.mark.parametrize("half_width_m, expected_m", [(6.5, 5.0), (5.8, 4.0)])
+def test_a_six_metre_probe_falls_back_to_five_then_four_metres(half_width_m, expected_m):
+    # s06r's live check (2026-10-08) found no unobstructed probe at 6 m, and only the 12 m probe had fallbacks. One pillar
+    # in a small field: a 6 m probe would stand 6.9 m from its axis, outside the 2 m edge margin on all 8 bearings (4.88 m
+    # along a diagonal against a 4.5 m limit), while 5 m stands 4.17 m out along a diagonal and 4 m 3.46 m.
+    from autofly_ue5.scenes.model import Bounds
+    from autofly_ue5.validate.obstacles import choose_probes, obstacle_from_instance
+
+    pillar = obstacle_from_instance(_instance(), _registry())
+    bounds = Bounds(-half_width_m, half_width_m, -half_width_m, half_width_m)
+    (probe,) = choose_probes([pillar], bounds, distances=(6.0,), lower_altitudes_m=())
+    assert probe.distance_m == expected_m and probe.expected_depth_m == pytest.approx(expected_m, abs=0.02)
+    with pytest.raises(ValueError, match=r"6\.0 m \(nor at \(5\.0, 4\.0\)\)"):
+        choose_probes([pillar], Bounds(-5.0, 5.0, -5.0, 5.0), distances=(6.0,), lower_altitudes_m=())
+
+
 def test_pixel_rays_follow_the_image_axes():
     from autofly_ue5.validate.obstacles import pixel_rays
 
