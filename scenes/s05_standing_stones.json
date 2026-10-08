@@ -111,5 +111,6 @@
     1.0,
     3.0
   ],
-  "instruction_obstacle": "standing stones"
+  "instruction_obstacle": "standing stones",
+  "exposure_bias_ev": -12.0
 }
