@@ -125,6 +125,15 @@ reachability and the live checks of §11. Then M5 trains one expert per train sc
     (survey of 2026-10-02): Quaternius / Kenney low-poly CC0 as placeholders until a Fab session with the user. Fetched
     by `scripts/fetch_assets.py` (`use: ["targets"]`), measured by `scripts/measure_assets.py`, imported after the
     training run frees the editor (an editor is a foreign GPU job to a live run's relaunch guard).
+  **Done 2026-10-08 (offline, during s02's training):** the mechanism (`dataset/targets.py`, the sampler's pinned draws,
+  the collector's `--targets`, provenance and card, the validator's name check; 90f9ae1) and the pool
+  (`assets/targets.json`, 60 entries in the paper's mix; 23 Poly Haven photoreal furniture/equipment models and
+  5 Kenney kits fetched at 1k and measured; 232021b). **Left for C6, once the editor is free:** import the 48 model
+  targets (Kenney parts merged per model), base `UMaterial`s for red/blue/yellow/green (the runtime paints only a
+  base material, so 10 of the 12 geometry targets spawn grey today and the pool loader refuses them as usable),
+  confirm sphere and cone and every target's short name in `world.list_assets()`, and an exclusion for scenes whose
+  obstacles are the same kind as a target (s07 cubes, s09 poles, later vehicles in s10/s11). Open with the user:
+  vehicles and people are Kenney stand-ins until a Fab session; no CC0 slide exists.
 - [ ] **C6. Footprints and the runtime spawn table**: footprint circles from measured extents at flight altitude;
   box extents (base x scale, yaw) for `check_map.py`, `validate/geometry.py` and `motion.py`'s `CircleFootprint`
   (fact 9); `_spawn_asset_name` checked against `world.list_assets()` for every target (spec §7.1: short names, base

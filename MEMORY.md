@@ -235,6 +235,13 @@ stale "fact". Standing rules live in `CLAUDE.md`; this file is the reasoning and
 
 ## Scene learnings
 
+- **A runtime spawn can be painted only with a base `UMaterial`, and the palette's colours are instances (2026-10-08,
+  C5).** So the pool's blue/red/yellow/green shapes spawn grey until base materials exist for those colours (an editor
+  task, like M_Orange); `dataset/targets.py` refuses such entries as usable rather than mislabel episodes. Sphere and
+  cone are cooked only because other content references them (the cone through BlocksMap): confirm both in
+  `world.list_assets()` before a pool relies on them. The pool is a collection-time choice; experts and gates keep the
+  orange cylinder, so no scene file or layout changes.
+
 - **The gate's depth probe needs a trunk; a bush offers none (2026-10-08, s06).** `validate/obstacles.choose_probes`
   wants ≥ 12 interior opaque pixels in the camera's window from outside the obstacle's whole-reach circle; a searsia
   bush keeps its stems inside its leaf canopy, so the first s06 (42 bushes) stopped at "no unobstructed depth probe at
