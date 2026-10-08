@@ -52,6 +52,9 @@ def test_every_seed_range_is_disjoint():
                (EVAL_CALLBACK_SEED_BASE, EVAL_CALLBACK_SEED_BASE + WORKER_SEED_STRIDE),
                (PROBE_SEED_BASE, PROBE_SEED_BASE + WORKER_SEED_STRIDE),
                (COLLECTION_SEED_BASE, COLLECTION_SEED_BASE + 100 * WORKER_SEED_STRIDE)]  # M3/M5 collection
+    from autofly_ue5.expert.seeds import EVAL_HARNESS_SEED_BASE, EVAL_HARNESS_SPAN
+
+    ranges.append((EVAL_HARNESS_SEED_BASE, EVAL_HARNESS_SEED_BASE + EVAL_HARNESS_SPAN))  # the evaluation harness (M6)
     ranges.sort()
     assert all(a_end <= b_start for (_, a_end), (b_start, _) in zip(ranges, ranges[1:]))
     # SB3 seeds a vec env's first reset explicitly with seed+rank (seed=0 here): those must not be any worker's.
@@ -69,6 +72,30 @@ def test_each_collection_run_gets_its_own_slice_of_the_collection_range():
     for bad in (-1, MAX_COLLECTION_SLICES):
         with pytest.raises(ValueError):
             collection_seed_base(bad)
+
+
+def test_each_evaluation_condition_and_scene_gets_its_own_slice_of_the_harness_range():
+    # The harness's frozen episode files (autofly_ue5/evaluation/episodes.py): no two conditions' files and no two scenes
+    # of one file share a seed. s01 and s01d share a layout and a draw order, so one seed would fly the same setup in both.
+    from autofly_ue5.expert.seeds import (
+        EVAL_HARNESS_CONDITION_STRIDE,
+        EVAL_HARNESS_SCENE_STRIDE,
+        EVAL_HARNESS_SEED_BASE,
+        EVAL_HARNESS_SPAN,
+        MAX_EVAL_HARNESS_CONDITIONS,
+        MAX_EVAL_HARNESS_SCENES,
+        eval_harness_seed_base,
+    )
+
+    assert EVAL_HARNESS_SEED_BASE == 600_000_000
+    slices = [(eval_harness_seed_base(c, s), eval_harness_seed_base(c, s) + EVAL_HARNESS_SCENE_STRIDE)
+              for c in range(MAX_EVAL_HARNESS_CONDITIONS) for s in range(MAX_EVAL_HARNESS_SCENES)]
+    assert slices[0][0] == EVAL_HARNESS_SEED_BASE and slices[-1][1] == EVAL_HARNESS_SEED_BASE + EVAL_HARNESS_SPAN
+    assert all(a_end == b_start for (_, a_end), (b_start, _) in zip(slices, slices[1:])), "contiguous, never shared"
+    assert eval_harness_seed_base(1, 0) == EVAL_HARNESS_SEED_BASE + EVAL_HARNESS_CONDITION_STRIDE
+    for bad in ((-1, 0), (MAX_EVAL_HARNESS_CONDITIONS, 0), (0, -1), (0, MAX_EVAL_HARNESS_SCENES)):
+        with pytest.raises(ValueError):
+            eval_harness_seed_base(*bad)
 
 
 def test_the_pilot_cli_takes_a_seed_slice():

@@ -15,6 +15,9 @@ range fly the same episodes. The ranges:
                                               in 100 slices of 1e6, one per (scene, collection run):
                                               collection_seed_base(k). Slice 0 is s01's pilot; slice 99 is for
                                               smokes and diagnostics, never a dataset
+    [EVAL_HARNESS_SEED_BASE, +1e7)            the closed-loop evaluation harness's frozen episode files (M6, plan 6;
+                                              autofly_ue5/evaluation/episodes.py): one 1e6 slice per condition, one
+                                              1e4 sub-slice per scene within it: eval_harness_seed_base(c, s)
 """
 
 from __future__ import annotations
@@ -41,6 +44,26 @@ COLLECTION_SEED_BASE = 400_000_000
 COLLECTION_SLICE_STRIDE = 1_000_000
 MAX_COLLECTION_SLICES = 100
 DIAGNOSTIC_COLLECTION_SLICE = MAX_COLLECTION_SLICES - 1
+# The evaluation harness (plan 6 item 6, revision 1 item 5): a policy is scored on frozen files of (scene, seed) per
+# condition, and none of those episodes may be one an expert trained, was gated or selected on, or that a dataset holds,
+# or a student's score would measure memory. A slice per condition and a sub-slice per scene, so no two files and no two
+# scenes share a seed: s01 and s01d share a layout and a draw order, and one seed would fly the same setup in both.
+EVAL_HARNESS_SEED_BASE = 600_000_000
+EVAL_HARNESS_CONDITION_STRIDE = 1_000_000
+EVAL_HARNESS_SCENE_STRIDE = 10_000
+MAX_EVAL_HARNESS_CONDITIONS = 10
+MAX_EVAL_HARNESS_SCENES = EVAL_HARNESS_CONDITION_STRIDE // EVAL_HARNESS_SCENE_STRIDE
+EVAL_HARNESS_SPAN = MAX_EVAL_HARNESS_CONDITIONS * EVAL_HARNESS_CONDITION_STRIDE
+
+
+def eval_harness_seed_base(condition_slot: int, scene_slot: int) -> int:
+    """The first seed of scene slot `scene_slot` in condition slot `condition_slot` of the harness's range (the slots
+    are evaluation/episodes.py's CONDITION_SLOTS and SCENE_SLOTS, append-only)."""
+    if not 0 <= condition_slot < MAX_EVAL_HARNESS_CONDITIONS:
+        raise ValueError(f"evaluation condition slot must be in [0, {MAX_EVAL_HARNESS_CONDITIONS}), got {condition_slot}")
+    if not 0 <= scene_slot < MAX_EVAL_HARNESS_SCENES:
+        raise ValueError(f"evaluation scene slot must be in [0, {MAX_EVAL_HARNESS_SCENES}), got {scene_slot}")
+    return EVAL_HARNESS_SEED_BASE + condition_slot * EVAL_HARNESS_CONDITION_STRIDE + scene_slot * EVAL_HARNESS_SCENE_STRIDE
 
 
 def collection_seed_base(slice_index: int) -> int:
