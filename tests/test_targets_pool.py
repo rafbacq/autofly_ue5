@@ -149,9 +149,11 @@ SEEN_DRAWN_PER_SCENE = {"s01": 43, "s01d": 43, "s09": 43,  # 50 less 4 cylinders
 
 
 def test_the_kenney_stand_ins_are_drawn_and_marked_as_stand_ins(pool):
+    # Every entry states its mark, a JSON boolean (the merged export reads target.stand_in from each episode's provenance)
     kenney = [t for t in pool if t["source"]["source"] == "kenney"]
-    assert len(kenney) == 25 and all(t["status"] == "imported" and t.get("stand_in") is True for t in kenney)
-    assert not any("stand_in" in t for t in pool if t["source"]["source"] != "kenney")
+    assert all(isinstance(t.get("stand_in"), bool) for t in pool), [t["name"] for t in pool if "stand_in" not in t]
+    assert len(kenney) == 25 and all(t["status"] == "imported" for t in kenney)
+    assert [t["name"] for t in pool if t["stand_in"]] == [t["name"] for t in kenney]
     vehicles = [t for t in kenney if t["category"] == "vehicle"]
     humans = [t for t in kenney if t["category"] == "human"]
     assert len(vehicles) == 12 and len(humans) == 10, "what only the stand-ins cover until a Fab session"

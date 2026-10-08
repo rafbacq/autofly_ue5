@@ -12,9 +12,10 @@ from pathlib import Path
 import pytest
 
 
-def _entry(name, category, asset, scale, material, *, seen=True, status="primitive", height_m=None, source=None):
+def _entry(name, category, asset, scale, material, *, seen=True, status="primitive", height_m=None, source=None,
+           stand_in=False):
     return {"name": name, "category": category, "seen": seen, "asset": asset, "scale": scale, "material": material,
-            "status": status, "source": source, "height_m": height_m}
+            "status": status, "source": source, "height_m": height_m, "stand_in": stand_in}
 
 
 def primitive_pool_entries() -> list[dict]:
@@ -79,7 +80,7 @@ def test_a_stand_in_is_drawn_like_any_imported_entry_and_keeps_its_mark_in_what_
     boulder = pool.entries[5]
     assert boulder.stand_in is True and boulder.usable and boulder in pool.for_split("train")
     assert boulder.to_json()["stand_in"] is True and boulder.to_json()["status"] == "imported"
-    assert not any(e.stand_in for e in pool.entries[:5]), "absent means not a stand-in"
+    assert not any(e.stand_in for e in pool.entries[:5]) and all(e.to_json()["stand_in"] is False for e in pool.entries[:5])
 
 
 def test_each_split_draws_from_its_own_usable_entries_in_file_order(tmp_path):
@@ -141,6 +142,7 @@ def _without_key(index: int, key: str):
     (_with(0, asset="island_tree_02", status="imported"), 1, "cards"),
     (_with(5, stand_in="yes"), 1, "stand_in"),
     (_with(5, stand_in=None), 1, "stand_in"),
+    (_without_key(5, "stand_in"), 1, "stand_in"),  # the mark is stated for every entry, never inferred from its absence
 ])
 def test_a_malformed_pool_is_refused_with_a_reason(tmp_path, entries, version, match):
     from autofly_ue5.dataset.targets import TargetPool, TargetPoolError

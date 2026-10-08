@@ -21,10 +21,11 @@ plan 6 step 2a). They are low-poly: 12 vehicles (10 seen), 10 people (9 seen), t
 
 ## Reversible
 
-- **The mark travels with the data.** `TargetEntry.to_json()` carries `stand_in`, so every collected episode's
-  provenance says, for its target and each distractor, whether it was a stand-in. A dataset can drop or keep those
-  episodes later without re-collecting anything else. (The merged export of revision 1 item 1 should copy the mark
-  into its episode metadata, next to the entry's status.)
+- **The mark travels with the data.** Every entry of `assets/targets.json` states `stand_in`, true for the 25 Kenney
+  models and false for the other 35; the loader refuses an entry without it, so the mark is never inferred.
+  `TargetEntry.to_json()` carries it, so every pool episode's provenance says, as a JSON boolean, for its target
+  (`target.stand_in`, which the merged export reads into its episode metadata) and each distractor, whether it was a
+  stand-in. A dataset can drop or keep those episodes later without re-collecting anything else.
 - **Undoing it is one data edit:** set the 25 entries' status back to `placeholder`. They keep `stand_in: true`, and
   `scripts/import_assets.py apply --targets --use-placeholders` writes the same mark when it promotes a placeholder, so
   a re-import cannot draw a stand-in without it.

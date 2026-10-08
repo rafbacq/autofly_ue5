@@ -634,6 +634,54 @@ def test_each_pool_episode_records_its_first_use_hold_and_which_objects_were_sta
             assert obj["stand_in"] is (obj["name"] == "grey boulder"), obj
 
 
+REAL_SIX = ("covered car", "red sedan", "orange cylinder", "blue cylinder", "red cube", "green cube")
+
+
+def _real_entries_pool(tmp_path) -> Path:
+    """Six entries of assets/targets.json as they stand (a Poly Haven model, a Kenney stand-in, four primitives), in a
+    pool of their own (no exclusion table beside it)."""
+    from autofly_ue5.paths import ROOT
+    from tests.test_dataset_targets import write_pool
+
+    real = json.loads((ROOT / "assets" / "targets.json").read_text())["targets"]
+    return write_pool(tmp_path / "real" / "targets.json", [t for t in real if t["name"] in REAL_SIX])
+
+
+def test_a_kenney_target_s_provenance_says_stand_in_and_a_poly_haven_one_does_not(tmp_path):
+    # The merged export reads each episode's target.stand_in (a JSON boolean, never omitted with a pool).
+    import dataclasses
+
+    from autofly_ue5.collect.collector import _provenance
+    from autofly_ue5.dataset.targets import TargetPool
+    from autofly_ue5.expert.episode import sample_setup
+
+    scene, layout = scene_and_layout()
+    pool = TargetPool.load(_real_entries_pool(tmp_path))
+    by_name = {e.name: e for e in pool.entries}
+    base = sample_setup(scene, layout, np.random.default_rng(3), pool=pool)
+    for name, mark in (("red sedan", True), ("covered car", False)):
+        setup = dataclasses.replace(base, target=by_name[name], target_scale=by_name[name].scale)
+        flight = {"setup": setup, "spawned": ("target",), "info": {}, "movers": [], "poses": [], "times": [],
+                  "final_pose": [0.0] * 4, "outcome": "success", "prewarm_steps": 0, "first_frame": None}
+        target = _provenance(scene, "sha", 1, flight, deterministic=False, target_name=name,
+                             target_name_status="pool")["target"]
+        assert target["name"] == name and target["stand_in"] is mark and target["status"] == "imported"
+
+
+def test_every_object_of_a_pool_episode_carries_its_entry_s_stand_in_mark(tmp_path):
+    record = _pilot(tmp_path, n_episodes=4, targets=_real_entries_pool(tmp_path))
+    assert record["status"] == "ok" and record["validation"]["pass"], record["error"]
+    root = tmp_path / "data"
+    provenance = [json.loads(p.read_text()) for p in (root / "pilot" / "provenance").glob("*.json")]
+    provenance += [json.loads(p.read_text())["provenance"] for p in (root / "rejects" / "pilot").glob("*.json")]
+    seen_marks = set()
+    for prov in provenance:
+        for obj in (prov["target"], *prov["distractors"]):
+            assert obj["stand_in"] is (obj["name"] == "red sedan"), obj
+            seen_marks.add(obj["stand_in"])
+    assert seen_marks == {True, False}
+
+
 def test_a_pool_free_episode_records_no_first_use_hold(tmp_path):
     record = _pilot(tmp_path, n_episodes=1)
     prov = json.loads(next((tmp_path / "data" / "pilot" / "provenance").glob("*.json")).read_text())

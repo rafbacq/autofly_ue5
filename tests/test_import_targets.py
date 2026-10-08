@@ -25,7 +25,7 @@ def _sha(path: Path) -> str:
 def _entry(name, category, source, *, status="candidate", scale=(1.0, 1.0, 1.0), seen=True, extent=None, asset=None,
            material=None):
     out = {"name": name, "category": category, "seen": seen, "asset": asset, "scale": list(scale), "material": material,
-           "status": status, "source": source, "height_m": None}
+           "status": status, "source": source, "height_m": None, "stand_in": source.get("source") == "kenney"}
     if extent is not None:
         out["extent_m"] = extent
     return out
@@ -328,7 +328,7 @@ def test_apply_writes_the_registry_and_the_pool_and_the_pool_then_spawns_them(tm
     by_name = {t["name"]: t for t in json.loads(w["paths"]["pool"].read_text())["targets"]}
     assert by_name["red car"]["status"] == "imported"
     # drawn, a stand-in keeps its mark, so a dataset's metadata can filter its episodes later (plan 6 revision 1 item 7)
-    assert by_name["red car"]["stand_in"] is True and "stand_in" not in by_name["wooden chair"]
+    assert by_name["red car"]["stand_in"] is True and by_name["wooden chair"]["stand_in"] is False
     loaded = {e.name: e for e in TargetPool.load(w["paths"]["pool"], registry=load_registry(w["paths"]["registry"])).entries}
     assert loaded["red car"].stand_in and loaded["red car"].usable and not loaded["wooden chair"].stand_in
 

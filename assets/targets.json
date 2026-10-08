@@ -27,7 +27,8 @@
         1.288
       ],
       "pivot": "base",
-      "note": "4.38 m long as modelled; scaled to 4 m (the pool's largest size)"
+      "note": "4.38 m long as modelled; scaled to 4 m (the pool's largest size)",
+      "stand_in": false
     },
     {
       "name": "red sedan",
@@ -413,7 +414,8 @@
         1.0,
         2.0
       ],
-      "pivot": "center"
+      "pivot": "center",
+      "stand_in": false
     },
     {
       "name": "blue cylinder",
@@ -440,7 +442,8 @@
         2.0
       ],
       "pivot": "center",
-      "note": "runtime_blue: the base UMaterial /Game/AutoFly/Materials/Runtime/M_Blue (the palette's MI_Blue is an instance, which a runtime spawn cannot apply, spec 7.1); usable once scripts/apply_runtime_materials.py has merged assets/pending/runtime_materials.registry.json (docs/runbook-targets.md)"
+      "note": "runtime_blue: the base UMaterial /Game/AutoFly/Materials/Runtime/M_Blue (the palette's MI_Blue is an instance, which a runtime spawn cannot apply, spec 7.1); usable once scripts/apply_runtime_materials.py has merged assets/pending/runtime_materials.registry.json (docs/runbook-targets.md)",
+      "stand_in": false
     },
     {
       "name": "red cylinder",
@@ -467,7 +470,8 @@
         2.0
       ],
       "pivot": "center",
-      "note": "runtime_red: the base UMaterial /Game/AutoFly/Materials/Runtime/M_Red (the palette's MI_Red is an instance, which a runtime spawn cannot apply, spec 7.1); usable once scripts/apply_runtime_materials.py has merged assets/pending/runtime_materials.registry.json (docs/runbook-targets.md)"
+      "note": "runtime_red: the base UMaterial /Game/AutoFly/Materials/Runtime/M_Red (the palette's MI_Red is an instance, which a runtime spawn cannot apply, spec 7.1); usable once scripts/apply_runtime_materials.py has merged assets/pending/runtime_materials.registry.json (docs/runbook-targets.md)",
+      "stand_in": false
     },
     {
       "name": "yellow cylinder",
@@ -494,7 +498,8 @@
         2.0
       ],
       "pivot": "center",
-      "note": "runtime_yellow: the base UMaterial /Game/AutoFly/Materials/Runtime/M_Yellow (the palette's MI_Yellow is an instance, which a runtime spawn cannot apply, spec 7.1); usable once scripts/apply_runtime_materials.py has merged assets/pending/runtime_materials.registry.json (docs/runbook-targets.md)"
+      "note": "runtime_yellow: the base UMaterial /Game/AutoFly/Materials/Runtime/M_Yellow (the palette's MI_Yellow is an instance, which a runtime spawn cannot apply, spec 7.1); usable once scripts/apply_runtime_materials.py has merged assets/pending/runtime_materials.registry.json (docs/runbook-targets.md)",
+      "stand_in": false
     },
     {
       "name": "red cube",
@@ -521,7 +526,8 @@
         1.2
       ],
       "pivot": "center",
-      "note": "runtime_red: the base UMaterial /Game/AutoFly/Materials/Runtime/M_Red (the palette's MI_Red is an instance, which a runtime spawn cannot apply, spec 7.1); usable once scripts/apply_runtime_materials.py has merged assets/pending/runtime_materials.registry.json (docs/runbook-targets.md)"
+      "note": "runtime_red: the base UMaterial /Game/AutoFly/Materials/Runtime/M_Red (the palette's MI_Red is an instance, which a runtime spawn cannot apply, spec 7.1); usable once scripts/apply_runtime_materials.py has merged assets/pending/runtime_materials.registry.json (docs/runbook-targets.md)",
+      "stand_in": false
     },
     {
       "name": "green cube",
@@ -548,7 +554,8 @@
         1.2
       ],
       "pivot": "center",
-      "note": "runtime_green: the base UMaterial /Game/AutoFly/Materials/Runtime/M_Green (the palette's MI_Green is an instance, which a runtime spawn cannot apply, spec 7.1); usable once scripts/apply_runtime_materials.py has merged assets/pending/runtime_materials.registry.json (docs/runbook-targets.md)"
+      "note": "runtime_green: the base UMaterial /Game/AutoFly/Materials/Runtime/M_Green (the palette's MI_Green is an instance, which a runtime spawn cannot apply, spec 7.1); usable once scripts/apply_runtime_materials.py has merged assets/pending/runtime_materials.registry.json (docs/runbook-targets.md)",
+      "stand_in": false
     },
     {
       "name": "yellow cube",
@@ -575,7 +582,8 @@
         1.2
       ],
       "pivot": "center",
-      "note": "runtime_yellow: the base UMaterial /Game/AutoFly/Materials/Runtime/M_Yellow (the palette's MI_Yellow is an instance, which a runtime spawn cannot apply, spec 7.1); usable once scripts/apply_runtime_materials.py has merged assets/pending/runtime_materials.registry.json (docs/runbook-targets.md)"
+      "note": "runtime_yellow: the base UMaterial /Game/AutoFly/Materials/Runtime/M_Yellow (the palette's MI_Yellow is an instance, which a runtime spawn cannot apply, spec 7.1); usable once scripts/apply_runtime_materials.py has merged assets/pending/runtime_materials.registry.json (docs/runbook-targets.md)",
+      "stand_in": false
     },
     {
       "name": "blue cone",
@@ -602,7 +610,8 @@
         1.5
       ],
       "pivot": "center",
-      "note": "runtime_blue: the base UMaterial /Game/AutoFly/Materials/Runtime/M_Blue (the palette's MI_Blue is an instance, which a runtime spawn cannot apply, spec 7.1); usable once scripts/apply_runtime_materials.py has merged assets/pending/runtime_materials.registry.json (docs/runbook-targets.md)"
+      "note": "runtime_blue: the base UMaterial /Game/AutoFly/Materials/Runtime/M_Blue (the palette's MI_Blue is an instance, which a runtime spawn cannot apply, spec 7.1); usable once scripts/apply_runtime_materials.py has merged assets/pending/runtime_materials.registry.json (docs/runbook-targets.md)",
+      "stand_in": false
     },
     {
       "name": "orange cone",
@@ -628,7 +637,8 @@
         1.0,
         1.5
       ],
-      "pivot": "center"
+      "pivot": "center",
+      "stand_in": false
     },
     {
       "name": "yellow sphere",
@@ -655,7 +665,8 @@
         1.2
       ],
       "pivot": "center",
-      "note": "runtime_yellow: the base UMaterial /Game/AutoFly/Materials/Runtime/M_Yellow (the palette's MI_Yellow is an instance, which a runtime spawn cannot apply, spec 7.1); usable once scripts/apply_runtime_materials.py has merged assets/pending/runtime_materials.registry.json (docs/runbook-targets.md)"
+      "note": "runtime_yellow: the base UMaterial /Game/AutoFly/Materials/Runtime/M_Yellow (the palette's MI_Yellow is an instance, which a runtime spawn cannot apply, spec 7.1); usable once scripts/apply_runtime_materials.py has merged assets/pending/runtime_materials.registry.json (docs/runbook-targets.md)",
+      "stand_in": false
     },
     {
       "name": "green sphere",
@@ -682,7 +693,8 @@
         1.2
       ],
       "pivot": "center",
-      "note": "runtime_green: the base UMaterial /Game/AutoFly/Materials/Runtime/M_Green (the palette's MI_Green is an instance, which a runtime spawn cannot apply, spec 7.1); usable once scripts/apply_runtime_materials.py has merged assets/pending/runtime_materials.registry.json (docs/runbook-targets.md)"
+      "note": "runtime_green: the base UMaterial /Game/AutoFly/Materials/Runtime/M_Green (the palette's MI_Green is an instance, which a runtime spawn cannot apply, spec 7.1); usable once scripts/apply_runtime_materials.py has merged assets/pending/runtime_materials.registry.json (docs/runbook-targets.md)",
+      "stand_in": false
     },
     {
       "name": "green cone",
@@ -709,7 +721,8 @@
         1.5
       ],
       "pivot": "center",
-      "note": "runtime_green: the base UMaterial /Game/AutoFly/Materials/Runtime/M_Green (the palette's MI_Green is an instance, which a runtime spawn cannot apply, spec 7.1); usable once scripts/apply_runtime_materials.py has merged assets/pending/runtime_materials.registry.json (docs/runbook-targets.md)"
+      "note": "runtime_green: the base UMaterial /Game/AutoFly/Materials/Runtime/M_Green (the palette's MI_Green is an instance, which a runtime spawn cannot apply, spec 7.1); usable once scripts/apply_runtime_materials.py has merged assets/pending/runtime_materials.registry.json (docs/runbook-targets.md)",
+      "stand_in": false
     },
     {
       "name": "beige sofa",
@@ -736,7 +749,8 @@
         0.658,
         0.796
       ],
-      "pivot": "base"
+      "pivot": "base",
+      "stand_in": false
     },
     {
       "name": "black leather sofa",
@@ -763,7 +777,8 @@
         0.818,
         0.71
       ],
-      "pivot": "base"
+      "pivot": "base",
+      "stand_in": false
     },
     {
       "name": "grey armchair",
@@ -790,7 +805,8 @@
         0.766,
         1.065
       ],
-      "pivot": "base"
+      "pivot": "base",
+      "stand_in": false
     },
     {
       "name": "green armchair",
@@ -817,7 +833,8 @@
         0.664,
         1.058
       ],
-      "pivot": "base"
+      "pivot": "base",
+      "stand_in": false
     },
     {
       "name": "white plastic chair",
@@ -844,7 +861,8 @@
         0.628,
         0.88
       ],
-      "pivot": "base"
+      "pivot": "base",
+      "stand_in": false
     },
     {
       "name": "blue school chair",
@@ -871,7 +889,8 @@
         0.675,
         1.006
       ],
-      "pivot": "base"
+      "pivot": "base",
+      "stand_in": false
     },
     {
       "name": "red wooden bench",
@@ -898,7 +917,8 @@
         0.496,
         0.889
       ],
-      "pivot": "base"
+      "pivot": "base",
+      "stand_in": false
     },
     {
       "name": "round wooden table",
@@ -925,7 +945,8 @@
         1.399,
         1.005
       ],
-      "pivot": "base"
+      "pivot": "base",
+      "stand_in": false
     },
     {
       "name": "white cabinet",
@@ -952,7 +973,8 @@
         0.617,
         1.182
       ],
-      "pivot": "base"
+      "pivot": "base",
+      "stand_in": false
     },
     {
       "name": "grandfather clock",
@@ -979,7 +1001,8 @@
         0.427,
         2.191
       ],
-      "pivot": "base"
+      "pivot": "base",
+      "stand_in": false
     },
     {
       "name": "wooden picnic table",
@@ -1006,7 +1029,8 @@
         3.022,
         0.746
       ],
-      "pivot": "base"
+      "pivot": "base",
+      "stand_in": false
     },
     {
       "name": "red barrel",
@@ -1033,7 +1057,8 @@
         0.563,
         0.88
       ],
-      "pivot": "base"
+      "pivot": "base",
+      "stand_in": false
     },
     {
       "name": "blue barrel",
@@ -1060,7 +1085,8 @@
         0.485,
         0.88
       ],
-      "pivot": "base"
+      "pivot": "base",
+      "stand_in": false
     },
     {
       "name": "wooden barrel",
@@ -1087,7 +1113,8 @@
         0.756,
         0.871
       ],
-      "pivot": "base"
+      "pivot": "base",
+      "stand_in": false
     },
     {
       "name": "green suitcase",
@@ -1120,7 +1147,8 @@
         0.239,
         0.568
       ],
-      "pivot": "base"
+      "pivot": "base",
+      "stand_in": false
     },
     {
       "name": "old television",
@@ -1147,7 +1175,8 @@
         0.471,
         0.457
       ],
-      "pivot": "base"
+      "pivot": "base",
+      "stand_in": false
     },
     {
       "name": "red fire extinguisher",
@@ -1174,7 +1203,8 @@
         0.367,
         0.659
       ],
-      "pivot": "base"
+      "pivot": "base",
+      "stand_in": false
     },
     {
       "name": "yellow generator",
@@ -1201,7 +1231,8 @@
         0.564,
         0.577
       ],
-      "pivot": "base"
+      "pivot": "base",
+      "stand_in": false
     },
     {
       "name": "red tool chest",
@@ -1228,7 +1259,8 @@
         0.407,
         0.652
       ],
-      "pivot": "base"
+      "pivot": "base",
+      "stand_in": false
     },
     {
       "name": "yellow wet floor sign",
@@ -1255,7 +1287,8 @@
         0.358,
         0.629
       ],
-      "pivot": "base"
+      "pivot": "base",
+      "stand_in": false
     },
     {
       "name": "orange traffic cone",
@@ -1312,7 +1345,8 @@
         0.618,
         1.722
       ],
-      "pivot": "base"
+      "pivot": "base",
+      "stand_in": false
     },
     {
       "name": "man in brown jacket",
@@ -1639,7 +1673,8 @@
         1.366,
         1.073
       ],
-      "pivot": "base"
+      "pivot": "base",
+      "stand_in": false
     },
     {
       "name": "tiger",

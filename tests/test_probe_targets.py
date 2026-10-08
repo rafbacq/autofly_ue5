@@ -31,7 +31,7 @@ def _write_world(tmp_path: Path) -> tuple[Path, Path]:
 
     def entry(name, asset, scale, material, status="primitive", source=None):
         return {"name": name, "category": "geometry", "seen": True, "asset": asset, "scale": scale, "material": material,
-                "status": status, "source": source, "height_m": None}
+                "status": status, "source": source, "height_m": None, "stand_in": status == "placeholder"}
 
     pool = {"version": 1, "targets": [
         entry("orange cylinder", "cylinder", [1.0, 1.0, 2.0], "orange"),

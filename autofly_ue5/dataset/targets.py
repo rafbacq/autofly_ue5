@@ -10,13 +10,14 @@ as before.
     {"version": 1, "targets": [{"name": "blue hatchback", "category": "vehicle", "seen": true,
       "asset": "<registry key, null until imported>", "scale": [sx, sy, sz], "material": "<registry material or null>",
       "status": "candidate|placeholder|manual|imported|primitive", "source": {"source", "id", "licence", "page"} or null,
-      "height_m": ...}]}
+      "height_m": ..., "stand_in": true|false}]}
 
-An optional `"stand_in": true` marks a low-poly stand-in (the Kenney models drawn for the vehicle and human categories
-until a Fab session replaces them, plan 6 step 2b): it is drawn like any imported entry, and every episode's record of
-its target and distractors carries the mark, so a dataset can filter them out later.
+`stand_in` marks a low-poly stand-in (the Kenney models drawn for the vehicle and human categories until a Fab session
+replaces them, plan 6 step 2b): it is drawn like any imported entry, and every episode's record of its target and
+distractors carries the mark as a JSON boolean, so a dataset can filter them out later (the merged export reads
+`target.stand_in`). Stated for every entry, true or false: an entry without it is refused, never read as either.
 
-Every entry carries all nine keys, so a misspelt key is a missing one and is refused; other keys are ignored. Only
+Every entry carries all ten keys, so a misspelt key is a missing one and is refused; other keys are ignored. Only
 `primitive` (engine content) and `imported` entries are drawn, and each must be spawnable as it stands: its asset in the
 registry, one mesh (a runtime spawn places one: a model with a no-collision `cards` part would arrive without its
 leaves), a scale, and a material that is either none (the mesh's own) or a base `UMaterial` the runtime can apply. A
@@ -55,7 +56,7 @@ TARGET_SPLITS = SPLITS + (UNSEEN_TARGETS,)
 # One target and up to five distractors (spec §9 step 1: 3-5), all different entries: fewer cannot fill an episode
 # without drawing an object twice.
 MIN_USABLE = 6
-ENTRY_KEYS = ("name", "category", "seen", "asset", "scale", "material", "status", "source", "height_m")
+ENTRY_KEYS = ("name", "category", "seen", "asset", "scale", "material", "status", "source", "height_m", "stand_in")
 EXCLUSIONS_FILE = "target_exclusions.json"  # beside the pool file: the pool's own data, loaded with it
 EXCLUSIONS_VERSION = 1
 
@@ -128,9 +129,9 @@ def _entry(raw: Any, where: str, registry: AssetRegistry) -> TargetEntry:
     for key in ("asset", "material"):
         if raw[key] is not None and not isinstance(raw[key], str):
             raise TargetPoolError(f"{where}: {key} must be a registry key or null, got {raw[key]!r}")
-    stand_in = raw.get("stand_in", False)
+    stand_in = raw["stand_in"]
     if not isinstance(stand_in, bool):
-        raise TargetPoolError(f"{where}: stand_in must be true or false where given, got {stand_in!r}")
+        raise TargetPoolError(f"{where}: stand_in must be true or false, got {stand_in!r}")
     entry = TargetEntry(name=name, category=raw["category"], seen=raw["seen"], asset=raw["asset"],
                         scale=_scale(raw["scale"], where), material=raw["material"], status=raw["status"],
                         source=raw["source"], height_m=float(height) if height is not None else None,
