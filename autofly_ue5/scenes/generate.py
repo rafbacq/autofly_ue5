@@ -3,9 +3,9 @@
 Placements (spec §6.1): `jittered_grid` (pillars, poles: s01's, whose draw order is pinned by tests/test_generate.py's
 S01_LAYOUT_SHA256 and must never change), `poisson` (rocks, stones, ruins: dart-throwing with a minimum centre
 distance), `clusters` (tree clusters: cluster centres, then members inside each cluster's disc) and `stacks` (boxes:
-stack positions, then boxes on top of each other). Footprints: `circle` (radius from the x scale) and `box` (the
-circumscribed circle of the scaled base, conservative for the occupancy grid and every clearance check, which are
-circle-only until spec §13's M4 item replaces them).
+stack positions, then boxes on top of each other). Footprints: `circle` (radius from the x scale; for a measured
+model its whole reach, see `_footprint_radius_m`) and `box` (the circumscribed circle of the scaled base, conservative
+for the occupancy grid and every clearance check, which are circle-only until spec §13's M4 item replaces them).
 
 Several groups per scene (s04's rocks and stones, s10's walls and containers): a later group's instances are placed
 clear of every earlier instance (surface gap >= 0), by rejection for the samplers and by refusal for a grid, which
@@ -135,15 +135,21 @@ def _ground_radius_m(asset: AssetEntry, s_xy: float) -> float:
 
 
 def _footprint_radius_m(asset: AssetEntry, s_xy: float, s_z: float = 1.0, band_m: tuple[float, float] | None = None) -> float:
-    """What the drone meets: for a measured model, the profile's reach in the flight band at this scale; for a primitive,
-    the whole footprint. Raises when a measured model has nothing in the band at this scale: it is not an obstacle to a
-    drone flying there, and a scene that lists it must scale it or leave it out."""
+    """What the drone can meet: the model's whole horizontal reach at this scale (the widest slice of its profile, as
+    for the ground footprint), or a primitive's whole footprint. Until 2026-10-08 a measured model's circle was its
+    reach inside the flight band only. The body is not a point at the band's altitude, and after an episode ends beside
+    a tree the reset climbs straight up through whatever hangs above the band: tree_small_02 reaches 0.175 m farther
+    above 3 m than inside 1-3 m, searsia_burchellii_small 0.17 m below 1 m, and in a mesh scene the footprint circle is
+    the contact rule itself (expert/footprint_contact.py, 0.9 m from it), with the rotor tips 0.02 m outside the circle
+    at its closest ending. So the circle holds every slice. For rocks that means the base (0-0.5 m wider than their band
+    slices at the 2-3x scales s03-s05 need), which the flight-band check below still requires to reach the band. Raises
+    when a measured model has nothing in the band at this scale: it is not an obstacle to a drone flying there, and a
+    scene that lists it must scale it up or leave it out."""
     if asset.radius_profile_m is not None and band_m is not None:
-        radius = band_radius_from_profile(list(asset.radius_profile_m), asset.profile_step_m, s_xy=s_xy, s_z=s_z, band_m=band_m)
-        if radius is None:
+        in_band = band_radius_from_profile(list(asset.radius_profile_m), asset.profile_step_m, s_xy=s_xy, s_z=s_z, band_m=band_m)
+        if in_band is None:
             raise ValueError(f"asset {asset.name!r} at scale z {s_z} is {asset.base_size_m[2] * s_z:.2f} m tall with nothing "
                              f"in the flight band {band_m}: scale it up or leave it out")
-        return round(radius, 4)
     return _ground_radius_m(asset, s_xy)
 
 

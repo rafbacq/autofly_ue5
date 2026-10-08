@@ -305,14 +305,16 @@ def test_a_profiled_asset_s_footprint_is_what_the_flight_band_meets_at_its_scale
         generate_layout(tiny, _registry_with_tree())  # 0.7 m tall: below the band, no obstacle to the drone
 
 
-def test_scaled_rocks_present_their_scaled_profile_and_unscaled_rocks_are_refused(tmp_path):
+def test_scaled_rocks_present_their_whole_reach_and_unscaled_rocks_are_refused(tmp_path):
     big = _scene(tmp_path, [_group(asset="rock", count=20, xy=(2.0, 3.0), z=(2.0, 3.0),
                                    placement={"type": "poisson", "margin_m": 8.0, "min_distance_m": 7.0})], scene_id="s05")
     layout = generate_layout(big, _registry_with_tree())
     for inst in layout.instances:
         s_xy, _s, s_z = inst.scale
-        # 1-3 m at scale s_z is the model's 1/s_z to 3/s_z; a 1 m rock scaled 2-3x spans that with its slices 0.33+ m
-        assert 0.6 * s_xy - 1e-6 <= inst.radius_m <= 0.95 * s_xy + 1e-6
+        # 1-3 m at scale s_z is the model's 1/s_z to 3/s_z; a 1 m rock scaled 2-3x spans that with its slices 0.33+ m.
+        # Its circle is the whole model's reach, the 0.95 m base (2026-10-08: the circle is the contact rule in a mesh
+        # scene and the reset climbs through every slice), not the narrower band slices (0.6-0.9 m).
+        assert inst.radius_m == pytest.approx(0.95 * s_xy, abs=1e-3)
         assert inst.height_m == pytest.approx(1.0 * s_z)
     natural = _scene(tmp_path, [_group(asset="rock", count=5, xy=(1.0, 1.0), z=(1.0, 1.0))], scene_id="s03")
     with pytest.raises(ValueError, match="flight band"):
