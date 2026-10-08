@@ -23,6 +23,9 @@ is recorded as M3's gate.
   placeholder in the card). Not both.
 - The gate record (default docs/gates/m3_gate.json, never written over) passes when the requested episodes were kept,
   the validator passes, and the engine-fault audit is clean. The TFDS read-back is recorded next to it.
+- `--no-export` skips the store's own RLDS export (and so any `--check-python` read-back, refused beside it): plan 6
+  revision 1 exports one merged dataset from every store, and a copy per store would double the disk and the time.
+  The record's `rlds` then says so, and the validator alone decides the store.
 
 Simulators: one, on `--instance`, stopped through its own pid record at the end. Ends with `os._exit` like every
 entry point that talks to projectairsim (its client leaves a non-daemon thread behind).
@@ -66,6 +69,7 @@ from scripts.export_rlds import check_with_tfds  # noqa: E402
 from scripts.m2_gate import build_eval_env, checkpoint_obs_config, default_sac_loader  # noqa: E402
 
 DEFAULT_TARGET_NAME = "orange cylinder"  # U3: s01's target until M4's pool exists
+EXPORT_SKIPPED = {"skipped": "merged export (plan 6 revision 1)"}  # the record's rlds under --no-export
 TARGET_NAME_STATUS = "placeholder_until_M4"  # U3 (docs/decisions/2026-10-03-m3-a0-and-collection.md)
 PAK = UE_PROJECT_DIR / "Packaged" / "Development" / "Linux" / "Blocks" / "Content" / "Paks" / "Blocks-Linux.pak"
 
@@ -119,7 +123,9 @@ def run(*, scene: str, model_path: Path, scene_config: str, name: str, n_episode
         check_python: Path | None = None, device: str = "auto", sim_factory: Callable[[], Any] | None = None,
         load_model: Callable[[Path], Any] | None = None, obs_config_reader: Callable[[Path], Any] | None = None,
         sim_root: Path = SIM_RUN_DIR, platform: dict | None = None, footprint_shape: str | None = None,
-        against_trained_shape: bool = False) -> dict[str, Any]:
+        against_trained_shape: bool = False, export: bool = True) -> dict[str, Any]:
+    if not export and check_python is not None:
+        raise ValueError("--check-python reads the store's own RLDS export back, and --no-export skips that export")
     run_started = time.strftime("%Y-%m-%d %H:%M:%S")
     run_start_epoch = time.time()
     xid_before = xid_count(run_started)
@@ -155,7 +161,8 @@ def run(*, scene: str, model_path: Path, scene_config: str, name: str, n_episode
         "episodes_requested": n_episodes, "seed_base": seed_base, "instance": instance, "target_name": target_name,
         "a0": "sector8", "reward_version": REWARD_VERSION, "collector_git_head": _git("rev-parse", "HEAD"),
         "collector_tree_dirty": bool(_git("status", "--porcelain")), "run_started": run_started,
-        "status": "failed", "pass": False, "error": None, "collection": None, "validation": None, "rlds": None,
+        "status": "failed", "pass": False, "error": None, "collection": None, "validation": None,
+        "rlds": None if export else dict(EXPORT_SKIPPED),
     }
     provenance = {"expert": record["expert"], "platform": platform if platform is not None else platform_provenance(),
                   "scene_config": record["scene_config"], "collector_git_head": record["collector_git_head"],
@@ -213,7 +220,7 @@ def run(*, scene: str, model_path: Path, scene_config: str, name: str, n_episode
             record["validation"] = validate_dataset(root)
         except Exception as err:
             record["validation"] = {"pass": False, "failures": [f"the validator raised {type(err).__name__}: {err}"]}
-        if writer.manifest["counts"]["episodes"]:  # whatever was kept is exported, even from a failed run
+        if export and writer.manifest["counts"]["episodes"]:  # whatever was kept is exported, even from a failed run
             try:
                 record["rlds"] = export_rlds(root, Path(data_root), name)  # spec §10.1: data/<dataset_name>/1.0.0/
                 if check_python is not None:
@@ -228,6 +235,7 @@ def run(*, scene: str, model_path: Path, scene_config: str, name: str, n_episode
         engine_faults = {"error": f"the audit raised {type(err).__name__}: {err}"}
         record["faults_ok"] = False
     record["engine_faults"] = engine_faults
+    # Under --no-export rlds is EXPORT_SKIPPED, which has no error: the skipped export is no failure, the validator decides
     rlds = record["rlds"] or {}
     record["pass"] = bool(record["status"] == "ok" and kept >= n_episodes and (record["validation"] or {}).get("pass")
                           and record["faults_ok"] and rlds and "error" not in rlds
@@ -272,6 +280,9 @@ def build_arg_parser() -> argparse.ArgumentParser:
                         "contact_rules then names the shape it trained under as trained_shape")
     p.add_argument("--deterministic", action="store_true")
     p.add_argument("--check-python", type=Path, default=None, help="a python with tensorflow-datasets, to read it back")
+    p.add_argument("--no-export", action="store_true",
+                   help="skip this store's own RLDS export (plan 6 revision 1 exports one merged dataset from every "
+                        "store); the record's rlds says so and the validator still runs")
     p.add_argument("--device", default="auto")
     return p
 
@@ -281,6 +292,8 @@ def main(argv: list[str] | None = None) -> int:
     out_path = args.out if args.out is not None else evidence.GATES_DIR / "m3_gate.json"
     try:
         evidence.refuse_existing_evidence(out_path)
+        if args.no_export and args.check_python is not None:
+            raise ValueError("--check-python reads the store's own RLDS export back, and --no-export skips that export")
         seed_base = collection_seed_base(args.seed_slice)
         busy = slot_busy(args.instance, args.sim_root)
         if busy:
@@ -310,7 +323,8 @@ def main(argv: list[str] | None = None) -> int:
                  n_episodes=args.episodes, instance=args.instance, out_path=out_path, data_root=args.data_root,
                  deterministic=args.deterministic, max_attempts=args.max_attempts, target_name=args.target_name,
                  targets=args.targets, check_python=args.check_python, device=args.device, sim_root=args.sim_root,
-                 seed_base=seed_base, footprint_shape=footprint_shape, against_trained_shape=args.against_trained_shape)
+                 seed_base=seed_base, footprint_shape=footprint_shape, against_trained_shape=args.against_trained_shape,
+                 export=not args.no_export)
     print(json.dumps({"status": record["status"], "pass": record["pass"], "error": record["error"],
                       "kept": (record["collection"] or {}).get("kept"),
                       "validator_pass": (record["validation"] or {}).get("pass")}, indent=2))

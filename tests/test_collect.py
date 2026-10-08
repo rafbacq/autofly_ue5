@@ -355,6 +355,46 @@ def test_the_gate_needs_a_usable_rlds_export(tmp_path, monkeypatch):
     assert record["pass"] is False
 
 
+def test_a_store_collected_for_the_merged_export_skips_its_own_and_still_passes(tmp_path, monkeypatch):
+    # Plan 6 revision 1 item 1: one merged dataset is exported from every store, so a store's own RLDS copy would only
+    # double the disk and the time. Skipped, the record says why; the validator still runs and still decides.
+    import scripts.collect_dataset as cli
+
+    monkeypatch.setattr(cli, "export_rlds", lambda *a, **k: pytest.fail("exported a store the merged export covers"))
+    record = _pilot(tmp_path, export=False)
+    assert record["rlds"] == {"skipped": "merged export (plan 6 revision 1)"}
+    assert record["validation"]["pass"] and record["pass"] is True, record
+    assert not (tmp_path / "data" / "pilot" / "1.0.0").exists()
+    failing = _pilot(tmp_path, export=False, name="bad", n_episodes=3, max_attempts=2)  # 2 flights cannot keep 3
+    assert failing["rlds"] == {"skipped": "merged export (plan 6 revision 1)"} and failing["pass"] is False
+
+
+def test_the_pilot_cli_takes_no_export_and_refuses_a_read_back_of_nothing(tmp_path, monkeypatch, capsys):
+    from tests.test_run_shape import run_root
+
+    model = run_root(tmp_path, "s01_r2") / "final.zip"
+    code, kwargs = _pilot_main_s01(tmp_path, monkeypatch, model, "--no-export")
+    assert code == 0 and kwargs["export"] is False
+    code, kwargs = _pilot_main_s01(tmp_path, monkeypatch, model)
+    assert code == 0 and kwargs["export"] is True, "the default exports, as M3's pilot did"
+    code, kwargs = _pilot_main_s01(tmp_path, monkeypatch, model, "--no-export", "--check-python", "/bin/true")
+    assert code == 2 and kwargs is None and "--check-python" in capsys.readouterr().err
+
+
+def _pilot_main_s01(tmp_path, monkeypatch, model, *argv):
+    """The pilot CLI on s01 with run() replaced: (exit code, run()'s keyword arguments or None)."""
+    import scripts.collect_dataset as cli
+
+    monkeypatch.setattr(cli, "checkpoint_obs_config", lambda path: None)
+    called = []
+    monkeypatch.setattr(cli, "run", lambda **kwargs: called.append(kwargs) or {
+        "status": "ok", "pass": True, "error": None, "collection": None, "validation": None})
+    code = cli.main(["--model", str(model), "--scene-config", "scene_autofly_s01_fast.jsonc", "--name", "pilot",
+                     "--data-root", str(tmp_path / "data"), "--out", str(tmp_path / "m3.json"), "--sim-root",
+                     str(tmp_path / "sim"), *argv])
+    return code, (called[0] if called else None)
+
+
 def test_the_gate_needs_the_tfds_read_back_when_one_was_asked_for(tmp_path):
     fake_python = tmp_path / "fake_tfds_python"
     fake_python.write_text('#!/bin/sh\necho \'{"pass": false, "mismatches": ["frames differ"]}\'\nexit 1\n')
