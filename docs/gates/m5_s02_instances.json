@@ -1,0 +1,297 @@
+{
+  "description": "Task 7: instance-scaling throughput measurement with an RL env in the loop (spec \u00a78/\u00a712).",
+  "scene": "s02",
+  "map": "/Game/AutoFly/Maps/S02",
+  "scene_config": {
+    "file": "scene_autofly_s02_fast.jsonc",
+    "sha256": "2ba549af66881da610be7c47c58fa936ac7ca022ec4a52d9d7541ec98ca35ebc"
+  },
+  "resilient": true,
+  "candidate_ns": [
+    1,
+    2,
+    4
+  ],
+  "attempted_ns": [
+    1,
+    2,
+    4
+  ],
+  "warmup_s": 30.0,
+  "timed_window_target_s": 180.0,
+  "vram_budget_mib": 20000,
+  "gpu_total_mib": 24564,
+  "baseline_vram_mib": 111,
+  "per_n": {
+    "1": {
+      "env_steps_per_s_total": 11.252058148583174,
+      "env_steps_per_s_per_instance": 11.252058148583174,
+      "vram_mib": 1702,
+      "vram_samples_mib": [
+        1696,
+        1700,
+        1700,
+        1700,
+        1700,
+        1700,
+        1700,
+        1700,
+        1700,
+        1702,
+        1702,
+        1702
+      ],
+      "launch_s": 2.9984991010278463,
+      "per_instance_launch_s": [
+        2.982404618000146
+      ],
+      "episodes_completed": 54,
+      "fault_truncations": 0,
+      "backend_faults": {
+        "fault_counts": {
+          "CameraPoseError": 0,
+          "StepTimingError": 0,
+          "StaleStateError": 0,
+          "CommandTimeoutError": 0,
+          "Timeout": 0,
+          "ConnectionReset": 0,
+          "KinematicsJumpError": 0,
+          "SimRequestTimeoutError": 0,
+          "ObjectMoveRefusedError": 0,
+          "FrameTimeoutError": 0,
+          "FrameTimestampError": 0,
+          "ResetPoseError": 0,
+          "StartCollisionError": 0,
+          "SetPoseError": 0,
+          "EpisodeSetupError": 0,
+          "SimExitedError": 0,
+          "SimReadyTimeout": 0,
+          "SimConnectionLostError": 0
+        },
+        "recovered_counts": {
+          "CameraPoseError": 0,
+          "StepTimingError": 0,
+          "StaleStateError": 0,
+          "CommandTimeoutError": 0,
+          "Timeout": 0,
+          "ConnectionReset": 0,
+          "KinematicsJumpError": 0,
+          "SimRequestTimeoutError": 0,
+          "ObjectMoveRefusedError": 0,
+          "FrameTimeoutError": 0,
+          "FrameTimestampError": 0,
+          "ResetPoseError": 0,
+          "StartCollisionError": 0,
+          "SetPoseError": 0,
+          "EpisodeSetupError": 0,
+          "SimExitedError": 0,
+          "SimReadyTimeout": 0,
+          "SimConnectionLostError": 0
+        },
+        "relaunch_count": 0
+      },
+      "backend_faults_missing_workers": [],
+      "total_env_steps": 2026,
+      "warmup_s": 30.0,
+      "timed_window_s": 180.05594827601453,
+      "faults": {
+        "xid_delta": 0,
+        "boot_changed": false,
+        "device_lost": {
+          "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst0/sim.log": 0
+        },
+        "logs_scanned": 1,
+        "kernel_journal_readable": true
+      },
+      "faults_ok": true
+    },
+    "2": {
+      "env_steps_per_s_total": 12.403538321045026,
+      "env_steps_per_s_per_instance": 6.201769160522513,
+      "vram_mib": 3360,
+      "vram_samples_mib": [
+        3330,
+        3338,
+        3346,
+        3348,
+        3348,
+        3348,
+        3357,
+        3359,
+        3360,
+        3360,
+        3360,
+        3360
+      ],
+      "launch_s": 6.329552031995263,
+      "per_instance_launch_s": [
+        3.002808279998135,
+        3.294904748967383
+      ],
+      "episodes_completed": 55,
+      "fault_truncations": 0,
+      "backend_faults": {
+        "fault_counts": {
+          "CameraPoseError": 0,
+          "StepTimingError": 0,
+          "StaleStateError": 0,
+          "CommandTimeoutError": 0,
+          "Timeout": 0,
+          "ConnectionReset": 0,
+          "KinematicsJumpError": 0,
+          "SimRequestTimeoutError": 0,
+          "ObjectMoveRefusedError": 0,
+          "FrameTimeoutError": 0,
+          "FrameTimestampError": 0,
+          "ResetPoseError": 0,
+          "StartCollisionError": 0,
+          "SetPoseError": 0,
+          "EpisodeSetupError": 0,
+          "SimExitedError": 0,
+          "SimReadyTimeout": 0,
+          "SimConnectionLostError": 0
+        },
+        "recovered_counts": {
+          "CameraPoseError": 0,
+          "StepTimingError": 0,
+          "StaleStateError": 0,
+          "CommandTimeoutError": 0,
+          "Timeout": 0,
+          "ConnectionReset": 0,
+          "KinematicsJumpError": 0,
+          "SimRequestTimeoutError": 0,
+          "ObjectMoveRefusedError": 0,
+          "FrameTimeoutError": 0,
+          "FrameTimestampError": 0,
+          "ResetPoseError": 0,
+          "StartCollisionError": 0,
+          "SetPoseError": 0,
+          "EpisodeSetupError": 0,
+          "SimExitedError": 0,
+          "SimReadyTimeout": 0,
+          "SimConnectionLostError": 0
+        },
+        "relaunch_count": 0
+      },
+      "backend_faults_missing_workers": [],
+      "total_env_steps": 2234,
+      "warmup_s": 30.0,
+      "timed_window_s": 180.1098962390097,
+      "faults": {
+        "xid_delta": 0,
+        "boot_changed": false,
+        "device_lost": {
+          "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.10.08-06.12.09.log": 0,
+          "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst0/sim.log": 0,
+          "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst1/sim.log": 0
+        },
+        "logs_scanned": 3,
+        "kernel_journal_readable": true
+      },
+      "faults_ok": true
+    },
+    "4": {
+      "env_steps_per_s_total": 14.932022722942655,
+      "env_steps_per_s_per_instance": 3.7330056807356637,
+      "vram_mib": 6559,
+      "vram_samples_mib": [
+        6475,
+        6483,
+        6499,
+        6517,
+        6529,
+        6535,
+        6539,
+        6541,
+        6549,
+        6549,
+        6557,
+        6559
+      ],
+      "launch_s": 13.15107836102834,
+      "per_instance_launch_s": [
+        2.9977024890249595,
+        3.291655582957901,
+        3.39797459699912,
+        3.3990448000258766
+      ],
+      "episodes_completed": 64,
+      "fault_truncations": 0,
+      "backend_faults": {
+        "fault_counts": {
+          "CameraPoseError": 0,
+          "StepTimingError": 0,
+          "StaleStateError": 0,
+          "CommandTimeoutError": 0,
+          "Timeout": 0,
+          "ConnectionReset": 0,
+          "KinematicsJumpError": 0,
+          "SimRequestTimeoutError": 0,
+          "ObjectMoveRefusedError": 0,
+          "FrameTimeoutError": 0,
+          "FrameTimestampError": 0,
+          "ResetPoseError": 0,
+          "StartCollisionError": 0,
+          "SetPoseError": 0,
+          "EpisodeSetupError": 0,
+          "SimExitedError": 0,
+          "SimReadyTimeout": 0,
+          "SimConnectionLostError": 0
+        },
+        "recovered_counts": {
+          "CameraPoseError": 0,
+          "StepTimingError": 0,
+          "StaleStateError": 0,
+          "CommandTimeoutError": 0,
+          "Timeout": 0,
+          "ConnectionReset": 0,
+          "KinematicsJumpError": 0,
+          "SimRequestTimeoutError": 0,
+          "ObjectMoveRefusedError": 0,
+          "FrameTimeoutError": 0,
+          "FrameTimestampError": 0,
+          "ResetPoseError": 0,
+          "StartCollisionError": 0,
+          "SetPoseError": 0,
+          "EpisodeSetupError": 0,
+          "SimExitedError": 0,
+          "SimReadyTimeout": 0,
+          "SimConnectionLostError": 0
+        },
+        "relaunch_count": 0
+      },
+      "backend_faults_missing_workers": [],
+      "total_env_steps": 2700,
+      "warmup_s": 30.0,
+      "timed_window_s": 180.8194408820127,
+      "faults": {
+        "xid_delta": 0,
+        "boot_changed": false,
+        "device_lost": {
+          "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst0/sim-backup-2026.10.08-06.15.47.log": 0,
+          "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst0/sim.log": 0,
+          "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst1/sim-backup-2026.10.08-06.15.47.log": 0,
+          "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst1/sim.log": 0,
+          "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst2/sim.log": 0,
+          "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst3/sim.log": 0
+        },
+        "logs_scanned": 6,
+        "kernel_journal_readable": true
+      },
+      "faults_ok": true
+    }
+  },
+  "failures": {},
+  "chosen_n": 4,
+  "stop_reason": "measured every candidate N without hitting a stop condition",
+  "projection": {
+    "hours_per_scene": 18.602823136009537,
+    "hours_all_scenes": 186.02823136009536,
+    "days_all_scenes": 7.75117630667064,
+    "assumed_steps_needed_per_scene": 1000000,
+    "assumed_n_scenes": 10,
+    "note": "D7 (plan2 decisions): training runs on a wall-clock budget, not a fixed step count, so the steps-needed figure below is an assumption for costing purposes, not a measured requirement. 1,000,000 env steps/scene is used as a round, order-of-magnitude planning figure for a SAC agent converging on a single ~70x70 m crossing task; n_scenes=10 is the train split (s01-s10, spec \u00a76)."
+  },
+  "run_started": "2026-10-08 02:08:36",
+  "run_finished": "2026-10-08 02:19:33"
+}
