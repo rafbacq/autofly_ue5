@@ -61,3 +61,12 @@ done
 Addendum (2026-10-08, before the gate ran): the circle gate is flown on main as it stood before the outline patch (pure
 circle, 0.9 m); after the patch, m2_gate reads s02_r1's identity and scores it under the circle without a flag. The
 outline record of the pick, at the outline's 1.05 m, is docs/gates/m5_s02_gate_outline.json.
+
+Result (2026-10-08 18:18): the pick (`avg_350k_end`, sha256 as in `m5_s02_gate.json`) flew the gate's 200 episodes
+under the outline rule at 1.05 m (`docs/gates/m5_s02_gate_outline.json`, deterministic, `--against-trained-shape`):
+**179/200 = 0.895** (Wilson 0.845-0.930), against 0.580 under the circle on the same seeds. Its failures: 16 footprint
+endings, 2 lateral exits, 2 climbs, 1 timeout; no physical contact. Paired by seed, 71 episodes succeed only under the
+outline and 8 only under the circle (exact McNemar p = 9.7e-14). It still fails the 0.95 bar, and the pre-registered circle
+gate stays failed: this record measures the pilot under the rule collection uses, nothing more. The circle cost the
+expert 79 episodes ending a median 2.7 m from any geometry; the outline ends at the real tree. So s02's pilot is this
+pick, and the other mesh scenes' screening (`m5_pilot_screening.json`) was flown under the same outline rule.
