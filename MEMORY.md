@@ -6,6 +6,15 @@ stale "fact". Standing rules live in `CLAUDE.md`; this file is the reasoning and
 
 ## Traps: read these before touching the simulator path
 
+- **The drone's collision reaches past its rotor tips (2026-10-08).** Physical collisions registered at 0.51 m (mover
+  probe d1) and 0.52-0.63 m (run 5's static collisions) from a surface, centre to surface, against the rotors' 0.48 m:
+  the drone's UE mesh collision is larger than its rotor discs. Any geometric rule meant to keep the body off
+  geometry must cover 0.63 m plus a full-speed ending step (0.41 m): the mesh outline rule is 1.05 m for that reason.
+  A pivot circle's slack hid this; a tight outline does not.
+- **A gate on a model trained under another rule is a silent trap (2026-10-08).** The outline became the default
+  shape; s02_r1's pre-registered gate command predated the flag. Tools now read a run's shape from its identity and
+  refuse a contradicting flag; never add a default where a run's rule is knowable.
+
 - **A crash into a tree can wedge the Unreal actor beyond any teleport (2026-10-07, s02).** The plugin moves the
   actor to the kinematics by a collision sweep every tick, and UE lets a penetrating actor move only *out of* each
   contact (dot with its normal > 0.01): under a branch and beside a twig there is no such direction. Climbs, nudges,
@@ -120,6 +129,13 @@ stale "fact". Standing rules live in `CLAUDE.md`; this file is the reasoning and
   The launch guard then refuses every simulator launch; wait or coordinate.
 
 ## RL and evaluation learnings
+
+- **A strong pillar expert transfers to other solid-obstacle scenes (2026-10-08, `runs/screening/`).** The accepted
+  s01d mean (pillars + movers, 3 depth frames, mover input zeroed on static scenes) flew s07 stacked boxes and s09
+  poles 40/40 each, stochastic; the plain s01 expert 33/40 and 39/40. Screen existing experts before training one.
+- **Measure what a rule ends against real geometry (2026-10-08).** s02's footprint endings looked like near misses
+  until ray-cast against the trees' glTFs: median 2.7 m from any leaf, the tree out of view in 74 of 82. A rule the
+  policy cannot observe caps its score whatever the training. `scripts/footprint_endings_figure.py` is the tool.
 
 - **Average a run's checkpoints; the mean flies steadier than any one of them (2026-10-06, run 6).**
   - Neighbouring checkpoints differed sharply in deterministic exits (stage 1: 1 against 15 in 40 episodes).
