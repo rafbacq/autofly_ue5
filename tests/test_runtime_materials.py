@@ -90,7 +90,7 @@ def test_the_pool_loader_accepts_an_entry_painted_with_a_base_material(tmp_path)
 
     registry = load_registry(_registry_with_patch(tmp_path))
     entry = {"name": "red cube", "category": "geometry", "seen": True, "asset": "cube", "scale": [1.2, 1.2, 1.2],
-             "material": "runtime_red", "status": "primitive", "source": None, "height_m": 1.2}
+             "material": "runtime_red", "status": "primitive", "source": None, "height_m": 1.2, "stand_in": False}
     pool = TargetPool.from_json({"version": 1, "targets": [entry]}, registry=registry)
     assert pool.entries[0].usable and pool.entries[0].material == "runtime_red"
     with pytest.raises(TargetPoolError, match="color_instance"):
