@@ -75,6 +75,7 @@ def make_vec_env(
     target_pool: TargetPool | None = None,
     footprint_shape: str = DEFAULT_SHAPE,
     footprint_fields: FootprintFields | None = None,
+    target_split: str | None = None,
 ) -> VecEnv:
     """n `AutoFlyEnv`s, each `ResilientAutoFlyEnv(Monitor(AutoFlyEnv(...)))`, vectorised.
 
@@ -104,7 +105,7 @@ def make_vec_env(
     are meshes from (default: each reads its own), so a trainer's workers share the copy its identity was built from;
     `footprint_shape` / `footprint_fields`: what the footprint rule measures to (the outline, from these fields, or the
     circle) for every env, likewise one copy. `target_pool`: a collection's target pool (plan 5 C5) for every env; the
-    trainer never passes one.
+    trainer never passes one. `target_split`: an evaluation's override of the split the pool draws for (AutoFlyEnv).
     """
     if n < 1:
         raise ValueError(f"n must be >= 1, got {n}")
@@ -122,7 +123,7 @@ def make_vec_env(
                               altitude_margin=altitude_margin, mover_contact_margin_m=mover_contact_margin_m,
                               static_contact_m=static_contact_m, footprint_contact_margin_m=footprint_contact_margin_m,
                               registry=registry, target_pool=target_pool, footprint_shape=footprint_shape,
-                              footprint_fields=footprint_fields)
+                              footprint_fields=footprint_fields, target_split=target_split)
             # outcome and collision_source per episode, for scripts/watch_training.py (the info always carries both).
             monitored = Monitor(base, filename=str(monitor_dir / f"{instance}.monitor.csv"),
                                 info_keywords=("is_success", "outcome", "collision_source"))

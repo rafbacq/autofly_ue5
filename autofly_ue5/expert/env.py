@@ -88,6 +88,10 @@ class AutoFlyEnv(gym.Env):
     trainer and the gate pass none, so the expert keeps flying to the orange cylinder it learned on. A pool the scene's
     split cannot draw from (fewer than six usable entries, after the scene's own exclusions: the pool's
     target_exclusions.json, keyed by this scene's id) is refused here, before anything launches.
+
+    `target_split` (evaluation only, plan 6 revision 1 item 5; needs a pool): None draws for the scene's own split;
+    "train", "test_seen", "test_unseen" for that split; "unseen" an unseen target among seen distractors
+    (`expert.episode.sample_setup` pins each form).
     """
 
     metadata: dict[str, Any] = {"render_modes": []}
@@ -114,13 +118,18 @@ class AutoFlyEnv(gym.Env):
         target_pool: TargetPool | None = None,
         footprint_shape: str = DEFAULT_SHAPE,
         footprint_fields: FootprintFields | None = None,
+        target_split: str | None = None,
     ) -> None:
         super().__init__()
         self._footprint_shape = check_shape(footprint_shape)
+        if target_split is not None and target_pool is None:
+            raise ValueError(f"target_split {target_split!r} says which pool entries an episode draws: it needs a "
+                             f"target pool")
         if target_pool is not None:
             # raises TargetPoolError for a split it cannot fill, after this scene's own exclusions (plan 6 step 2c)
-            target_pool.for_split(scene.split, scene_id=scene.id)
+            target_pool.draw_lists(scene.split if target_split is None else target_split, scene_id=scene.id)
         self._target_pool = target_pool
+        self._target_split = target_split
         if not (math.isfinite(static_contact_m) and static_contact_m >= 0):
             raise ValueError(f"a static contact boundary must be a non-negative number of metres (0: physical contact "
                              f"only), got {static_contact_m}")
@@ -252,6 +261,8 @@ class AutoFlyEnv(gym.Env):
             self._episode_index += 1
         # Without a pool, M2's own call, argument for argument (the seed tests wrap sample_setup by that signature).
         pool_kwargs = {"pool": self._target_pool} if self._target_pool is not None else {}
+        if self._target_split is not None:
+            pool_kwargs["target_split"] = self._target_split
         setup = sample_setup(self._scene, self._layout, rng, **pool_kwargs)
         a0 = (options or {}).get("a0")
         if a0 == "sector8":  # dataset collection only: AutoFly's coarse guidance, applied before recording (M3)
@@ -521,6 +532,11 @@ class AutoFlyEnv(gym.Env):
     def target_pool(self) -> TargetPool | None:
         """The target pool every episode draws from (plan 5 C5), or None: the orange cylinder."""
         return self._target_pool
+
+    @property
+    def target_split(self) -> str | None:
+        """The split an evaluation draws its targets for instead of the scene's (plan 6 revision 1 item 5), or None."""
+        return self._target_split
 
     @property
     def setup(self) -> EpisodeSetup | None:

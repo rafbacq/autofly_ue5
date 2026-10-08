@@ -363,6 +363,61 @@ def test_the_env_draws_for_its_own_scene_after_the_pool_s_exclusions(tmp_path):
         make_env(target_pool=small)
 
 
+def test_an_evaluation_env_may_draw_its_targets_for_another_split(tmp_path):
+    # Plan 6 revision 1 item 5: a seen scene with unseen targets. Refused, before anything launches, without a pool, for
+    # an unknown split, or where the scene's pool holds no unseen entry.
+    from autofly_ue5.dataset.targets import TargetPoolError
+    from autofly_ue5.expert.episode import sample_setup
+    from tests.test_dataset_targets import unseen_pool, wide_pool
+
+    scene, layout = scene_and_layout()
+    pool = unseen_pool(tmp_path / "a")
+    env = make_env(target_pool=pool, target_split="unseen")
+    assert env.target_split == "unseen" and make_env().target_split is None
+    for seed in (3, 4):
+        env.reset(seed=seed)
+        assert env.setup == sample_setup(scene, layout, np.random.default_rng(seed), pool=pool, target_split="unseen")
+        assert not env.setup.target.seen
+    env.close()
+    launched = []
+
+    class _Sim(FakeSimulator):
+        def launch(self, map_path, instance):
+            launched.append(instance)
+            super().launch(map_path, instance)
+
+    from autofly_ue5.expert.env import AutoFlyEnv
+
+    for kwargs, error in (({"target_split": "unseen"}, ValueError),
+                          ({"target_split": "validation", "target_pool": pool}, ValueError),
+                          ({"target_split": "unseen", "target_pool": wide_pool(tmp_path / "b",
+                            {"version": 1, "scenes": {"s01": {"crate": "no unseen entry left"}}})}, TargetPoolError)):
+        with pytest.raises(error):
+            AutoFlyEnv(scene, layout, _Sim, map_path="/Game/AutoFly/Maps/S01", instance=0, **kwargs)
+    assert not launched
+
+
+def test_the_vec_env_and_the_gate_s_env_hand_a_target_split_through_and_default_to_none(tmp_path):
+    from autofly_ue5.expert.vec import make_vec_env
+    from scripts.m2_gate import build_eval_env
+    from tests.test_dataset_targets import unseen_pool
+
+    pool = unseen_pool(tmp_path)
+    scene, layout = scene_and_layout()
+    for kwargs, expected in (({"target_pool": pool}, None), ({"target_pool": pool, "target_split": "unseen"}, "unseen")):
+        vec = make_vec_env(scene, layout, 1, map_path="/x", monitor_dir=tmp_path / "mon", sim_factory=FakeSimulator,
+                           sim_root=tmp_path / "sim", launch=False, **kwargs)
+        try:
+            assert vec.envs[0].unwrapped.target_split == expected
+        finally:
+            vec.close()
+        env = build_eval_env("s01", instance=4, sim_factory=FakeSimulator, sim_root=tmp_path / "sim", **kwargs)
+        try:
+            assert env.unwrapped.target_split == expected
+        finally:
+            env.close()
+
+
 def test_the_vec_env_and_the_gate_s_env_hand_a_pool_through_and_default_to_none(tmp_path):
     from autofly_ue5.expert.vec import make_vec_env
     from scripts.m2_gate import build_eval_env

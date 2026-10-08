@@ -454,6 +454,70 @@ def test_a_train_scene_draws_every_seen_entry_and_never_an_unseen_one(tmp_path):
     assert "orange slab" in drawn, "a test_unseen scene draws from the seen and the unseen entries"
 
 
+def test_without_a_target_split_or_with_the_scene_s_own_the_draws_are_today_s(tmp_path):
+    # Plan 6 revision 1 item 5: evaluation may override which split the targets come from; None changes nothing.
+    import dataclasses
+
+    from autofly_ue5.expert.episode import sample_setup
+    from tests.test_dataset_targets import unseen_pool
+
+    scene, layout = scene_and_layout()
+    pool = unseen_pool(tmp_path)
+    for seed in (0, 1, 7, 400_000_000, 100_000_061):
+        rng = np.random.default_rng(seed)
+        plain = sample_setup(scene, layout, rng)
+        rest = list(pool.for_split(scene.split, scene_id=scene.id))
+        target = rest.pop(int(rng.integers(len(rest))))
+        expected = tuple(rest.pop(int(rng.integers(len(rest)))) for _ in plain.distractors)
+        today = sample_setup(scene, layout, np.random.default_rng(seed), pool=pool)
+        assert today.target == target and today.distractor_entries == expected, f"seed {seed}"
+        assert sample_setup(scene, layout, np.random.default_rng(seed), pool=pool, target_split=None) == today
+        assert sample_setup(scene, layout, np.random.default_rng(seed), pool=pool, target_split="train") == today
+        # another split draws as a scene of that split would, from the same stream
+        as_unseen_scene = sample_setup(dataclasses.replace(scene, split="test_unseen"), layout,
+                                       np.random.default_rng(seed), pool=pool)
+        assert sample_setup(scene, layout, np.random.default_rng(seed), pool=pool,
+                            target_split="test_unseen") == as_unseen_scene
+
+
+def test_an_unseen_target_split_draws_an_unseen_target_among_seen_distractors_in_a_pinned_form(tmp_path):
+    # "unseen": step 10 from the unseen entries only, step 11 from the seen ones (each after the scene's exclusions, in
+    # file order), one integer each, after every other draw: an earlier draw never moves.
+    from autofly_ue5.expert.episode import sample_setup
+    from tests.test_dataset_targets import unseen_pool
+
+    scene, layout = scene_and_layout()
+    pool = unseen_pool(tmp_path, {"version": 1, "scenes": {"s01": {"sphere": "stones"}}})
+    targets_drawn = set()
+    for seed in range(40):
+        rng = np.random.default_rng(seed)
+        plain = sample_setup(scene, layout, rng)
+        targets = list(pool.unseen_targets(scene_id=scene.id))
+        rest = list(pool.for_split("train", scene_id=scene.id))
+        target = targets.pop(int(rng.integers(len(targets))))
+        expected = tuple(rest.pop(int(rng.integers(len(rest)))) for _ in plain.distractors)
+        drawn = sample_setup(scene, layout, np.random.default_rng(seed), pool=pool, target_split="unseen")
+        assert drawn.target == target and drawn.distractor_entries == expected, f"seed {seed}"
+        assert dataclasses.replace(drawn, target=None, distractor_entries=(), instruction=plain.instruction,
+                                   target_scale=plain.target_scale) == plain, f"seed {seed}: an earlier draw moved"
+        assert not drawn.target.seen and all(e.seen for e in drawn.distractor_entries)
+        assert all(e.asset != "sphere" for e in (drawn.target, *drawn.distractor_entries)), "exclusions apply to both"
+        assert drawn.target.name in drawn.instruction
+        targets_drawn.add(drawn.target.name)
+    assert targets_drawn == {"orange slab", "grid slab"}
+
+
+def test_a_target_split_needs_a_pool_and_a_known_split(tmp_path):
+    from autofly_ue5.expert.episode import sample_setup
+    from tests.test_dataset_targets import unseen_pool
+
+    scene, layout = scene_and_layout()
+    with pytest.raises(ValueError, match="pool"):
+        sample_setup(scene, layout, np.random.default_rng(0), target_split="unseen")
+    with pytest.raises(ValueError, match="unseen"):
+        sample_setup(scene, layout, np.random.default_rng(0), pool=unseen_pool(tmp_path), target_split="validation")
+
+
 def test_a_pool_too_small_for_the_distractor_positions_is_refused(tmp_path):
     from autofly_ue5.expert.episode import sample_setup
     from tests.test_dataset_targets import primitive_pool

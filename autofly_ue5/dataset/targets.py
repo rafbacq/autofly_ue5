@@ -48,6 +48,10 @@ CATEGORIES = ("vehicle", "geometry", "furniture", "equipment", "human", "other")
 STATUSES = ("candidate", "placeholder", "manual", "imported", "primitive")
 USABLE_STATUSES = ("primitive", "imported")  # in the registry and spawnable now; the rest wait for an import
 SPLITS = ("train", "test_seen", "test_unseen")
+# An evaluation's override (plan 6 revision 1 item 5): an unseen target among seen distractors, in any scene. Not a
+# scene's split: test_unseen scenes (s11/s12) are out of scope, and a seen scene is where unseen targets are evaluated.
+UNSEEN_TARGETS = "unseen"
+TARGET_SPLITS = SPLITS + (UNSEEN_TARGETS,)
 # One target and up to five distractors (spec §9 step 1: 3-5), all different entries: fewer cannot fill an episode
 # without drawing an object twice.
 MIN_USABLE = 6
@@ -283,6 +287,29 @@ class TargetPool:
                                   f"{after}; an episode needs {MIN_USABLE} different ones (a target and up to five "
                                   f"distractors)")
         return usable
+
+    def unseen_targets(self, *, scene_id: str | None = None) -> tuple[TargetEntry, ...]:
+        """The usable unseen entries in file order, less those scene `scene_id` excludes: what an UNSEEN_TARGETS draw
+        takes its target from. Refused when there is none."""
+        excluded = self.excluded(scene_id)
+        unseen = tuple(e for e in self.entries if e.usable and not e.seen and e.asset not in excluded)
+        if not unseen:
+            where = f" in scene {scene_id!r} after its exclusions ({sorted(excluded)})" if excluded else ""
+            raise TargetPoolError(f"{self.path or 'the target pool'}: no usable unseen entry{where}; an unseen-target "
+                                  f"draw needs at least one")
+        return unseen
+
+    def draw_lists(self, split: str, *, scene_id: str | None = None) -> tuple[list[TargetEntry], list[TargetEntry]]:
+        """(the entries an episode's target is drawn from, the entries its distractors are drawn from), fresh lists in
+        file order after scene `scene_id`'s exclusions. For a split: `for_split(split)`, one list returned twice (the
+        sampler removes the target from it before drawing the distractors, as it always has). For UNSEEN_TARGETS:
+        `unseen_targets()` and `for_split("train")` (the seen entries), two disjoint lists."""
+        if split == UNSEEN_TARGETS:
+            return list(self.unseen_targets(scene_id=scene_id)), list(self.for_split("train", scene_id=scene_id))
+        if split not in SPLITS:
+            raise TargetPoolError(f"unknown target split {split!r}; one of {TARGET_SPLITS}")
+        rest = list(self.for_split(split, scene_id=scene_id))
+        return rest, rest
 
     def to_json(self, split: str, *, scene_id: str | None = None) -> dict:
         """The pool a collection drew from, for its record and provenance: the file, its hash and the split's names; for

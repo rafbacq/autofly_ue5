@@ -258,6 +258,44 @@ def test_a_malformed_exclusion_table_is_refused_with_a_reason(tmp_path, table, m
         wide_pool(tmp_path, table)
 
 
+# --------------------------------------------------------------------------------------------------------
+# Evaluation's target-split override (plan 6 revision 1 item 5): what an episode's target and its distractors are drawn
+# from, for a scene's own split, another split, or "unseen" (unseen targets among seen distractors).
+# --------------------------------------------------------------------------------------------------------
+def unseen_pool_entries() -> list[dict]:
+    """The wide pool plus two more unseen entries: three unseen usable entries over two meshes."""
+    return wide_pool_entries() + [
+        _entry("grid slab", "geometry", "crate", [2.0, 2.0, 0.5], "grid", seen=False, height_m=0.5),
+        _entry("orange ball", "geometry", "sphere", [1.0, 1.0, 1.0], "orange", seen=False, height_m=1.0),
+    ]
+
+
+def unseen_pool(tmp_path: Path, table: dict | None = None):
+    from autofly_ue5.dataset.targets import TargetPool
+
+    write_table(tmp_path / "target_exclusions.json", table)
+    return TargetPool.load(write_pool(tmp_path / "targets.json", unseen_pool_entries()))
+
+
+def test_a_split_draws_its_target_and_distractors_from_one_list_and_unseen_from_two(tmp_path):
+    from autofly_ue5.dataset.targets import TargetPoolError
+
+    pool = unseen_pool(tmp_path)
+    for split in ("train", "test_seen", "test_unseen"):
+        targets, rest = pool.draw_lists(split, scene_id="s01")
+        assert targets is rest and targets == list(pool.for_split(split, scene_id="s01")), "one list, as before"
+    targets, rest = pool.draw_lists("unseen", scene_id="s01")
+    assert [e.name for e in targets] == ["orange slab", "grid slab", "orange ball"] and not any(e.seen for e in targets)
+    assert rest == list(pool.for_split("train", scene_id="s01")), "the distractors: the seen entries, as a train scene"
+    # the scene's exclusions apply to both lists: s07 excludes crates
+    targets, rest = pool.draw_lists("unseen", scene_id="s07")
+    assert [e.name for e in targets] == ["orange ball"] and all(e.asset != "crate" for e in rest)
+    with pytest.raises(TargetPoolError, match="unseen"):
+        wide_pool(tmp_path / "x").draw_lists("unseen", scene_id="s07")  # its only unseen entry is a crate
+    with pytest.raises(TargetPoolError, match="unseen"):
+        pool.draw_lists("validation", scene_id="s01")
+
+
 def test_the_pool_s_record_for_a_scene_names_what_it_draws_and_what_its_table_excluded(tmp_path):
     pool = wide_pool(tmp_path)
     table = tmp_path / "target_exclusions.json"

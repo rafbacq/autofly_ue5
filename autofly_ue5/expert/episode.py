@@ -222,7 +222,7 @@ def _place_with_clearance(
 
 def sample_setup(
     scene: SceneFile, layout: Layout, rng: np.random.Generator, *, n_distractors_range: tuple[int, int] = N_DISTRACTORS_DEFAULT,
-    pool: TargetPool | None = None,
+    pool: TargetPool | None = None, target_split: str | None = None,
 ) -> EpisodeSetup:
     """Draw a full episode setup for one seed.
 
@@ -238,10 +238,20 @@ def sample_setup(
     `rest.pop(int(rng.integers(len(rest))))`. One integer per object, no `rng.choice` (whose without-replacement
     algorithm is numpy's to change), and never an entry twice.
 
+    `target_split` (evaluation only, plan 6 revision 1 item 5; needs a pool): None draws for `scene.split`, exactly as
+    above. "train", "test_seen" or "test_unseen" draws as a scene of that split would, the same form over
+    `pool.for_split(target_split, scene_id=scene.id)`. "unseen" (dataset/targets.py UNSEEN_TARGETS) draws an unseen
+    target among seen distractors from two lists, each after the scene's exclusions in file order:
+    `targets = list(pool.unseen_targets(scene_id=scene.id))` and `rest = list(pool.for_split("train", scene_id=scene.id))`;
+    step 10 is `target = targets.pop(int(rng.integers(len(targets))))`, step 11 as above from `rest`. Still one integer
+    per object after every other draw, so the positions, the start and the movers of a seed never move.
+
     The start, the target and the distractors keep `scene_spawn_clearance_m(scene)` from every obstacle. A scene's own
     clearance adds no draw and moves none: it only rejects candidates the default would have accepted, so a seed whose
     points all clear it draws the same episode (tests/test_expert_episode.py).
     """
+    if target_split is not None and pool is None:
+        raise ValueError(f"target_split {target_split!r} says which pool entries an episode draws: it needs a target pool")
     bounds = layout.bounds
     clearance = scene_spawn_clearance_m(scene)
 
@@ -324,11 +334,14 @@ def sample_setup(
     distractor_entries: tuple[TargetEntry, ...] = ()
     target_scale = TARGET_SCALE
     if pool is not None:
-        rest = list(pool.for_split(scene.split, scene_id=scene.id))
-        if len(rest) < 1 + len(distractors):
-            raise ValueError(f"the target pool has {len(rest)} usable entries for split {scene.split!r}: too few for a "
-                             f"target and {len(distractors)} distractor entries without replacement")
-        target_entry = rest.pop(int(rng.integers(len(rest))))  # 10
+        split = scene.split if target_split is None else target_split
+        # one list for a split (`targets is rest`: the target is removed before the distractors), two for "unseen"
+        targets, rest = pool.draw_lists(split, scene_id=scene.id)
+        if len(rest) < len(distractors) + (1 if targets is rest else 0):
+            raise ValueError(f"the target pool has {len(rest)} usable entries for the distractors of split {split!r} in "
+                             f"scene {scene.id!r}: too few for {len(distractors)} distractor entries"
+                             f"{' and a target' if targets is rest else ''} without replacement")
+        target_entry = targets.pop(int(rng.integers(len(targets))))  # 10
         distractor_entries = tuple(rest.pop(int(rng.integers(len(rest)))) for _ in distractors)  # 11
         target_scale = target_entry.scale
         instruction = template.format(target=target_entry.name, obstacle=scene.instruction_obstacle)

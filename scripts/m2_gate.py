@@ -170,17 +170,20 @@ def _load_throughput_projection(instances_path: Path = INSTANCES_PATH) -> dict |
 # --------------------------------------------------------------------------------------------------------
 def build_eval_env(scene: str, *, instance: int, sim_factory: Callable[[], Any], seed_base: int = EVAL_SEED_BASE,
                    sim_root: Path = SIM_RUN_DIR, obs_config: ObsConfig | None = None,
-                   target_pool: TargetPool | None = None, footprint_shape: str = DEFAULT_SHAPE) -> ResilientAutoFlyEnv:
+                   target_pool: TargetPool | None = None, footprint_shape: str = DEFAULT_SHAPE,
+                   target_split: str | None = None) -> ResilientAutoFlyEnv:
     # seed_base: every gate episode is an explicit reset(seed=...); the counter base only matters for a stray
     # seed=None reset, which then still draws from the gate's own range. target_pool: the collector's (plan 5 C5,
     # scripts/collect_dataset.py --targets); the gate passes none and scores the orange cylinder. footprint_shape: what
     # a mesh scene's footprint rule measures to (expert/footprint_contact.py; "circle" to score s02_r1's models under
-    # the rule they trained on).
+    # the rule they trained on). target_split: an evaluation's override of the split the pool draws for (needs a pool;
+    # "unseen": unseen targets among seen distractors, plan 6 revision 1 item 5).
     resolved = resolve_scene(scene)
     scene_file, layout, map_path = resolved.scene, resolved.layout, resolved.map_path
     route_client_log(instance_dir(instance, sim_root) / "client.log")
     base = AutoFlyEnv(scene_file, layout, sim_factory, map_path=map_path, instance=instance, seed_base=seed_base,
-                      obs_config=obs_config, target_pool=target_pool, footprint_shape=footprint_shape)
+                      obs_config=obs_config, target_pool=target_pool, footprint_shape=footprint_shape,
+                      target_split=target_split)
     return ResilientAutoFlyEnv(base, instance=instance, sim_root=sim_root)
 
 
