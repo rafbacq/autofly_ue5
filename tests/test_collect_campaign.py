@@ -284,3 +284,35 @@ def test_status_counts_each_store_s_kept_flown_and_rejects_by_reason(cli, tmp_pa
     assert "s01: kept 2/4, flown 5" in out and "all: kept 3/6, flown 6" in out
     summary = cli.campaign_status(json.loads(campaign.read_text()), jobs_dir=jobs)
     assert summary["jobs"][0]["rejected_by_reason"] == {"collision": 2, "out_of_bounds": 1}
+
+
+def _first_frame(data: Path, name: str, episode: str, target: str, status: str, *, reject: str | None = None) -> None:
+    """One episode's provenance as the collector writes it, reduced to what status reads: its target and first frame."""
+    provenance = {"target": {"name": target}, "first_frame_visibility": {"status": status}}
+    if reject is None:
+        (data / name / "provenance").mkdir(parents=True, exist_ok=True)
+        (data / name / "provenance" / f"{episode}.json").write_text(json.dumps(provenance))
+    else:
+        (data / "rejects" / name).mkdir(parents=True, exist_ok=True)
+        (data / "rejects" / name / f"{episode}.json").write_text(json.dumps(
+            {"id": episode, "reason": reject, "provenance": provenance}))
+
+
+def test_status_counts_first_frames_per_store_and_per_target_and_names_every_miss(cli, tmp_path, capsys):
+    campaign = _campaign(tmp_path, [("s01_c0", 6), ("s02_c0", 7)])
+    data = tmp_path / "data"
+    _store(data, "s01_c0", [401_000_000, 401_000_001])
+    _first_frame(data, "s01_c0", "s01_401000000", "red cube", "visible")
+    _first_frame(data, "s01_c0", "s01_401000001", "red sedan", "missing")
+    _first_frame(data, "s01_c0", "s01_401000002", "red cube", "occluded", reject="collision")
+    _store(data, "s02_c0", [421_000_000])
+    _first_frame(data, "s02_c0", "s02_421000000", "red cube", "visible")
+    assert cli.main(["status", "--campaign", str(campaign), "--jobs-dir", str(tmp_path / "jobs")]) == 0
+    out = capsys.readouterr().out
+    assert "s01_c0 first frame: visible 1, missing 1, occluded 1" in out and "s02_c0 first frame: visible 1" in out
+    lines = {line.strip().split("  ")[0]: line for line in out.splitlines() if line.startswith("  ")}
+    assert "visible 2, occluded 1" in lines["red cube"] and "missing 1" in lines["red sedan"]
+    assert "MISSING s01_c0 s01_401000001 (red sedan)" in out, "a miss is named, never only counted"
+    summary = cli.campaign_status(json.loads(campaign.read_text()), jobs_dir=tmp_path / "jobs")
+    assert summary["jobs"][0]["first_frame"] == {"visible": 1, "missing": 1, "occluded": 1}
+    assert summary["targets"]["red cube"] == {"visible": 2, "occluded": 1}

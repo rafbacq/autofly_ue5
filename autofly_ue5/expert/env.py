@@ -576,6 +576,11 @@ class AutoFlyEnv(gym.Env):
         return self._setup
 
     @property
+    def layout(self) -> Layout:
+        """The layout this env flies (the collector's first-frame check ray-casts its obstacles)."""
+        return self._layout
+
+    @property
     def spawned(self) -> tuple[str, ...]:
         """The current episode's spawned object names, target first (provenance, spec §10.2)."""
         return self._spawned

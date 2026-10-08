@@ -59,6 +59,7 @@ from autofly_ue5.expert.episode import _runtime_material_path, _spawn_asset_name
 from autofly_ue5.scenes.model import AssetRegistry, Layout, load_registry  # noqa: E402
 from autofly_ue5.sim.types import CONTROL_DT_S, ObjectNotFoundError, Pose  # noqa: E402
 from autofly_ue5.validate.geometry import CAMERA_OFFSET_M  # noqa: E402
+from autofly_ue5.validate.visibility import spawned_box  # noqa: E402
 
 ALTITUDE_M = 2.0
 REACH_M = 13.0  # the farthest target's far face from the body: 0.4 m mount + 10 m + half a 4 m car
@@ -121,10 +122,10 @@ def _project(points: np.ndarray, view: Pose, n: int) -> tuple[np.ndarray, np.nda
 
 
 def _expected_box(asset, scale, position) -> tuple[list[float], list[float]]:
-    o = asset.bounds_origin_cm or (0.0, 0.0, 0.0)
-    size = [b * s for b, s in zip(asset.base_size_m, scale)]
-    centre = [position[0] + o[0] * scale[0] / 100.0, position[1] + o[1] * scale[1] / 100.0, position[2] - o[2] * scale[2] / 100.0]
-    return centre, size
+    """(centre, size) of the box a spawned entry stands in at `position` (its standing height): one definition with the
+    collector's first-frame check (validate/visibility.py spawned_box)."""
+    box = spawned_box("target", asset, scale, position[0], position[1])
+    return [box.x, box.y, box.z_center], [2 * h for h in box.half]
 
 
 def _region(centre, size, view: Pose, n: int) -> tuple[np.ndarray, dict]:

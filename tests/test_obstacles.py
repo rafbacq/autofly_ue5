@@ -150,6 +150,37 @@ def test_pixel_rays_follow_the_image_axes():
     assert centre == pytest.approx((1.0, 0.5 / 128, 0.5 / 128))
 
 
+@pytest.mark.parametrize("yaw", [0.0, 0.7, -2.4])
+def test_a_point_projects_onto_the_pixel_whose_ray_reaches_it(yaw):
+    # project_point is pixel_rays' inverse (one focal length, one set of axes): a point at planar depth d along a pixel's
+    # ray lands in that pixel, half a pixel from its edges, at depth d; for a 64-pixel frame too.
+    from autofly_ue5.validate.obstacles import camera_origin, pixel_rays, project_point
+
+    pose = Pose(3.0, -4.0, -2.0, yaw)
+    origin = camera_origin(pose)
+    for size in (256, 64):
+        for r, c in ((0, 0), (128 % size, 37), (size - 1, size - 1), (40, size - 3)):
+            (ray,) = pixel_rays(pose, slice(r, r + 1), slice(c, c + 1), image_size=size)
+            for d in (0.5, 7.0, 60.0):
+                point = tuple(o + d * v for o, v in zip(origin, ray))
+                row, col, depth = project_point(pose, point, image_size=size)
+                assert (row, col) == pytest.approx((r + 0.5, c + 0.5), abs=1e-9) and depth == pytest.approx(d)
+    _row, _col, depth = project_point(pose, (pose.x - 5 * math.cos(yaw), pose.y - 5 * math.sin(yaw), -2.0))
+    assert depth < 0, "behind the camera"
+
+
+def test_a_box_s_interval_along_a_ray_is_its_near_and_far_faces():
+    from autofly_ue5.validate.obstacles import Box
+
+    box = Box(tag="b", x=10.0, y=0.0, radius_m=1.0, z_center=-1.0, yaw=0.0, half=(0.5, 1.0, 1.0))
+    assert box.surface_interval((0.0, 0.0, -1.0), (1.0, 0.0, 0.0)) == pytest.approx((9.5, 10.5))
+    assert box.surface_distance((0.0, 0.0, -1.0), (1.0, 0.0, 0.0)) == pytest.approx(9.5)
+    assert box.surface_interval((0.0, 3.0, -1.0), (1.0, 0.0, 0.0)) is None, "beside it"
+    assert box.surface_interval((20.0, 0.0, -1.0), (1.0, 0.0, 0.0)) is None, "behind the ray's origin"
+    turned = Box(tag="b", x=10.0, y=0.0, radius_m=1.0, z_center=-1.0, yaw=math.pi / 2, half=(0.5, 1.0, 1.0))
+    assert turned.surface_interval((0.0, 0.0, -1.0), (1.0, 0.0, 0.0)) == pytest.approx((9.0, 11.0))
+
+
 def test_row_silhouette_of_a_cylinder_matches_m1_s_pinhole_width():
     from autofly_ue5.validate.geometry import contiguous_width, pillar_width_px
     from autofly_ue5.validate.obstacles import obstacle_from_instance, row_silhouette

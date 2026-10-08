@@ -16,6 +16,10 @@ uninterrupted flight.
 The target is named one of two ways (plan 5 C5). With a target pool in the env (`scripts/collect_dataset.py --targets`)
 each episode's drawn entry names it: the sampler wrote the name into the instruction, and the provenance carries the
 target's and every distractor's entry. Without one, M3's way: every episode is the orange cylinder under `target_name`.
+
+With a pool, every episode, kept or rejected, also records whether its first recorded frame shows its target
+(`first_frame_visibility`, validate/visibility.py: plan 6 revision 1's proof that the env's first-use hold suffices).
+The summary counts each status, and every `missing` is said on stderr as it happens.
 """
 
 from __future__ import annotations
@@ -30,6 +34,8 @@ from autofly_ue5.dataset.state import autofly_state
 from autofly_ue5.expert.episode import INSTRUCTION_TEMPLATES, EpisodeSetup, spawn_spec
 from autofly_ue5.scenes.model import SceneFile
 from autofly_ue5.sim.types import Observation
+from autofly_ue5.validate.visibility import STATUSES as FIRST_FRAME_STATUSES
+from autofly_ue5.validate.visibility import FirstFrameVisibility
 
 DEFAULT_MAX_STEPS = 1_000  # far above AutoFlyEnv's 300-step limit: a guard, not a target
 DEFAULT_MAX_FAULT_RETRIES = 20
@@ -56,7 +62,8 @@ def record_inputs(raw: Observation, setup: EpisodeSetup) -> tuple[np.ndarray, np
     return np.array(raw.rgb, copy=True), autofly_state(raw, setup.start, setup.target_xy_z)
 
 
-def _fly(model, env, seed: int, *, deterministic: bool, max_steps: int) -> dict[str, Any]:
+def _fly(model, env, seed: int, *, deterministic: bool, max_steps: int,
+         visibility: FirstFrameVisibility | None = None) -> dict[str, Any]:
     obs, info = env.reset(seed=seed, options={"a0": "sector8"})
     prewarm_steps = info.get("prewarm_steps")  # the reset's first-use hold, with a pool (expert/env.py)
     base = env.unwrapped
@@ -64,6 +71,8 @@ def _fly(model, env, seed: int, *, deterministic: bool, max_steps: int) -> dict[
     spawned = tuple(base.spawned)
     low, high = env.action_space.low, env.action_space.high
     raw = base.last_observation
+    # the frame recorded first: does it show the target? (validate/visibility.py)
+    first_frame = visibility(raw, setup, prewarm_steps=prewarm_steps) if visibility is not None else None
     frames, states, actions, times, poses, movers = [], [], [], [], [], []
     for _ in range(max_steps):
         action, _ = model.predict(obs, deterministic=deterministic)
@@ -82,10 +91,11 @@ def _fly(model, env, seed: int, *, deterministic: bool, max_steps: int) -> dict[
         if terminated or truncated:
             return {"setup": setup, "spawned": spawned, "outcome": info["outcome"], "info": info, "frames": frames, "states": states,
                     "actions": actions, "times": times, "poses": poses, "movers": movers,
-                    "final_pose": [raw.pose.x, raw.pose.y, raw.pose.z, raw.pose.yaw], "prewarm_steps": prewarm_steps}
+                    "final_pose": [raw.pose.x, raw.pose.y, raw.pose.z, raw.pose.yaw], "prewarm_steps": prewarm_steps,
+                    "first_frame": first_frame}
     return {"setup": setup, "spawned": spawned, "outcome": "exceeded_max_steps", "info": info, "frames": frames, "states": states,
             "actions": actions, "times": times, "poses": poses, "movers": movers, "final_pose": poses[-1],
-            "prewarm_steps": prewarm_steps}
+            "prewarm_steps": prewarm_steps, "first_frame": first_frame}
 
 
 def _pool_object(entry, spawned: dict) -> dict:
@@ -132,6 +142,8 @@ def _provenance(scene: SceneFile, layout_sha256: str | None, seed: int, flight: 
         # With a pool: how many more hover steps the reset held before the first record because the episode spawned an
         # object new to the simulator session (plan 6 step 2a). A pool-free episode's provenance stays M3's, key for key.
         **({"prewarm_steps": flight["prewarm_steps"]} if flight.get("prewarm_steps") is not None else {}),
+        # With a pool: whether the first recorded frame shows the target (validate/visibility.py), kept or rejected.
+        **({"first_frame_visibility": flight["first_frame"]} if flight.get("first_frame") is not None else {}),
         "termination": flight["outcome"],
         "collision_source": info.get("collision_source"),
         # A mesh scene's ending (expert/footprint_contact.py): which tree, how close, from where, how fast; or the circle
@@ -164,16 +176,21 @@ def collect(model, env, *, scene: SceneFile, writer: RawDatasetWriter, seed_base
         raise ValueError(f"the env's target pool names each episode's target; target_name={target_name!r} is the "
                          f"pool-free fallback and cannot be given beside it")
     max_attempts = max_attempts if max_attempts is not None else 10 * n_keep
+    # With a pool, each first recorded frame is checked against the layout's geometry, built (a mesh scene's glTFs
+    # loaded) once, before anything is flown.
+    visibility = FirstFrameVisibility(env.unwrapped.layout) if pool is not None else None
     summary = progress if progress is not None else {}
     summary.update(status="running", kept=0, rejected=0, attempted=0, fault_retries=0, outcomes={},
                    seeds_flown=[seed_base, None])
+    if visibility is not None:  # only with a pool: a pool-free collection's summary stays M3's
+        summary["first_frame_visibility"] = {status: 0 for status in FIRST_FRAME_STATUSES}
     for seed in range(seed_base, seed_base + max_attempts):
         if summary["kept"] >= n_keep:
             break
         summary["seeds_flown"][1] = seed
         for retry in range(max_fault_retries + 1):
             try:
-                flight = _fly(model, env, seed, deterministic=deterministic, max_steps=max_steps)
+                flight = _fly(model, env, seed, deterministic=deterministic, max_steps=max_steps, visibility=visibility)
                 break
             except EpisodeFault as fault:
                 summary["fault_retries"] += 1
@@ -184,6 +201,14 @@ def collect(model, env, *, scene: SceneFile, writer: RawDatasetWriter, seed_base
         summary["attempted"] += 1
         summary["outcomes"][outcome] = summary["outcomes"].get(outcome, 0) + 1
         episode_id = f"{scene.id}_{seed}"
+        first_frame = flight["first_frame"]
+        if first_frame is not None:
+            summary["first_frame_visibility"][first_frame["status"]] += 1
+            if first_frame["status"] == "missing":  # the failure the hold guards against: said, never only counted
+                print(f"FIRST-FRAME MISSING seed {seed}: {flight['setup'].target.name} in view and unobstructed at "
+                      f"{first_frame['range_m']} m (pixel {first_frame['pixel']}), the frame's window reads "
+                      f"{first_frame['depth_window_min_m']} m; prewarm_steps {first_frame['prewarm_steps']}",
+                      file=sys.stderr, flush=True)
         setup = flight["setup"]
         if setup.target is not None:  # the sampler already wrote the drawn name into the instruction
             name, name_status, instruction = setup.target.name, POOL_NAME_STATUS, setup.instruction

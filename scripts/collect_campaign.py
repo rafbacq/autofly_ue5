@@ -30,7 +30,9 @@ launch: starts the jobs it may, in plan order, with `scripts/run_job.sh start co
   evaluations while its trainer lives) or cannot be read (look at it first), nor on a slot a job of this campaign
   holds: a slot runs one job at a time, so run launch again as batches end. --dry-run says what it would start.
 status: per job, its state (pending, running, finished and its exit code, stopped, died) and its store's counts from
-  its manifest and its rejects: kept of those asked, flown, rejected by reason; then per scene and in all.
+  its manifest and its rejects: kept of those asked, flown, rejected by reason; then per scene and in all. Then the
+  first-frame checks (validate/visibility.py) of every episode, kept or rejected, from its provenance: counts of each
+  status per store and per target, and every `missing` episode by name.
 
 The campaign file holds every job's exact command, so what runs is on disk before anything runs.
 """
@@ -78,6 +80,7 @@ from autofly_ue5.sim.process import (  # noqa: E402
     is_alive,
     read_pid_file,
 )
+from autofly_ue5.validate.visibility import STATUSES as FIRST_FRAME_STATUSES  # noqa: E402
 
 VERSION = 1
 DATA_ROOT = ROOT / "data"  # collect_dataset.py's default --data-root
@@ -358,6 +361,33 @@ def store_counts(data_root: Path, name: str) -> dict:
             "rejected_by_reason": dict(sorted(reasons.items()))}
 
 
+def store_first_frames(data_root: Path, name: str) -> tuple[Counter, dict[str, Counter], list[str]]:
+    """A store's first-frame checks (validate/visibility.py) from its episodes' provenance, kept and rejected: (counts
+    by status, counts by status per target name, the ids of the episodes whose first frame missed its target)."""
+    counts, by_target, missing = Counter(), {}, []
+    kept = sorted((Path(data_root) / name / "provenance").glob("*.json"))
+    rejected = sorted((Path(data_root) / "rejects" / name).glob("*.json"))
+    for path, is_reject in [*((p, False) for p in kept), *((p, True) for p in rejected)]:
+        data = _read_json(path) or {}
+        provenance = (data.get("provenance") or {}) if is_reject else data
+        record = provenance.get("first_frame_visibility")
+        if not isinstance(record, dict):
+            continue  # a pool-free episode records none
+        status = str(record.get("status"))
+        target = str((provenance.get("target") or {}).get("name"))
+        counts[status] += 1
+        by_target.setdefault(target, Counter())[status] += 1
+        if status == "missing":
+            missing.append(f"{path.stem} ({target})")
+    return counts, by_target, missing
+
+
+def _ordered(counts: Counter) -> dict[str, int]:
+    """Counts by first-frame status, in validate/visibility.py's order, an unknown status after them."""
+    known = [s for s in FIRST_FRAME_STATUSES if counts.get(s)]
+    return {s: counts[s] for s in [*known, *sorted(s for s in counts if s not in FIRST_FRAME_STATUSES)]}
+
+
 def _totals(rows: list[dict]) -> dict:
     reasons = Counter()
     for row in rows:
@@ -370,16 +400,21 @@ def _totals(rows: list[dict]) -> dict:
 def campaign_status(campaign: dict, *, jobs_dir: Path | None = None) -> dict:
     jobs_dir = Path(jobs_dir) if jobs_dir is not None else jobs_dir_default()
     data_root, records_dir = _abs(campaign["data_root"]), _abs(campaign.get("records_dir", RECORDS_DIR))
-    rows = []
+    rows, targets = [], {}
     for job in campaign["jobs"]:
         record = _read_json(records_dir / f"{job['name']}.json")
+        first_frame, by_target, missing = store_first_frames(data_root, job["name"])
+        for target, counts in by_target.items():
+            targets.setdefault(target, Counter()).update(counts)
         rows.append({"name": job["name"], "scene": job["scene"], "batch": job["batch"], "slot": job["slot"],
                      "seed_slice": job.get("seed_slice"), "episodes": job["episodes"],
                      **job_state(job["job"], jobs_dir), **store_counts(data_root, job["name"]),
+                     "first_frame": _ordered(first_frame), "first_frame_missing": missing,
                      "record": ({k: record.get(k) for k in ("status", "pass", "error")}
                                 if isinstance(record, dict) else None)})
     scenes = {scene: _totals([r for r in rows if r["scene"] == scene]) for scene in dict.fromkeys(r["scene"] for r in rows)}
-    return {"jobs": rows, "scenes": scenes, "all": _totals(rows)}
+    return {"jobs": rows, "scenes": scenes, "all": _totals(rows),
+            "targets": {name: _ordered(counts) for name, counts in sorted(targets.items())}}
 
 
 def _reasons(counts: dict) -> str:
@@ -401,6 +436,19 @@ def print_status(summary: dict) -> None:
     totals = summary["all"]
     print(f"all: kept {totals['kept']}/{totals['episodes']}, flown {totals['flown']}, rejected {totals['rejected']}"
           f"{_reasons(totals['rejected_by_reason'])}")
+    if not summary["targets"]:
+        return
+    print("first frames (validate/visibility.py), kept and rejected, per store:")
+    for row in summary["jobs"]:
+        if row["first_frame"]:
+            print(f"{row['name']} first frame: {', '.join(f'{s} {n}' for s, n in row['first_frame'].items())}")
+    print("per target:")
+    width = max(len(name) for name in summary["targets"]) + 2
+    for name, counts in summary["targets"].items():
+        print(f"  {name:{width}s}  {', '.join(f'{s} {n}' for s, n in counts.items())}")
+    for row in summary["jobs"]:
+        for episode in row["first_frame_missing"]:  # every miss by name: the failure the first-use hold guards against
+            print(f"MISSING {row['name']} {episode}")
 
 
 # ----------------------------------------------------------------------------------------------------------------------

@@ -132,6 +132,13 @@ class Box:
         return -(self.z_center + self.half[2])
 
     def surface_distance(self, origin: Vec3, direction: Vec3) -> float | None:
+        interval = self.surface_interval(origin, direction)
+        return interval[0] if interval is not None and interval[0] > 0 else None
+
+    def surface_interval(self, origin: Vec3, direction: Vec3) -> tuple[float, float] | None:
+        """(near face, far face) along the ray, in its parameter, the near one 0 when the origin is inside; None when
+        the ray misses the box or it lies behind the origin. The first-frame visibility check reads a target's whole
+        depth along a pixel's ray from it (validate/visibility.py)."""
         # slab test in the box's own frame (yaw undone about the centre; z needs no rotation)
         ox, oy = _rotate_xy(origin[0] - self.x, origin[1] - self.y, -self.yaw)
         dx, dy = _rotate_xy(direction[0], direction[1], -self.yaw)
@@ -147,7 +154,7 @@ class Box:
             t_near, t_far = max(t_near, min(t1, t2)), min(t_far, max(t1, t2))
             if t_near > t_far:
                 return None
-        return t_near if t_near > 0 else None
+        return t_near, t_far
 
     def surface_distances(self, origin: Vec3, directions, *, opaque_only: bool = False) -> np.ndarray:
         return _distances_one_by_one(self, origin, directions)
@@ -391,10 +398,30 @@ def camera_origin(pose: Pose, camera_offset_m: float = CAMERA_OFFSET_M) -> Vec3:
     return (pose.x + camera_offset_m * math.cos(pose.yaw), pose.y + camera_offset_m * math.sin(pose.yaw), pose.z)
 
 
+def focal_px(image_size: int = IMAGE_SIZE, hfov_deg: float = HFOV_DEG) -> float:
+    """The front camera's focal length in pixels: the one intrinsic of its square pinhole (pixel_rays, project_point)."""
+    return (image_size / 2) / math.tan(math.radians(hfov_deg) / 2)
+
+
+def project_point(pose: Pose, point: Vec3, *, image_size: int = IMAGE_SIZE, hfov_deg: float = HFOV_DEG,
+                  camera_offset_m: float = CAMERA_OFFSET_M) -> tuple[float, float, float]:
+    """Where a world point (NED) falls in the front camera's image, pixel_rays' inverse: (row, col) in pixel units,
+    pixel k spanning [k, k + 1) (its ray passes through k + 0.5), and the point's planar depth; a depth of 0 or less
+    is behind the camera, with row and col NaN. The camera is level at the body's altitude, as pixel_rays has it."""
+    ox, oy, oz = camera_origin(pose, camera_offset_m)
+    rx, ry, rz = point[0] - ox, point[1] - oy, point[2] - oz
+    depth = rx * math.cos(pose.yaw) + ry * math.sin(pose.yaw)
+    if depth <= 0:
+        return math.nan, math.nan, depth
+    f = focal_px(image_size, hfov_deg)
+    across = -rx * math.sin(pose.yaw) + ry * math.cos(pose.yaw)
+    return image_size / 2 + f * rz / depth, image_size / 2 + f * across / depth, depth
+
+
 def pixel_rays(pose: Pose, rows, cols, *, image_size: int = IMAGE_SIZE, hfov_deg: float = HFOV_DEG) -> list[Vec3]:
     """Unnormalised world directions (planar depth = ray parameter) of the pixel centres in rows x cols of the front
     camera: forward along the yaw, right = yaw + 90 deg (columns increase rightward), down = +z (rows increase downward)."""
-    f = (image_size / 2) / math.tan(math.radians(hfov_deg) / 2)
+    f = focal_px(image_size, hfov_deg)
     fwd = (math.cos(pose.yaw), math.sin(pose.yaw), 0.0)
     right = (-math.sin(pose.yaw), math.cos(pose.yaw), 0.0)
     rays = []

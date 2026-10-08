@@ -638,6 +638,57 @@ def test_a_pool_free_episode_records_no_first_use_hold(tmp_path):
     record = _pilot(tmp_path, n_episodes=1)
     prov = json.loads(next((tmp_path / "data" / "pilot" / "provenance").glob("*.json")).read_text())
     assert record["status"] == "ok" and "prewarm_steps" not in prov and "stand_in" not in prov["target"]
+    assert "first_frame_visibility" not in prov and "first_frame_visibility" not in record["collection"]
+
+
+# Plan 6 revision 1, the "Targets" done check: every pool episode, kept or rejected, records whether its first recorded
+# frame shows its target (validate/visibility.py). On s01's ground without its pillars, so nothing but a distractor can
+# stand between the drone and its target.
+def _open_field_collect(tmp_path, sim_factory, *, n_keep=3, max_attempts=8):
+    import dataclasses
+
+    from autofly_ue5.collect.collector import collect
+    from autofly_ue5.dataset.raw import RawDatasetWriter
+    from autofly_ue5.expert.env import AutoFlyEnv
+    from autofly_ue5.expert.resilient import ResilientAutoFlyEnv
+    from tests.test_dataset_targets import primitive_pool
+
+    scene, layout = scene_and_layout()
+    base = AutoFlyEnv(scene, dataclasses.replace(layout, instances=()), sim_factory, map_path="/Game/AutoFly/Maps/S01",
+                      instance=0, target_pool=primitive_pool(tmp_path / "pool"))
+    env = ResilientAutoFlyEnv(base, instance=0, sim_root=tmp_path / "sim")
+    writer = RawDatasetWriter(tmp_path / "data", "field", scene=scene, provenance=PROVENANCE)
+    summary = collect(_StraightAtTargetModel(), env, scene=scene, writer=writer, seed_base=SEED_BASE, n_keep=n_keep,
+                      max_attempts=max_attempts, layout_sha256="test")
+    root = tmp_path / "data"
+    provenance = [json.loads(p.read_text()) for p in sorted((root / "field" / "provenance").glob("*.json"))]
+    provenance += [json.loads(p.read_text())["provenance"] for p in sorted((root / "rejects" / "field").glob("*.json"))]
+    return summary, provenance
+
+
+def test_each_pool_episode_records_whether_its_first_frame_shows_its_target(tmp_path):
+    from autofly_ue5.validate.visibility import STATUSES
+    from tests.test_visibility import RenderingFake
+
+    summary, provenance = _open_field_collect(tmp_path, RenderingFake)
+    records = [prov["first_frame_visibility"] for prov in provenance]
+    assert len(records) == summary["attempted"] >= 3
+    for prov, record in zip(provenance, records):
+        assert record["prewarm_steps"] == prov["prewarm_steps"] and record["status"] in STATUSES
+        assert {"status", "range_m", "pixel", "depth_window_min_m", "prewarm_steps"} <= set(record)
+        if record["status"] == "occluded":
+            assert record["occluder"]["by"].startswith("distractor_"), record
+    statuses = [record["status"] for record in records]
+    assert "visible" in statuses and set(statuses) <= {"visible", "occluded"}, statuses
+    assert summary["first_frame_visibility"] == {status: statuses.count(status) for status in STATUSES}
+
+
+def test_a_first_frame_without_its_target_is_recorded_missing_and_said_so(tmp_path, capsys):
+    summary, provenance = _open_field_collect(tmp_path, FakeSimulator)  # its depth frames show nothing at all
+    statuses = [prov["first_frame_visibility"]["status"] for prov in provenance]
+    assert "missing" in statuses and set(statuses) <= {"missing", "occluded"}, statuses
+    assert summary["first_frame_visibility"]["missing"] == statuses.count("missing")
+    assert capsys.readouterr().err.count("FIRST-FRAME MISSING") == statuses.count("missing")
 
 
 def test_the_pilot_cli_lists_only_what_its_scene_draws_after_the_pool_s_exclusions(tmp_path):
