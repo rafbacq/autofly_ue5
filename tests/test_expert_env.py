@@ -3,6 +3,7 @@ import pytest
 from gymnasium.utils.env_checker import check_env
 
 from autofly_ue5.sim.fake import FakeSimulator
+from autofly_ue5.sim.types import CameraPoseError
 from tests.test_expert_episode import scene_and_layout
 
 
@@ -361,6 +362,134 @@ def test_the_env_draws_for_its_own_scene_after_the_pool_s_exclusions(tmp_path):
     small = wide_pool(tmp_path / "b", {"version": 1, "scenes": {"s01": {"cylinder": "pillars", "sphere": "stones"}}})
     with pytest.raises(TargetPoolError, match="s01"):
         make_env(target_pool=small)
+
+
+# --------------------------------------------------------------------------------------------------------
+# The first-use hold (plan 6 step 2a): live, a pool object spawned for the first time in a simulator session could be
+# missing from the first frame after it spawned and showed within five steps (runs/m4/targets_settle_diag/settle.json;
+# docs/gates/m4_targets_probe.json). The reset then hovers five more steps before its observation, once per asset (mesh
+# and material) per session; a relaunched simulator starts cold. Pool-free resets are untouched.
+# --------------------------------------------------------------------------------------------------------
+class CountingSim(FakeSimulator):
+    """Counts step() calls and keeps every commanded velocity."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.steps_called = 0
+        self.commands: list[tuple] = []
+
+    def command_velocity(self, v_forward, yaw_rate, v_z):
+        self.commands.append((v_forward, yaw_rate, v_z))
+        super().command_velocity(v_forward, yaw_rate, v_z)
+
+    def step(self, dt=0.2):
+        self.steps_called += 1
+        return super().step(dt)
+
+
+def _objects(setup) -> set:
+    return {(e.asset, e.material) for e in (setup.target, *setup.distractor_entries)}
+
+
+def _reset_counting(env, seed):
+    """(info, step() calls the reset made, the velocities it commanded) for one reset of `env`."""
+    sim = env._sim
+    before = (sim.steps_called, len(sim.commands)) if sim is not None else (0, 0)
+    _obs, info = env.reset(seed=seed)
+    if env._sim is not sim:
+        before = (0, 0)
+    return info, env._sim.steps_called - before[0], env._sim.commands[before[1]:]
+
+
+def test_a_pool_reset_holds_five_more_hover_steps_the_first_time_an_object_is_spawned_in_a_session(tmp_path):
+    from autofly_ue5.expert.env import PREWARM_HOLD_STEPS
+    from tests.test_dataset_targets import wide_pool
+
+    assert PREWARM_HOLD_STEPS == 5
+    env = make_env(target_pool=wide_pool(tmp_path))
+    env._sim_factory = CountingSim
+    warmed, holds = set(), []
+    for seed in range(12):
+        info, steps, commands = _reset_counting(env, seed)
+        expected = 0 if _objects(env.setup) <= warmed else PREWARM_HOLD_STEPS
+        assert info["prewarm_steps"] == expected and steps == 1 + expected, f"seed {seed}"
+        assert commands == [(0.0, 0.0, 0.0)] * steps, "every step of a reset hovers"
+        assert info["steps"] == 0, "the hold is not an episode step"
+        warmed |= _objects(env.setup)
+        holds.append(expected)
+    assert holds[0] == PREWARM_HOLD_STEPS and 0 in holds, holds
+    # the observation returned is the frame after the hold, and the episode starts from it
+    _obs, _reward, _term, _trunc, info = env.step(np.array([0.0, 0.0, 0.0], dtype=np.float32))
+    assert info["steps"] == 1
+
+
+def test_a_relaunched_simulator_forgets_what_was_warm(tmp_path):
+    from autofly_ue5.expert.env import PREWARM_HOLD_STEPS
+    from autofly_ue5.expert.resilient import ResilientAutoFlyEnv
+    from tests.test_dataset_targets import wide_pool
+
+    env = make_env(target_pool=wide_pool(tmp_path))
+    env._sim_factory = CountingSim
+    wrapper = ResilientAutoFlyEnv(env, instance=0, sim_root=tmp_path / "sim")
+    assert _reset_counting(env, 3)[0]["prewarm_steps"] == PREWARM_HOLD_STEPS
+    assert _reset_counting(env, 3)[0]["prewarm_steps"] == 0, "the same objects again, in the same session"
+    first = env._sim
+    wrapper._relaunch()  # what a fault that needs a fresh simulator does
+    info, steps, _commands = _reset_counting(env, 3)
+    assert env._sim is not first and info["prewarm_steps"] == PREWARM_HOLD_STEPS and steps == 1 + PREWARM_HOLD_STEPS
+    env.close()
+    assert _reset_counting(env, 3)[0]["prewarm_steps"] == PREWARM_HOLD_STEPS, "a closed env's next session too"
+
+
+def test_a_hold_cut_short_by_a_fault_is_held_again(tmp_path):
+    from autofly_ue5.expert.env import PREWARM_HOLD_STEPS
+    from tests.test_dataset_targets import wide_pool
+
+    env = make_env(target_pool=wide_pool(tmp_path))
+    env._sim_factory = CountingSim
+    env.reset(seed=1)
+    sim = env._sim
+    new_seed = next(s for s in range(2, 60) if not _objects(_peek(env, s)) <= _objects(env.setup))
+    real_step, calls = sim.step, {"n": 0}
+
+    def failing_step(dt=0.2):
+        calls["n"] += 1
+        if calls["n"] == 3:  # inside the hold: the re-render step is the first
+            raise CameraPoseError("camera 1.2 m from kinematics")
+        return real_step(dt)
+
+    sim.step = failing_step
+    with pytest.raises(CameraPoseError):
+        env.reset(seed=new_seed)
+    sim.step = real_step
+    assert _reset_counting(env, new_seed)[0]["prewarm_steps"] == PREWARM_HOLD_STEPS
+
+
+def _peek(env, seed):
+    from autofly_ue5.expert.episode import sample_setup
+
+    return sample_setup(env._scene, env._layout, np.random.default_rng(seed), pool=env.target_pool)
+
+
+def test_a_reset_without_a_pool_never_holds_and_reports_no_hold():
+    env = make_env()
+    env._sim_factory = CountingSim
+    for seed in range(4):
+        info, steps, _commands = _reset_counting(env, seed)
+        assert steps == 1 and "prewarm_steps" not in info
+
+
+def test_a_dynamic_scene_with_a_pool_holds_with_its_movers_in_place(tmp_path):
+    from autofly_ue5.expert.env import PREWARM_HOLD_STEPS
+    from tests.test_dataset_targets import wide_pool
+    from tests.test_dynamic_env import make_dynamic_env
+
+    env = make_dynamic_env(sim_cls=CountingSim, target_pool=wide_pool(tmp_path))
+    _obs, info = env.reset(seed=5)
+    assert info["prewarm_steps"] == PREWARM_HOLD_STEPS and env._sim.steps_called == 1 + PREWARM_HOLD_STEPS
+    assert info["n_movers"] == len(info["mover_routes"]) > 0
+    for _ in range(3):
+        env.step(np.array([1.0, 0.0, 0.0], dtype=np.float32))
 
 
 def test_an_evaluation_env_may_draw_its_targets_for_another_split(tmp_path):

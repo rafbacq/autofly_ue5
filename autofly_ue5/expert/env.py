@@ -58,6 +58,13 @@ def action_space() -> spaces.Box:
 # Step faults that a moving pillar the drone was about to touch can cause (spec §6.5, "defensive inference").
 MOVER_INFERABLE_FAULTS = (CameraPoseError, KinematicsJumpError)
 
+# Plan 6 step 2a. Live, a pool object spawned for the first time in a simulator session could be missing from the first
+# frame after it spawned and showed within five steps (runs/m4/targets_settle_diag/settle.json: three of six models drew
+# no pixel on step 1 and their whole outline by step 5, a fourth a fifth of it; every second spawn showed on step 1;
+# docs/gates/m4_targets_probe.json counted five such first-frame misses). The collector records the reset's frame as the
+# episode's first, so a reset that spawned an object new to the session hovers this many more steps before it returns.
+PREWARM_HOLD_STEPS = 5
+
 
 class AutoFlyEnv(gym.Env):
     """One simulator per env, injected as a factory so tests run `FakeSimulator` and training runs the
@@ -92,6 +99,12 @@ class AutoFlyEnv(gym.Env):
     `target_split` (evaluation only, plan 6 revision 1 item 5; needs a pool): None draws for the scene's own split;
     "train", "test_seen", "test_unseen" for that split; "unseen" an unseen target among seen distractors
     (`expert.episode.sample_setup` pins each form).
+
+    The first-use hold (plan 6 step 2a, with a pool only): when an episode spawns an object, an entry's mesh and
+    material, that this simulator session has not spawned before, `reset()` hovers PREWARM_HOLD_STEPS more steps after
+    its re-render step, so the observation it returns (the collector's first record) shows every object. The objects
+    count as warm once a hold completes; a launch, a relaunch included, starts cold. Not episode steps, like the
+    re-render step; the reset info says how many (`prewarm_steps`). Without a pool nothing changes, call for call.
     """
 
     metadata: dict[str, Any] = {"render_modes": []}
@@ -213,6 +226,8 @@ class AutoFlyEnv(gym.Env):
         self._last_pose: Pose | None = None
         self._last_obs: dict[str, np.ndarray] | None = None
         self._last_raw: Observation | None = None
+        # The pool objects (asset, material) this simulator session has spawned and held for: the first-use hold.
+        self._warm: set[tuple[str | None, str | None]] = set()
         # Advances by one on every seed=None reset() so a given env instance replays episodes 0, 1, 2,
         # ... in a fixed, reproducible order (offset per-env by seed_base, so vectorised workers stay
         # disjoint even when the caller resets every one of them with seed=None). An explicit seed does
@@ -228,6 +243,7 @@ class AutoFlyEnv(gym.Env):
             self._sim = sim
             self._displaced = set()  # a freshly launched level has every pillar at home
             self._movers = None
+            self._warm = set()  # and has loaded no pool object yet
         return self._sim
 
     def reset(self, seed: int | None = None, options: dict | None = None) -> tuple[dict[str, np.ndarray], dict]:
@@ -302,6 +318,7 @@ class AutoFlyEnv(gym.Env):
         # action -- so self._step_index is set to 0 afterward, not incremented.
         sim.command_velocity(0.0, 0.0, 0.0)
         sim.step(CONTROL_DT_S)
+        prewarm_steps = self._first_use_hold(sim, setup) if self._target_pool is not None else None
         obs = sim.observe()
         if obs.collided:
             # An episode that starts in contact is lost before its first action (C9): not a policy outcome.
@@ -345,6 +362,8 @@ class AutoFlyEnv(gym.Env):
         info = self._info(Outcome.RUNNING, self._prev_dist, obs.pose, bearing, None)
         if movers is not None:
             info["mover_routes"] = [route.to_json() for route in setup.movers]
+        if prewarm_steps is not None:  # with a pool only: every pool-free reset's info stays as it was
+            info["prewarm_steps"] = prewarm_steps
         self._last_obs = {"depth": self._stacker.reset(encode_depth(obs.depth)),
                           "vector": encode_vector(obs.pose, obs.velocity_ned, obs.yaw_rate, setup.target_xy_z),
                           **self._mover_obs(obs.pose)}
@@ -486,6 +505,19 @@ class AutoFlyEnv(gym.Env):
                           "vector": encode_vector(obs.pose, obs.velocity_ned, obs.yaw_rate, self._setup.target_xy_z),
                           **self._mover_obs(obs.pose)}
         return self._last_obs, reward, result.terminated, result.truncated, info
+
+    def _first_use_hold(self, sim: Simulator, setup: EpisodeSetup) -> int:
+        """PREWARM_HOLD_STEPS more hover steps when this episode spawned a pool object (an entry's mesh and material: a
+        primitive in a colour new to the session loads that material too) the session has not held for yet, else none.
+        The objects count as warm only once the hold completed: one a fault cut short is held again next time."""
+        objects = {(entry.asset, entry.material) for entry in (setup.target, *setup.distractor_entries)}
+        if objects <= self._warm:
+            return 0
+        for _ in range(PREWARM_HOLD_STEPS):
+            sim.command_velocity(0.0, 0.0, 0.0)
+            sim.step(CONTROL_DT_S)
+        self._warm |= objects
+        return PREWARM_HOLD_STEPS
 
     def _with_penalties(self, reward: float, pose: Pose, info: dict) -> float:
         """`reward` less the run's training penalties for a step ending at `pose` (expert/mover_clearance.py,
