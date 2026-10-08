@@ -218,6 +218,19 @@ def test_a_backend_fault_replays_the_seed_from_a_fresh_policy_and_is_never_score
     assert record["scenes"]["s01"]["backend_faults"]["fault_counts"]["CameraPoseError"] == 1
 
 
+def test_a_policy_is_described_once_per_run(tmp_path):
+    # A VLA's describe() may hash a checkpoint of many gigabytes: once for the record, never per episode.
+    class Described(Constant):
+        calls = 0
+
+        def describe(self):
+            Described.calls += 1
+            return {"name": "described", "checkpoint_sha256": "0" * 64}
+
+    record = _run(tmp_path, Described(), _condition(tmp_path, n=3), max_steps=2)
+    assert Described.calls == 1 and record["policy"] == {"name": "described", "checkpoint_sha256": "0" * 64}
+
+
 def test_episode_limits_and_a_scene_subset_select_part_of_a_condition(tmp_path):
     path = _condition(tmp_path, scenes=("s01", "s01d"), n=3)
     record = _run(tmp_path, Constant(), path, scenes=["s01d"], max_episodes_per_scene=2, max_steps=4)

@@ -180,13 +180,13 @@ def _action_summary(raw: list[np.ndarray], commanded: list[np.ndarray]) -> dict:
 
 
 def _fly_once(policy: Any, env: ResilientAutoFlyEnv, episode: EvalEpisode, *, a0: str, privileged_state: bool,
-              max_steps: int, layout, success_radius_m: float) -> dict:
-    """One attempt at `episode`: its record, or {"fault": name} when a backend fault cut it short."""
+              max_steps: int, layout, success_radius_m: float, name: str) -> dict:
+    """One attempt at `episode`: its record, or {"fault": name} when a backend fault cut it short. `name` names the
+    policy in its errors."""
     obs, info = env.reset(seed=episode.seed, options={"a0": a0})
     base = env.unwrapped
     setup = base.setup
     raw = base.last_observation
-    name = describe_policy(policy).get("name")
     _call(policy, name, "reset", setup.instruction)
     points = [(raw.pose.x, raw.pose.y)]
     asked, commanded, act_s = [], [], []
@@ -244,12 +244,14 @@ def _fly_once(policy: Any, env: ResilientAutoFlyEnv, episode: EvalEpisode, *, a0
 
 def fly_episode(policy: Any, env: ResilientAutoFlyEnv, episode: EvalEpisode, *, a0: str, privileged_state: bool,
                 max_steps: int, layout, success_radius_m: float,
-                max_fault_retries: int = DEFAULT_MAX_FAULT_RETRIES) -> dict:
-    """`episode` flown until an attempt runs uninterrupted, with how many attempts faults cost (never scored)."""
+                max_fault_retries: int = DEFAULT_MAX_FAULT_RETRIES, policy_name: str | None = None) -> dict:
+    """`episode` flown until an attempt runs uninterrupted, with how many attempts faults cost (never scored).
+    `policy_name` names the policy in its errors (default: describe_policy's, read here)."""
+    name = policy_name if policy_name is not None else describe_policy(policy).get("name")
     faults: Counter[str] = Counter()
     for _attempt in range(max_fault_retries + 1):
         result = _fly_once(policy, env, episode, a0=a0, privileged_state=privileged_state, max_steps=max_steps,
-                           layout=layout, success_radius_m=success_radius_m)
+                           layout=layout, success_radius_m=success_radius_m, name=name)
         if "fault" in result:
             faults[result["fault"]] += 1
             print(f"EVAL {episode.scene} seed {episode.seed}: a {result['fault']} cut the attempt short; flying it "
@@ -299,9 +301,11 @@ def run_condition(policy: Any, condition_file: Path | ConditionFile, *, instance
     "failed" (the policy broke)."""
     condition = condition_file if isinstance(condition_file, ConditionFile) else load_condition(condition_file)
     pool = target_pool if isinstance(target_pool, TargetPool) else TargetPool.load(target_pool)
+    described = describe_policy(policy)  # once: a VLA's describe() may hash a checkpoint of many gigabytes
+    name = described.get("name")
     if getattr(policy, "requires_privileged_state", False) and not privileged_state:
-        raise ValueError(f"policy {describe_policy(policy).get('name')} steers by the privileged state (state[0], "
-                         f"state[1]), which the harness zeroes: run it with privileged_state=True (--privileged-state)")
+        raise ValueError(f"policy {name} steers by the privileged state (state[0], state[1]), which the harness zeroes: "
+                         f"run it with privileged_state=True (--privileged-state)")
     if max_steps < 1:
         raise ValueError(f"max_steps must be at least 1, got {max_steps}")
     if out_path is not None and Path(out_path).suffix != ".json":
@@ -330,7 +334,7 @@ def run_condition(policy: Any, condition_file: Path | ConditionFile, *, instance
         "condition": {"name": condition.name, "file": None if condition.path is None else str(condition.path),
                       "sha256": condition.sha256, "episodes_per_scene": condition.episodes_per_scene,
                       "scenes": list(condition.scene_ids)},
-        "policy": describe_policy(policy),
+        "policy": described,
         "privileged_state": bool(privileged_state), "privileged_state_indices": list(PRIVILEGED_STATE_INDICES),
         "a0": condition.a0, "max_steps": max_steps, "max_episodes_per_scene": max_episodes_per_scene,
         "contact_rule_shape": TASK_FOOTPRINT_SHAPE,
@@ -386,7 +390,8 @@ def run_condition(policy: Any, condition_file: Path | ConditionFile, *, instance
                 for episode in plan.episodes:
                     result = fly_episode(policy, env, episode, a0=condition.a0, privileged_state=privileged_state,
                                          max_steps=max_steps, layout=plan.resolved.layout,
-                                         success_radius_m=success_radius_m, max_fault_retries=max_fault_retries)
+                                         success_radius_m=success_radius_m, max_fault_retries=max_fault_retries,
+                                         policy_name=name)
                     flown.append(result)
                     episodes.append(result)
                     scene["metrics"], record["overall"] = summarise(flown), summarise(episodes)
