@@ -235,6 +235,18 @@ stale "fact". Standing rules live in `CLAUDE.md`; this file is the reasoning and
 
 ## Scene learnings
 
+- **Mesh scenes end episodes at the footprint circle, not at contact (2026-10-08, `expert/footprint_contact.py`).**
+  The task's rule is 0.9 m from the circle (`radius_m`, the band's reach): the rule is checked after the step is
+  flown, so the ending step overshoots by up to a full-speed step (0.4 m); plus the rotor reach (0.48 m) and a
+  full-rate turning step's chord bow (0.01 m). A 0.5 m first version let 40 of 40 scripted fake flights end with a
+  rotor tip inside the circle (caught by the figure, not by the tests: the fake's wood was a 0.3 m trunk deep inside
+  every circle, so "0 sim endings" proved less than it seemed). Which instances it covers is the registry's say (`radius_profile_m` is not None: every imported model, never a
+  cylinder or a crate), so s06 and the rock scenes get it without a scene-file field, and a layout naming an asset the
+  registry lacks is refused. Starts, targets and distractors keep 1.4 m from every circle and a reset may land 0.3 m
+  off, so the trainer refuses a training margin beyond 0.2 m (boundary 1.1 m). Log lines `FOOTPRINT instance N:` count
+  the endings; `outcomes/collision_footprint` and `_footprint_margin` are their curves. A "sim" collision on a mesh scene
+  means the body reached wood anyway: look at it (a branch outside its circle, or a dip under the band's floor).
+
 - **Importing glTF through Interchange from Python (2026-10-07, five editor runs).** A pipeline object in
   `AssetImportTask.options` is ignored; pass an `InterchangePipelineStackOverride` holding the default glTF pipelines
   (`/Interchange/Pipelines/DefaultGLTFAssetsPipeline` + `DefaultGLTFPipeline`) changed in memory. Defaults bake node

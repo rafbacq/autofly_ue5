@@ -116,8 +116,14 @@ reachability and the live checks of §11. Then M5 trains one expert per train sc
   wedge the swept Unreal actor among the leaf cards beyond any teleport. Also found and fixed: glTF BLEND leaves were
   Translucent and invisible to the depth camera (now Masked). Cards are now a no-collision companion mesh
   (`<key>_cards`), and **`m4_s02_gate_run3.json` passed**; wood still wedges a body that reaches it (2 of 4 crashes),
-  so tree scenes will end episodes at the footprint circle (geometric contact, as s01d's movers) -- to build into
-  `expert/env.py` before M5 trains on s02.
+  so tree scenes will end episodes at the footprint circle (geometric contact, as s01d's movers) -- **built 2026-10-08**
+  (`expert/footprint_contact.py`, `tests/test_footprint_contact.py`): the task's rule at 0.9 m from every mesh
+  obstacle's circle (rotor reach + one full-speed step + chord bow, since the ending step overshoots), scored by the
+  gate (`contact_rules` in its record) and rejected by the collector, with a training-only
+  `--footprint-contact-margin` (at most 0.2 m) on top; the physical event stays as the backstop. A measured model's
+  `radius_m` is now its whole reach (the reset climbs through every slice); s02's layout was regenerated (level spec
+  identical, two tree_small_02 radii +0.19/+0.27 m) and re-gated: `m4_s02_gate_run4.json` passed. Static
+  s01 and s01d are untouched (the golden test), and the rule covers rocks (s03-s05) as it covers trees.
 - [ ] **C9. Status**: CLAUDE.md's table, spec §6.3 wording where a scene's phrase changed, MEMORY.md's learnings.
 
 ## Not in M4

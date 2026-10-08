@@ -287,6 +287,22 @@ R5–R9.
   the episode (`autofly_ue5/expert/resilient.py`, `evaluate.py`). Added 2026-10-05: a step whose rgb/depth frames do
   not arrive within 5 s (`FrameTimeoutError`, first seen ending run 5 at 25k steps), or arrive stamped at another time
   (`FrameTimestampError`), is a step fault too.
+- **A body that reaches a mesh can wedge the swept actor for good (2026-10-07, M4 s02).** The plugin moves the Unreal
+  actor to the kinematics by a collision sweep every tick, and UE lets a penetrating actor move only *out of* each
+  contact: among a tree's branches there is no such direction, every escape returns the same pose with a collision
+  event, and the wedged actor cannot fly afterwards (`docs/gates/m4_s02_wood_crash_reset_probe.json`: 2 of 4 crashes
+  into wood stayed wedged; `docs/decisions/2026-10-07-m4-live-checks-and-foliage.md`). Convex solids (pillars, boxes)
+  never wedge. **So in a scene with mesh obstacles (every registry asset with a radius profile: trees, rocks) the
+  task's contact rule is geometric**, evaluated by the environment on every step as §6.5's mover rule is: an episode
+  ends as a collision when the drone's swept step passes within 0.9 m of an obstacle's footprint circle, the layout's
+  `radius_m` (the model's widest reach in the flight band at its scale, §6.4), which contains every branch the band
+  meets. 0.9 m is the rotor reach (0.48 m from the centre) plus one full-speed step (0.4 m, since the rule is checked
+  after the step is flown and the ending step itself overshoots) plus a full-rate turning step's 0.01 m of chord bow,
+  the same invariant as §6.5's `contact_m − max_speed·dt > 0.48 m`; a 0.5 m first version let 40 of 40 scripted
+  flights end with a rotor tip inside the circle. The physical collision event stays as a backstop, scored as "sim".
+  The gate scores this rule and the collector rejects by it; a training run may add a margin on top
+  (`--footprint-contact-margin`, as the mover margin), never exceeding what keeps a start outside the boundary (1.1 m
+  in all, so at most 0.2 m). `autofly_ue5/expert/footprint_contact.py`.
 - **Lock-step holds exactly at 5 Hz.** 55/55 records had simulator time, image timestamps and kinematics timestamps
   equal to the step target; camera-to-state pose error stayed at 2.4e-7 m. The velocity command's duration is
   `dt − 2·step-ns = 0.19 s`, sent before the step, with the reply awaited after it.

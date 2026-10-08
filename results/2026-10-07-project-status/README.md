@@ -14,10 +14,10 @@ e44a859.
 | M0 | UE5 + Project AirSim installed, smoke test | **Passed** 2026-09-15 | `m0_gate.json` |
 | M1 | `sim/` module; scene s01 built from JSON and packaged | **Passed** 2026-09-16 | `m1_gate.json` |
 | M2 | SAC expert on s01 (white pillars) ≥ 0.95 over 200 episodes | **Passed** 2026-09-26: 0.98 deterministic, 0.99 stochastic | `records/m2_gate.json` |
-| M2d | moving pillars (s01d): expert ≥ 0.95 | **Open**: 0.775 → 0.885 → 0.920 → **0.935** over six runs; the bar is 0.95 | `records/m2d_*_gate.json` |
+| M2d | moving pillars (s01d): expert ≥ 0.95 | **Gate failed, expert accepted** (2026-10-07): 0.775 → 0.885 → 0.920 → **0.935** over six runs against the bar of 0.95; the user accepted the 0.935 expert for collection, stochastically, and no run 7 starts (`docs/decisions/2026-10-07-s01d-accepted-at-0.935.md`) | `records/m2d_*_gate.json` |
 | M3 | collector, dataset writer, validator; 100-episode pilot | **Passed** 2026-10-03: 100 of 101 episodes kept, 17,738 records, TFDS reads them back exactly | `records/m3_gate.json` |
 | M5 (part) | dataset rebalancing (paper App. A.2.4) | **Done on the pilot** 2026-10-07 | `records/s01_pilot_rebalance.json` |
-| M4 | asset library; scenes s02–s12 | **Started**: every placement type generates and is checked offline; editor work next | `docs/superpowers/plans/…plan5…` |
+| M4 | asset library; scenes s02–s12 | **In progress**: s09, s07 and s02 built, packaged and gated live; the footprint contact rule for mesh scenes is built (2026-10-08); the remaining scenes, the target pool and the snow exposure are next | `docs/gates/m4_*_gate.json`, `docs/superpowers/plans/…plan5…` |
 | M6 (part) | path efficiency (the paper's PER) | **Measured on the pilot** | `records/s01_pilot_path_efficiency.json` |
 
 ## 1. The experts and their gates
@@ -113,7 +113,29 @@ The live checks that gated s01 (M1) now run on any scene: s09 and s07 passed (`d
 `m4_s07_gate.json`: every actor within microns, depth within millimetres, crashes where predicted). s02 failed its
 crash check: a crash into a canopy wedges the simulator's actor among the leaf cards, which the next step removes from
 the collision mesh (`docs/decisions/2026-10-07-m4-live-checks-and-foliage.md`). The same checks caught that the trees'
-leaves were invisible to the depth camera and fixed it.
+leaves were invisible to the depth camera and fixed it. With the leaf cards split into a no-collision companion mesh
+the s02 gate passed on its third record (`m4_s02_gate_run3.json`); wood still wedged 2 of 4 crashed bodies, which is
+what the next section answers.
+
+## 5. The footprint contact rule for mesh scenes (2026-10-08)
+
+In a scene whose obstacles are imported models (trees now, rocks next), the task's contact rule is no longer physical
+contact, because a body that reaches wood can wedge the simulator's actor for good. An episode ends as a collision when
+the drone's swept step passes within 0.9 m of an obstacle's footprint circle (the layout's `radius_m`, the model's
+whole horizontal reach at its scale), checked by the environment on every step exactly as s01d's 1 m mover rule is; the
+simulator's collision event stays as a backstop. The gate scores this rule and records it (`contact_rules`), the
+collector rejects by it, and a training run may widen it by at most 0.2 m
+(`docs/decisions/2026-10-08-footprint-contact-rule.md`, `autofly_ue5/expert/footprint_contact.py`).
+
+![footprint rule](figures/s02_footprint_rule.png)
+
+Forty scripted flights straight at s02's trees on the fake simulator, each flown under the task rule (left) and with
+the 0.2 m training margin (right): every flight ends between 0.51 and 0.88 m from its circle under the rule, so no rotor
+tip (0.48 m from the centre) ever enters a circle, including on the ending step, which overshoots by up to a full-speed
+step of 0.4 m. The first version of the rule, at 0.5 m, failed exactly that test: all 40 ending steps had a rotor tip
+inside the circle (gaps 0.11–0.48 m), which this figure caught and the offline tests had not. The close-up draws the
+largest tree to scale with the drone sitting on the boundary. Numbers: `figures/s02_footprint_rule.json`
+(`scripts/footprint_rule_figure.py`).
 
 ## Numbers worth knowing
 
