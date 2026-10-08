@@ -178,7 +178,7 @@ class TargetExclusions:
     Keyed by asset, not by entry name: the shape is what reads as an obstacle, so an asset takes every colour of a
     primitive with it (one added later too), and a model is its own asset. Keyed by the scene's own id: s01d flies s01's
     level but draws by its own entry. A scene without an entry excludes nothing. Refused at load: a scene no scene file
-    claims, an asset no entry of the pool is drawn from, an empty entry, a missing reason."""
+    claims, an asset no entry of the pool uses, an empty entry, a missing reason."""
 
     scenes: dict[str, dict[str, str]] = field(hash=False)
     path: str | None = None
@@ -215,8 +215,8 @@ class TargetExclusions:
                                       f"each is excluded")
             for asset, reason in excluded.items():
                 if asset not in assets:
-                    raise TargetPoolError(f"{where}: scene {scene_id!r} excludes {asset!r}, which no entry of the pool is "
-                                          f"drawn from")
+                    raise TargetPoolError(f"{where}: scene {scene_id!r} excludes {asset!r}, which no entry of the pool "
+                                          f"uses")
                 if not isinstance(reason, str) or not reason.strip():
                     raise TargetPoolError(f"{where}: scene {scene_id!r}, asset {asset!r}: give the reason it is excluded")
             scenes[scene_id] = dict(excluded)

@@ -23,7 +23,8 @@ glTF meshes, ray-cast), and gives one of five statuses:
 A window pixel can tell when its ray meets the target's box before everything else the geometry predicts there (the
 ground plane, the layout's obstacles near the line of sight, the distractors' boxes) and that background lies beyond the
 target's far face by more than the tolerance. Without that test, a far target would read "visible" off the ground just
-behind its base: the first frame's target is typically 40-65 m away.
+behind its base: the first frame's target stands on the far edge, 64-78 m away in the collector's open-field tests of
+s01's ground.
 
 What the env exposes, and so what is used: the depth is the simulator's own frame at full resolution
 (`Observation.depth`, 256 x 256 planar metres, no hit = inf: sim/decode.py), not the policy's encoded input; the camera's
