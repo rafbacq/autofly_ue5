@@ -14,7 +14,8 @@ range fly the same episodes. The ranges:
     [COLLECTION_SEED_BASE, +1e8)              dataset collection (M3/M5): never a training, gate or probe episode,
                                               in 100 slices of 1e6, one per (scene, collection run):
                                               collection_seed_base(k). Slice 0 is s01's pilot; slice 99 is for
-                                              smokes and diagnostics, never a dataset
+                                              smokes and diagnostics, never a dataset; a campaign's batches take
+                                              campaign_seed_slice(scene, batch), slices 1-90
     [EVAL_HARNESS_SEED_BASE, +1e7)            the closed-loop evaluation harness's frozen episode files (M6, plan 6;
                                               autofly_ue5/evaluation/episodes.py): one 1e6 slice per condition, one
                                               1e4 sub-slice per scene within it: eval_harness_seed_base(c, s)
@@ -44,6 +45,14 @@ COLLECTION_SEED_BASE = 400_000_000
 COLLECTION_SLICE_STRIDE = 1_000_000
 MAX_COLLECTION_SLICES = 100
 DIAGNOSTIC_COLLECTION_SLICE = MAX_COLLECTION_SLICES - 1
+# A collection campaign's batches (plan 6 step 2e, scripts/collect_campaign.py): every (scene, batch) owns one slice,
+# scene-major in this fixed order, slice = 1 + CAMPAIGN_BATCHES_PER_SCENE * (the scene's index) + batch:
+#     s01 1-10, s01d 11-20, s02 21-30, s03 31-40, s04 41-50, s05 51-60, s06 61-70, s07 71-80, s09 81-90.
+# So no two batches of any campaign fly the same episodes (s01 and s01d share a layout and a draw order), a store's
+# seeds say which scene and batch it is, and neither the M3 pilot's slice 0 nor the smokes' 99 is ever reused; 91-98
+# are unassigned. A scene appended to the order takes the next ten slices; reordering would rename every batch.
+CAMPAIGN_SCENE_ORDER = ("s01", "s01d", "s02", "s03", "s04", "s05", "s06", "s07", "s09")
+CAMPAIGN_BATCHES_PER_SCENE = 10
 # The evaluation harness (plan 6 item 6, revision 1 item 5): a policy is scored on frozen files of (scene, seed) per
 # condition, and none of those episodes may be one an expert trained, was gated or selected on, or that a dataset holds,
 # or a student's score would measure memory. A slice per condition and a sub-slice per scene, so no two files and no two
@@ -72,6 +81,15 @@ def collection_seed_base(slice_index: int) -> int:
     if not 0 <= slice_index < MAX_COLLECTION_SLICES:
         raise ValueError(f"collection slice must be in [0, {MAX_COLLECTION_SLICES}), got {slice_index}")
     return COLLECTION_SEED_BASE + slice_index * COLLECTION_SLICE_STRIDE
+
+
+def campaign_seed_slice(scene_id: str, batch: int) -> int:
+    """The collection slice of batch `batch` of scene `scene_id` in a collection campaign (see CAMPAIGN_SCENE_ORDER)."""
+    if scene_id not in CAMPAIGN_SCENE_ORDER:
+        raise ValueError(f"scene {scene_id!r} has no campaign slices; the campaign's scenes are {CAMPAIGN_SCENE_ORDER}")
+    if not 0 <= batch < CAMPAIGN_BATCHES_PER_SCENE:
+        raise ValueError(f"campaign batch must be in [0, {CAMPAIGN_BATCHES_PER_SCENE}), got {batch}")
+    return 1 + CAMPAIGN_BATCHES_PER_SCENE * CAMPAIGN_SCENE_ORDER.index(scene_id) + batch
 
 
 def worker_seed_base(rank: int) -> int:

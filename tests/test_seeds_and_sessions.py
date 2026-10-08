@@ -98,6 +98,27 @@ def test_each_evaluation_condition_and_scene_gets_its_own_slice_of_the_harness_r
             eval_harness_seed_base(*bad)
 
 
+def test_a_campaign_s_batches_each_own_a_slice_scene_major_never_the_pilot_s_or_the_smokes():
+    # Plan 6 step 2e: slice = 1 + 10 * (the scene's place in a fixed order) + batch. Slice 0 is the M3 pilot's and 99
+    # the smokes', so no campaign batch can fly either's seeds, nor another batch's.
+    from autofly_ue5.expert.seeds import (
+        CAMPAIGN_BATCHES_PER_SCENE,
+        CAMPAIGN_SCENE_ORDER,
+        DIAGNOSTIC_COLLECTION_SLICE,
+        campaign_seed_slice,
+    )
+
+    assert CAMPAIGN_SCENE_ORDER == ("s01", "s01d", "s02", "s03", "s04", "s05", "s06", "s07", "s09")
+    assert CAMPAIGN_BATCHES_PER_SCENE == 10
+    assert campaign_seed_slice("s01", 0) == 1 and campaign_seed_slice("s01d", 0) == 11
+    assert campaign_seed_slice("s07", 0) == 71 and campaign_seed_slice("s09", 9) == 90
+    slices = [campaign_seed_slice(s, b) for s in CAMPAIGN_SCENE_ORDER for b in range(CAMPAIGN_BATCHES_PER_SCENE)]
+    assert len(set(slices)) == len(slices) and min(slices) == 1 and max(slices) < DIAGNOSTIC_COLLECTION_SLICE
+    for scene, batch in (("s05r", 0), ("s08", 0), ("s01", -1), ("s01", CAMPAIGN_BATCHES_PER_SCENE)):
+        with pytest.raises(ValueError):
+            campaign_seed_slice(scene, batch)
+
+
 def test_the_pilot_cli_takes_a_seed_slice():
     from scripts.collect_dataset import build_arg_parser
 
