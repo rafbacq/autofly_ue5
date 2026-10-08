@@ -89,6 +89,26 @@ def test_every_frame_of_every_episode_is_scored_in_order_for_its_own_target(tmp_
         assert all(0.0 <= s <= 1.0 for s in ep["scores"])
 
 
+def test_a_pool_store_is_scored_for_the_target_each_episode_s_provenance_names(tmp_path):
+    # Plan 5 C5: with a target pool every episode has its own target, and the detector must look for that one. The
+    # collector writes the drawn entry's name into the manifest entry the detector reads and into the provenance; the
+    # validator holds the two equal (tests/test_collect.py).
+    from autofly_ue5.dataset.rebalance import build_rebalance
+    from scripts.detect_targets import run
+    from tests.test_dataset_targets import primitive_pool
+
+    _summary, root = _collect(tmp_path, n_keep=4, target_pool=primitive_pool(tmp_path), target_name=None)
+    doc = run(root, tmp_path / "detections.json", _MeanPixelDetector(), batch=4)
+    manifest = json.loads((root / "manifest.json").read_text())
+    queries = []
+    for entry in manifest["episodes"]:
+        name = json.loads((root / "provenance" / f"{entry['id']}.json").read_text())["target"]["name"]
+        assert doc["episodes"][entry["id"]]["query"] == name and doc["episodes"][entry["id"]]["prompt"] == name + "."
+        queries.append(name)
+    assert len(set(queries)) > 1, "the store's episodes look for different targets"
+    assert build_rebalance(manifest, doc)["coverage"]["episodes"] == 4
+
+
 def test_a_limited_run_is_resumed_without_rescoring_and_another_detector_or_store_is_refused(tmp_path):
     from scripts.detect_targets import run
 

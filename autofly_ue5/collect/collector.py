@@ -12,6 +12,10 @@ For each seed from the collection range (`autofly_ue5.expert.seeds.COLLECTION_SE
 A backend fault ends the attempt on its last real observation (`ResilientAutoFlyEnv`); its records are dropped and
 the same seed is flown again, as the gate does (`autofly_ue5.expert.evaluate`). So a stored episode is always one
 uninterrupted flight.
+
+The target is named one of two ways (plan 5 C5). With a target pool in the env (`scripts/collect_dataset.py --targets`)
+each episode's drawn entry names it: the sampler wrote the name into the instruction, and the provenance carries the
+target's and every distractor's entry. Without one, M3's way: every episode is the orange cylinder under `target_name`.
 """
 
 from __future__ import annotations
@@ -28,6 +32,7 @@ from autofly_ue5.scenes.model import SceneFile
 
 DEFAULT_MAX_STEPS = 1_000  # far above AutoFlyEnv's 300-step limit: a guard, not a target
 DEFAULT_MAX_FAULT_RETRIES = 20
+POOL_NAME_STATUS = "pool"  # a name drawn from the target pool (plan 5 C5), not M3's placeholder
 
 
 class EpisodeFault(Exception):
@@ -72,22 +77,39 @@ def _fly(model, env, seed: int, *, deterministic: bool, max_steps: int) -> dict[
             "actions": actions, "times": times, "poses": poses, "movers": movers, "final_pose": poses[-1]}
 
 
+def _pool_object(entry, spawned: dict) -> dict:
+    """A pool object's record: its entry (name, category, seen, asset, scale, material, status), the material the runtime
+    applied (the spawner leaves the mesh's own where it cannot apply the entry's) and the height it stood at."""
+    return {**entry.to_json(), "material_applied": spawned["material"] or "mesh_default", "spawn_z_ned": spawned["z_ned"]}
+
+
 def _provenance(scene: SceneFile, layout_sha256: str | None, seed: int, flight: dict, *, deterministic: bool,
                 target_name: str, target_name_status: str | None) -> dict:
     setup = flight["setup"]
     info = flight["info"]
     spec = spawn_spec(setup)
     names = list(flight["spawned"]) + [None] * (1 + len(setup.distractors) - len(flight["spawned"]))
+    if setup.target is not None:
+        # xyz stays the privileged target position the expert flew to (expert/episode.py TARGET_Z_NED); spawn_z_ned is
+        # where the object stood.
+        target = {**_pool_object(setup.target, spec["target"]), "name_status": target_name_status,
+                  "spawned_as": names[0], "xyz": list(setup.target_xy_z)}
+        distractors = [{**_pool_object(entry, spawned), "spawned_as": names[1 + i], "xyz": list(d)}
+                       for i, (entry, spawned, d) in enumerate(zip(setup.distractor_entries, spec["distractors"],
+                                                                   setup.distractors, strict=True))]
+    else:
+        target = {"name": target_name, "name_status": target_name_status, "asset": spec["asset"],
+                  "material": spec["target_material"], "spawned_as": names[0], "xyz": list(setup.target_xy_z),
+                  "scale": list(setup.target_scale)}
+        distractors = [{"asset": spec["asset"], "material": spec["distractor_material"] or "mesh_default",
+                        "spawned_as": names[1 + i], "xyz": list(d), "scale": list(setup.target_scale)}
+                       for i, d in enumerate(setup.distractors)]
     return {
         "scene": {"id": scene.id, "file": scene.path, "sha256": scene.sha256},
         "layout_sha256": layout_sha256,
         "seed": seed,
-        "target": {"name": target_name, "name_status": target_name_status, "asset": spec["asset"],
-                   "material": spec["target_material"], "spawned_as": names[0], "xyz": list(setup.target_xy_z),
-                   "scale": list(setup.target_scale)},
-        "distractors": [{"asset": spec["asset"], "material": spec["distractor_material"] or "mesh_default",
-                         "spawned_as": names[1 + i], "xyz": list(d), "scale": list(setup.target_scale)}
-                        for i, d in enumerate(setup.distractors)],
+        "target": target,
+        "distractors": distractors,
         "start_pose": [setup.start.x, setup.start.y, setup.start.z, setup.start.yaw],
         "a0": {"mode": "sector8", "start_yaw_rad": setup.start.yaw},
         "movers": [r.to_json() for r in setup.movers],
@@ -107,14 +129,25 @@ def _provenance(scene: SceneFile, layout_sha256: str | None, seed: int, flight: 
     }
 
 
-def collect(model, env, *, scene: SceneFile, writer: RawDatasetWriter, seed_base: int, n_keep: int, target_name: str,
-            deterministic: bool = False, max_attempts: int | None = None, layout_sha256: str | None = None,
-            max_steps: int = DEFAULT_MAX_STEPS, max_fault_retries: int = DEFAULT_MAX_FAULT_RETRIES,
-            progress: dict | None = None, target_name_status: str | None = None) -> dict:
+def collect(model, env, *, scene: SceneFile, writer: RawDatasetWriter, seed_base: int, n_keep: int,
+            target_name: str | None = None, deterministic: bool = False, max_attempts: int | None = None,
+            layout_sha256: str | None = None, max_steps: int = DEFAULT_MAX_STEPS,
+            max_fault_retries: int = DEFAULT_MAX_FAULT_RETRIES, progress: dict | None = None,
+            target_name_status: str | None = None) -> dict:
     """Fly seeds seed_base, seed_base + 1, ... until `n_keep` episodes are kept or `max_attempts` seeds were flown.
+
+    `target_name` names every episode's target when the env has no target pool (M3), and must be None when it has one:
+    the pool's entries name each episode's own, and a second name beside them would be ignored or would contradict
+    them. Refused either way before anything is flown.
 
     `progress` (returned, and updated after every episode) lets a caller that catches an exception still report what
     was flown: a crashed pilot's record must keep its counts (the M3 review, 2026-10-03)."""
+    pool = env.unwrapped.target_pool
+    if pool is None and target_name is None:
+        raise ValueError("no target name: pass target_name, or give the env a target pool (plan 5 C5)")
+    if pool is not None and target_name is not None:
+        raise ValueError(f"the env's target pool names each episode's target; target_name={target_name!r} is the "
+                         f"pool-free fallback and cannot be given beside it")
     max_attempts = max_attempts if max_attempts is not None else 10 * n_keep
     summary = progress if progress is not None else {}
     summary.update(status="running", kept=0, rejected=0, attempted=0, fault_retries=0, outcomes={},
@@ -136,12 +169,18 @@ def collect(model, env, *, scene: SceneFile, writer: RawDatasetWriter, seed_base
         summary["attempted"] += 1
         summary["outcomes"][outcome] = summary["outcomes"].get(outcome, 0) + 1
         episode_id = f"{scene.id}_{seed}"
-        provenance = _provenance(scene, layout_sha256, seed, flight, deterministic=deterministic, target_name=target_name,
-                                 target_name_status=target_name_status)
+        setup = flight["setup"]
+        if setup.target is not None:  # the sampler already wrote the drawn name into the instruction
+            name, name_status, instruction = setup.target.name, POOL_NAME_STATUS, setup.instruction
+        else:
+            name, name_status = target_name, target_name_status
+            instruction = dataset_instruction(scene, setup.instruction, target_name)
+        provenance = _provenance(scene, layout_sha256, seed, flight, deterministic=deterministic, target_name=name,
+                                 target_name_status=name_status)
         if outcome == "success":
             writer.write_episode(
                 episode_id=episode_id, scene_id=scene.id, split=scene.split, seed=seed,
-                instruction=dataset_instruction(scene, flight["setup"].instruction, target_name), target_name=target_name,
+                instruction=instruction, target_name=name,
                 frames=flight["frames"], states=np.stack(flight["states"]), actions=np.stack(flight["actions"]),
                 sim_time_ns=np.asarray(flight["times"], dtype=np.int64), provenance=provenance)
             summary["kept"] += 1

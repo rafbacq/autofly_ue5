@@ -32,23 +32,24 @@ class _Crashes(_StraightAtTargetModel):
         return action, None
 
 
-def _env(tmp_path, sim_factory=FakeSimulator):
+def _env(tmp_path, sim_factory=FakeSimulator, target_pool=None):
     from autofly_ue5.expert.env import AutoFlyEnv
     from autofly_ue5.expert.resilient import ResilientAutoFlyEnv
 
     scene, layout = scene_and_layout()
-    base = AutoFlyEnv(scene, layout, sim_factory, map_path="/Game/AutoFly/Maps/S01", instance=0)
+    base = AutoFlyEnv(scene, layout, sim_factory, map_path="/Game/AutoFly/Maps/S01", instance=0, target_pool=target_pool)
     return scene, ResilientAutoFlyEnv(base, instance=0, sim_root=tmp_path / "sim")
 
 
-def _collect(tmp_path, model=None, n_keep=3, sim_factory=FakeSimulator, max_attempts=20):
+def _collect(tmp_path, model=None, n_keep=3, sim_factory=FakeSimulator, max_attempts=20, target_pool=None,
+             target_name="orange cylinder"):
     from autofly_ue5.collect.collector import collect
     from autofly_ue5.dataset.raw import RawDatasetWriter
 
-    scene, env = _env(tmp_path, sim_factory)
+    scene, env = _env(tmp_path, sim_factory, target_pool)
     writer = RawDatasetWriter(tmp_path / "data", "pilot", scene=scene, provenance=PROVENANCE)
     summary = collect(model or _StraightAtTargetModel(), env, scene=scene, writer=writer, seed_base=SEED_BASE,
-                      n_keep=n_keep, target_name="orange cylinder", max_attempts=max_attempts,
+                      n_keep=n_keep, target_name=target_name, max_attempts=max_attempts,
                       layout_sha256="test-layout")
     return summary, tmp_path / "data" / "pilot"
 
@@ -416,6 +417,21 @@ def test_the_validator_compares_provenance_with_the_record_by_value(tmp_path):
     assert any("simulator times" in f for f in validate_dataset(root)["failures"])
 
 
+def test_the_validator_holds_the_provenance_s_target_name_to_the_record_s(tmp_path):
+    # The rebalancing detector queries the manifest's name for each episode (scripts/detect_targets.py); with a target
+    # pool the names differ per episode, so a provenance that names another target would make the detector look for the
+    # wrong object.
+    from autofly_ue5.validate.dataset import validate_dataset
+
+    _summary, root = _collect(tmp_path, n_keep=1)
+    entry = json.loads((root / "manifest.json").read_text())["episodes"][0]
+    prov = root / "provenance" / f"{entry['id']}.json"
+    _rewrite_json(prov, lambda p: p["target"].update(name="blue hatchback"))
+    assert any("target name" in f for f in validate_dataset(root)["failures"])
+    _rewrite_json(prov, lambda p: p["target"].update(name=entry["target_name"]))
+    assert validate_dataset(root)["pass"]
+
+
 def test_provenance_names_the_target_and_distractors_and_the_card_marks_the_placeholder_name(tmp_path):
     # Spec §10.2: target and distractor names; U3: "orange cylinder" is marked a placeholder until M4's pool.
     record = _pilot(tmp_path, n_episodes=1)
@@ -454,3 +470,95 @@ def test_a_dataset_name_must_be_a_valid_tfds_name(tmp_path):
     for bad in ("S01-Pilot", "1pilot", "pilot run", ""):
         with pytest.raises(ValueError):
             RawDatasetWriter(tmp_path / "data", bad, scene=scene, provenance=PROVENANCE)
+
+
+# ------------------------------------------------------------------------------------------------------------------
+# The target pool (plan 5 C5): a collection draws each episode's target and distractors from it, and the record says so.
+# ------------------------------------------------------------------------------------------------------------------
+class _SpawnRecordingSim(FakeSimulator):
+    spawns: list = []
+
+    def spawn(self, name, asset, pose, scale, material=None):
+        _SpawnRecordingSim.spawns.append((name, asset, pose, tuple(scale), material))
+        return super().spawn(name, asset, pose, scale, material)
+
+
+def test_a_pool_collection_names_each_episode_s_own_target_and_records_its_entries(tmp_path):
+    from autofly_ue5.expert.episode import INSTRUCTION_TEMPLATES
+    from autofly_ue5.validate.dataset import validate_dataset
+    from tests.test_dataset_targets import primitive_pool
+
+    pool = primitive_pool(tmp_path)
+    entries = {e.name: e for e in pool.entries}
+    _SpawnRecordingSim.spawns = []
+    summary, root = _collect(tmp_path, n_keep=4, target_pool=pool, target_name=None, sim_factory=_SpawnRecordingSim)
+    assert summary["kept"] == 4 and validate_dataset(root)["pass"]
+    manifest = json.loads((root / "manifest.json").read_text())
+    names = [entry["target_name"] for entry in manifest["episodes"]]
+    assert len(set(names)) > 1 and set(names) <= set(pool_names := [e.name for e in pool.for_split("train")]), names
+    assert manifest["counts"]["by_target"] == {n: names.count(n) for n in set(names)}
+    for entry in manifest["episodes"]:
+        assert entry["instruction"] in {t.format(target=entry["target_name"], obstacle="white pillars")
+                                        for t in INSTRUCTION_TEMPLATES}
+        prov = json.loads((root / "provenance" / f"{entry['id']}.json").read_text())
+        target = prov["target"]
+        drawn = entries[target["name"]]
+        assert target["name"] == entry["target_name"] and target["name_status"] == "pool"
+        assert {k: target[k] for k in drawn.to_json()} == drawn.to_json()
+        assert target["material_applied"] == (drawn.material or "mesh_default")
+        assert target["spawned_as"].startswith("target") and len(target["xyz"]) == 3
+        assert 3 <= len(prov["distractors"]) <= 5
+        distractor_names = [d["name"] for d in prov["distractors"]]
+        assert len(set(distractor_names)) == len(distractor_names) and target["name"] not in distractor_names
+        for i, d in enumerate(prov["distractors"]):
+            assert d["name"] in pool_names and {k: d[k] for k in entries[d["name"]].to_json()} == entries[d["name"]].to_json()
+            assert d["spawned_as"].startswith(f"distractor_{i}") and len(d["xyz"]) == 3
+    assets = {asset for _name, asset, _pose, _scale, _material in _SpawnRecordingSim.spawns}
+    assert assets <= {"Cylinder", "Cube", "boulder_01"}, "short Unreal names, never a registry key or a package path"
+
+
+def test_a_collection_names_its_target_one_way_only(tmp_path):
+    # With a pool each episode's entry names it; without one --target-name does (M3). Both, or neither, is refused.
+    from autofly_ue5.collect.collector import collect
+    from autofly_ue5.dataset.raw import RawDatasetWriter
+    from tests.test_dataset_targets import primitive_pool
+
+    for target_pool, target_name in ((primitive_pool(tmp_path), "orange cylinder"), (None, None)):
+        scene, env = _env(tmp_path, target_pool=target_pool)
+        writer = RawDatasetWriter(tmp_path / "data", "pilot", scene=scene, provenance=PROVENANCE)
+        with pytest.raises(ValueError, match="target"):
+            collect(_StraightAtTargetModel(), env, scene=scene, writer=writer, seed_base=SEED_BASE, n_keep=1,
+                    target_name=target_name, max_attempts=1)
+        assert not (tmp_path / "data" / "pilot").exists()
+
+
+def test_the_pilot_cli_with_a_pool_lists_its_names_in_the_card_and_records_the_pool(tmp_path):
+    from tests.test_dataset_targets import SEEN_USABLE, primitive_pool, write_pool
+
+    path = write_pool(tmp_path / "pool" / "targets.json")
+    pool = primitive_pool(tmp_path / "pool")
+    record = _pilot(tmp_path, n_episodes=2, targets=path)
+    assert record["status"] == "ok" and record["validation"]["pass"], record["error"]
+    assert record["target_name"] is None and record["target_pool"] == pool.to_json("train")
+    root = tmp_path / "data" / "pilot"
+    manifest = json.loads((root / "manifest.json").read_text())
+    assert manifest["card"]["target_names"] == {name: "pool" for name in SEEN_USABLE}
+    for entry in manifest["episodes"]:
+        prov = json.loads((root / "provenance" / f"{entry['id']}.json").read_text())
+        assert prov["target_pool"] == pool.to_json("train") and prov["target"]["name"] == entry["target_name"]
+
+
+def test_the_pilot_cli_refuses_a_bad_pool_or_a_target_name_beside_one_before_launching_anything(tmp_path):
+    from scripts.collect_dataset import main
+    from tests.test_dataset_targets import primitive_pool_entries, write_pool
+
+    checkpoint = tmp_path / "model.zip"
+    checkpoint.write_bytes(b"x")
+    common = ["--model", str(checkpoint), "--scene-config", "scene_autofly_s01_fast.jsonc", "--name", "pilot",
+              "--data-root", str(tmp_path / "data"), "--out", str(tmp_path / "m3.json")]
+    small = write_pool(tmp_path / "small.json", [e for e in primitive_pool_entries() if e["name"] != "white box"])
+    good = write_pool(tmp_path / "good.json")
+    assert main([*common, "--targets", str(small)]) == 2, "five seen entries cannot fill a train episode"
+    assert main([*common, "--targets", str(tmp_path / "missing.json")]) == 2
+    assert main([*common, "--targets", str(good), "--target-name", "orange cylinder"]) == 2
+    assert not (tmp_path / "m3.json").exists() and not (tmp_path / "data").exists()

@@ -10,7 +10,9 @@ Failures, any one of which fails the dataset:
 - a kept episode that did not end at its target, or that is longer than the step limit;
 - an instruction that is not one of the release's templates filled with the episode's own target name and its scene's
   obstacle phrase (Plan 2's placeholder "the target" fails);
-- a provenance record missing a field spec §10.2 needs, or whose seed or simulator times differ from the record's.
+- a provenance record missing a field spec §10.2 needs, or whose seed, simulator times or target name differ from the
+  record's (with a target pool each episode names its own target, and the rebalancing detector queries the manifest's
+  name: plan 5 C5).
 
 A malformed episode (wrong shapes) is reported and its remaining checks skipped, never a crash of the validator.
 
@@ -138,6 +140,10 @@ def validate_dataset(root: Path, *, decode_every_frame: bool = True) -> dict:
                     failures.append(f"{eid}: provenance seed {prov['seed']} != the manifest's {entry['seed']}")
                 if [int(t) for t in prov["sim_time_ns"]] != times.tolist():
                     failures.append(f"{eid}: provenance simulator times differ from steps.npz")
+                if not isinstance(prov["target"], dict) or prov["target"].get("name") != entry["target_name"]:
+                    name = prov["target"].get("name") if isinstance(prov["target"], dict) else prov["target"]
+                    failures.append(f"{eid}: provenance target name {name!r} != the manifest's "
+                                    f"{entry['target_name']!r}")
         speeds.extend(state[:, 3].tolist())
         altitudes.extend(state[:, 8].tolist())
         forwards.extend(action[:, 0].tolist())

@@ -19,6 +19,7 @@ import gymnasium as gym
 import numpy as np
 from gymnasium import spaces
 
+from autofly_ue5.dataset.targets import TargetPool
 from autofly_ue5.expert.altitude_margin import AltitudeMarginPenalty
 from autofly_ue5.expert.episode import EpisodeSetup, a0_aligned, apply_setup, clear_setup, sample_setup
 from autofly_ue5.expert.footprint_contact import FootprintContactRule, footprint_obstacles
@@ -70,6 +71,11 @@ class AutoFlyEnv(gym.Env):
     the task's rule, scored by the gate; `footprint_contact_margin_m` widens it for a training run only. `registry`: the
     asset registry that decides which obstacles are meshes (default: read now); a trainer passes the one copy it read
     before claiming its run root, so its identity, record and workers cannot disagree about it.
+
+    `target_pool` (plan 5 C5, `autofly_ue5.dataset.targets`): the objects a collection's targets and distractors are,
+    handed to the sampler for every episode; the instruction then names the target. A collection-time choice: the
+    trainer and the gate pass none, so the expert keeps flying to the orange cylinder it learned on. A pool the scene's
+    split cannot draw from (fewer than six usable entries) is refused here, before anything launches.
     """
 
     metadata: dict[str, Any] = {"render_modes": []}
@@ -93,8 +99,12 @@ class AutoFlyEnv(gym.Env):
         static_contact_m: float = 0.0,
         footprint_contact_margin_m: float = 0.0,
         registry: AssetRegistry | None = None,
+        target_pool: TargetPool | None = None,
     ) -> None:
         super().__init__()
+        if target_pool is not None:
+            target_pool.for_split(scene.split)  # raises TargetPoolError for a split it cannot fill
+        self._target_pool = target_pool
         if not (math.isfinite(static_contact_m) and static_contact_m >= 0):
             raise ValueError(f"a static contact boundary must be a non-negative number of metres (0: physical contact "
                              f"only), got {static_contact_m}")
@@ -217,7 +227,9 @@ class AutoFlyEnv(gym.Env):
         else:
             rng = np.random.default_rng(self._seed_base + self._episode_index)
             self._episode_index += 1
-        setup = sample_setup(self._scene, self._layout, rng)
+        # Without a pool, M2's own call, argument for argument (the seed tests wrap sample_setup by that signature).
+        pool_kwargs = {"pool": self._target_pool} if self._target_pool is not None else {}
+        setup = sample_setup(self._scene, self._layout, rng, **pool_kwargs)
         a0 = (options or {}).get("a0")
         if a0 == "sector8":  # dataset collection only: AutoFly's coarse guidance, applied before recording (M3)
             setup = a0_aligned(setup)
@@ -469,6 +481,11 @@ class AutoFlyEnv(gym.Env):
             return None
         rule = FootprintContactRule(self._footprint_obstacles, training_margin_m=self._footprint_contact_margin_m)
         return {"footprint": rule.to_json()}
+
+    @property
+    def target_pool(self) -> TargetPool | None:
+        """The target pool every episode draws from (plan 5 C5), or None: the orange cylinder."""
+        return self._target_pool
 
     @property
     def setup(self) -> EpisodeSetup | None:

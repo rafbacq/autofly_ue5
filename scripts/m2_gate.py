@@ -52,6 +52,7 @@ import time  # noqa: E402
 import traceback  # noqa: E402
 from typing import Any, Callable  # noqa: E402
 
+from autofly_ue5.dataset.targets import TargetPool  # noqa: E402
 from autofly_ue5.evidence import default_evidence_path, record_destination, refuse_existing_evidence  # noqa: E402
 from autofly_ue5.expert.env import AutoFlyEnv  # noqa: E402
 from autofly_ue5.expert.evaluate import (  # noqa: E402
@@ -167,14 +168,16 @@ def _load_throughput_projection(instances_path: Path = INSTANCES_PATH) -> dict |
 # worker (no VecEnv needed: the gate steps a single environment sequentially, never in parallel).
 # --------------------------------------------------------------------------------------------------------
 def build_eval_env(scene: str, *, instance: int, sim_factory: Callable[[], Any], seed_base: int = EVAL_SEED_BASE,
-                   sim_root: Path = SIM_RUN_DIR, obs_config: ObsConfig | None = None) -> ResilientAutoFlyEnv:
+                   sim_root: Path = SIM_RUN_DIR, obs_config: ObsConfig | None = None,
+                   target_pool: TargetPool | None = None) -> ResilientAutoFlyEnv:
     # seed_base: every gate episode is an explicit reset(seed=...); the counter base only matters for a stray
-    # seed=None reset, which then still draws from the gate's own range.
+    # seed=None reset, which then still draws from the gate's own range. target_pool: the collector's (plan 5 C5,
+    # scripts/collect_dataset.py --targets); the gate passes none and scores the orange cylinder.
     resolved = resolve_scene(scene)
     scene_file, layout, map_path = resolved.scene, resolved.layout, resolved.map_path
     route_client_log(instance_dir(instance, sim_root) / "client.log")
     base = AutoFlyEnv(scene_file, layout, sim_factory, map_path=map_path, instance=instance, seed_base=seed_base,
-                      obs_config=obs_config)
+                      obs_config=obs_config, target_pool=target_pool)
     return ResilientAutoFlyEnv(base, instance=instance, sim_root=sim_root)
 
 

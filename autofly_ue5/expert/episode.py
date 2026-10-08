@@ -11,6 +11,10 @@ The scene's start/target bands are measured as distance to the NEAREST of the fo
 independently from their rings can therefore land on the same side of the scene and produce a one-metre
 "episode". This module avoids that by drawing an edge first (for both start and target, with the target
 forced to the opposite edge) and then a position along that specific edge's band -- see `_sample_band_point`.
+
+With a target pool (plan 5 C5, `autofly_ue5.dataset.targets`), the target and distractors are the pool's objects and the
+instruction names the target. The pool is drawn after every other draw, so the positions, the start and the movers of a
+seed are the same with or without one, and without one nothing changes at all (tests/test_static_s01_golden.py).
 """
 
 from __future__ import annotations
@@ -18,14 +22,18 @@ from __future__ import annotations
 import dataclasses
 import math
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 import numpy as np
 
 from autofly_ue5.expert.reward import RewardConfig
-from autofly_ue5.scenes.model import Bounds, Instance, Layout, SceneFile, load_registry
+from autofly_ue5.scenes.model import AssetEntry, Bounds, Instance, Layout, SceneFile, load_registry
 from autofly_ue5.scenes.motion import MoverRoute, sample_movers
 from autofly_ue5.sim.protocol import Simulator
 from autofly_ue5.sim.types import ObjectNotFoundError, Pose
+
+if TYPE_CHECKING:  # dataset/targets.py imports this module (RUNTIME_SPAWNABLE_MATERIAL_KINDS); the sampler only duck-types
+    from autofly_ue5.dataset.targets import TargetEntry, TargetPool
 
 EDGES = ("x_min", "x_max", "y_min", "y_max")
 OPPOSITE = {"x_min": "x_max", "x_max": "x_min", "y_min": "y_max", "y_max": "y_min"}
@@ -69,6 +77,8 @@ START_KEEPOUT_M = 8.0
 
 # Target/distractor reference height: the object's centre sits 1 m above the ground (NED z = -1.0), and a
 # scale of (1, 1, 2) stands a 2 m-tall cylinder on the ground given the registry's 1 m unit-scale cylinder.
+# It is also the privileged target position the expert flies to (its observation holds the height difference,
+# expert/obs.py), so a pool's object keeps it in the setup and only its spawn pose stands it on the ground.
 TARGET_Z_NED = -1.0
 TARGET_SCALE = (1.0, 1.0, 2.0)
 
@@ -107,6 +117,10 @@ class EpisodeSetup:
     # A dynamic scene's movers and how they were placed (spec §6.5); empty for a static scene.
     movers: tuple[MoverRoute, ...] = ()
     mover_stats: dict | None = None
+    # The target pool's draws (plan 5 C5): the target's entry and one entry per distractor position, in order. Empty
+    # without a pool: the orange cylinder and unpainted cylinders, as M2 and M3 flew.
+    target: TargetEntry | None = None
+    distractor_entries: tuple[TargetEntry, ...] = ()
 
 
 def _nearest_obstacle_gap(x: float, y: float, instances: tuple[Instance, ...]) -> float:
@@ -190,13 +204,20 @@ def _place_with_clearance(
 
 def sample_setup(
     scene: SceneFile, layout: Layout, rng: np.random.Generator, *, n_distractors_range: tuple[int, int] = N_DISTRACTORS_DEFAULT,
+    pool: TargetPool | None = None,
 ) -> EpisodeSetup:
     """Draw a full episode setup for one seed.
 
     Fixed draw order so a seed reproduces exactly: start edge -> start position -> start altitude ->
     start yaw -> target position on the opposite edge -> distractor count -> distractor positions ->
-    instruction template -> (dynamic scenes only) movers. The movers come last so a static scene's episodes, which
-    the M2 gate and its replays depend on, are drawn exactly as before.
+    instruction template -> (dynamic scenes only) movers -> (with a target pool only) the target's entry -> the
+    distractors' entries. The movers come after every static draw so a static scene's episodes, which the M2 gate and
+    its replays depend on, are drawn exactly as before; the pool comes after the movers for the same reason (plan 5 C5).
+
+    The pool's draws, pinned (tests/test_expert_episode.py): `rest` is the split's usable entries in file order
+    (`pool.for_split(scene.split)`); step 10 is `target = rest.pop(int(rng.integers(len(rest))))`, and step 11, for each
+    distractor position already drawn in order, `rest.pop(int(rng.integers(len(rest))))`. One integer per object, no
+    `rng.choice` (whose without-replacement algorithm is numpy's to change), and never an entry twice.
     """
     bounds = layout.bounds
     clearance = spawn_clearance_m()
@@ -255,9 +276,9 @@ def sample_setup(
 
     # 8: instruction template.
     template = str(INSTRUCTION_TEMPLATES[int(rng.integers(len(INSTRUCTION_TEMPLATES)))])
-    # Decision D1: until M4 supplies the 60-target name pool, every episode names the same literal
-    # target, so the instruction reads "...to reach the target". M4 replaces this with a real name drawn
-    # from the split-appropriate pool.
+    # Decision D1: without a target pool every episode names the same literal target, so the instruction reads
+    # "...to reach the target" (the collector's no-pool path substitutes its --target-name). With a pool, step 10
+    # below fills the same template with the drawn target's name.
     instruction = template.format(target="target", obstacle=scene.instruction_obstacle)
 
     # 9: movers (spec §6.5), after every draw above.
@@ -271,12 +292,26 @@ def sample_setup(
         )
         movers, mover_stats = sample.routes, sample.stats
 
+    # 10-11: the target pool (plan 5 C5), after every draw above; see the docstring for the pinned form.
+    target_entry: TargetEntry | None = None
+    distractor_entries: tuple[TargetEntry, ...] = ()
+    target_scale = TARGET_SCALE
+    if pool is not None:
+        rest = list(pool.for_split(scene.split))
+        if len(rest) < 1 + len(distractors):
+            raise ValueError(f"the target pool has {len(rest)} usable entries for split {scene.split!r}: too few for a "
+                             f"target and {len(distractors)} distractor entries without replacement")
+        target_entry = rest.pop(int(rng.integers(len(rest))))  # 10
+        distractor_entries = tuple(rest.pop(int(rng.integers(len(rest)))) for _ in distractors)  # 11
+        target_scale = target_entry.scale
+        instruction = template.format(target=target_entry.name, obstacle=scene.instruction_obstacle)
+
     return EpisodeSetup(
         scene_id=scene.id,  # s01d flies s01's layout but its episodes are s01d's
         seed=layout.seed,
         start=start,
         target_xy_z=target_xy_z,
-        target_scale=TARGET_SCALE,
+        target_scale=target_scale,
         distractors=tuple(distractors),
         instruction=instruction,
         start_edge=start_edge,
@@ -284,6 +319,8 @@ def sample_setup(
         obstacle_material=scene.obstacle_groups[0].palette[0],
         movers=movers,
         mover_stats=mover_stats,
+        target=target_entry,
+        distractor_entries=distractor_entries,
     )
 
 
@@ -336,11 +373,36 @@ def _runtime_material_path(registry, name: str | None) -> str | None:
     return entry.ue_path if entry.kind in RUNTIME_SPAWNABLE_MATERIAL_KINDS else None
 
 
+def standing_z_ned(asset: AssetEntry, scale: tuple[float, float, float]) -> float:
+    """The spawn z (NED) that stands `asset` at `scale` on the ground (plan 5 C5): an engine primitive's pivot is its
+    centre, so the centre goes up half the scaled height; an imported model stands on its own origin. For the registry's
+    1 m cylinder at (1, 1, 2) this is TARGET_Z_NED, the pool-free target's height."""
+    if asset.pivot == "center":
+        return -asset.base_size_m[2] * scale[2] / 2.0
+    if asset.pivot == "base":
+        return 0.0
+    raise ValueError(f"asset {asset.name!r} has pivot {asset.pivot!r}; only 'center' and 'base' stand on the ground")
+
+
+def _entry_spec(entry: TargetEntry, registry) -> dict:
+    """One pool object as spawned, by registry key: the material only when the runtime applies it (else None, the mesh's
+    own; `_runtime_material_path`), and the spawn height."""
+    return {"asset": entry.asset,
+            "material": entry.material if _runtime_material_path(registry, entry.material) is not None else None,
+            "scale": list(entry.scale), "z_ned": standing_z_ned(registry.assets[entry.asset], entry.scale)}
+
+
 def spawn_spec(setup: EpisodeSetup) -> dict:
     """What apply_setup() spawns, by registry key: one asset for all, the target's material, and the distractors'
     (None when the obstacle material cannot be applied at runtime, leaving the mesh's default; see below). The
-    collector records it as provenance (spec §10.2)."""
+    collector records it as provenance (spec §10.2).
+
+    With a target pool (plan 5 C5) every object is its own entry: {"target": {asset, material, scale, z_ned},
+    "distractors": [the same per distractor]}, the material None where the mesh keeps its own."""
     registry = load_registry()
+    if setup.target is not None:
+        return {"target": _entry_spec(setup.target, registry),
+                "distractors": [_entry_spec(entry, registry) for entry in setup.distractor_entries]}
     if "orange" in registry.materials:
         target_material_name: str | None = "orange"
     else:
@@ -373,6 +435,10 @@ def apply_setup(sim: Simulator, setup: EpisodeSetup) -> tuple[str, ...]:
     string that is not a real package path) but succeed silently against `FakeSimulator`, which is why
     `FakeSimulator.spawn()` now enforces the same contract `spawn()`'s docstring always documented.
 
+    With a target pool (plan 5 C5) the target and each distractor are spawned from their own entries instead: the entry's
+    asset by its short name, standing on the ground at the sampled position (`standing_z_ned`), at the entry's scale,
+    painted with the entry's material only when it is a base UMaterial (`_runtime_material_path`), else the mesh's own.
+
     If a `spawn` partway through the loop raises, whatever was already spawned is torn down before the
     error propagates. This matters because the real backend's `spawn()` can raise AFTER the actor already
     exists server-side (WorldSimApi creates the object, then raises if `set_object_material` fails on it),
@@ -383,19 +449,29 @@ def apply_setup(sim: Simulator, setup: EpisodeSetup) -> tuple[str, ...]:
     number of episodes would otherwise leak forever.
     """
     registry = load_registry()
-    spec = spawn_spec(setup)
-    target_material = _runtime_material_path(registry, spec["target_material"])
-    obstacle_material = _runtime_material_path(registry, setup.obstacle_material)
-    asset_name = _spawn_asset_name(registry.assets[spec["asset"]].ue_path)
+    tx, ty, tz = setup.target_xy_z
+    if setup.target is not None:
+        # Every call resolved before the first spawn: a bad entry raises with nothing to tear down.
+        calls = [("target", setup.target, (tx, ty))] + [
+            (f"distractor_{i}", entry, (dx, dy))
+            for i, (entry, (dx, dy, _dz)) in enumerate(zip(setup.distractor_entries, setup.distractors, strict=True))]
+        spawns = [(name, _spawn_asset_name(registry.assets[entry.asset].ue_path),
+                   Pose(x=x, y=y, z=standing_z_ned(registry.assets[entry.asset], entry.scale), yaw=0.0), entry.scale,
+                   _runtime_material_path(registry, entry.material))
+                  for name, entry, (x, y) in calls]
+    else:
+        spec = spawn_spec(setup)
+        target_material = _runtime_material_path(registry, spec["target_material"])
+        obstacle_material = _runtime_material_path(registry, setup.obstacle_material)
+        asset_name = _spawn_asset_name(registry.assets[spec["asset"]].ue_path)
+        spawns = [("target", asset_name, Pose(x=tx, y=ty, z=tz, yaw=0.0), setup.target_scale, target_material)] + [
+            (f"distractor_{i}", asset_name, Pose(x=dx, y=dy, z=dz, yaw=0.0), setup.target_scale, obstacle_material)
+            for i, (dx, dy, dz) in enumerate(setup.distractors)]
 
     names: list[str] = []
     try:
-        tx, ty, tz = setup.target_xy_z
-        names.append(sim.spawn("target", asset_name, Pose(x=tx, y=ty, z=tz, yaw=0.0), setup.target_scale, target_material))
-        for i, (dx, dy, dz) in enumerate(setup.distractors):
-            names.append(
-                sim.spawn(f"distractor_{i}", asset_name, Pose(x=dx, y=dy, z=dz, yaw=0.0), setup.target_scale, obstacle_material)
-            )
+        for name, asset_name, pose, scale, material in spawns:
+            names.append(sim.spawn(name, asset_name, pose, scale, material))
     except Exception:
         clear_setup(sim, tuple(names))
         raise

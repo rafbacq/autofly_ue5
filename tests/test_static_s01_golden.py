@@ -111,14 +111,14 @@ def _scripted_action(env, rng: np.random.Generator, noise: float) -> np.ndarray:
     return np.array([v, yaw_rate, float(rng.uniform(-0.3, 0.3))], dtype=np.float32)
 
 
-def _flight_record(seed: int, pillars: bool, noise: float) -> dict:
+def _flight_record(seed: int, pillars: bool, noise: float, **env_kwargs) -> dict:
     from autofly_ue5.expert.env import AutoFlyEnv
 
     scene, layout = _scene_and_layout()
     TracingSimulator.trace = []
     # The real pillars, inflated by the rotor-tip half-span, so the fake registers pillar hits.
     TracingSimulator.obstacles = [(inst.x, inst.y, inst.radius_m + 0.47) for inst in layout.instances] if pillars else []
-    env = AutoFlyEnv(scene, layout, TracingSimulator, map_path="/Game/AutoFly/Maps/S01", instance=0)
+    env = AutoFlyEnv(scene, layout, TracingSimulator, map_path="/Game/AutoFly/Maps/S01", instance=0, **env_kwargs)
     rng = np.random.default_rng(seed + 7)
     obs, info = env.reset(seed=seed)
     steps = [{"obs": _obs_digest(obs), "info": json.loads(json.dumps(info))}]
@@ -207,6 +207,24 @@ def test_scripted_flights_make_the_same_calls_and_score_the_same():
                 assert g.get(key) == e.get(key), f"{where}: {key} changed"
             assert {k: g["info"].get(k) for k in e["info"]} == e["info"], f"{where}: an info value changed"
             assert set(e["info"]) <= set(g["info"]), f"{where}: info keys may only gain additions"
+
+
+def test_an_explicit_absent_target_pool_is_still_m2_s_s01():
+    # Plan 5 C5: the target pool is a collection-time choice the trainer and the gate never make. Saying so explicitly,
+    # to the sampler and to the env, must draw the same episodes and make the same simulator calls as M2's s01.
+    from autofly_ue5.expert.episode import sample_setup
+
+    scene, layout = _scene_and_layout()
+    golden = _golden()
+    for seed, expected in golden["setups"].items():
+        got = _setup_record(sample_setup(scene, layout, np.random.default_rng(int(seed)), pool=None))
+        assert {k: got[k] for k in expected} == expected, f"seed {seed}"
+        assert got["target"] is None and got["distractor_entries"] == []
+    for expected in golden["flights"]:
+        got = _flight_record(expected["seed"], expected["pillars"], expected["noise"], target_pool=None)
+        assert got["trace"] == expected["trace"], f"seed {expected['seed']}: the simulator call sequence changed"
+        assert [g["obs"] for g in got["steps"]] == [e["obs"] for e in expected["steps"]]
+        assert [g.get("reward") for g in got["steps"]] == [e.get("reward") for e in expected["steps"]]
 
 
 def test_the_scripted_flights_reach_real_outcomes():

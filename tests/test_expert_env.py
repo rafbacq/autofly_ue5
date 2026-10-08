@@ -302,3 +302,68 @@ def test_the_collector_s_a0_option_starts_the_episode_facing_the_target_s_sector
     assert abs(math.remainder(env.setup.start.yaw, math.pi / 4)) < 1e-9
     with pytest.raises(ValueError, match="a0"):
         env.reset(seed=11, options={"a0": "sideways"})
+
+
+# --------------------------------------------------------------------------------------------------------
+# The target pool (plan 5 C5): the env hands it to the sampler; a collection-time choice, never the trainer's.
+# --------------------------------------------------------------------------------------------------------
+def test_a_target_pool_reaches_every_episode_and_spawns_its_entries(tmp_path):
+    from autofly_ue5.expert.episode import _spawn_asset_name, sample_setup
+    from autofly_ue5.scenes.model import load_registry
+    from tests.test_dataset_targets import primitive_pool
+
+    pool = primitive_pool(tmp_path)
+    env = make_env(target_pool=pool)
+    scene, layout = scene_and_layout()
+    registry = load_registry()
+    assert env.target_pool is pool and make_env().target_pool is None
+    for seed in (3, 4, 5):
+        env.reset(seed=seed)
+        assert env.setup == sample_setup(scene, layout, np.random.default_rng(seed), pool=pool)
+        objects = env._sim._objects
+        for name, entry in zip(env.spawned, (env.setup.target, *env.setup.distractor_entries), strict=True):
+            assert objects[name][0] == _spawn_asset_name(registry.assets[entry.asset].ue_path)
+            assert objects[name][2] == entry.scale
+        assert len(objects) == len(env.spawned), "the last episode's objects were destroyed"
+
+
+def test_the_env_refuses_a_pool_its_scene_s_split_cannot_draw_from_before_launching(tmp_path):
+    from autofly_ue5.dataset.targets import TargetPool, TargetPoolError
+    from tests.test_dataset_targets import primitive_pool_entries, write_pool
+
+    entries = [e for e in primitive_pool_entries() if e["name"] != "white box"]  # five seen usable entries
+    pool = TargetPool.load(write_pool(tmp_path / "targets.json", entries))
+    launched = []
+
+    class _Sim(FakeSimulator):
+        def launch(self, map_path, instance):
+            launched.append(instance)
+            super().launch(map_path, instance)
+
+    from autofly_ue5.expert.env import AutoFlyEnv
+
+    scene, layout = scene_and_layout()
+    with pytest.raises(TargetPoolError, match="6"):
+        AutoFlyEnv(scene, layout, _Sim, map_path="/Game/AutoFly/Maps/S01", instance=0, target_pool=pool)
+    assert not launched
+
+
+def test_the_vec_env_and_the_gate_s_env_hand_a_pool_through_and_default_to_none(tmp_path):
+    from autofly_ue5.expert.vec import make_vec_env
+    from scripts.m2_gate import build_eval_env
+    from tests.test_dataset_targets import primitive_pool
+
+    pool = primitive_pool(tmp_path)
+    scene, layout = scene_and_layout()
+    for kwargs, expected in (({}, None), ({"target_pool": pool}, pool)):
+        vec = make_vec_env(scene, layout, 1, map_path="/x", monitor_dir=tmp_path / "mon", sim_factory=FakeSimulator,
+                           sim_root=tmp_path / "sim", launch=False, **kwargs)
+        try:
+            assert vec.envs[0].unwrapped.target_pool is expected
+        finally:
+            vec.close()
+        env = build_eval_env("s01", instance=4, sim_factory=FakeSimulator, sim_root=tmp_path / "sim", **kwargs)
+        try:
+            assert env.unwrapped.target_pool is expected
+        finally:
+            env.close()

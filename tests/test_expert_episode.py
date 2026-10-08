@@ -345,3 +345,200 @@ def test_a0_aligns_the_start_to_the_target_s_8_sector_bearing_and_nothing_else()
         assert abs(off) <= math.radians(22.5) + 1e-9
         assert round(aligned.start.yaw / (math.pi / 4)) * (math.pi / 4) == pytest.approx(aligned.start.yaw)
         assert dataclasses.replace(aligned, start=setup.start) == setup
+
+
+# --------------------------------------------------------------------------------------------------------
+# The target pool (plan 5 C5, "Design (2026-10-08)"): drawn after every existing draw, spawned from its entries.
+# --------------------------------------------------------------------------------------------------------
+def _template_of(instruction: str, target: str, obstacle: str) -> str:
+    from autofly_ue5.expert.episode import INSTRUCTION_TEMPLATES
+
+    (template,) = [t for t in INSTRUCTION_TEMPLATES if t.format(target=target, obstacle=obstacle) == instruction]
+    return template
+
+
+def test_without_a_pool_the_setup_is_drawn_exactly_as_before():
+    from autofly_ue5.expert.episode import sample_setup
+
+    scene, layout = scene_and_layout()
+    for seed in range(20):
+        plain = sample_setup(scene, layout, np.random.default_rng(seed))
+        explicit = sample_setup(scene, layout, np.random.default_rng(seed), pool=None)
+        assert explicit == plain and explicit.target is None and explicit.distractor_entries == ()
+        _template_of(plain.instruction, "target", scene.instruction_obstacle)  # Plan 2's placeholder name, as before
+
+
+def test_a_pool_changes_no_earlier_draw_and_the_instruction_names_the_drawn_target(tmp_path):
+    import dataclasses
+
+    from autofly_ue5.expert.episode import sample_setup
+    from tests.test_dataset_targets import primitive_pool
+
+    scene, layout = scene_and_layout()
+    pool = primitive_pool(tmp_path)
+    for seed in range(30):
+        plain = sample_setup(scene, layout, np.random.default_rng(seed))
+        drawn = sample_setup(scene, layout, np.random.default_rng(seed), pool=pool)
+        assert dataclasses.replace(drawn, target=None, distractor_entries=(), instruction=plain.instruction,
+                                   target_scale=plain.target_scale) == plain, f"seed {seed}: an earlier draw moved"
+        assert drawn.target in pool.for_split("train") and drawn.target_scale == drawn.target.scale
+        assert len(drawn.distractor_entries) == len(drawn.distractors)
+        names = [drawn.target.name] + [e.name for e in drawn.distractor_entries]
+        assert len(set(names)) == len(names), "distractors are drawn without replacement, never the target"
+        template = _template_of(plain.instruction, "target", scene.instruction_obstacle)
+        assert drawn.instruction == template.format(target=drawn.target.name, obstacle=scene.instruction_obstacle)
+
+
+def test_the_pool_s_draws_are_pinned_the_target_then_one_entry_per_distractor_position(tmp_path):
+    # Step 10: the target, uniform over the split's usable entries in file order. Step 11: for each distractor position
+    # already drawn, in order, one of the remaining entries, uniform, removed from the rest. Both by rng.integers, after
+    # every draw a pool-free setup makes from the same stream.
+    from autofly_ue5.expert.episode import sample_setup
+    from tests.test_dataset_targets import primitive_pool
+
+    scene, layout = scene_and_layout()
+    pool = primitive_pool(tmp_path)
+    for seed in (0, 1, 7, 400_000_000, 100_000_061):
+        rng = np.random.default_rng(seed)
+        plain = sample_setup(scene, layout, rng)
+        rest = list(pool.for_split(scene.split))
+        target = rest.pop(int(rng.integers(len(rest))))
+        expected = tuple(rest.pop(int(rng.integers(len(rest)))) for _ in plain.distractors)
+        drawn = sample_setup(scene, layout, np.random.default_rng(seed), pool=pool)
+        assert drawn.target == target and drawn.distractor_entries == expected, f"seed {seed}"
+
+
+def test_a_train_scene_draws_every_seen_entry_and_never_an_unseen_one(tmp_path):
+    import dataclasses
+
+    from autofly_ue5.expert.episode import sample_setup
+    from tests.test_dataset_targets import SEEN_USABLE, primitive_pool
+
+    scene, layout = scene_and_layout()
+    pool = primitive_pool(tmp_path)
+    targets = set()
+    for seed in range(120):
+        setup = sample_setup(scene, layout, np.random.default_rng(seed), pool=pool)
+        targets.add(setup.target.name)
+        assert all(e.seen for e in (setup.target, *setup.distractor_entries))
+    assert targets == set(SEEN_USABLE)
+    unseen_scene = dataclasses.replace(scene, split="test_unseen")
+    drawn = set()
+    for seed in range(120):
+        setup = sample_setup(unseen_scene, layout, np.random.default_rng(seed), pool=pool)
+        drawn |= {e.name for e in (setup.target, *setup.distractor_entries)}
+    assert "orange slab" in drawn, "a test_unseen scene draws from the seen and the unseen entries"
+
+
+def test_a_pool_too_small_for_the_distractor_positions_is_refused(tmp_path):
+    from autofly_ue5.expert.episode import sample_setup
+    from tests.test_dataset_targets import primitive_pool
+
+    scene, layout = scene_and_layout()
+    pool = primitive_pool(tmp_path)  # six seen usable entries: a target and five distractors at most
+    with pytest.raises(ValueError, match="distractor"):
+        sample_setup(scene, layout, np.random.default_rng(0), pool=pool, n_distractors_range=(6, 6))
+    assert len(sample_setup(scene, layout, np.random.default_rng(0), pool=pool,
+                            n_distractors_range=(5, 5)).distractor_entries) == 5
+
+
+def _pool_setup(tmp_path, target: str, distractors: tuple[str, ...], seed: int = 3):
+    import dataclasses
+
+    from autofly_ue5.expert.episode import sample_setup
+    from tests.test_dataset_targets import primitive_pool
+
+    scene, layout = scene_and_layout()
+    pool = primitive_pool(tmp_path)
+    by_name = {e.name: e for e in pool.entries}
+    setup = sample_setup(scene, layout, np.random.default_rng(seed), pool=pool)
+    return dataclasses.replace(setup, target=by_name[target], target_scale=by_name[target].scale,
+                               distractor_entries=tuple(by_name[n] for n in distractors[:len(setup.distractors)]))
+
+
+class _RecordingSim(FakeSimulator):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.spawn_calls = []
+
+    def spawn(self, name, asset, pose, scale, material=None):
+        self.spawn_calls.append((name, asset, pose, tuple(scale), material))
+        return super().spawn(name, asset, pose, scale, material)
+
+
+def _spawned(setup):
+    from autofly_ue5.expert.episode import apply_setup
+
+    sim = _RecordingSim()
+    sim.launch("/Game/AutoFly/Maps/S01", 0)
+    sim.reset(setup.start)
+    names = apply_setup(sim, setup)
+    return names, sim
+
+
+def test_apply_setup_stands_each_pool_entry_on_the_ground_by_its_short_name_scale_and_material(tmp_path):
+    # Centre pivot: the centre at half the scaled height (z = -h s_z / 2, NED); base pivot: z = 0. The entry's material
+    # only when it is a base UMaterial; none keeps the mesh's own.
+    setup = _pool_setup(tmp_path, "grey boulder", ("orange cylinder", "grid pole", "white box", "orange cube", "grid cube"))
+    names, sim = _spawned(setup)
+    expected = {
+        "grey boulder": ("boulder_01", 0.0, None),
+        "orange cylinder": ("Cylinder", -1.0, "/Game/Geometry/Materials/M_Orange"),
+        "grid pole": ("Cylinder", -1.5, "/Engine/EngineMaterials/WorldGridMaterial"),
+        "white box": ("Cube", -0.5, None),
+        "orange cube": ("Cube", -0.6, "/Game/Geometry/Materials/M_Orange"),
+        "grid cube": ("Cube", -0.75, "/Engine/EngineMaterials/WorldGridMaterial"),
+    }
+    entries = (setup.target, *setup.distractor_entries)
+    positions = (setup.target_xy_z, *setup.distractors)
+    assert len(names) == len(sim.spawn_calls) == len(entries) == 1 + len(setup.distractors)
+    for i, (call, entry, xyz) in enumerate(zip(sim.spawn_calls, entries, positions)):
+        name, asset, pose, scale, material = call
+        exp_asset, exp_z, exp_material = expected[entry.name]
+        assert name == ("target" if i == 0 else f"distractor_{i - 1}")
+        assert asset == exp_asset and "/" not in asset
+        assert (pose.x, pose.y, pose.yaw) == (xyz[0], xyz[1], 0.0) and pose.z == pytest.approx(exp_z)
+        assert scale == entry.scale and material == exp_material
+
+
+def test_the_privileged_target_position_the_expert_flies_to_does_not_follow_the_entry(tmp_path):
+    # The expert's vector observation holds the target's height difference (expert/obs.py), so the setup keeps the
+    # cylinder's centre height whatever stands there; only the spawn pose stands the entry on the ground.
+    from autofly_ue5.expert.episode import TARGET_Z_NED
+
+    setup = _pool_setup(tmp_path, "grey boulder", ("orange cylinder", "grid pole", "white box", "orange cube", "grid cube"))
+    assert setup.target_xy_z[2] == TARGET_Z_NED and all(d[2] == TARGET_Z_NED for d in setup.distractors)
+
+
+def test_the_orange_cylinder_from_a_pool_spawns_exactly_as_the_pool_free_target(tmp_path):
+    from autofly_ue5.expert.episode import sample_setup
+
+    scene, layout = scene_and_layout()
+    plain = sample_setup(scene, layout, np.random.default_rng(3))
+    pooled = _pool_setup(tmp_path, "orange cylinder", ("grid pole", "white box", "orange cube", "grid cube", "grey boulder"))
+    _names, plain_sim = _spawned(plain)
+    _names, pooled_sim = _spawned(pooled)
+    assert pooled_sim.spawn_calls[0] == plain_sim.spawn_calls[0]
+
+
+def test_an_entry_whose_material_the_runtime_cannot_apply_spawns_with_the_mesh_s_own(tmp_path):
+    # The pool's loader refuses such an entry; the spawner keeps the runtime's rule on its own all the same.
+    import dataclasses
+
+    setup = _pool_setup(tmp_path, "orange cube", ("grid pole", "white box", "orange cylinder", "grid cube", "grey boulder"))
+    setup = dataclasses.replace(setup, target=dataclasses.replace(setup.target, material="red"))
+    _names, sim = _spawned(setup)
+    assert sim.spawn_calls[0][4] is None
+
+
+def test_spawn_spec_describes_each_pool_entry_by_registry_key(tmp_path):
+    from autofly_ue5.expert.episode import spawn_spec
+
+    setup = _pool_setup(tmp_path, "grey boulder", ("orange cylinder", "white box", "grid pole", "orange cube", "grid cube"))
+    spec = spawn_spec(setup)
+    assert spec["target"] == {"asset": "boulder_01", "material": None, "scale": [1.5, 1.5, 1.5], "z_ned": 0.0}
+    assert spec["distractors"][:2] == [
+        {"asset": "cylinder", "material": "orange", "scale": [1.0, 1.0, 2.0], "z_ned": -1.0},
+        {"asset": "crate", "material": None, "scale": [2.0, 1.0, 1.0], "z_ned": -0.5},
+    ]
+    assert len(spec["distractors"]) == len(setup.distractors)

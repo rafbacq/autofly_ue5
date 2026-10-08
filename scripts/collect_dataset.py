@@ -10,6 +10,9 @@ is recorded as M3's gate.
 - Seeds come from `--seed-slice` k of the collection range (400e6 + k * 1e6), disjoint from training, evaluation, the
   gate and the probes. One slice per (scene, collection run); 99 is for smokes and diagnostics.
 - Stochastic by default (spec §9 step 5; docs/decisions/2026-10-02-m2-closeout.md); `--deterministic` for comparison.
+- `--targets assets/targets.json` (plan 5 C5): each episode's target and distractors are drawn from the scene split's
+  pool and the instruction names the target; the card lists the pool's names with status "pool". Without it, M3's way:
+  the orange cylinder under `--target-name` (default "orange cylinder", a placeholder in the card). Not both.
 - The gate record (default docs/gates/m3_gate.json, never written over) passes when the requested episodes were kept,
   the validator passes, and the engine-fault audit is clean. The TFDS read-back is recorded next to it.
 
@@ -35,9 +38,10 @@ import traceback  # noqa: E402
 from typing import Any, Callable  # noqa: E402
 
 from autofly_ue5 import evidence  # noqa: E402
-from autofly_ue5.collect.collector import collect  # noqa: E402
+from autofly_ue5.collect.collector import POOL_NAME_STATUS, collect  # noqa: E402
 from autofly_ue5.dataset.raw import RawDatasetWriter  # noqa: E402
 from autofly_ue5.dataset.rlds import VERSION, export_rlds  # noqa: E402
+from autofly_ue5.dataset.targets import TargetPool  # noqa: E402
 from autofly_ue5.expert.reward import REWARD_VERSION  # noqa: E402
 from autofly_ue5.expert.seeds import COLLECTION_SEED_BASE, collection_seed_base  # noqa: E402
 from autofly_ue5.expert.train import sha256_of  # noqa: E402
@@ -101,15 +105,22 @@ def _write_exclusive(destination: Path, record: dict) -> Path:
 
 def run(*, scene: str, model_path: Path, scene_config: str, name: str, n_episodes: int, instance: int, out_path: Path,
         data_root: Path, deterministic: bool = False, max_attempts: int | None = None,
-        target_name: str = DEFAULT_TARGET_NAME, seed_base: int = COLLECTION_SEED_BASE, check_python: Path | None = None,
-        device: str = "auto", sim_factory: Callable[[], Any] | None = None, load_model: Callable[[Path], Any] | None = None,
-        obs_config_reader: Callable[[Path], Any] | None = None, sim_root: Path = SIM_RUN_DIR,
-        platform: dict | None = None) -> dict[str, Any]:
+        target_name: str | None = None, targets: Path | None = None, seed_base: int = COLLECTION_SEED_BASE,
+        check_python: Path | None = None, device: str = "auto", sim_factory: Callable[[], Any] | None = None,
+        load_model: Callable[[Path], Any] | None = None, obs_config_reader: Callable[[Path], Any] | None = None,
+        sim_root: Path = SIM_RUN_DIR, platform: dict | None = None) -> dict[str, Any]:
     run_started = time.strftime("%Y-%m-%d %H:%M:%S")
     run_start_epoch = time.time()
     xid_before = xid_count(run_started)
     boot_before = boot_id()
     resolved = resolve_scene(scene)
+    # The target pool (plan 5 C5), read and checked against the scene's split before anything is claimed or launched.
+    pool = TargetPool.load(targets) if targets is not None else None
+    if pool is not None and target_name is not None:
+        raise ValueError("--target-name is the pool-free fallback; with --targets each episode's entry names its target")
+    if pool is None and target_name is None:
+        target_name = DEFAULT_TARGET_NAME
+    pool_record = pool.to_json(resolved.scene.split) if pool is not None else None
     sim_factory = sim_factory or scene_config_factory(scene_config, resolved.movable_objects, run_root=sim_root)
     load_model = load_model or (lambda p: default_sac_loader(p, device=device))
     obs_config = (obs_config_reader or checkpoint_obs_config)(model_path)
@@ -131,23 +142,28 @@ def run(*, scene: str, model_path: Path, scene_config: str, name: str, n_episode
                   "collector_tree_dirty": record["collector_tree_dirty"], "reward_version": REWARD_VERSION,
                   "dataset": name}
     record["platform"] = provenance["platform"]
+    if pool_record is not None:  # only with a pool: a pool-free pilot's record and provenance are M3's, key for key
+        record["target_pool"] = provenance["target_pool"] = pool_record
+        card = {"target_names": {pool_name: POOL_NAME_STATUS for pool_name in pool_record["names"]}}
+    else:
+        card = {"target_names": {target_name: TARGET_NAME_STATUS}}
     swept = sweep_orphaned_instances(sim_root)  # a crashed earlier run's simulators; never a live run's
     if swept:
         print(f"swept orphaned instances before starting: {swept}", file=sys.stderr)
     env = writer = None
     progress: dict[str, Any] = {}  # collect()'s live counts: they survive an exception partway (the M3 review)
     try:
-        writer = RawDatasetWriter(data_root, name, scene=resolved.scene, provenance=provenance,
-                                  card={"target_names": {target_name: TARGET_NAME_STATUS}})
+        writer = RawDatasetWriter(data_root, name, scene=resolved.scene, provenance=provenance, card=card)
         model = load_model(model_path)
         env = build_eval_env(scene, instance=instance, sim_factory=sim_factory, seed_base=seed_base, sim_root=sim_root,
-                             obs_config=obs_config)
+                             obs_config=obs_config, target_pool=pool)
         t0 = time.monotonic()
         before = env.get_fault_summary()
         try:
             collect(model, env, scene=resolved.scene, writer=writer, seed_base=seed_base, n_keep=n_episodes,
                     target_name=target_name, deterministic=deterministic, max_attempts=max_attempts,
-                    layout_sha256=resolved.layout_sha256, progress=progress, target_name_status=TARGET_NAME_STATUS)
+                    layout_sha256=resolved.layout_sha256, progress=progress,
+                    target_name_status=TARGET_NAME_STATUS if pool is None else None)
         finally:
             progress["wall_s"] = round(time.monotonic() - t0, 1)
             try:
@@ -219,7 +235,11 @@ def build_arg_parser() -> argparse.ArgumentParser:
     p.add_argument("--sim-root", type=Path, default=SIM_RUN_DIR, help=argparse.SUPPRESS)
     p.add_argument("--data-root", type=Path, default=ROOT / "data")
     p.add_argument("--out", type=Path, default=None, help="the gate record (default docs/gates/m3_gate.json)")
-    p.add_argument("--target-name", default=DEFAULT_TARGET_NAME)
+    p.add_argument("--target-name", default=None,
+                   help=f"every episode's target name without --targets (default {DEFAULT_TARGET_NAME!r}, M3's placeholder)")
+    p.add_argument("--targets", type=Path, default=None,
+                   help="the target pool (assets/targets.json, plan 5 C5): each episode draws its target and distractors "
+                        "from the scene split's usable entries, and the instruction names the target")
     p.add_argument("--deterministic", action="store_true")
     p.add_argument("--check-python", type=Path, default=None, help="a python with tensorflow-datasets, to read it back")
     p.add_argument("--device", default="auto")
@@ -242,13 +262,19 @@ def main(argv: list[str] | None = None) -> int:
         if (args.data_root / args.name / "manifest.json").exists():
             raise FileExistsError(f"{args.data_root / args.name} already holds a dataset; pick a new --name")
         checkpoint_obs_config(args.model)  # offline: an unreadable checkpoint is refused before anything launches
+        if args.targets is not None:  # offline too: a pool the scene's split cannot draw from (TargetPoolError)
+            if args.target_name is not None:
+                raise ValueError("--target-name is the pool-free fallback; with --targets each episode's entry names its "
+                                 "target")
+            TargetPool.load(args.targets).for_split(resolve_scene(args.scene).scene.split)
     except (FileNotFoundError, FileExistsError, ValueError) as err:
         print(f"refusing to start: {err}", file=sys.stderr)
         return 2
     record = run(scene=args.scene, model_path=args.model, scene_config=args.scene_config, name=args.name,
                  n_episodes=args.episodes, instance=args.instance, out_path=out_path, data_root=args.data_root,
                  deterministic=args.deterministic, max_attempts=args.max_attempts, target_name=args.target_name,
-                 check_python=args.check_python, device=args.device, sim_root=args.sim_root, seed_base=seed_base)
+                 targets=args.targets, check_python=args.check_python, device=args.device, sim_root=args.sim_root,
+                 seed_base=seed_base)
     print(json.dumps({"status": record["status"], "pass": record["pass"], "error": record["error"],
                       "kept": (record["collection"] or {}).get("kept"),
                       "validator_pass": (record["validation"] or {}).get("pass")}, indent=2))

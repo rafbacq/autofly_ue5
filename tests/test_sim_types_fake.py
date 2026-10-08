@@ -102,12 +102,25 @@ def test_rgb_depends_on_pose_only():
 def test_spawn_unique_names_and_destroy():
     sim = FakeSimulator()
     sim.launch("/Game/AutoFly/Maps/S01", 0)
-    first = sim.spawn("AF_Target", "cylinder", Pose(1.0, 2.0, -1.0, 0.0), (1.0, 1.0, 1.0), "/Game/AutoFly/Materials/MI_White")
-    second = sim.spawn("AF_Target", "cylinder", Pose(3.0, 2.0, -1.0, 0.0), (1.0, 1.0, 1.0))
+    first = sim.spawn("AF_Target", "Cylinder", Pose(1.0, 2.0, -1.0, 0.0), (1.0, 1.0, 1.0), "/Game/Geometry/Materials/M_Orange")
+    second = sim.spawn("AF_Target", "Cylinder", Pose(3.0, 2.0, -1.0, 0.0), (1.0, 1.0, 1.0))
     assert first == "AF_Target" and second == "AF_Target1"
     sim.destroy(first)
     with pytest.raises(ObjectNotFoundError):
         sim.destroy(first)
+
+
+def test_spawn_rejects_a_material_instance_as_the_real_server_does():
+    # Project AirSim's setMaterial loads with an exact base-UMaterial class filter (WorldSimApi.cpp:1019-1033): a
+    # material instance (UE's MI_ prefix: every registry color_instance, every imported glTF material) loads as null and
+    # the spawn fails live. A target pool's palette-coloured primitive is exactly such a call (plan 5 C5).
+    sim = FakeSimulator()
+    sim.launch("/Game/AutoFly/Maps/S01", 0)
+    for path in ("/Game/AutoFly/Materials/MI_Red", "/Game/AutoFly/Assets/tree_x/MI_leaves.MI_leaves"):
+        with pytest.raises(ValueError, match="instance"):
+            sim.spawn("AF_Target", "Cube", Pose(1.0, 2.0, -1.0, 0.0), (1.0, 1.0, 1.0), path)
+    assert sim.spawn("AF_Target", "Cube", Pose(1.0, 2.0, -1.0, 0.0), (1.0, 1.0, 1.0),
+                     "/Game/Geometry/Materials/M_Orange") == "AF_Target"
 
 
 # --------------------------------------------------------------------------------------------------------

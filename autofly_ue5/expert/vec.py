@@ -14,6 +14,7 @@ import gymnasium as gym
 from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv, VecEnv
 
+from autofly_ue5.dataset.targets import TargetPool
 from autofly_ue5.expert.altitude_margin import AltitudeMarginPenalty
 from autofly_ue5.expert.env import AutoFlyEnv
 from autofly_ue5.expert.mover_clearance import MoverClearancePenalty, MoverClosingPenalty
@@ -69,6 +70,7 @@ def make_vec_env(
     static_contact_m: float = 0.0,
     footprint_contact_margin_m: float = 0.0,
     registry: AssetRegistry | None = None,
+    target_pool: TargetPool | None = None,
 ) -> VecEnv:
     """n `AutoFlyEnv`s, each `ResilientAutoFlyEnv(Monitor(AutoFlyEnv(...)))`, vectorised.
 
@@ -96,6 +98,7 @@ def make_vec_env(
     (`expert/static_contact.py`); `footprint_contact_margin_m`: a training run's margin outside the task's footprint
     rule on a mesh scene (`expert/footprint_contact.py`); `registry`: the asset registry every env reads which obstacles
     are meshes from (default: each reads its own), so a trainer's workers share the copy its identity was built from.
+    `target_pool`: a collection's target pool (plan 5 C5) for every env; the trainer never passes one.
     """
     if n < 1:
         raise ValueError(f"n must be >= 1, got {n}")
@@ -112,7 +115,7 @@ def make_vec_env(
                               obs_config=obs_config, mover_clearance=mover_clearance, mover_closing=mover_closing,
                               altitude_margin=altitude_margin, mover_contact_margin_m=mover_contact_margin_m,
                               static_contact_m=static_contact_m, footprint_contact_margin_m=footprint_contact_margin_m,
-                              registry=registry)
+                              registry=registry, target_pool=target_pool)
             # outcome and collision_source per episode, for scripts/watch_training.py (the info always carries both).
             monitored = Monitor(base, filename=str(monitor_dir / f"{instance}.monitor.csv"),
                                 info_keywords=("is_success", "outcome", "collision_source"))

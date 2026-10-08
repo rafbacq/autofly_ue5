@@ -105,6 +105,15 @@ class FakeSimulator:
                 f"'material is a package path of a base UMaterial (e.g. \"/Game/Geometry/Materials/M_Orange\")'); "
                 f"the real backend's set_object_material() rejects anything else"
             )
+        if material is not None and material.rsplit("/", 1)[-1].startswith("MI_"):
+            # setMaterial loads with an exact base-UMaterial class filter (WorldSimApi.cpp:1019-1033), so a material
+            # instance fails live however right its path. The fake knows a material only by its path, and UE names
+            # instances MI_ (every registry color_instance, every imported glTF material): a target pool's palette-
+            # coloured primitive (plan 5 C5) would otherwise pass here and fail on the first live spawn.
+            raise ValueError(
+                f"material={material!r} is a material instance (MI_), not a base UMaterial; the real backend's "
+                f"set_object_material() cannot load it (expert/episode.py _runtime_material_path)"
+            )
         unique, k = name, 1
         while unique in self._objects:
             unique = f"{name}{k}"
