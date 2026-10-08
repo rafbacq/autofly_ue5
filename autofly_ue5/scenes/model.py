@@ -89,6 +89,10 @@ class SceneFile:
     # Reward coefficients this scene sets for itself, as sorted (name, value) pairs; () keeps spec §8's defaults
     # (expert.reward.reward_config_for_scene). s01d prices leaving the bounds like a collision (2026-10-03).
     reward: tuple[tuple[str, float], ...] = ()
+    # The sampler's clearance from every obstacle circle for starts, targets and distractors (2026-10-08), when a scene
+    # needs a wider training margin than the default 1.4 m allows; None: the default (expert.episode.
+    # scene_spawn_clearance_m). The layout is still accepted at 1.4 m, so the schema refuses anything less.
+    spawn_clearance_m: float | None = None
 
 
 @dataclass(frozen=True)
@@ -259,6 +263,7 @@ def load_scene_file(path: Path) -> SceneFile:
         level=data.get("level"),
         dynamic=_dynamic_spec(data["dynamic"], path) if "dynamic" in data else None,
         reward=tuple(sorted((name, float(value)) for name, value in data.get("reward", {}).items())),
+        spawn_clearance_m=float(data["spawn_clearance_m"]) if "spawn_clearance_m" in data else None,
     )
 
 

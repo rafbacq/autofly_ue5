@@ -67,3 +67,44 @@ def test_load_registry():
     white = registry.materials["white"]
     assert white.kind == "color_instance" and white.parameter == "Color" and white.rgba == (0.9, 0.9, 0.9, 1.0)
     assert registry.materials["grid"].parent is None
+
+
+# --------------------------------------------------------------------------------------------------------
+# spawn_clearance_m (2026-10-08): where a scene's episodes may begin, not what its level is.
+# --------------------------------------------------------------------------------------------------------
+def test_a_scene_without_a_spawn_clearance_leaves_the_samplers_own():
+    assert load_scene_file(S01).spawn_clearance_m is None
+
+
+def test_a_scene_may_keep_its_starts_targets_and_distractors_farther_out(tmp_path):
+    assert load_scene_file(_variant(tmp_path, lambda d: d.update(spawn_clearance_m=1.7))).spawn_clearance_m == 1.7
+
+
+@pytest.mark.parametrize("value", [1.39, 0.5, 0.0, -1.0])
+def test_a_spawn_clearance_below_the_layouts_acceptance_is_refused(tmp_path, value):
+    # A layout is accepted only at the sampler's 1.4 m inflation: a smaller clearance would start episodes in space no
+    # check ever cleared.
+    with pytest.raises(SceneFileError, match=r"spawn_clearance_m.*1\.4"):
+        load_scene_file(_variant(tmp_path, lambda d: d.update(spawn_clearance_m=value)))
+
+
+def test_the_schemas_floor_is_the_samplers_own_clearance():
+    from autofly_ue5.expert.episode import spawn_clearance_m
+    from autofly_ue5.scenes.model import SCHEMA_PATH
+
+    field = json.loads(SCHEMA_PATH.read_text())["properties"]["spawn_clearance_m"]
+    assert field["minimum"] == spawn_clearance_m() and "sampler" in field["description"]
+
+
+def test_a_spawn_clearance_leaves_the_layout_and_the_level_as_they_are(tmp_path):
+    # Only the scene file's hash changes, which the stored layout and level spec record: a scene that adds the field
+    # regenerates its layout file (scripts/build_scenes.py) with the same instances.
+    from autofly_ue5.scenes.generate import generate_layout
+    from autofly_ue5.scenes.level_spec import layout_to_level_spec
+
+    registry = load_registry()
+    plain, wide = load_scene_file(S01), load_scene_file(_variant(tmp_path, lambda d: d.update(spawn_clearance_m=1.7)))
+    layout = generate_layout(plain, registry)
+    assert generate_layout(wide, registry) == layout and wide.sha256 != plain.sha256
+    assert ({**layout_to_level_spec(layout, wide, registry), "scene_sha256": None}
+            == {**layout_to_level_spec(layout, plain, registry), "scene_sha256": None})

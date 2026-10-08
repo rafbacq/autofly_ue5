@@ -223,3 +223,25 @@ def test_only_a_dynamic_scene_lets_its_simulator_move_anything(tmp_path):
     assert resolve_scene("s01", scenes_dir=scenes, levels_dir=levels).movable_objects == ()
     tags = resolve_scene("s01d", scenes_dir=scenes, levels_dir=levels).movable_objects
     assert len(tags) == 80 and tags[0] == "obs_0000" and tags[-1] == "obs_0079"
+
+
+def test_a_scene_reusing_a_level_must_match_its_spawn_clearance(tmp_path):
+    # Where episodes begin is episode geometry: a scene flying another's level with other starts is another task.
+    from autofly_ue5.scenes.resolve import resolve_scene
+
+    scenes, levels = _tree(tmp_path, {"s01d_moving_pillars.json": _dynamic_variant(spawn_clearance_m=1.7)})
+    with pytest.raises(SceneFileError, match=r"differs from .*spawn_clearance_m"):
+        resolve_scene("s01d", scenes_dir=scenes, levels_dir=levels)
+
+
+def test_a_scene_and_the_level_it_reuses_may_share_a_spawn_clearance(tmp_path):
+    from autofly_ue5.scenes.resolve import resolve_scene
+
+    base = json.loads(S01.read_text())
+    base["spawn_clearance_m"] = 1.7
+    blob = json.dumps(base, indent=2).encode()
+    scenes, levels = _tree(tmp_path, {"s01d_moving_pillars.json": _dynamic_variant(spawn_clearance_m=1.7)},
+                           layout_sha=hashlib.sha256(blob).hexdigest())
+    (scenes / S01.name).write_bytes(blob)
+    resolved = resolve_scene("s01d", scenes_dir=scenes, levels_dir=levels)
+    assert resolved.scene.spawn_clearance_m == resolved.base_scene.spawn_clearance_m == 1.7

@@ -165,6 +165,8 @@ One JSON file per scene in `scenes/`, validated by a schema in `autofly_ue5/scen
   and `dynamic`, the moving-obstacle block of §6.5. A scene with `level` must match that scene in every static field
   (seed, bounds, ground, obstacle groups, bands), and gets no level of its own. Ids may end in `r` (re-seeded test
   layout) or `d` (dynamic variant).
+- Optional (2026-10-08): `spawn_clearance_m`, the sampler's clearance for starts, targets and distractors when a scene
+  needs a wider training margin than 1.4 m allows; the layout's acceptance stays at 1.4 m.
 
 ### 6.2 Generator and reachability
 

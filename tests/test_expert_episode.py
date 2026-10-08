@@ -1,3 +1,4 @@
+import dataclasses
 import math
 
 import numpy as np
@@ -542,3 +543,98 @@ def test_spawn_spec_describes_each_pool_entry_by_registry_key(tmp_path):
         {"asset": "crate", "material": None, "scale": [2.0, 1.0, 1.0], "z_ned": -0.5},
     ]
     assert len(spec["distractors"]) == len(setup.distractors)
+
+
+# --------------------------------------------------------------------------------------------------------
+# A scene's own spawn clearance (2026-10-08): the sampler keeps starts, targets and distractors farther from every
+# obstacle so a training margin can be wider (docs/decisions/2026-10-08-footprint-contact-rule.md, known limit 1).
+# --------------------------------------------------------------------------------------------------------
+def _edge_pillar_layout():
+    """s01's bounds with pillars every 5 m along a line 4 m inside each edge: in the start band and next to the target
+    band, so a good share of the points the sampler draws lands 1.4-1.7 m from a pillar (s01's own field stays 8 m in,
+    where no start, target or distractor ever comes within 1.7 m of it)."""
+    from autofly_ue5.scenes.model import Instance
+
+    _scene, s01 = scene_and_layout()
+    b, inset, r = s01.bounds, 4.0, 0.4
+    along = [b.x_min + inset + 5.0 * k for k in range(13)]
+    points = ([(x, b.y_min + inset) for x in along] + [(x, b.y_max - inset) for x in along]
+              + [(b.x_min + inset, y) for y in along[1:-1]] + [(b.x_max - inset, y) for y in along[1:-1]])
+    return dataclasses.replace(s01, instances=tuple(
+        Instance(f"obs_{i:04d}", "cylinder", x, y, -5.0, 0.0, (2 * r, 2 * r, 10.0), "white", r, 10.0)
+        for i, (x, y) in enumerate(points)))
+
+
+def _points(setup):
+    return [(setup.start.x, setup.start.y), setup.target_xy_z[:2]] + [d[:2] for d in setup.distractors]
+
+
+def _nearest_gap(layout, xy):
+    return min(math.hypot(xy[0] - inst.x, xy[1] - inst.y) - inst.radius_m for inst in layout.instances)
+
+
+def test_the_scene_spawn_clearance_is_the_scenes_own_or_the_samplers():
+    from autofly_ue5.expert.episode import scene_spawn_clearance_m, spawn_clearance_m
+
+    scene, _layout = scene_and_layout()
+    assert scene_spawn_clearance_m(scene) == spawn_clearance_m() == 1.4
+    assert scene_spawn_clearance_m(dataclasses.replace(scene, spawn_clearance_m=1.7)) == 1.7
+    with pytest.raises(ValueError, match="1.4"):  # a SceneFile built in code, past the schema
+        scene_spawn_clearance_m(dataclasses.replace(scene, spawn_clearance_m=1.2))
+
+
+def test_a_scene_at_the_samplers_own_clearance_draws_exactly_as_one_without_it():
+    from autofly_ue5.expert.episode import sample_setup
+
+    scene, _s01 = scene_and_layout()
+    layout = _edge_pillar_layout()
+    for seed in range(60):
+        plain_rng, same_rng = np.random.default_rng(seed), np.random.default_rng(seed)
+        assert (sample_setup(dataclasses.replace(scene, spawn_clearance_m=1.4), layout, same_rng)
+                == sample_setup(scene, layout, plain_rng))
+        assert same_rng.bit_generator.state == plain_rng.bit_generator.state
+
+
+def test_a_wider_spawn_clearance_only_rejects_closer_points_and_adds_no_draw():
+    # The field adds no draw and moves none: it only rejects a candidate the default clearance would have accepted. So
+    # a seed whose every placed point already clears 1.7 m draws the same episode with the same rng consumption, and a
+    # seed with a point 1.4-1.7 m from a pillar draws another one, every point of it clear of 1.7 m.
+    from autofly_ue5.expert.episode import sample_setup, spawn_clearance_m
+
+    scene, _s01 = scene_and_layout()
+    wide_scene = dataclasses.replace(scene, spawn_clearance_m=1.7)
+    layout = _edge_pillar_layout()
+    same = moved = 0
+    for seed in range(60):
+        plain_rng, wide_rng = np.random.default_rng(seed), np.random.default_rng(seed)
+        plain, wide = sample_setup(scene, layout, plain_rng), sample_setup(wide_scene, layout, wide_rng)
+        assert all(_nearest_gap(layout, xy) >= 1.7 for xy in _points(wide)), f"seed {seed}"
+        plain_gaps = [_nearest_gap(layout, xy) for xy in _points(plain)]
+        assert min(plain_gaps) >= spawn_clearance_m()
+        if min(plain_gaps) >= 1.7:
+            assert wide == plain and wide_rng.bit_generator.state == plain_rng.bit_generator.state, f"seed {seed}"
+            same += 1
+        else:
+            assert wide != plain, f"seed {seed}"
+            moved += 1
+    assert same >= 5 and moved >= 5, (same, moved)  # both branches exercised: the layout puts points in the ring
+
+
+def test_the_mover_guard_keeps_the_layouts_acceptance_inflation(monkeypatch):
+    # The path-length guard measures paths on the occupancy grid the layout was accepted on (spec §6.5, §6.2); a
+    # scene's wider start clearance must not narrow that grid, or a layout proven connected only at 1.4 m could read
+    # as unreachable and silently lose every mover.
+    import autofly_ue5.expert.episode as episode
+    from tests.test_dynamic_env import dynamic_scene
+
+    scene, layout = dynamic_scene()
+    seen = []
+    real = episode.sample_movers
+
+    def spy(*args, **kwargs):
+        seen.append(kwargs["inflate_m"])
+        return real(*args, **kwargs)
+
+    monkeypatch.setattr(episode, "sample_movers", spy)
+    episode.sample_setup(dataclasses.replace(scene, spawn_clearance_m=1.7), layout, np.random.default_rng(3))
+    assert seen == [episode.spawn_clearance_m()] == [1.4]

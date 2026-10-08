@@ -583,6 +583,64 @@ def test_a_start_inside_the_rule_is_retried_not_charged(monkeypatch):
         make_tree_env().reset(seed=1_000_070)
 
 
+def edge_tree_scene_and_layout(**fields):
+    """Trees down to 4 m from the edges, inside the start band, so a share of starts lands near a circle (the main tree
+    scene keeps every circle 4.8 m or more from any start drawn, so no start ever comes near one). `fields`: top-level
+    scene fields to add, e.g. spawn_clearance_m."""
+    group = lambda asset, count: {  # noqa: E731
+        "asset": asset, "count": count, "scale_range": {"xy": [0.9, 1.1], "z": [0.9, 1.1]}, "palette": ["mesh"],
+        "placement": {"type": "poisson", "margin_m": 4.0, "min_distance_m": 6.0}}
+    groups = [group("searsia_lucida_b", 40), group("quiver_tree_01", 20)]
+    data = {**tree_scene_dict(), "obstacle_groups": groups, **fields}
+    return _generated("edge_trees_" + "_".join(f"{k}{v}" for k, v in sorted(fields.items())), data)
+
+
+class LandsOffTowardTheNearestCircle(FakeSimulator):
+    """A reset that lands the backend's whole tolerance (RESET_POSITION_TOLERANCE_M, which it accepts) off its pose,
+    straight toward the nearest footprint circle: the worst start the trainer's margin ceiling allows for."""
+
+    def __init__(self, circles, **kw):
+        super().__init__(**kw)
+        self._circles = circles
+
+    def reset(self, pose):
+        from autofly_ue5.sim.airsim_backend import RESET_POSITION_TOLERANCE_M
+        from autofly_ue5.sim.types import Pose
+
+        c = min(self._circles, key=lambda i: math.hypot(i.x - pose.x, i.y - pose.y) - i.radius_m)
+        d = math.hypot(c.x - pose.x, c.y - pose.y)
+        k = RESET_POSITION_TOLERANCE_M / d
+        return super().reset(Pose(pose.x + k * (c.x - pose.x), pose.y + k * (c.y - pose.y), pose.z, pose.yaw))
+
+
+def test_starts_at_a_scenes_wider_clearance_never_meet_the_margin_it_allows_even_landing_off_toward_a_tree():
+    # spawn_clearance_m 1.7 lets a run train at 0.9 + 0.5 = 1.4 m = 1.7 - 0.3 (train.py's ceiling). Twenty seeds whose
+    # start the default 1.4 m sampler puts 1.4-1.7 m from a circle, each reset landing 0.3 m toward that circle: every
+    # start is drawn clear of 1.7 m instead, lands outside the 1.4 m boundary, and none is lost as a
+    # StartCollisionError.
+    from autofly_ue5.expert.env import AutoFlyEnv
+    from autofly_ue5.expert.episode import sample_setup
+
+    scene, layout = edge_tree_scene_and_layout(spawn_clearance_m=1.7)
+    assert scene.spawn_clearance_m == 1.7 and layout == edge_tree_scene_and_layout()[1]
+
+    def gap(xy):
+        return min(math.hypot(xy[0] - i.x, xy[1] - i.y) - i.radius_m for i in layout.instances)
+
+    default = dataclasses.replace(scene, spawn_clearance_m=None)
+    starts = ((seed, sample_setup(default, layout, np.random.default_rng(seed)).start)
+              for seed in range(1_000_000, 1_002_000))
+    seeds = [seed for seed, start in starts if 1.4 <= gap((start.x, start.y)) < 1.7][:20]
+    assert len(seeds) == 20
+    env = AutoFlyEnv(scene, layout, functools.partial(LandsOffTowardTheNearestCircle, layout.instances,
+                                                      obstacles=wood(layout)),
+                     map_path="/Game/AutoFly/Maps/S99", instance=0, footprint_contact_margin_m=0.5)
+    for seed in seeds:
+        env.reset(seed=seed)  # a StartCollisionError here fails the test
+        drawn, landed = gap((env._setup.start.x, env._setup.start.y)), gap((env._last_pose.x, env._last_pose.y))
+        assert drawn >= 1.7 and 1.4 < landed <= drawn - 0.3 + 1e-6, (seed, drawn, landed)
+
+
 def test_the_outcome_callback_logs_footprint_collisions_on_their_own_curves():
     from types import SimpleNamespace
 
@@ -639,8 +697,9 @@ def _train(tmp_path, monkeypatch, *flags, trees=True, scene=None, layout=None, r
     if trees:
         _scene, tree_layout = tree_scene_and_layout()
         monkeypatch.setattr(train, "resolve_scene", lambda scene_id: _tree_resolved(tmp_path, scene, layout))
+        obstacles = wood(layout if layout is not None else tree_layout)
         monkeypatch.setattr(train, "scene_config_factory",
-                            lambda config, movable=(), **kw: functools.partial(FakeSimulator, obstacles=wood(tree_layout)))
+                            lambda config, movable=(), **kw: functools.partial(FakeSimulator, obstacles=obstacles))
     else:
         monkeypatch.setattr(train, "scene_config_factory", lambda config, movable=(), **kw: FakeSimulator)
     seen = []
@@ -674,6 +733,7 @@ def test_a_tree_scene_without_the_margin_still_names_the_task_rule_in_its_identi
     code, out, _seen = _train(tmp_path, monkeypatch)
     record = json.loads(out.read_text())
     assert code == 0 and record["identity"]["footprint_contact"] == {"contact_m": 0.9, "training_margin_m": 0.0}
+    assert "spawn_clearance_m" not in record["identity"] and record["config"]["spawn_clearance_m"] == 1.4
 
 
 def test_a_pillar_scenes_identity_and_record_are_as_before(tmp_path, monkeypatch):
@@ -681,6 +741,54 @@ def test_a_pillar_scenes_identity_and_record_are_as_before(tmp_path, monkeypatch
     record = json.loads(out.read_text())
     assert code == 0 and "footprint_contact" not in record["identity"] and record["contact_rules"] is None
     assert record["config"]["footprint_contact_margin_m"] == 0.0 and seen == [0.0, 0.0]
+    assert "spawn_clearance_m" not in record["identity"], "every earlier run's identity must still match"
+
+
+def wide_tree_scene_and_layout():
+    """The tree scene with `spawn_clearance_m: 1.7` (2026-10-08): the same layout, starts kept 0.3 m farther out."""
+    scene, layout = _generated("trees_7002_clear1.7", {**tree_scene_dict(), "spawn_clearance_m": 1.7})
+    assert scene.spawn_clearance_m == 1.7 and layout == tree_scene_and_layout()[1]
+    return scene, layout
+
+
+def wide_mixed_scene_and_layout():
+    scene, layout = _generated("mixed_clear1.7", {**mixed_scene_dict(), "spawn_clearance_m": 1.7})
+    assert scene.spawn_clearance_m == 1.7 and layout == mixed_scene_and_layout()[1]
+    return scene, layout
+
+
+def test_a_scene_that_keeps_its_starts_farther_out_allows_a_wider_margin_and_names_it_in_its_identity(
+        tmp_path, monkeypatch):
+    # 0.9 + 0.5 = 1.4 m = 1.7 - 0.3: the widest boundary a start drawn 1.7 m out and landing 0.3 m off can never meet.
+    scene, layout = wide_tree_scene_and_layout()
+    code, out, seen = _train(tmp_path, monkeypatch, "--footprint-contact-margin", "0.5", scene=scene, layout=layout)
+    record = json.loads(out.read_text())
+    assert code == 0 and record["status"] == "ok", record["error"]
+    assert record["identity"]["spawn_clearance_m"] == 1.7 and record["config"]["spawn_clearance_m"] == 1.7
+    assert record["identity"]["footprint_contact"] == {"contact_m": 0.9, "training_margin_m": 0.5}
+    assert seen == [0.5, 0.0]
+
+
+def test_a_static_boundary_may_reach_as_far_as_the_scenes_starts_allow(tmp_path, monkeypatch):
+    scene, layout = wide_mixed_scene_and_layout()
+    code, out, _seen = _train(tmp_path, monkeypatch, "--static-contact-m", "1.4", scene=scene, layout=layout)
+    record = json.loads(out.read_text())
+    assert code == 0 and record["status"] == "ok", record["error"]
+    assert record["identity"]["static_contact_m"] == 1.4 and record["identity"]["spawn_clearance_m"] == 1.7
+
+
+@pytest.mark.parametrize("flags, wide, why", [
+    (("--footprint-contact-margin", "0.6"), True,
+     "beyond the 1.4 m a start can be from a footprint circle (starts keep 1.7 m"),
+    (("--static-contact-m", "1.5"), True, "beyond the 1.4 m a start can be from a pillar (starts keep 1.7 m"),
+    (("--static-contact-m", "1.4"), False, "beyond the 1.1 m a start can be from a pillar (starts keep 1.4 m"),
+])
+def test_the_ceilings_follow_the_scenes_own_start_clearance(tmp_path, monkeypatch, capsys, flags, wide, why):
+    scene, layout = (wide_mixed_scene_and_layout() if "--static-contact-m" in flags else wide_tree_scene_and_layout()) \
+        if wide else mixed_scene_and_layout()
+    code, _out, seen = _train(tmp_path, monkeypatch, *flags, scene=scene, layout=layout)
+    assert code == 2 and why in capsys.readouterr().err
+    assert not (tmp_path / "run").exists() and seen == []
 
 
 @pytest.mark.parametrize("flags, trees, why", [

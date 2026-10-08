@@ -25,6 +25,10 @@
     "altitude_band": { "$ref": "#/$defs/range" },
     "instruction_obstacle": { "type": "string", "minLength": 1 },
     "dynamic": { "$ref": "#/$defs/dynamic" },
+    "spawn_clearance_m": {
+      "type": "number", "minimum": 1.4,
+      "description": "2026-10-08: the episode sampler's clearance (m) from every obstacle circle for starts, targets and distractors, when a scene needs a wider training margin than the default 1.4 m allows (expert/episode.py scene_spawn_clearance_m). The sampler only: the layout is still accepted at 1.4 m, the reachability inflation, so the floor is 1.4 m (a smaller value would start episodes in space no layout check cleared). Not a property of the level: it leaves the layout and the built level unchanged, but a scene reusing a level must match it."
+    },
     "reward": {
       "type": "object", "additionalProperties": false, "minProperties": 1,
       "properties": {

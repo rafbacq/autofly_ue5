@@ -296,7 +296,8 @@ def sample_movers(
     resolution_m: float = GUARD_RESOLUTION_M,
 ) -> MoverSample:
     """The movers of one episode (spec §6.5). Fixed draw order: mover count, path-mover count, path movers, other
-    movers, then each mover's route tries in turn. Never raises."""
+    movers, then each mover's route tries in turn. Never raises. `inflate_m`: the occupancy grid's inflation, the one
+    the layout was accepted with (spec §6.2's 1.4 m), never a scene's wider start clearance (expert/episode.py)."""
     k = int(rng.integers(spec.count[0], spec.count[1] + 1))
     n_path = int(rng.integers(spec.path_movers[0], spec.path_movers[1] + 1))
     instances = list(layout.instances)

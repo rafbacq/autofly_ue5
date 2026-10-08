@@ -127,7 +127,7 @@ from stable_baselines3.common.vec_env import VecEnv
 
 from autofly_ue5.expert.env import AutoFlyEnv  # noqa: F401  (re-exported for callers of this module)
 from autofly_ue5.expert.env import action_space
-from autofly_ue5.expert.episode import spawn_clearance_m
+from autofly_ue5.expert.episode import scene_spawn_clearance_m
 from autofly_ue5.expert.faults import (  # noqa: F401  (re-exported: moved from this module)
     FAULT_ERRORS_RESET,
     FAULT_ERRORS_STEP,
@@ -326,6 +326,10 @@ def run_identity(resolved: ResolvedScene, obs_config: ObsConfig, scene_config: s
         # change of would make the buffer another task's, and the run's margin. A pillar scene names nothing, so every
         # earlier run's identity still matches.
         extra["footprint_contact"] = {"contact_m": FOOTPRINT_CONTACT_M, "training_margin_m": footprint_contact_margin_m}
+    if resolved.scene.spawn_clearance_m is not None:
+        # Where the scene's episodes begin (scene_spawn_clearance_m), named only by a scene that sets it so every
+        # earlier run's identity still matches. The scene's hash already differs; this says why in the record.
+        extra["spawn_clearance_m"] = resolved.scene.spawn_clearance_m
     return {
         "scene_config": scene_config_record(scene_config) if scene_config is not None else None,
         "scene": resolved.scene.id,
@@ -824,13 +828,15 @@ def main(argv: list[str] | None = None) -> int:
             raise ValueError(f"--mover-contact-margin: scene {scene_file.id} has no moving pillars")
         if not (math.isfinite(args.static_contact_m) and args.static_contact_m >= 0):
             raise ValueError(f"--static-contact-m must be a non-negative number of metres, got {args.static_contact_m}")
-        # A start keeps spawn_clearance_m() from every pillar's surface, and a reset may land up to the backend's
-        # tolerance off it (review of 3a0c3b7). A boundary beyond what is left could put a legitimate start inside it:
-        # a seeded first reset replays its seed until the worker gives up, and that ends the run.
-        start_floor_m = round(spawn_clearance_m() - RESET_POSITION_TOLERANCE_M, 6)
+        # A start keeps the scene's spawn clearance (episode.scene_spawn_clearance_m: 1.4 m, or the scene file's own
+        # spawn_clearance_m) from every pillar's surface, and a reset may land up to the backend's tolerance off it
+        # (review of 3a0c3b7). A boundary beyond what is left could put a legitimate start inside it: a seeded first
+        # reset replays its seed until the worker gives up, and that ends the run.
+        start_clearance_m = scene_spawn_clearance_m(scene_file)
+        start_floor_m = round(start_clearance_m - RESET_POSITION_TOLERANCE_M, 6)
         if args.static_contact_m > start_floor_m:
             raise ValueError(f"--static-contact-m {args.static_contact_m} m is beyond the {start_floor_m:g} m a start "
-                             f"can be from a pillar (starts keep {spawn_clearance_m():g} m; a reset may land "
+                             f"can be from a pillar (starts keep {start_clearance_m:g} m; a reset may land "
                              f"{RESET_POSITION_TOLERANCE_M:g} m off)")
         if not (math.isfinite(args.footprint_contact_margin) and args.footprint_contact_margin >= 0):
             raise ValueError(f"--footprint-contact-margin must be a non-negative number of metres, got "
@@ -854,7 +860,7 @@ def main(argv: list[str] | None = None) -> int:
         if FOOTPRINT_CONTACT_M + args.footprint_contact_margin > start_floor_m:
             raise ValueError(f"--footprint-contact-margin {args.footprint_contact_margin} m puts the boundary at "
                              f"{FOOTPRINT_CONTACT_M + args.footprint_contact_margin:g} m, beyond the {start_floor_m:g} m a "
-                             f"start can be from a footprint circle (starts keep {spawn_clearance_m():g} m; a reset may "
+                             f"start can be from a footprint circle (starts keep {start_clearance_m:g} m; a reset may "
                              f"land {RESET_POSITION_TOLERANCE_M:g} m off)")
         altitude_margin = None
         if args.altitude_margin_penalty is not None:
@@ -1079,6 +1085,7 @@ def main(argv: list[str] | None = None) -> int:
             "mover_contact_margin_m": args.mover_contact_margin,
             "static_contact_m": args.static_contact_m,
             "footprint_contact_margin_m": args.footprint_contact_margin,
+            "spawn_clearance_m": start_clearance_m,  # what the sampler kept starts, targets and distractors from
             "batch_size": args.batch_size,
             # What the model actually trained with, not what this file intends (a resumed model restores its own).
             "train_freq": str(model.train_freq) if model is not None else None,

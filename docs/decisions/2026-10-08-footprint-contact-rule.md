@@ -71,6 +71,13 @@ the physical event as a backstop, built test-first, with s01's golden test untou
    a scene-level start/target clearance (a `spawn_clearance_m` field used by the sampler only, leaving the layout's
    acceptance at 1.4 m): starts farther from circles allow a wider margin without making any layout less flyable. It
    changes s02's scene file, so its layout file would be regenerated (instances unchanged) and its gate re-run.
+
+   **The field now exists (2026-10-08).** A scene file may set `spawn_clearance_m` (≥ 1.4 m, the schema's floor). The
+   sampler keeps starts, targets and distractors that far from every circle (`episode.scene_spawn_clearance_m`); the
+   layout's acceptance, the movers' path-length guard and the built level stay at 1.4 m. The trainer's ceilings follow
+   it: with 1.7 m, `--footprint-contact-margin` may reach 0.5 m (0.9 + 0.5 = 1.7 − 0.3) and `--static-contact-m`
+   1.4 m. A scene that sets it names it in the run identity; one that does not is unchanged, so every earlier run
+   resumes. It is one of the static fields a scene reusing a level must match. No scene sets it yet.
 2. The reset after a footprint ending still climbs straight up from 0.5–0.9 m outside the circle; the circle now holds
    every slice, so the climb clears the model, but a spawned target beside a tree is not in any circle.
 3. The rule covers movers' homes like any other circle only on static scenes: a scene with both a dynamic block and

@@ -23,7 +23,9 @@ gate scores it, the collector rejects by it, and a training run may only add a m
 the env's `footprint_contact_margin_m`), because every s01d expert flew to the boundary it trained on and its
 deterministic tail reached about 0.3 m inside it (`2026-10-06-s01d-r6-plan.md`). Starts, targets and distractors keep
 `episode.spawn_clearance_m()` = 1.4 m from every circle, and a reset may land 0.3 m off, so the trainer refuses a margin
-that puts the boundary beyond 1.1 m: at most 0.2 m here.
+that puts the boundary beyond 1.1 m: at most 0.2 m here. A scene may keep them farther out (its file's
+`spawn_clearance_m`, 2026-10-08; `episode.scene_spawn_clearance_m`), which raises the ceiling by as much: 1.7 m allows
+0.5 m.
 """
 
 from __future__ import annotations

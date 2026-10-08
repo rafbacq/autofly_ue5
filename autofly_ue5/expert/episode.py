@@ -92,9 +92,27 @@ def spawn_clearance_m() -> float:
 
     This is exactly the inflation `reachability.check_reachability` validated the scene's layout with
     (`drone_radius_m + clearance_m`), so a point this sampler accepts is flyable by the same definition
-    the scene was already checked against.
+    the scene was already checked against. A scene may keep its points farther out, never closer
+    (`scene_spawn_clearance_m`).
     """
     return DRONE_RADIUS_M + CLEARANCE_M
+
+
+def scene_spawn_clearance_m(scene: SceneFile) -> float:
+    """The clearance this scene's starts, targets and distractors keep from every obstacle: the scene file's own
+    `spawn_clearance_m` (2026-10-08), else `spawn_clearance_m()`.
+
+    A training boundary must stay inside where a start can be (train.py: this less the reset tolerance), so the default
+    1.4 m caps a tree scene's footprint margin at 0.2 m, while every s01d expert's deterministic tail reached about
+    0.3 m inside its training boundary (docs/decisions/2026-10-08-footprint-contact-rule.md, known limit 1). Hence a scene may
+    keep its episodes farther out. Never closer: the layout is accepted only at `spawn_clearance_m()`'s inflation, so a
+    SceneFile built in code is refused here below it, as the schema refuses a file."""
+    if scene.spawn_clearance_m is None:
+        return spawn_clearance_m()
+    if not scene.spawn_clearance_m >= spawn_clearance_m():
+        raise ValueError(f"scene {scene.id}: spawn_clearance_m {scene.spawn_clearance_m} is below the "
+                         f"{spawn_clearance_m():g} m the layout is accepted at")
+    return scene.spawn_clearance_m
 
 
 @dataclass(frozen=True)
@@ -218,9 +236,13 @@ def sample_setup(
     (`pool.for_split(scene.split)`); step 10 is `target = rest.pop(int(rng.integers(len(rest))))`, and step 11, for each
     distractor position already drawn in order, `rest.pop(int(rng.integers(len(rest))))`. One integer per object, no
     `rng.choice` (whose without-replacement algorithm is numpy's to change), and never an entry twice.
+
+    The start, the target and the distractors keep `scene_spawn_clearance_m(scene)` from every obstacle. A scene's own
+    clearance adds no draw and moves none: it only rejects candidates the default would have accepted, so a seed whose
+    points all clear it draws the same episode (tests/test_expert_episode.py).
     """
     bounds = layout.bounds
-    clearance = spawn_clearance_m()
+    clearance = scene_spawn_clearance_m(scene)
 
     # 1: start edge.
     start_edge = str(EDGES[int(rng.integers(len(EDGES)))])
@@ -281,13 +303,17 @@ def sample_setup(
     # below fills the same template with the drawn target's name.
     instruction = template.format(target="target", obstacle=scene.instruction_obstacle)
 
-    # 9: movers (spec §6.5), after every draw above.
+    # 9: movers (spec §6.5), after every draw above. The path-length guard keeps the layout's acceptance inflation, not
+    # the scene's start clearance: it compares paths on the §6.2 occupancy grid the layout was proven connected on
+    # (docs/decisions/2026-10-02-dynamic-obstacles.md), and a grid inflated wider could read as unreachable and silently
+    # drop every mover ("static_unreachable"). A wider start clearance changes where an episode begins, not which space
+    # is flyable; and a start that far out still seeds the guard (every cell within 0.3 m of it is free at 1.4 m).
     movers: tuple[MoverRoute, ...] = ()
     mover_stats = None
     if scene.dynamic is not None:
         sample = sample_movers(
             scene.dynamic, layout, start_xy=(start_x, start_y), target_xy=(target_x, target_y),
-            distractors_xy=[(dx, dy) for dx, dy, _dz in distractors], rng=rng, inflate_m=clearance,
+            distractors_xy=[(dx, dy) for dx, dy, _dz in distractors], rng=rng, inflate_m=spawn_clearance_m(),
             success_radius_m=RewardConfig().success_radius_m,
         )
         movers, mover_stats = sample.routes, sample.stats
