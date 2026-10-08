@@ -5,14 +5,14 @@
       "name": "covered car",
       "category": "vehicle",
       "seen": true,
-      "asset": null,
+      "asset": "tgt_covered_car",
       "scale": [
         0.913,
         0.913,
         0.913
       ],
       "material": null,
-      "status": "candidate",
+      "status": "imported",
       "source": {
         "source": "polyhaven",
         "id": "covered_car",
@@ -33,7 +33,7 @@
       "name": "red sedan",
       "category": "vehicle",
       "seen": true,
-      "asset": null,
+      "asset": "tgt_sedan",
       "scale": [
         1.568,
         1.568,
@@ -62,7 +62,7 @@
       "name": "green hatchback",
       "category": "vehicle",
       "seen": true,
-      "asset": null,
+      "asset": "tgt_hatchback_sports",
       "scale": [
         1.333,
         1.333,
@@ -91,7 +91,7 @@
       "name": "blue van",
       "category": "vehicle",
       "seen": true,
-      "asset": null,
+      "asset": "tgt_van",
       "scale": [
         1.454,
         1.454,
@@ -120,7 +120,7 @@
       "name": "yellow taxi",
       "category": "vehicle",
       "seen": true,
-      "asset": null,
+      "asset": "tgt_taxi",
       "scale": [
         1.454,
         1.454,
@@ -149,7 +149,7 @@
       "name": "police car",
       "category": "vehicle",
       "seen": true,
-      "asset": null,
+      "asset": "tgt_police",
       "scale": [
         1.29,
         1.29,
@@ -178,7 +178,7 @@
       "name": "ambulance",
       "category": "vehicle",
       "seen": true,
-      "asset": null,
+      "asset": "tgt_ambulance",
       "scale": [
         1.23,
         1.23,
@@ -207,7 +207,7 @@
       "name": "red fire truck",
       "category": "vehicle",
       "seen": true,
-      "asset": null,
+      "asset": "tgt_firetruck",
       "scale": [
         1.176,
         1.176,
@@ -236,7 +236,7 @@
       "name": "green garbage truck",
       "category": "vehicle",
       "seen": true,
-      "asset": null,
+      "asset": "tgt_garbage_truck",
       "scale": [
         1.159,
         1.159,
@@ -265,7 +265,7 @@
       "name": "yellow suv",
       "category": "vehicle",
       "seen": true,
-      "asset": null,
+      "asset": "tgt_suv_luxury",
       "scale": [
         1.403,
         1.403,
@@ -294,7 +294,7 @@
       "name": "white pickup truck",
       "category": "vehicle",
       "seen": true,
-      "asset": null,
+      "asset": "tgt_truck_flat",
       "scale": [
         1.457,
         1.457,
@@ -323,7 +323,7 @@
       "name": "crane",
       "category": "vehicle",
       "seen": false,
-      "asset": null,
+      "asset": "tgt_crane",
       "scale": [
         1.0,
         1.0,
@@ -352,7 +352,7 @@
       "name": "green front loader",
       "category": "vehicle",
       "seen": false,
-      "asset": null,
+      "asset": "tgt_tractor_shovel",
       "scale": [
         1.416,
         1.416,
@@ -703,14 +703,14 @@
       "name": "beige sofa",
       "category": "furniture",
       "seen": true,
-      "asset": null,
+      "asset": "tgt_sofa_01",
       "scale": [
         1.0,
         1.0,
         1.0
       ],
       "material": null,
-      "status": "candidate",
+      "status": "imported",
       "source": {
         "source": "polyhaven",
         "id": "Sofa_01",
@@ -730,14 +730,14 @@
       "name": "black leather sofa",
       "category": "furniture",
       "seen": true,
-      "asset": null,
+      "asset": "tgt_sofa_02",
       "scale": [
         1.0,
         1.0,
         1.0
       ],
       "material": null,
-      "status": "candidate",
+      "status": "imported",
       "source": {
         "source": "polyhaven",
         "id": "sofa_02",
@@ -757,14 +757,14 @@
       "name": "grey armchair",
       "category": "furniture",
       "seen": true,
-      "asset": null,
+      "asset": "tgt_armchair_01",
       "scale": [
         1.0,
         1.0,
         1.0
       ],
       "material": null,
-      "status": "candidate",
+      "status": "imported",
       "source": {
         "source": "polyhaven",
         "id": "ArmChair_01",
@@ -784,14 +784,14 @@
       "name": "green armchair",
       "category": "furniture",
       "seen": true,
-      "asset": null,
+      "asset": "tgt_greenchair_01",
       "scale": [
         1.0,
         1.0,
         1.0
       ],
       "material": null,
-      "status": "candidate",
+      "status": "imported",
       "source": {
         "source": "polyhaven",
         "id": "GreenChair_01",
@@ -811,14 +811,14 @@
       "name": "white plastic chair",
       "category": "furniture",
       "seen": true,
-      "asset": null,
+      "asset": "tgt_plastic_monobloc_chair_01",
       "scale": [
         1.0,
         1.0,
         1.0
       ],
       "material": null,
-      "status": "candidate",
+      "status": "imported",
       "source": {
         "source": "polyhaven",
         "id": "plastic_monobloc_chair_01",
@@ -838,14 +838,14 @@
       "name": "blue school chair",
       "category": "furniture",
       "seen": true,
-      "asset": null,
+      "asset": "tgt_schoolchair_01",
       "scale": [
         1.0,
         1.0,
         1.0
       ],
       "material": null,
-      "status": "candidate",
+      "status": "imported",
       "source": {
         "source": "polyhaven",
         "id": "SchoolChair_01",
@@ -865,14 +865,14 @@
       "name": "red wooden bench",
       "category": "furniture",
       "seen": true,
-      "asset": null,
+      "asset": "tgt_painted_wooden_bench",
       "scale": [
         1.0,
         1.0,
         1.0
       ],
       "material": null,
-      "status": "candidate",
+      "status": "imported",
       "source": {
         "source": "polyhaven",
         "id": "painted_wooden_bench",
@@ -892,14 +892,14 @@
       "name": "round wooden table",
       "category": "furniture",
       "seen": true,
-      "asset": null,
+      "asset": "tgt_round_wooden_table_01",
       "scale": [
         1.0,
         1.0,
         1.0
       ],
       "material": null,
-      "status": "candidate",
+      "status": "imported",
       "source": {
         "source": "polyhaven",
         "id": "round_wooden_table_01",
@@ -919,14 +919,14 @@
       "name": "white cabinet",
       "category": "furniture",
       "seen": true,
-      "asset": null,
+      "asset": "tgt_painted_wooden_cabinet",
       "scale": [
         1.0,
         1.0,
         1.0
       ],
       "material": null,
-      "status": "candidate",
+      "status": "imported",
       "source": {
         "source": "polyhaven",
         "id": "painted_wooden_cabinet",
@@ -946,14 +946,14 @@
       "name": "grandfather clock",
       "category": "furniture",
       "seen": false,
-      "asset": null,
+      "asset": "tgt_vintage_grandfather_clock_01",
       "scale": [
         1.0,
         1.0,
         1.0
       ],
       "material": null,
-      "status": "candidate",
+      "status": "imported",
       "source": {
         "source": "polyhaven",
         "id": "vintage_grandfather_clock_01",
@@ -973,14 +973,14 @@
       "name": "wooden picnic table",
       "category": "furniture",
       "seen": false,
-      "asset": null,
+      "asset": "tgt_wooden_picnic_table",
       "scale": [
         1.0,
         1.0,
         1.0
       ],
       "material": null,
-      "status": "candidate",
+      "status": "imported",
       "source": {
         "source": "polyhaven",
         "id": "wooden_picnic_table",
@@ -1000,14 +1000,14 @@
       "name": "red barrel",
       "category": "equipment",
       "seen": true,
-      "asset": null,
+      "asset": "tgt_barrel_01",
       "scale": [
         1.0,
         1.0,
         1.0
       ],
       "material": null,
-      "status": "candidate",
+      "status": "imported",
       "source": {
         "source": "polyhaven",
         "id": "Barrel_01",
@@ -1027,14 +1027,14 @@
       "name": "blue barrel",
       "category": "equipment",
       "seen": true,
-      "asset": null,
+      "asset": "tgt_barrel_02",
       "scale": [
         1.0,
         1.0,
         1.0
       ],
       "material": null,
-      "status": "candidate",
+      "status": "imported",
       "source": {
         "source": "polyhaven",
         "id": "Barrel_02",
@@ -1054,14 +1054,14 @@
       "name": "wooden barrel",
       "category": "equipment",
       "seen": true,
-      "asset": null,
+      "asset": "tgt_wine_barrel_01",
       "scale": [
         1.0,
         1.0,
         1.0
       ],
       "material": null,
-      "status": "candidate",
+      "status": "imported",
       "source": {
         "source": "polyhaven",
         "id": "wine_barrel_01",
@@ -1081,14 +1081,14 @@
       "name": "green suitcase",
       "category": "equipment",
       "seen": true,
-      "asset": null,
+      "asset": "tgt_vintage_suitcase_01",
       "scale": [
         1.0,
         1.0,
         1.0
       ],
       "material": null,
-      "status": "candidate",
+      "status": "imported",
       "source": {
         "source": "polyhaven",
         "id": "vintage_suitcase",
@@ -1114,14 +1114,14 @@
       "name": "old television",
       "category": "equipment",
       "seen": true,
-      "asset": null,
+      "asset": "tgt_television_01",
       "scale": [
         1.0,
         1.0,
         1.0
       ],
       "material": null,
-      "status": "candidate",
+      "status": "imported",
       "source": {
         "source": "polyhaven",
         "id": "Television_01",
@@ -1141,14 +1141,14 @@
       "name": "red fire extinguisher",
       "category": "equipment",
       "seen": true,
-      "asset": null,
+      "asset": "tgt_korean_fire_extinguisher_01",
       "scale": [
         1.0,
         1.0,
         1.0
       ],
       "material": null,
-      "status": "candidate",
+      "status": "imported",
       "source": {
         "source": "polyhaven",
         "id": "korean_fire_extinguisher_01",
@@ -1168,14 +1168,14 @@
       "name": "yellow generator",
       "category": "equipment",
       "seen": true,
-      "asset": null,
+      "asset": "tgt_portable_generator",
       "scale": [
         1.0,
         1.0,
         1.0
       ],
       "material": null,
-      "status": "candidate",
+      "status": "imported",
       "source": {
         "source": "polyhaven",
         "id": "portable_generator",
@@ -1195,14 +1195,14 @@
       "name": "red tool chest",
       "category": "equipment",
       "seen": true,
-      "asset": null,
+      "asset": "tgt_metal_tool_chest",
       "scale": [
         1.0,
         1.0,
         1.0
       ],
       "material": null,
-      "status": "candidate",
+      "status": "imported",
       "source": {
         "source": "polyhaven",
         "id": "metal_tool_chest",
@@ -1222,14 +1222,14 @@
       "name": "yellow wet floor sign",
       "category": "equipment",
       "seen": true,
-      "asset": null,
+      "asset": "tgt_wetfloorsign_01",
       "scale": [
         1.0,
         1.0,
         1.0
       ],
       "material": null,
-      "status": "candidate",
+      "status": "imported",
       "source": {
         "source": "polyhaven",
         "id": "WetFloorSign_01",
@@ -1249,7 +1249,7 @@
       "name": "orange traffic cone",
       "category": "equipment",
       "seen": false,
-      "asset": null,
+      "asset": "tgt_cone",
       "scale": [
         1.512,
         1.512,
@@ -1278,14 +1278,14 @@
       "name": "wooden ladder",
       "category": "equipment",
       "seen": false,
-      "asset": null,
+      "asset": "tgt_wooden_ladder_02",
       "scale": [
         1.0,
         1.0,
         1.0
       ],
       "material": null,
-      "status": "candidate",
+      "status": "imported",
       "source": {
         "source": "polyhaven",
         "id": "wooden_ladder_02",
@@ -1305,7 +1305,7 @@
       "name": "man in brown jacket",
       "category": "human",
       "seen": true,
-      "asset": null,
+      "asset": "tgt_character_a",
       "scale": [
         0.648,
         0.648,
@@ -1334,7 +1334,7 @@
       "name": "man in red shirt",
       "category": "human",
       "seen": true,
-      "asset": null,
+      "asset": "tgt_character_b",
       "scale": [
         0.648,
         0.648,
@@ -1363,7 +1363,7 @@
       "name": "bald man in green shirt",
       "category": "human",
       "seen": true,
-      "asset": null,
+      "asset": "tgt_character_c",
       "scale": [
         0.648,
         0.648,
@@ -1392,7 +1392,7 @@
       "name": "person in purple shirt",
       "category": "human",
       "seen": true,
-      "asset": null,
+      "asset": "tgt_character_e",
       "scale": [
         0.611,
         0.611,
@@ -1421,7 +1421,7 @@
       "name": "doctor in white coat",
       "category": "human",
       "seen": true,
-      "asset": null,
+      "asset": "tgt_character_i",
       "scale": [
         0.648,
         0.648,
@@ -1450,7 +1450,7 @@
       "name": "police officer",
       "category": "human",
       "seen": true,
-      "asset": null,
+      "asset": "tgt_character_j",
       "scale": [
         0.666,
         0.666,
@@ -1479,7 +1479,7 @@
       "name": "man in blue jacket",
       "category": "human",
       "seen": true,
-      "asset": null,
+      "asset": "tgt_character_p",
       "scale": [
         0.648,
         0.648,
@@ -1508,7 +1508,7 @@
       "name": "man in black suit",
       "category": "human",
       "seen": true,
-      "asset": null,
+      "asset": "tgt_character_q",
       "scale": [
         0.666,
         0.666,
@@ -1537,7 +1537,7 @@
       "name": "girl in yellow shirt",
       "category": "human",
       "seen": true,
-      "asset": null,
+      "asset": "tgt_character_female_b",
       "scale": [
         1.797,
         1.797,
@@ -1566,7 +1566,7 @@
       "name": "woman in grey suit",
       "category": "human",
       "seen": false,
-      "asset": null,
+      "asset": "tgt_character_female_d",
       "scale": [
         2.127,
         2.127,
@@ -1595,14 +1595,14 @@
       "name": "bronze whale statue",
       "category": "other",
       "seen": true,
-      "asset": null,
+      "asset": "tgt_bronze_whale_statue",
       "scale": [
         1.0,
         1.0,
         1.0
       ],
       "material": null,
-      "status": "candidate",
+      "status": "imported",
       "source": {
         "source": "polyhaven",
         "id": "bronze_whale_statue",
@@ -1622,7 +1622,7 @@
       "name": "tiger",
       "category": "other",
       "seen": false,
-      "asset": null,
+      "asset": "tgt_animal_tiger",
       "scale": [
         0.85,
         0.85,
@@ -1651,7 +1651,7 @@
       "name": "elephant",
       "category": "other",
       "seen": false,
-      "asset": null,
+      "asset": "tgt_animal_elephant",
       "scale": [
         1.8,
         1.8,

@@ -1852,6 +1852,3472 @@
       "licence": "Unreal Engine EULA",
       "cooked_because": "/Game/BlocksMap, which is +MapsToCook (ue_project/Config/DefaultGame.ini), references it; nothing in an always-cooked directory does, so dropping BlocksMap from the cook would drop the cone",
       "measured_by": "the cooked mesh's bounds (ue_project/Saved/Cooked/Linux/Engine/Content/BasicShapes/Cone.uexp, cook of 2026-10-08 02:22): origin (0, 0, 0), half-extent 50 cm, read where Cube.uexp and Cylinder.uexp hold the 50 cm their live builds measured. The runtime spawn table (world.list_assets()) is to confirm it at plan 5 C6; no level places it yet"
+    },
+    "tgt_covered_car": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_covered_car/tgt_covered_car/StaticMeshes/tgt_covered_car",
+      "base_size_m": [
+        1.789,
+        4.3803,
+        1.4111
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "vehicle",
+      "role": "target",
+      "seen": true,
+      "measured_extent_cm_at_unit_scale": [
+        89.4482,
+        219.0127,
+        70.5556
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        70.5556
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        2.0309,
+        2.2809,
+        2.2747,
+        2.2431,
+        2.0172,
+        1.517
+      ],
+      "ground_radius_m": 2.2809,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": 2.0172,
+      "triangles": 12592,
+      "nanite": true,
+      "nanite_fallback_triangles": 12590,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "covered car",
+      "merged": {
+        "nodes": [
+          "covered_car_wheel_01",
+          "covered_car_wheel_02",
+          "covered_car_wheel_03",
+          "covered_car_wheel_04",
+          "covered_car"
+        ],
+        "translation_m": [
+          -0.047801,
+          -0.0,
+          -0.023811
+        ],
+        "rewrites": [],
+        "skinned_nodes": []
+      },
+      "source": {
+        "source": "polyhaven",
+        "id": "covered_car",
+        "file": "covered_car_1k.gltf",
+        "licence": "CC0-1.0",
+        "authors": {
+          "MP": "All"
+        },
+        "page": "https://polyhaven.com/a/covered_car",
+        "sha256": "80b210b08673833a8085812b9ee71286213b2af92654886e5a1a368977265aa7"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_sedan": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_sedan/tgt_sedan/StaticMeshes/tgt_sedan",
+      "base_size_m": [
+        1.5,
+        2.55,
+        1.3
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "vehicle",
+      "role": "target",
+      "seen": true,
+      "measured_extent_cm_at_unit_scale": [
+        75.0,
+        127.5,
+        65.0
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        65.0
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        1.3472,
+        1.3472,
+        1.3428,
+        1.1194,
+        0.8223,
+        0.7132
+      ],
+      "ground_radius_m": 1.3472,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": 0.8223,
+      "triangles": 2032,
+      "nanite": true,
+      "nanite_fallback_triangles": 2032,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "red sedan",
+      "merged": {
+        "nodes": [
+          "wheel-front-right",
+          "body",
+          "wheel-back-left",
+          "wheel-back-right",
+          "wheel-front-left"
+        ],
+        "translation_m": [
+          -0.0,
+          0.0,
+          0.025
+        ],
+        "rewrites": [],
+        "skinned_nodes": []
+      },
+      "source": {
+        "source": "kenney",
+        "id": "kenney_car-kit",
+        "file": "Models/GLB format/sedan.glb",
+        "model": "sedan",
+        "licence": "CC0-1.0",
+        "authors": {
+          "Kenney": "All"
+        },
+        "page": "https://kenney.nl/assets/car-kit",
+        "sha256": "b532ea7d2c59f7f6b22b138cf1955218a2c1898f1cea932af4d3fd563c3959b7"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_hatchback_sports": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_hatchback_sports/tgt_hatchback_sports/StaticMeshes/tgt_hatchback_sports",
+      "base_size_m": [
+        1.3,
+        2.85,
+        1.1
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "vehicle",
+      "role": "target",
+      "seen": true,
+      "measured_extent_cm_at_unit_scale": [
+        65.0,
+        142.5,
+        55.0
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        55.0
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        1.482,
+        1.482,
+        1.4346,
+        1.3886,
+        1.0284
+      ],
+      "ground_radius_m": 1.482,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": 1.0284,
+      "triangles": 2088,
+      "nanite": true,
+      "nanite_fallback_triangles": 2088,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "green hatchback",
+      "merged": {
+        "nodes": [
+          "wheel-front-right",
+          "wheel-front-left",
+          "wheel-back-right",
+          "wheel-back-left",
+          "body"
+        ],
+        "translation_m": [
+          -0.0,
+          0.0,
+          0.025
+        ],
+        "rewrites": [],
+        "skinned_nodes": []
+      },
+      "source": {
+        "source": "kenney",
+        "id": "kenney_car-kit",
+        "file": "Models/GLB format/hatchback-sports.glb",
+        "model": "hatchback-sports",
+        "licence": "CC0-1.0",
+        "authors": {
+          "Kenney": "All"
+        },
+        "page": "https://kenney.nl/assets/car-kit",
+        "sha256": "bd5c9d4c3b4bdd254a66b8426563a68b1487ae7a5076df3a2488e6ffed7be64f"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_van": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_van/tgt_van/StaticMeshes/tgt_van",
+      "base_size_m": [
+        1.5,
+        2.75,
+        1.35
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "vehicle",
+      "role": "target",
+      "seen": true,
+      "measured_extent_cm_at_unit_scale": [
+        75.0,
+        137.5,
+        67.5
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        67.5
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        1.4367,
+        1.4367,
+        1.4346,
+        1.4346,
+        1.3454,
+        1.2339
+      ],
+      "ground_radius_m": 1.4367,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": 1.3454,
+      "triangles": 2082,
+      "nanite": true,
+      "nanite_fallback_triangles": 2082,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "blue van",
+      "merged": {
+        "nodes": [
+          "wheel-front-right",
+          "wheel-front-left",
+          "wheel-back-right",
+          "wheel-back-left",
+          "body"
+        ],
+        "translation_m": [
+          -0.0,
+          0.0,
+          0.025
+        ],
+        "rewrites": [],
+        "skinned_nodes": []
+      },
+      "source": {
+        "source": "kenney",
+        "id": "kenney_car-kit",
+        "file": "Models/GLB format/van.glb",
+        "model": "van",
+        "licence": "CC0-1.0",
+        "authors": {
+          "Kenney": "All"
+        },
+        "page": "https://kenney.nl/assets/car-kit",
+        "sha256": "ed4ed56e8e5ed98db050af09ed2062b3b6bb7b93eab1e563cb6774b387b233a1"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_taxi": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_taxi/tgt_taxi/StaticMeshes/tgt_taxi",
+      "base_size_m": [
+        1.5,
+        2.75,
+        1.5
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "vehicle",
+      "role": "target",
+      "seen": true,
+      "measured_extent_cm_at_unit_scale": [
+        75.0,
+        137.5,
+        75.0
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        75.0
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        1.4367,
+        1.4367,
+        1.4346,
+        1.3886,
+        0.9028,
+        0.7922
+      ],
+      "ground_radius_m": 1.4367,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": 0.9028,
+      "triangles": 2072,
+      "nanite": true,
+      "nanite_fallback_triangles": 2072,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "yellow taxi",
+      "merged": {
+        "nodes": [
+          "body",
+          "wheel-front-right",
+          "wheel-front-left",
+          "wheel-back-left",
+          "wheel-back-right"
+        ],
+        "translation_m": [
+          -0.0,
+          0.0,
+          0.025
+        ],
+        "rewrites": [],
+        "skinned_nodes": []
+      },
+      "source": {
+        "source": "kenney",
+        "id": "kenney_car-kit",
+        "file": "Models/GLB format/taxi.glb",
+        "model": "taxi",
+        "licence": "CC0-1.0",
+        "authors": {
+          "Kenney": "All"
+        },
+        "page": "https://kenney.nl/assets/car-kit",
+        "sha256": "3803539718ffd3b84b515dbce8ed6b489f1ff5be58edb1903d2c5db5c584bdc7"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_police": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_police/tgt_police/StaticMeshes/tgt_police",
+      "base_size_m": [
+        1.5,
+        3.1,
+        1.3
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "vehicle",
+      "role": "target",
+      "seen": true,
+      "measured_extent_cm_at_unit_scale": [
+        75.0,
+        155.0,
+        65.0
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        65.0
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        1.5598,
+        1.5977,
+        1.5977,
+        1.5977,
+        0.9434,
+        0.3812
+      ],
+      "ground_radius_m": 1.5977,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": 0.9434,
+      "triangles": 2304,
+      "nanite": true,
+      "nanite_fallback_triangles": 2304,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "police car",
+      "merged": {
+        "nodes": [
+          "wheel-back-left",
+          "wheel-front-left",
+          "wheel-back-right",
+          "body",
+          "grill",
+          "wheel-front-right"
+        ],
+        "translation_m": [
+          -0.0,
+          0.0,
+          0.0
+        ],
+        "rewrites": [],
+        "skinned_nodes": []
+      },
+      "source": {
+        "source": "kenney",
+        "id": "kenney_car-kit",
+        "file": "Models/GLB format/police.glb",
+        "model": "police",
+        "licence": "CC0-1.0",
+        "authors": {
+          "Kenney": "All"
+        },
+        "page": "https://kenney.nl/assets/car-kit",
+        "sha256": "a617b880594f56239b7ac4cf6fd4d74ebdae3ba6c5d842e77c76a5906eff352a"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_ambulance": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_ambulance/tgt_ambulance/StaticMeshes/tgt_ambulance",
+      "base_size_m": [
+        1.5,
+        3.25,
+        1.8
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "vehicle",
+      "role": "target",
+      "seen": true,
+      "measured_extent_cm_at_unit_scale": [
+        75.0,
+        162.5,
+        90.0
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        90.0
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        1.6331,
+        1.7039,
+        1.7039,
+        1.7039,
+        1.7039,
+        1.7039,
+        1.7039,
+        1.2804
+      ],
+      "ground_radius_m": 1.7039,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": 1.7039,
+      "triangles": 2804,
+      "nanite": true,
+      "nanite_fallback_triangles": 2804,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "ambulance",
+      "merged": {
+        "nodes": [
+          "body",
+          "wheel-front-right",
+          "wheel-front-left",
+          "wheel-back-right",
+          "wheel-back-left",
+          "door-right",
+          "door-left"
+        ],
+        "translation_m": [
+          -0.0,
+          0.0,
+          0.025
+        ],
+        "rewrites": [],
+        "skinned_nodes": []
+      },
+      "source": {
+        "source": "kenney",
+        "id": "kenney_car-kit",
+        "file": "Models/GLB format/ambulance.glb",
+        "model": "ambulance",
+        "licence": "CC0-1.0",
+        "authors": {
+          "Kenney": "All"
+        },
+        "page": "https://kenney.nl/assets/car-kit",
+        "sha256": "9e429e2b6202c0d78d0c38b2adbaae6b77716bb2a0f6fbb2811556e1fb31edba"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_firetruck": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_firetruck/tgt_firetruck/StaticMeshes/tgt_firetruck",
+      "base_size_m": [
+        1.5,
+        3.4,
+        1.7
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "vehicle",
+      "role": "target",
+      "seen": true,
+      "measured_extent_cm_at_unit_scale": [
+        75.0,
+        170.0,
+        85.0
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        85.0
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        1.7077,
+        1.7923,
+        1.7923,
+        1.7923,
+        1.7923,
+        1.7923,
+        1.7923
+      ],
+      "ground_radius_m": 1.7923,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": 1.7923,
+      "triangles": 2767,
+      "nanite": true,
+      "nanite_fallback_triangles": 2767,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "red fire truck",
+      "merged": {
+        "nodes": [
+          "body",
+          "grill",
+          "wheel-front-right",
+          "wheel-front-left",
+          "wheel-back-right",
+          "wheel-back-left"
+        ],
+        "translation_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rewrites": [],
+        "skinned_nodes": []
+      },
+      "source": {
+        "source": "kenney",
+        "id": "kenney_car-kit",
+        "file": "Models/GLB format/firetruck.glb",
+        "model": "firetruck",
+        "licence": "CC0-1.0",
+        "authors": {
+          "Kenney": "All"
+        },
+        "page": "https://kenney.nl/assets/car-kit",
+        "sha256": "c0c0a22809316536468da7e9c7f57b8ec1a8e387ec3a1cde032976c6d8a6c7a4"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_garbage_truck": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_garbage_truck/tgt_garbage_truck/StaticMeshes/tgt_garbage_truck",
+      "base_size_m": [
+        1.6,
+        3.45,
+        1.6
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "vehicle",
+      "role": "target",
+      "seen": true,
+      "measured_extent_cm_at_unit_scale": [
+        80.0,
+        172.5,
+        80.0
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        80.0
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        1.763,
+        1.8106,
+        1.7235,
+        1.7703,
+        1.7156,
+        1.3428,
+        1.1305
+      ],
+      "ground_radius_m": 1.8106,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": 1.7156,
+      "triangles": 3124,
+      "nanite": true,
+      "nanite_fallback_triangles": 3124,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "green garbage truck",
+      "merged": {
+        "nodes": [
+          "arm",
+          "wheel-front-left",
+          "wheel-front-right",
+          "wheel-back-right",
+          "wheel-back-left",
+          "body",
+          "trash"
+        ],
+        "translation_m": [
+          -0.0,
+          0.0,
+          -0.025
+        ],
+        "rewrites": [],
+        "skinned_nodes": []
+      },
+      "source": {
+        "source": "kenney",
+        "id": "kenney_car-kit",
+        "file": "Models/GLB format/garbage-truck.glb",
+        "model": "garbage-truck",
+        "licence": "CC0-1.0",
+        "authors": {
+          "Kenney": "All"
+        },
+        "page": "https://kenney.nl/assets/car-kit",
+        "sha256": "6f2943e0ba4c6d86eb69a9243224259d6e0f169f474228439cda0579d49d3509"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_suv_luxury": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_suv_luxury/tgt_suv_luxury/StaticMeshes/tgt_suv_luxury",
+      "base_size_m": [
+        1.5,
+        2.85,
+        1.3
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "vehicle",
+      "role": "target",
+      "seen": true,
+      "measured_extent_cm_at_unit_scale": [
+        75.0,
+        142.5,
+        65.0
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        65.0
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        1.482,
+        1.482,
+        1.5275,
+        1.5275,
+        1.4384,
+        1.3273
+      ],
+      "ground_radius_m": 1.5275,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": 1.4384,
+      "triangles": 2086,
+      "nanite": true,
+      "nanite_fallback_triangles": 2086,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "yellow suv",
+      "merged": {
+        "nodes": [
+          "wheel-back-right",
+          "wheel-front-right",
+          "wheel-front-left",
+          "body",
+          "wheel-back-left"
+        ],
+        "translation_m": [
+          -0.0,
+          0.0,
+          -0.025
+        ],
+        "rewrites": [],
+        "skinned_nodes": []
+      },
+      "source": {
+        "source": "kenney",
+        "id": "kenney_car-kit",
+        "file": "Models/GLB format/suv-luxury.glb",
+        "model": "suv-luxury",
+        "licence": "CC0-1.0",
+        "authors": {
+          "Kenney": "All"
+        },
+        "page": "https://kenney.nl/assets/car-kit",
+        "sha256": "9e2a79dc050189d4555a88d2e9da0f30ff946ba74f1d43b5b3bda3c193d1f7d7"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_truck_flat": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_truck_flat/tgt_truck_flat/StaticMeshes/tgt_truck_flat",
+      "base_size_m": [
+        1.5,
+        2.7451,
+        1.3
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "vehicle",
+      "role": "target",
+      "seen": true,
+      "measured_extent_cm_at_unit_scale": [
+        75.0,
+        137.2557,
+        65.0
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        65.0
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        1.4345,
+        1.4345,
+        1.4793,
+        1.4793,
+        0.9593,
+        0.766
+      ],
+      "ground_radius_m": 1.4793,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": 0.9593,
+      "triangles": 2488,
+      "nanite": true,
+      "nanite_fallback_triangles": 2488,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "white pickup truck",
+      "merged": {
+        "nodes": [
+          "wheel-front-left",
+          "wheel-front-right",
+          "wheel-back-right",
+          "wheel-back-left",
+          "body"
+        ],
+        "translation_m": [
+          -0.0,
+          0.0,
+          0.0
+        ],
+        "rewrites": [],
+        "skinned_nodes": []
+      },
+      "source": {
+        "source": "kenney",
+        "id": "kenney_car-kit",
+        "file": "Models/GLB format/truck-flat.glb",
+        "model": "truck-flat",
+        "licence": "CC0-1.0",
+        "authors": {
+          "Kenney": "All"
+        },
+        "page": "https://kenney.nl/assets/car-kit",
+        "sha256": "4279862f2442e96c6603c514edf50bfb932707545695d8c4747611cd3796cf3b"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_crane": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_crane/tgt_crane/StaticMeshes/tgt_crane",
+      "base_size_m": [
+        1.926,
+        3.6803,
+        3.5533
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "vehicle",
+      "role": "target",
+      "seen": false,
+      "measured_extent_cm_at_unit_scale": [
+        96.3013,
+        184.0125,
+        177.666
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        177.666
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        1.6832,
+        1.6132,
+        1.4985,
+        1.4543,
+        1.4053,
+        1.4648,
+        1.4648,
+        1.4648,
+        1.4648,
+        1.3853,
+        1.45,
+        1.45,
+        1.8436,
+        1.8436,
+        1.5176
+      ],
+      "ground_radius_m": 1.8436,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": 1.4648,
+      "triangles": 564,
+      "nanite": true,
+      "nanite_fallback_triangles": 564,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "crane",
+      "merged": {
+        "nodes": [
+          "crane",
+          "arm"
+        ],
+        "translation_m": [
+          -0.0,
+          0.0,
+          1.15
+        ],
+        "rewrites": [],
+        "skinned_nodes": []
+      },
+      "source": {
+        "source": "kenney",
+        "id": "kenney_factory-kit",
+        "file": "Models/GLB format/crane.glb",
+        "model": "crane",
+        "licence": "CC0-1.0",
+        "authors": {
+          "Kenney": "All"
+        },
+        "page": "https://kenney.nl/assets/factory-kit",
+        "sha256": "ceaf20fb976ce0415d2b3d40e723b6ad377845818fa4fa68b55434108b1a6880"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_tractor_shovel": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_tractor_shovel/tgt_tractor_shovel/StaticMeshes/tgt_tractor_shovel",
+      "base_size_m": [
+        1.6606,
+        2.4701,
+        1.512
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "vehicle",
+      "role": "target",
+      "seen": false,
+      "measured_extent_cm_at_unit_scale": [
+        83.028,
+        123.5031,
+        75.6012
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        75.6012
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        1.398,
+        1.345,
+        1.4337,
+        1.364,
+        1.1132,
+        1.0749,
+        1.0749
+      ],
+      "ground_radius_m": 1.4337,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": 1.1132,
+      "triangles": 2646,
+      "nanite": true,
+      "nanite_fallback_triangles": 2646,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "green front loader",
+      "merged": {
+        "nodes": [
+          "wheel-back-left",
+          "body",
+          "shovel",
+          "wheel-back-right",
+          "wheel-front-left",
+          "wheel-front-right"
+        ],
+        "translation_m": [
+          -0.0,
+          0.0,
+          -0.0
+        ],
+        "rewrites": [],
+        "skinned_nodes": []
+      },
+      "source": {
+        "source": "kenney",
+        "id": "kenney_car-kit",
+        "file": "Models/GLB format/tractor-shovel.glb",
+        "model": "tractor-shovel",
+        "licence": "CC0-1.0",
+        "authors": {
+          "Kenney": "All"
+        },
+        "page": "https://kenney.nl/assets/car-kit",
+        "sha256": "1bc67bcc36dc563baf7b5060e2a790f67a5a0b42fbdf17c18ab933fcc8a4aa53"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_sofa_01": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_sofa_01/tgt_sofa_01/StaticMeshes/tgt_sofa_01",
+      "base_size_m": [
+        1.5715,
+        0.658,
+        0.7965
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "furniture",
+      "role": "target",
+      "seen": true,
+      "measured_extent_cm_at_unit_scale": [
+        78.5734,
+        32.9007,
+        39.8258
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        39.8258
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.8395,
+        0.8336,
+        0.7986,
+        0.3702
+      ],
+      "ground_radius_m": 0.8395,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": null,
+      "triangles": 4101,
+      "nanite": true,
+      "nanite_fallback_triangles": 4101,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "beige sofa",
+      "merged": {
+        "nodes": [
+          "Sofa_01"
+        ],
+        "translation_m": [
+          -0.007622,
+          0.000587,
+          0.032196
+        ],
+        "rewrites": [],
+        "skinned_nodes": []
+      },
+      "source": {
+        "source": "polyhaven",
+        "id": "Sofa_01",
+        "file": "Sofa_01_1k.gltf",
+        "licence": "CC0-1.0",
+        "authors": {
+          "Kirill Sannikov": "All"
+        },
+        "page": "https://polyhaven.com/a/Sofa_01",
+        "sha256": "dc9d331a24fc8994606ae5a283826cb28feb3166782f59d006d0f10cc92cc830"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_sofa_02": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_sofa_02/tgt_sofa_02/StaticMeshes/tgt_sofa_02",
+      "base_size_m": [
+        1.8072,
+        0.8178,
+        0.7095
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "furniture",
+      "role": "target",
+      "seen": true,
+      "measured_extent_cm_at_unit_scale": [
+        90.3584,
+        40.8876,
+        35.4744
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        35.4744
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.897,
+        0.8791,
+        0.942
+      ],
+      "ground_radius_m": 0.942,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": null,
+      "triangles": 2728,
+      "nanite": true,
+      "nanite_fallback_triangles": 2728,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "black leather sofa",
+      "merged": {
+        "nodes": [
+          "sofa_02_Base",
+          "sofa_02_Seat"
+        ],
+        "translation_m": [
+          -0.000267,
+          -0.000206,
+          0.068823
+        ],
+        "rewrites": [],
+        "skinned_nodes": []
+      },
+      "source": {
+        "source": "polyhaven",
+        "id": "sofa_02",
+        "file": "sofa_02_1k.gltf",
+        "licence": "CC0-1.0",
+        "authors": {
+          "Kirill Sannikov": "All"
+        },
+        "page": "https://polyhaven.com/a/sofa_02",
+        "sha256": "5df114209f9b956ccd4831eaeef469a81339ab371d0056eb6d5d29eee08eb431"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_armchair_01": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_armchair_01/tgt_armchair_01/StaticMeshes/tgt_armchair_01",
+      "base_size_m": [
+        0.8484,
+        0.7658,
+        1.0651
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "furniture",
+      "role": "target",
+      "seen": true,
+      "measured_extent_cm_at_unit_scale": [
+        42.4215,
+        38.288,
+        53.2544
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        53.2544
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.5543,
+        0.542,
+        0.5099,
+        0.4721,
+        0.4219
+      ],
+      "ground_radius_m": 0.5543,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": 0.4219,
+      "triangles": 5626,
+      "nanite": true,
+      "nanite_fallback_triangles": 5625,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "grey armchair",
+      "merged": {
+        "nodes": [
+          "ArmChair_01"
+        ],
+        "translation_m": [
+          -0.0,
+          0.000431,
+          0.034426
+        ],
+        "rewrites": [],
+        "skinned_nodes": []
+      },
+      "source": {
+        "source": "polyhaven",
+        "id": "ArmChair_01",
+        "file": "ArmChair_01_1k.gltf",
+        "licence": "CC0-1.0",
+        "authors": {
+          "Kirill Sannikov": "All"
+        },
+        "page": "https://polyhaven.com/a/ArmChair_01",
+        "sha256": "91e39d5b35f36c8074b7b6432f6fd77f5f1a257c4d6af3924c0b263eb674286b"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_greenchair_01": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_greenchair_01/tgt_greenchair_01/StaticMeshes/tgt_greenchair_01",
+      "base_size_m": [
+        0.6731,
+        0.6644,
+        1.0585
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "furniture",
+      "role": "target",
+      "seen": true,
+      "measured_extent_cm_at_unit_scale": [
+        33.6547,
+        33.2194,
+        52.9256
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        52.9256
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.4512,
+        0.4502,
+        0.3694,
+        0.401,
+        0.3533
+      ],
+      "ground_radius_m": 0.4512,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": 0.3533,
+      "triangles": 4213,
+      "nanite": true,
+      "nanite_fallback_triangles": 4213,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "green armchair",
+      "merged": {
+        "nodes": [
+          "GreenChair_01"
+        ],
+        "translation_m": [
+          0.000535,
+          0.00053,
+          0.045854
+        ],
+        "rewrites": [],
+        "skinned_nodes": []
+      },
+      "source": {
+        "source": "polyhaven",
+        "id": "GreenChair_01",
+        "file": "GreenChair_01_1k.gltf",
+        "licence": "CC0-1.0",
+        "authors": {
+          "Kirill Sannikov": "All"
+        },
+        "page": "https://polyhaven.com/a/GreenChair_01",
+        "sha256": "d1e4946ac99ab9e64c82d802fe5cd49d962750e34b8d284762b3fe2b00ba8a45"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_plastic_monobloc_chair_01": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_plastic_monobloc_chair_01/tgt_plastic_monobloc_chair_01/StaticMeshes/tgt_plastic_monobloc_chair_01",
+      "base_size_m": [
+        0.6419,
+        0.6276,
+        0.8798
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "furniture",
+      "role": "target",
+      "seen": true,
+      "measured_extent_cm_at_unit_scale": [
+        32.0931,
+        31.3796,
+        43.9921
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        43.9921
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.4396,
+        0.3898,
+        0.3567,
+        0.3321
+      ],
+      "ground_radius_m": 0.4396,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": null,
+      "triangles": 3356,
+      "nanite": true,
+      "nanite_fallback_triangles": 3356,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "white plastic chair",
+      "merged": {
+        "nodes": [
+          "plastic_monobloc_chair_01"
+        ],
+        "translation_m": [
+          -0.0,
+          2e-05,
+          0.022155
+        ],
+        "rewrites": [],
+        "skinned_nodes": []
+      },
+      "source": {
+        "source": "polyhaven",
+        "id": "plastic_monobloc_chair_01",
+        "file": "plastic_monobloc_chair_01_1k.gltf",
+        "licence": "CC0-1.0",
+        "authors": {
+          "Kuutti Siitonen": "All"
+        },
+        "page": "https://polyhaven.com/a/plastic_monobloc_chair_01",
+        "sha256": "899bf148139ab8d1718c25ec06112a652631f9476b5aaeeacb9eb1da9b7f1d3a"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_schoolchair_01": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_schoolchair_01/tgt_schoolchair_01/StaticMeshes/tgt_schoolchair_01",
+      "base_size_m": [
+        0.5659,
+        0.6753,
+        1.006
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "furniture",
+      "role": "target",
+      "seen": true,
+      "measured_extent_cm_at_unit_scale": [
+        28.2927,
+        33.7627,
+        50.3018
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        50.3018
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.4334,
+        0.3753,
+        0.372,
+        0.3122,
+        0.2744
+      ],
+      "ground_radius_m": 0.4334,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": 0.2744,
+      "triangles": 5072,
+      "nanite": true,
+      "nanite_fallback_triangles": 5072,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "blue school chair",
+      "merged": {
+        "nodes": [
+          "SchoolChair_01"
+        ],
+        "translation_m": [
+          0.0,
+          0.001709,
+          -0.0
+        ],
+        "rewrites": [],
+        "skinned_nodes": []
+      },
+      "source": {
+        "source": "polyhaven",
+        "id": "SchoolChair_01",
+        "file": "SchoolChair_01_1k.gltf",
+        "licence": "CC0-1.0",
+        "authors": {
+          "Ethan Place": "All"
+        },
+        "page": "https://polyhaven.com/a/SchoolChair_01",
+        "sha256": "1db6aca4bf379c2d568b2068492dcfcda15d764c0c3d98a970055af25b46281e"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_painted_wooden_bench": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_painted_wooden_bench/tgt_painted_wooden_bench/StaticMeshes/tgt_painted_wooden_bench",
+      "base_size_m": [
+        1.1649,
+        0.4965,
+        0.8893
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "furniture",
+      "role": "target",
+      "seen": true,
+      "measured_extent_cm_at_unit_scale": [
+        58.2472,
+        24.8272,
+        44.4646
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        44.4646
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.6324,
+        0.6325,
+        0.6332,
+        0.6332
+      ],
+      "ground_radius_m": 0.6332,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": null,
+      "triangles": 630,
+      "nanite": true,
+      "nanite_fallback_triangles": 630,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "red wooden bench",
+      "merged": {
+        "nodes": [
+          "painted_wooden_bench"
+        ],
+        "translation_m": [
+          -0.006411,
+          0.000499,
+          0.005427
+        ],
+        "rewrites": [],
+        "skinned_nodes": []
+      },
+      "source": {
+        "source": "polyhaven",
+        "id": "painted_wooden_bench",
+        "file": "painted_wooden_bench_1k.gltf",
+        "licence": "CC0-1.0",
+        "authors": {
+          "Kirill Sannikov": "All"
+        },
+        "page": "https://polyhaven.com/a/painted_wooden_bench",
+        "sha256": "2289ab82f3fe3045bf18f7b9541743d2c65b9f071cb34bbe424d2bc998f3e507"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_round_wooden_table_01": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_round_wooden_table_01/tgt_round_wooden_table_01/StaticMeshes/tgt_round_wooden_table_01",
+      "base_size_m": [
+        1.3993,
+        1.3993,
+        1.005
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "furniture",
+      "role": "target",
+      "seen": true,
+      "measured_extent_cm_at_unit_scale": [
+        69.9674,
+        69.9674,
+        50.2511
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        50.2511
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.6571,
+        0.3174,
+        0.0869,
+        0.6997,
+        0.6932
+      ],
+      "ground_radius_m": 0.6997,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": 0.6932,
+      "triangles": 8640,
+      "nanite": true,
+      "nanite_fallback_triangles": 8640,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "round wooden table",
+      "merged": {
+        "nodes": [
+          "round_wooden_table_01",
+          "round_wooden_table_01_bolts"
+        ],
+        "translation_m": [
+          -0.0,
+          0.001318,
+          -0.0
+        ],
+        "rewrites": [],
+        "skinned_nodes": []
+      },
+      "source": {
+        "source": "polyhaven",
+        "id": "round_wooden_table_01",
+        "file": "round_wooden_table_01_1k.gltf",
+        "licence": "CC0-1.0",
+        "authors": {
+          "Ulan Cabanilla": "All"
+        },
+        "page": "https://polyhaven.com/a/round_wooden_table_01",
+        "sha256": "dd09c1663b10d15a1fda12ba4f53743e8b8379b17254a78be22100d584738b48"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_painted_wooden_cabinet": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_painted_wooden_cabinet/tgt_painted_wooden_cabinet/StaticMeshes/tgt_painted_wooden_cabinet",
+      "base_size_m": [
+        1.1947,
+        0.6166,
+        1.1819
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "furniture",
+      "role": "target",
+      "seen": true,
+      "measured_extent_cm_at_unit_scale": [
+        59.7337,
+        30.8318,
+        59.0935
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        59.0935
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.6452,
+        0.6439,
+        0.6439,
+        0.6439,
+        0.6722
+      ],
+      "ground_radius_m": 0.6722,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": 0.6722,
+      "triangles": 2227,
+      "nanite": true,
+      "nanite_fallback_triangles": 2227,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "white cabinet",
+      "merged": {
+        "nodes": [
+          "painted_wooden_cabinet",
+          "painted_wooden_cabinet_door_02",
+          "painted_wooden_cabinet_door_01",
+          "painted_wooden_cabinet_drawer_02",
+          "painted_wooden_cabinet_drawer_01"
+        ],
+        "translation_m": [
+          -0.002632,
+          0.000371,
+          -0.025925
+        ],
+        "rewrites": [],
+        "skinned_nodes": []
+      },
+      "source": {
+        "source": "polyhaven",
+        "id": "painted_wooden_cabinet",
+        "file": "painted_wooden_cabinet_1k.gltf",
+        "licence": "CC0-1.0",
+        "authors": {
+          "Kirill Sannikov": "All"
+        },
+        "page": "https://polyhaven.com/a/painted_wooden_cabinet",
+        "sha256": "ce04543cdb10e05fe9c2cc08e9c118b16c1c717a07bcbfac9b99859465c8d1ed"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_vintage_grandfather_clock_01": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_vintage_grandfather_clock_01/tgt_vintage_grandfather_clock_01/StaticMeshes/tgt_vintage_grandfather_clock_01",
+      "base_size_m": [
+        0.6256,
+        0.4266,
+        2.1906
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "furniture",
+      "role": "target",
+      "seen": false,
+      "measured_extent_cm_at_unit_scale": [
+        31.2812,
+        21.3308,
+        109.5296
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        109.5296
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.3654,
+        0.3421,
+        0.2999,
+        0.2999,
+        0.2999,
+        0.3424,
+        0.3424,
+        0.345,
+        0.3786
+      ],
+      "ground_radius_m": 0.3786,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": 0.3786,
+      "triangles": 8582,
+      "nanite": true,
+      "nanite_fallback_triangles": 8582,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "grandfather clock",
+      "merged": {
+        "nodes": [
+          "vintage_grandfather_clock_01_body",
+          "vintage_grandfather_clock_01_minute_hand",
+          "vintage_grandfather_clock_01_houd_hand"
+        ],
+        "translation_m": [
+          -0.062766,
+          6.5e-05,
+          0.037664
+        ],
+        "rewrites": [
+          {
+            "material": "vintage_grandfather_clock_01_glass",
+            "change": "alphaMode BLEND -> MASK",
+            "alpha_cutoff": 0.5,
+            "removed_extensions": [
+              "KHR_materials_clearcoat"
+            ]
+          }
+        ],
+        "skinned_nodes": []
+      },
+      "source": {
+        "source": "polyhaven",
+        "id": "vintage_grandfather_clock_01",
+        "file": "vintage_grandfather_clock_01_1k.gltf",
+        "licence": "CC0-1.0",
+        "authors": {
+          "Yann Kervran": "Rigging",
+          "James Ray Cock": "Modeling & Texturing"
+        },
+        "page": "https://polyhaven.com/a/vintage_grandfather_clock_01",
+        "sha256": "6fbf4d470426d301681ea0021a0fe345817d9187608792c7610aeb9981f4cd06"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_wooden_picnic_table": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_wooden_picnic_table/tgt_wooden_picnic_table/StaticMeshes/tgt_wooden_picnic_table",
+      "base_size_m": [
+        2.241,
+        3.0223,
+        0.746
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "furniture",
+      "role": "target",
+      "seen": false,
+      "measured_extent_cm_at_unit_scale": [
+        112.0488,
+        151.1165,
+        37.2993
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        37.2993
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        1.7927,
+        1.878,
+        1.5949
+      ],
+      "ground_radius_m": 1.878,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": null,
+      "triangles": 10210,
+      "nanite": true,
+      "nanite_fallback_triangles": 10210,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "wooden picnic table",
+      "merged": {
+        "nodes": [
+          "wooden_picnic_table"
+        ],
+        "translation_m": [
+          0.000761,
+          0.000259,
+          -0.009645
+        ],
+        "rewrites": [],
+        "skinned_nodes": []
+      },
+      "source": {
+        "source": "polyhaven",
+        "id": "wooden_picnic_table",
+        "file": "wooden_picnic_table_1k.gltf",
+        "licence": "CC0-1.0",
+        "authors": {
+          "Ulan Cabanilla": "All"
+        },
+        "page": "https://polyhaven.com/a/wooden_picnic_table",
+        "sha256": "6b0dd9916fd87dba2e5baad06e20c0badf68bc68a5761a13854fa9a215c6bd50"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_barrel_01": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_barrel_01/tgt_barrel_01/StaticMeshes/tgt_barrel_01",
+      "base_size_m": [
+        0.563,
+        0.563,
+        0.88
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "equipment",
+      "role": "target",
+      "seen": true,
+      "measured_extent_cm_at_unit_scale": [
+        28.1518,
+        28.1518,
+        44.0
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        44.0
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.282,
+        0.2819,
+        0.2819,
+        0.282
+      ],
+      "ground_radius_m": 0.282,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": null,
+      "triangles": 2682,
+      "nanite": true,
+      "nanite_fallback_triangles": 2682,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "red barrel",
+      "merged": {
+        "nodes": [
+          "Barrel_01"
+        ],
+        "translation_m": [
+          0.0,
+          0.006614,
+          -0.0
+        ],
+        "rewrites": [],
+        "skinned_nodes": []
+      },
+      "source": {
+        "source": "polyhaven",
+        "id": "Barrel_01",
+        "file": "Barrel_01_1k.gltf",
+        "licence": "CC0-1.0",
+        "authors": {
+          "Jorge Camacho": "All"
+        },
+        "page": "https://polyhaven.com/a/Barrel_01",
+        "sha256": "e084945dedd6a3379c6f3e97842cac89df7169797707e123a5e5b42c135d6888"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_barrel_02": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_barrel_02/tgt_barrel_02/StaticMeshes/tgt_barrel_02",
+      "base_size_m": [
+        0.4882,
+        0.4846,
+        0.88
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "equipment",
+      "role": "target",
+      "seen": true,
+      "measured_extent_cm_at_unit_scale": [
+        24.4088,
+        24.2308,
+        44.0
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        44.0
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.2441,
+        0.2418,
+        0.2441,
+        0.2314
+      ],
+      "ground_radius_m": 0.2441,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": null,
+      "triangles": 2688,
+      "nanite": true,
+      "nanite_fallback_triangles": 2688,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "blue barrel",
+      "merged": {
+        "nodes": [
+          "Barrel_02"
+        ],
+        "translation_m": [
+          -0.0,
+          -0.004637,
+          0.0
+        ],
+        "rewrites": [],
+        "skinned_nodes": []
+      },
+      "source": {
+        "source": "polyhaven",
+        "id": "Barrel_02",
+        "file": "Barrel_02_1k.gltf",
+        "licence": "CC0-1.0",
+        "authors": {
+          "Jorge Camacho": "All"
+        },
+        "page": "https://polyhaven.com/a/Barrel_02",
+        "sha256": "82204368af4d7211c440e7ebcd30979f48ba349d4439f3bf0212f86d4ba5d9d8"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_wine_barrel_01": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_wine_barrel_01/tgt_wine_barrel_01/StaticMeshes/tgt_wine_barrel_01",
+      "base_size_m": [
+        0.7419,
+        0.756,
+        0.8713
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "equipment",
+      "role": "target",
+      "seen": true,
+      "measured_extent_cm_at_unit_scale": [
+        37.0951,
+        37.8018,
+        43.5632
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        43.5632
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.3598,
+        0.3806,
+        0.3775,
+        0.3353
+      ],
+      "ground_radius_m": 0.3806,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": null,
+      "triangles": 10820,
+      "nanite": true,
+      "nanite_fallback_triangles": 10820,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "wooden barrel",
+      "merged": {
+        "nodes": [
+          "wine_barrel_01_Lid",
+          "wine_barrel_01_bung",
+          "wine_barrel_01",
+          "wine_barrel_01_base"
+        ],
+        "translation_m": [
+          -2e-06,
+          -0.000684,
+          -0.007065
+        ],
+        "rewrites": [],
+        "skinned_nodes": []
+      },
+      "source": {
+        "source": "polyhaven",
+        "id": "wine_barrel_01",
+        "file": "wine_barrel_01_1k.gltf",
+        "licence": "CC0-1.0",
+        "authors": {
+          "James Ray Cock": "All"
+        },
+        "page": "https://polyhaven.com/a/wine_barrel_01",
+        "sha256": "503d3339677217c3241a3cdbc1c803ed1eb82d1a48f51436d1545ec5745ae8d8"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_vintage_suitcase_01": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_vintage_suitcase_01/tgt_vintage_suitcase_01/StaticMeshes/tgt_vintage_suitcase_01",
+      "base_size_m": [
+        0.6938,
+        0.2392,
+        0.5679
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "equipment",
+      "role": "target",
+      "seen": true,
+      "measured_extent_cm_at_unit_scale": [
+        34.6891,
+        11.9588,
+        28.3953
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        28.3953
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.357,
+        0.357,
+        0.3545
+      ],
+      "ground_radius_m": 0.357,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": null,
+      "triangles": 8237,
+      "nanite": true,
+      "nanite_fallback_triangles": 8237,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "green suitcase",
+      "merged": {
+        "nodes": [
+          "vintage_suitcase_01_bottom",
+          "vintage_suitcase_01_clasp",
+          "vintage_suitcase_01_handle",
+          "vintage_suitcase_01_top"
+        ],
+        "translation_m": [
+          -0.457921,
+          0.000106,
+          0.009233
+        ],
+        "rewrites": [],
+        "skinned_nodes": []
+      },
+      "source": {
+        "source": "polyhaven",
+        "id": "vintage_suitcase",
+        "file": "vintage_suitcase_1k.gltf",
+        "nodes": [
+          "vintage_suitcase_01_bottom",
+          "vintage_suitcase_01_clasp",
+          "vintage_suitcase_01_handle",
+          "vintage_suitcase_01_top"
+        ],
+        "licence": "CC0-1.0",
+        "authors": {
+          "Maximilian Schuster": "All"
+        },
+        "page": "https://polyhaven.com/a/vintage_suitcase",
+        "sha256": "5d040fdb26c5d97d5d60518ef4875cc72effcabe0a5f68f50e8970013e57a589"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_television_01": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_television_01/tgt_television_01/StaticMeshes/tgt_television_01",
+      "base_size_m": [
+        0.6,
+        0.4708,
+        0.4568
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "equipment",
+      "role": "target",
+      "seen": true,
+      "measured_extent_cm_at_unit_scale": [
+        30.0,
+        23.5405,
+        22.8424
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        22.8424
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.3653,
+        0.3577
+      ],
+      "ground_radius_m": 0.3653,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": null,
+      "triangles": 1918,
+      "nanite": true,
+      "nanite_fallback_triangles": 1918,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "old television",
+      "merged": {
+        "nodes": [
+          "Television_01"
+        ],
+        "translation_m": [
+          -0.0,
+          1.6e-05,
+          0.022961
+        ],
+        "rewrites": [],
+        "skinned_nodes": []
+      },
+      "source": {
+        "source": "polyhaven",
+        "id": "Television_01",
+        "file": "Television_01_1k.gltf",
+        "licence": "CC0-1.0",
+        "authors": {
+          "Gabriel Radi\u0107": "All"
+        },
+        "page": "https://polyhaven.com/a/Television_01",
+        "sha256": "ef4376366ea956519c1a1d06146a8e8cc2bb0fcbd5c6b9f919a54ce31d05d530"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_korean_fire_extinguisher_01": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_korean_fire_extinguisher_01/tgt_korean_fire_extinguisher_01/StaticMeshes/tgt_korean_fire_extinguisher_01",
+      "base_size_m": [
+        0.28,
+        0.3674,
+        0.6593
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "equipment",
+      "role": "target",
+      "seen": true,
+      "measured_extent_cm_at_unit_scale": [
+        13.9979,
+        18.3722,
+        32.9625
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        32.9625
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.2307,
+        0.1407,
+        0.1308
+      ],
+      "ground_radius_m": 0.2307,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": null,
+      "triangles": 9913,
+      "nanite": true,
+      "nanite_fallback_triangles": 9913,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "red fire extinguisher",
+      "merged": {
+        "nodes": [
+          "korean_fire_extinguisher_01"
+        ],
+        "translation_m": [
+          -0.0,
+          0.0,
+          -0.060481
+        ],
+        "rewrites": [
+          {
+            "material": "korean_fire_extinguisher_01_glass",
+            "change": "alphaMode BLEND -> MASK",
+            "alpha_cutoff": 0.5,
+            "removed_extensions": []
+          },
+          {
+            "material": "korean_fire_extinguisher_01_paper",
+            "change": "alphaMode BLEND -> MASK",
+            "alpha_cutoff": 0.5,
+            "removed_extensions": []
+          }
+        ],
+        "skinned_nodes": []
+      },
+      "source": {
+        "source": "polyhaven",
+        "id": "korean_fire_extinguisher_01",
+        "file": "korean_fire_extinguisher_01_1k.gltf",
+        "licence": "CC0-1.0",
+        "authors": {
+          "UM JOORIN": "All"
+        },
+        "page": "https://polyhaven.com/a/korean_fire_extinguisher_01",
+        "sha256": "565f9e41909165c2bead24b722746e29ba55e8eb5e541f61fe0d1ef7e66d2ecf"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_portable_generator": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_portable_generator/tgt_portable_generator/StaticMeshes/tgt_portable_generator",
+      "base_size_m": [
+        0.8183,
+        0.564,
+        0.5769
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "equipment",
+      "role": "target",
+      "seen": true,
+      "measured_extent_cm_at_unit_scale": [
+        40.917,
+        28.2,
+        28.8462
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        28.8462
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.4898,
+        0.4884,
+        0.4539
+      ],
+      "ground_radius_m": 0.4898,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": null,
+      "triangles": 26419,
+      "nanite": true,
+      "nanite_fallback_triangles": 26419,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "yellow generator",
+      "merged": {
+        "nodes": [
+          "portable_generator",
+          "portable_generator_dial",
+          "portable_generator_switch",
+          "portable_generator_toggle"
+        ],
+        "translation_m": [
+          0.005347,
+          -5.8e-05,
+          -0.0
+        ],
+        "rewrites": [
+          {
+            "material": "portable_generator_glass",
+            "change": "alphaMode BLEND -> MASK",
+            "alpha_cutoff": 0.5,
+            "removed_extensions": [
+              "KHR_materials_transmission"
+            ]
+          }
+        ],
+        "skinned_nodes": []
+      },
+      "source": {
+        "source": "polyhaven",
+        "id": "portable_generator",
+        "file": "portable_generator_1k.gltf",
+        "licence": "CC0-1.0",
+        "authors": {
+          "James Ray Cock": "All"
+        },
+        "page": "https://polyhaven.com/a/portable_generator",
+        "sha256": "d5afe27834f824dfe753391713c45be03479e8100831f320796030531f61b848"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_metal_tool_chest": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_metal_tool_chest/tgt_metal_tool_chest/StaticMeshes/tgt_metal_tool_chest",
+      "base_size_m": [
+        0.6854,
+        0.4072,
+        0.6518
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "equipment",
+      "role": "target",
+      "seen": true,
+      "measured_extent_cm_at_unit_scale": [
+        34.2694,
+        20.3577,
+        32.5918
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        32.5918
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.3725,
+        0.3879,
+        0.3879
+      ],
+      "ground_radius_m": 0.3879,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": null,
+      "triangles": 13360,
+      "nanite": true,
+      "nanite_fallback_triangles": 13360,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "red tool chest",
+      "merged": {
+        "nodes": [
+          "metal_tool_chest_chest",
+          "metal_tool_chest_hinge_chest",
+          "metal_tool_chest_lid",
+          "metal_tool_chest_handle_left",
+          "metal_tool_chest_lock",
+          "metal_tool_chest_hinge_lid",
+          "metal_tool_chest_handle_right"
+        ],
+        "translation_m": [
+          0.026742,
+          -0.000809,
+          -0.006154
+        ],
+        "rewrites": [],
+        "skinned_nodes": []
+      },
+      "source": {
+        "source": "polyhaven",
+        "id": "metal_tool_chest",
+        "file": "metal_tool_chest_1k.gltf",
+        "licence": "CC0-1.0",
+        "authors": {
+          "Yann Kervran": "Rigging",
+          "John Hutcheson": "Modeling & Texturing"
+        },
+        "page": "https://polyhaven.com/a/metal_tool_chest",
+        "sha256": "2f66fbb723cd52382f73daec184b68d9b36842a488ecaf120e5c3a6354e9dea4"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_wetfloorsign_01": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_wetfloorsign_01/tgt_wetfloorsign_01/StaticMeshes/tgt_wetfloorsign_01",
+      "base_size_m": [
+        0.3001,
+        0.3585,
+        0.6295
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "equipment",
+      "role": "target",
+      "seen": true,
+      "measured_extent_cm_at_unit_scale": [
+        15.0027,
+        17.9255,
+        31.4772
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        31.4772
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.2338,
+        0.1893,
+        0.1583
+      ],
+      "ground_radius_m": 0.2338,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": null,
+      "triangles": 228,
+      "nanite": true,
+      "nanite_fallback_triangles": 228,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "yellow wet floor sign",
+      "merged": {
+        "nodes": [
+          "WetFloorSign_01"
+        ],
+        "translation_m": [
+          0.0,
+          -0.002169,
+          0.014004
+        ],
+        "rewrites": [],
+        "skinned_nodes": []
+      },
+      "source": {
+        "source": "polyhaven",
+        "id": "WetFloorSign_01",
+        "file": "WetFloorSign_01_1k.gltf",
+        "licence": "CC0-1.0",
+        "authors": {
+          "Fran Calvente": "All"
+        },
+        "page": "https://polyhaven.com/a/WetFloorSign_01",
+        "sha256": "ba5b10d2de7bb60b77dc3e44a96446181a078e35597947a490a4b6de906059e4"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_cone": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_cone/tgt_cone/StaticMeshes/tgt_cone",
+      "base_size_m": [
+        0.4762,
+        0.4762,
+        0.5952
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "equipment",
+      "role": "target",
+      "seen": false,
+      "measured_extent_cm_at_unit_scale": [
+        23.8097,
+        23.8097,
+        29.7622
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        29.7622
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.3034,
+        0.1505,
+        0.0891
+      ],
+      "ground_radius_m": 0.3034,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": null,
+      "triangles": 172,
+      "nanite": true,
+      "nanite_fallback_triangles": 172,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "orange traffic cone",
+      "merged": {
+        "nodes": [
+          "cone"
+        ],
+        "translation_m": [
+          -0.0,
+          -0.0,
+          -0.0
+        ],
+        "rewrites": [],
+        "skinned_nodes": []
+      },
+      "source": {
+        "source": "kenney",
+        "id": "kenney_car-kit",
+        "file": "Models/GLB format/cone.glb",
+        "model": "cone",
+        "licence": "CC0-1.0",
+        "authors": {
+          "Kenney": "All"
+        },
+        "page": "https://kenney.nl/assets/car-kit",
+        "sha256": "d6659fc365de47c5d056b14f3d3fb3e191d3a5b869c43171753621dcf14b76bd"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_wooden_ladder_02": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_wooden_ladder_02/tgt_wooden_ladder_02/StaticMeshes/tgt_wooden_ladder_02",
+      "base_size_m": [
+        0.9895,
+        0.6181,
+        1.7222
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "equipment",
+      "role": "target",
+      "seen": false,
+      "measured_extent_cm_at_unit_scale": [
+        49.4753,
+        30.9069,
+        86.109
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        86.109
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.5685,
+        0.5223,
+        0.468,
+        0.4214,
+        0.3788,
+        0.3417,
+        0.3933
+      ],
+      "ground_radius_m": 0.5685,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": 0.3933,
+      "triangles": 6126,
+      "nanite": true,
+      "nanite_fallback_triangles": 6126,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "wooden ladder",
+      "merged": {
+        "nodes": [
+          "wooden_ladder_02"
+        ],
+        "translation_m": [
+          0.042335,
+          0.001616,
+          0.003042
+        ],
+        "rewrites": [],
+        "skinned_nodes": []
+      },
+      "source": {
+        "source": "polyhaven",
+        "id": "wooden_ladder_02",
+        "file": "wooden_ladder_02_1k.gltf",
+        "licence": "CC0-1.0",
+        "authors": {
+          "JN_3DPRINTINGNERD": "All"
+        },
+        "page": "https://polyhaven.com/a/wooden_ladder_02",
+        "sha256": "8fbb14700a4d0f6e44f538538f9294e4b3395d1923c719f18cb6dba9fd20a06a"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_character_a": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_character_a/tgt_character_a/StaticMeshes/tgt_character_a",
+      "base_size_m": [
+        1.6,
+        0.8,
+        2.7
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "human",
+      "role": "target",
+      "seen": true,
+      "measured_extent_cm_at_unit_scale": [
+        80.0,
+        40.0,
+        135.0
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        135.0
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.4472,
+        0.4472,
+        0.4472,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.5657,
+        0.5657,
+        0.5657
+      ],
+      "ground_radius_m": 0.8544,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": 0.8544,
+      "triangles": 72,
+      "nanite": true,
+      "nanite_fallback_triangles": 72,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "man in brown jacket",
+      "merged": {
+        "nodes": [
+          "leg-left",
+          "leg-right",
+          "torso",
+          "arm-left",
+          "arm-right",
+          "head"
+        ],
+        "translation_m": [
+          0.0,
+          -0.0,
+          -0.0
+        ],
+        "rewrites": [
+          {
+            "material": "texture-a",
+            "change": "KHR_materials_unlit -> lit",
+            "metallic_factor": 0.0
+          }
+        ],
+        "skinned_nodes": []
+      },
+      "source": {
+        "source": "kenney",
+        "id": "kenney_blocky-characters",
+        "file": "Models/GLB format/character-a.glb",
+        "model": "character-a",
+        "licence": "CC0-1.0",
+        "authors": {
+          "Kenney": "All"
+        },
+        "page": "https://kenney.nl/assets/blocky-characters",
+        "sha256": "8ee5dae167ec589863f6bba222467eb90ace8be357a4c5abfcab289290181616"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_character_b": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_character_b/tgt_character_b/StaticMeshes/tgt_character_b",
+      "base_size_m": [
+        1.6,
+        0.8,
+        2.7
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "human",
+      "role": "target",
+      "seen": true,
+      "measured_extent_cm_at_unit_scale": [
+        80.0,
+        40.0,
+        135.0
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        135.0
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.4472,
+        0.4472,
+        0.4472,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.5657,
+        0.5657,
+        0.5657
+      ],
+      "ground_radius_m": 0.8544,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": 0.8544,
+      "triangles": 72,
+      "nanite": true,
+      "nanite_fallback_triangles": 72,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "man in red shirt",
+      "merged": {
+        "nodes": [
+          "leg-left",
+          "leg-right",
+          "torso",
+          "arm-left",
+          "arm-right",
+          "head"
+        ],
+        "translation_m": [
+          -0.0,
+          -0.0,
+          -0.0
+        ],
+        "rewrites": [
+          {
+            "material": "texture-b",
+            "change": "KHR_materials_unlit -> lit",
+            "metallic_factor": 0.0
+          }
+        ],
+        "skinned_nodes": []
+      },
+      "source": {
+        "source": "kenney",
+        "id": "kenney_blocky-characters",
+        "file": "Models/GLB format/character-b.glb",
+        "model": "character-b",
+        "licence": "CC0-1.0",
+        "authors": {
+          "Kenney": "All"
+        },
+        "page": "https://kenney.nl/assets/blocky-characters",
+        "sha256": "30ed390a741a1b285f587544819aa8a02c8f7f270e552ed742eb84785034f62a"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_character_c": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_character_c/tgt_character_c/StaticMeshes/tgt_character_c",
+      "base_size_m": [
+        1.6,
+        0.8,
+        2.7
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "human",
+      "role": "target",
+      "seen": true,
+      "measured_extent_cm_at_unit_scale": [
+        80.0,
+        40.0,
+        135.0
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        135.0
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.4472,
+        0.4472,
+        0.4472,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.5657,
+        0.5657,
+        0.5657
+      ],
+      "ground_radius_m": 0.8544,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": 0.8544,
+      "triangles": 72,
+      "nanite": true,
+      "nanite_fallback_triangles": 72,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "bald man in green shirt",
+      "merged": {
+        "nodes": [
+          "leg-left",
+          "leg-right",
+          "torso",
+          "arm-left",
+          "arm-right",
+          "head"
+        ],
+        "translation_m": [
+          0.0,
+          -0.0,
+          -0.0
+        ],
+        "rewrites": [
+          {
+            "material": "texture-c",
+            "change": "KHR_materials_unlit -> lit",
+            "metallic_factor": 0.0
+          }
+        ],
+        "skinned_nodes": []
+      },
+      "source": {
+        "source": "kenney",
+        "id": "kenney_blocky-characters",
+        "file": "Models/GLB format/character-c.glb",
+        "model": "character-c",
+        "licence": "CC0-1.0",
+        "authors": {
+          "Kenney": "All"
+        },
+        "page": "https://kenney.nl/assets/blocky-characters",
+        "sha256": "ad2425ba0da5d9adff791b949bd62389ddcb09963ff89265930eab0d6484398c"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_character_e": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_character_e/tgt_character_e/StaticMeshes/tgt_character_e",
+      "base_size_m": [
+        1.6,
+        0.8,
+        2.7
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "human",
+      "role": "target",
+      "seen": true,
+      "measured_extent_cm_at_unit_scale": [
+        80.0,
+        40.0,
+        135.0
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        135.0
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.4472,
+        0.4472,
+        0.4472,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.5657,
+        0.5657,
+        0.5657
+      ],
+      "ground_radius_m": 0.8544,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": 0.8544,
+      "triangles": 72,
+      "nanite": true,
+      "nanite_fallback_triangles": 72,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "person in purple shirt",
+      "merged": {
+        "nodes": [
+          "leg-left",
+          "leg-right",
+          "torso",
+          "arm-left",
+          "arm-right",
+          "head"
+        ],
+        "translation_m": [
+          -0.0,
+          -0.0,
+          -0.0
+        ],
+        "rewrites": [
+          {
+            "material": "texture-e",
+            "change": "KHR_materials_unlit -> lit",
+            "metallic_factor": 0.0
+          }
+        ],
+        "skinned_nodes": []
+      },
+      "source": {
+        "source": "kenney",
+        "id": "kenney_blocky-characters",
+        "file": "Models/GLB format/character-e.glb",
+        "model": "character-e",
+        "licence": "CC0-1.0",
+        "authors": {
+          "Kenney": "All"
+        },
+        "page": "https://kenney.nl/assets/blocky-characters",
+        "sha256": "9a12684981bc7763aebeceaffed82abfcc458d27b1ed3e169b92bebcc4870675"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_character_i": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_character_i/tgt_character_i/StaticMeshes/tgt_character_i",
+      "base_size_m": [
+        1.6,
+        0.8,
+        2.7
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "human",
+      "role": "target",
+      "seen": true,
+      "measured_extent_cm_at_unit_scale": [
+        80.0,
+        40.0,
+        135.0
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        135.0
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.4472,
+        0.4472,
+        0.4472,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.5657,
+        0.5657,
+        0.5657
+      ],
+      "ground_radius_m": 0.8544,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": 0.8544,
+      "triangles": 72,
+      "nanite": true,
+      "nanite_fallback_triangles": 72,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "doctor in white coat",
+      "merged": {
+        "nodes": [
+          "leg-left",
+          "leg-right",
+          "torso",
+          "arm-left",
+          "arm-right",
+          "head"
+        ],
+        "translation_m": [
+          0.0,
+          -0.0,
+          -0.0
+        ],
+        "rewrites": [],
+        "skinned_nodes": []
+      },
+      "source": {
+        "source": "kenney",
+        "id": "kenney_blocky-characters",
+        "file": "Models/GLB format/character-i.glb",
+        "model": "character-i",
+        "licence": "CC0-1.0",
+        "authors": {
+          "Kenney": "All"
+        },
+        "page": "https://kenney.nl/assets/blocky-characters",
+        "sha256": "2b566d3b6261faa3e151b352396d823a285834f039ff6476db248ec6da902fe8"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_character_j": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_character_j/tgt_character_j/StaticMeshes/tgt_character_j",
+      "base_size_m": [
+        1.6,
+        0.8,
+        2.7
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "human",
+      "role": "target",
+      "seen": true,
+      "measured_extent_cm_at_unit_scale": [
+        80.0,
+        40.0,
+        135.0
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        135.0
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.4472,
+        0.4472,
+        0.4472,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.5657,
+        0.5657,
+        0.5657
+      ],
+      "ground_radius_m": 0.8544,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": 0.8544,
+      "triangles": 72,
+      "nanite": true,
+      "nanite_fallback_triangles": 72,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "police officer",
+      "merged": {
+        "nodes": [
+          "leg-left",
+          "leg-right",
+          "torso",
+          "arm-left",
+          "arm-right",
+          "head"
+        ],
+        "translation_m": [
+          0.0,
+          -0.0,
+          -0.0
+        ],
+        "rewrites": [
+          {
+            "material": "texture-j",
+            "change": "KHR_materials_unlit -> lit",
+            "metallic_factor": 0.0
+          }
+        ],
+        "skinned_nodes": []
+      },
+      "source": {
+        "source": "kenney",
+        "id": "kenney_blocky-characters",
+        "file": "Models/GLB format/character-j.glb",
+        "model": "character-j",
+        "licence": "CC0-1.0",
+        "authors": {
+          "Kenney": "All"
+        },
+        "page": "https://kenney.nl/assets/blocky-characters",
+        "sha256": "5bae1cabb44a719fba8e18a8c519f45c92531bc02a2a1324cd316ffa5903e311"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_character_p": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_character_p/tgt_character_p/StaticMeshes/tgt_character_p",
+      "base_size_m": [
+        1.6,
+        0.8,
+        2.7
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "human",
+      "role": "target",
+      "seen": true,
+      "measured_extent_cm_at_unit_scale": [
+        80.0,
+        40.0,
+        135.0
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        135.0
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.4472,
+        0.4472,
+        0.4472,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.5657,
+        0.5657,
+        0.5657
+      ],
+      "ground_radius_m": 0.8544,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": 0.8544,
+      "triangles": 72,
+      "nanite": true,
+      "nanite_fallback_triangles": 72,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "man in blue jacket",
+      "merged": {
+        "nodes": [
+          "leg-left",
+          "leg-right",
+          "torso",
+          "arm-left",
+          "arm-right",
+          "head"
+        ],
+        "translation_m": [
+          0.0,
+          -0.0,
+          -0.0
+        ],
+        "rewrites": [
+          {
+            "material": "texture-p",
+            "change": "KHR_materials_unlit -> lit",
+            "metallic_factor": 0.0
+          }
+        ],
+        "skinned_nodes": []
+      },
+      "source": {
+        "source": "kenney",
+        "id": "kenney_blocky-characters",
+        "file": "Models/GLB format/character-p.glb",
+        "model": "character-p",
+        "licence": "CC0-1.0",
+        "authors": {
+          "Kenney": "All"
+        },
+        "page": "https://kenney.nl/assets/blocky-characters",
+        "sha256": "50e18edd3003eeeca60c215a12f2c8230f9d12bc07e656eb06c3727ab0dba6cd"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_character_q": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_character_q/tgt_character_q/StaticMeshes/tgt_character_q",
+      "base_size_m": [
+        1.6,
+        0.8,
+        2.7
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "human",
+      "role": "target",
+      "seen": true,
+      "measured_extent_cm_at_unit_scale": [
+        80.0,
+        40.0,
+        135.0
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        135.0
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.4472,
+        0.4472,
+        0.4472,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.8544,
+        0.5657,
+        0.5657,
+        0.5657
+      ],
+      "ground_radius_m": 0.8544,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": 0.8544,
+      "triangles": 72,
+      "nanite": true,
+      "nanite_fallback_triangles": 72,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "man in black suit",
+      "merged": {
+        "nodes": [
+          "leg-left",
+          "leg-right",
+          "torso",
+          "arm-left",
+          "arm-right",
+          "head"
+        ],
+        "translation_m": [
+          -0.0,
+          -0.0,
+          -0.0
+        ],
+        "rewrites": [
+          {
+            "material": "texture-q",
+            "change": "KHR_materials_unlit -> lit",
+            "metallic_factor": 0.0
+          }
+        ],
+        "skinned_nodes": []
+      },
+      "source": {
+        "source": "kenney",
+        "id": "kenney_blocky-characters",
+        "file": "Models/GLB format/character-q.glb",
+        "model": "character-q",
+        "licence": "CC0-1.0",
+        "authors": {
+          "Kenney": "All"
+        },
+        "page": "https://kenney.nl/assets/blocky-characters",
+        "sha256": "9193d03bc9ee1cfb080a1d561522f45806fe0b522b9807ef2b7c451b77547999"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_character_female_b": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_character_female_b/tgt_character_female_b/StaticMeshes/tgt_character_female_b",
+      "base_size_m": [
+        0.7672,
+        0.4185,
+        0.7234
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "human",
+      "role": "target",
+      "seen": true,
+      "measured_extent_cm_at_unit_scale": [
+        38.3584,
+        20.9261,
+        36.1677
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        36.1677
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.3847,
+        0.3847,
+        0.2814
+      ],
+      "ground_radius_m": 0.3847,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": null,
+      "triangles": 742,
+      "nanite": true,
+      "nanite_fallback_triangles": 742,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "girl in yellow shirt",
+      "merged": {
+        "nodes": [
+          "body-mesh",
+          "head-mesh"
+        ],
+        "translation_m": [
+          0.0,
+          -0.0,
+          0.001622
+        ],
+        "rewrites": [],
+        "skinned_nodes": [
+          "body-mesh",
+          "head-mesh"
+        ]
+      },
+      "source": {
+        "source": "kenney",
+        "id": "kenney_mini-characters",
+        "file": "Models/GLB format/character-female-b.glb",
+        "model": "character-female-b",
+        "licence": "CC0-1.0",
+        "authors": {
+          "Kenney": "All"
+        },
+        "page": "https://kenney.nl/assets/mini-characters",
+        "sha256": "2288438e7baf9acc91a870c82dc00d66710bb486592cfc3474ef8ed93a03863a"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_character_female_d": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_character_female_d/tgt_character_female_d/StaticMeshes/tgt_character_female_d",
+      "base_size_m": [
+        0.7672,
+        0.4995,
+        0.7755
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "human",
+      "role": "target",
+      "seen": false,
+      "measured_extent_cm_at_unit_scale": [
+        38.3584,
+        24.9765,
+        38.7764
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        38.7764
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.3898,
+        0.3898,
+        0.2816,
+        0.1779
+      ],
+      "ground_radius_m": 0.3898,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": null,
+      "triangles": 797,
+      "nanite": true,
+      "nanite_fallback_triangles": 797,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "woman in grey suit",
+      "merged": {
+        "nodes": [
+          "body-mesh",
+          "head-mesh"
+        ],
+        "translation_m": [
+          0.0,
+          -0.0,
+          0.042126
+        ],
+        "rewrites": [],
+        "skinned_nodes": [
+          "body-mesh",
+          "head-mesh"
+        ]
+      },
+      "source": {
+        "source": "kenney",
+        "id": "kenney_mini-characters",
+        "file": "Models/GLB format/character-female-d.glb",
+        "model": "character-female-d",
+        "licence": "CC0-1.0",
+        "authors": {
+          "Kenney": "All"
+        },
+        "page": "https://kenney.nl/assets/mini-characters",
+        "sha256": "67f61708743bd34f91a4c2ba8160b61bf2e7d4ec2ca6647dfe99873422561410"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_bronze_whale_statue": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_bronze_whale_statue/tgt_bronze_whale_statue/StaticMeshes/tgt_bronze_whale_statue",
+      "base_size_m": [
+        0.932,
+        1.3659,
+        1.0729
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "other",
+      "role": "target",
+      "seen": true,
+      "measured_extent_cm_at_unit_scale": [
+        46.6002,
+        68.2925,
+        53.646
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        53.646
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.3592,
+        0.4808,
+        0.5903,
+        0.7264,
+        0.7481
+      ],
+      "ground_radius_m": 0.7481,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": 0.7481,
+      "triangles": 3816,
+      "nanite": true,
+      "nanite_fallback_triangles": 3816,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "bronze whale statue",
+      "merged": {
+        "nodes": [
+          "bronze_whale_statue"
+        ],
+        "translation_m": [
+          0.041865,
+          0.000142,
+          0.133559
+        ],
+        "rewrites": [],
+        "skinned_nodes": []
+      },
+      "source": {
+        "source": "polyhaven",
+        "id": "bronze_whale_statue",
+        "file": "bronze_whale_statue_1k.gltf",
+        "licence": "CC0-1.0",
+        "authors": {
+          "Tina": "All"
+        },
+        "page": "https://polyhaven.com/a/bronze_whale_statue",
+        "sha256": "97ff882e047f3415601437d6db43a7326a3fa1ac5bddb86ae119b74717888d18"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_animal_tiger": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_animal_tiger/tgt_animal_tiger/StaticMeshes/tgt_animal_tiger",
+      "base_size_m": [
+        1.35,
+        1.8993,
+        1.71
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "other",
+      "role": "target",
+      "seen": false,
+      "measured_extent_cm_at_unit_scale": [
+        67.5,
+        94.9656,
+        85.4997
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        85.4997
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.7051,
+        0.8791,
+        0.9014,
+        0.9523,
+        0.907,
+        0.951,
+        0.943
+      ],
+      "ground_radius_m": 0.9523,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": 0.951,
+      "triangles": 951,
+      "nanite": true,
+      "nanite_fallback_triangles": 951,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "tiger",
+      "merged": {
+        "nodes": [
+          "leg-front-right",
+          "body",
+          "tail",
+          "leg-back-left",
+          "leg-back-right",
+          "leg-front-left"
+        ],
+        "translation_m": [
+          -0.0,
+          0.0,
+          0.153953
+        ],
+        "rewrites": [],
+        "skinned_nodes": []
+      },
+      "source": {
+        "source": "kenney",
+        "id": "kenney_cube-pets",
+        "file": "Models/GLB format/animal-tiger.glb",
+        "model": "animal-tiger",
+        "licence": "CC0-1.0",
+        "authors": {
+          "Kenney": "All"
+        },
+        "page": "https://kenney.nl/assets/cube-pets",
+        "sha256": "cc70cdfd27ec6550b7a4524a3cc75fd594f94d384cac2bb68504b60d379f47d4"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
+    },
+    "tgt_animal_elephant": {
+      "ue_path": "/Game/AutoFly/Targets/tgt_animal_elephant/tgt_animal_elephant/StaticMeshes/tgt_animal_elephant",
+      "base_size_m": [
+        1.8779,
+        1.6752,
+        1.4312
+      ],
+      "pivot": "base",
+      "footprint": "circle",
+      "category": "other",
+      "role": "target",
+      "seen": false,
+      "measured_extent_cm_at_unit_scale": [
+        93.8926,
+        83.7606,
+        71.5625
+      ],
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        71.5625
+      ],
+      "profile_step_m": 0.25,
+      "radius_profile_m": [
+        0.8333,
+        0.894,
+        0.9326,
+        0.9395,
+        0.9174,
+        0.8715
+      ],
+      "ground_radius_m": 0.9395,
+      "band_m": [
+        1.0,
+        3.0
+      ],
+      "band_radius_m": 0.9174,
+      "triangles": 676,
+      "nanite": true,
+      "nanite_fallback_triangles": 676,
+      "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+      "target_name": "elephant",
+      "merged": {
+        "nodes": [
+          "body",
+          "tail",
+          "leg-back-left",
+          "leg-front-left",
+          "leg-back-right",
+          "leg-front-right"
+        ],
+        "translation_m": [
+          -0.0,
+          0.0,
+          -0.212606
+        ],
+        "rewrites": [],
+        "skinned_nodes": []
+      },
+      "source": {
+        "source": "kenney",
+        "id": "kenney_cube-pets",
+        "file": "Models/GLB format/animal-elephant.glb",
+        "model": "animal-elephant",
+        "licence": "CC0-1.0",
+        "authors": {
+          "Kenney": "All"
+        },
+        "page": "https://kenney.nl/assets/cube-pets",
+        "sha256": "0831346fb8ddb8e99e42e3f92fb48858551049dc7ea49e641d90fdfc65e057be"
+      },
+      "measured_by": "scenes/gltf.py merge_to_single_mesh + measure (the merged glTF) and scripts/import_assets.py (UE bounds)"
     }
   },
   "materials": {
@@ -1999,6 +5465,71 @@
       "kind": "mesh_default",
       "ue_path": "",
       "note": "the mesh's own imported materials are kept (plan 5, C3b): the palette of a group of imported models"
+    },
+    "runtime_red": {
+      "kind": "base_material",
+      "ue_path": "/Game/AutoFly/Materials/Runtime/M_Red",
+      "rgba": [
+        0.8,
+        0.1,
+        0.1,
+        1.0
+      ],
+      "palette": "red",
+      "roughness": 0.6407,
+      "made_by": "autofly_ue5/scenes/ue/create_runtime_materials.py"
+    },
+    "runtime_blue": {
+      "kind": "base_material",
+      "ue_path": "/Game/AutoFly/Materials/Runtime/M_Blue",
+      "rgba": [
+        0.1,
+        0.25,
+        0.85,
+        1.0
+      ],
+      "palette": "blue",
+      "roughness": 0.6407,
+      "made_by": "autofly_ue5/scenes/ue/create_runtime_materials.py"
+    },
+    "runtime_yellow": {
+      "kind": "base_material",
+      "ue_path": "/Game/AutoFly/Materials/Runtime/M_Yellow",
+      "rgba": [
+        0.9,
+        0.8,
+        0.1,
+        1.0
+      ],
+      "palette": "yellow",
+      "roughness": 0.6407,
+      "made_by": "autofly_ue5/scenes/ue/create_runtime_materials.py"
+    },
+    "runtime_green": {
+      "kind": "base_material",
+      "ue_path": "/Game/AutoFly/Materials/Runtime/M_Green",
+      "rgba": [
+        0.1,
+        0.6,
+        0.2,
+        1.0
+      ],
+      "palette": "green",
+      "roughness": 0.6407,
+      "made_by": "autofly_ue5/scenes/ue/create_runtime_materials.py"
+    },
+    "runtime_white": {
+      "kind": "base_material",
+      "ue_path": "/Game/AutoFly/Materials/Runtime/M_White",
+      "rgba": [
+        0.9,
+        0.9,
+        0.9,
+        1.0
+      ],
+      "palette": "white",
+      "roughness": 0.6407,
+      "made_by": "autofly_ue5/scenes/ue/create_runtime_materials.py"
     }
   }
 }
