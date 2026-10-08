@@ -66,7 +66,20 @@ def test_a_pool_file_loads_its_entries_in_file_order_as_frozen_records(tmp_path)
     assert pool.sha256 == hashlib.sha256(path.read_bytes()).hexdigest() and pool.path == str(path)
     assert pool.entries[0].to_json() == {"name": "orange cylinder", "category": "geometry", "seen": True,
                                          "asset": "cylinder", "scale": [1.0, 1.0, 2.0], "material": "orange",
-                                         "status": "primitive"}
+                                         "status": "primitive", "stand_in": False}
+
+
+def test_a_stand_in_is_drawn_like_any_imported_entry_and_keeps_its_mark_in_what_episodes_record(tmp_path):
+    # The Kenney stand-ins (plan 6 step 2b): low-poly models drawn for the categories nothing else covers yet. Their
+    # optional "stand_in" key travels with every episode's record of its target and distractors, so they can be filtered.
+    from autofly_ue5.dataset.targets import TargetPool
+
+    entries = _with(5, stand_in=True)  # the grey boulder, imported
+    pool = TargetPool.load(write_pool(tmp_path / "targets.json", entries))
+    boulder = pool.entries[5]
+    assert boulder.stand_in is True and boulder.usable and boulder in pool.for_split("train")
+    assert boulder.to_json()["stand_in"] is True and boulder.to_json()["status"] == "imported"
+    assert not any(e.stand_in for e in pool.entries[:5]), "absent means not a stand-in"
 
 
 def test_each_split_draws_from_its_own_usable_entries_in_file_order(tmp_path):
@@ -126,6 +139,8 @@ def _without_key(index: int, key: str):
     (_with(0, height_m="2 m"), 1, "height_m"),
     (_with(0, source="polyhaven"), 1, "source"),
     (_with(0, asset="island_tree_02", status="imported"), 1, "cards"),
+    (_with(5, stand_in="yes"), 1, "stand_in"),
+    (_with(5, stand_in=None), 1, "stand_in"),
 ])
 def test_a_malformed_pool_is_refused_with_a_reason(tmp_path, entries, version, match):
     from autofly_ue5.dataset.targets import TargetPool, TargetPoolError

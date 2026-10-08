@@ -138,3 +138,31 @@ def test_each_scene_excludes_the_targets_that_look_like_its_obstacles(pool):
         for asset in assets:
             assert by_asset[asset] and drawn.isdisjoint(by_asset[asset]), (scene, asset)
     assert "orange cylinder" in {e.name for e in loaded.for_split("train", scene_id="s07")}, "only the scene's own"
+
+
+# Plan 6 step 2b (docs/decisions/2026-10-08-target-pool-diversity.md): the 25 Kenney stand-ins are drawn, for the
+# vehicle and human categories nothing else covers yet, and each keeps a mark episodes record.
+SEEN_DRAWN_PER_SCENE = {"s01": 43, "s01d": 43, "s09": 43,  # 50 less 4 cylinders and 3 barrels
+                        "s07": 45,  # less 3 cubes, the cabinet and the tool chest
+                        "s03": 48, "s04": 48, "s05": 48, "s05r": 48,  # less 2 spheres
+                        "s02": 50, "s06": 50, "s06r": 50}
+
+
+def test_the_kenney_stand_ins_are_drawn_and_marked_as_stand_ins(pool):
+    kenney = [t for t in pool if t["source"]["source"] == "kenney"]
+    assert len(kenney) == 25 and all(t["status"] == "imported" and t.get("stand_in") is True for t in kenney)
+    assert not any("stand_in" in t for t in pool if t["source"]["source"] != "kenney")
+    vehicles = [t for t in kenney if t["category"] == "vehicle"]
+    humans = [t for t in kenney if t["category"] == "human"]
+    assert len(vehicles) == 12 and len(humans) == 10, "what only the stand-ins cover until a Fab session"
+
+
+def test_sixty_entries_are_drawn_fifty_seen_and_each_scene_draws_what_its_exclusions_leave():
+    from autofly_ue5.dataset.targets import TargetPool
+
+    loaded = TargetPool.load(TARGETS)
+    assert sum(e.usable for e in loaded.entries) == 60
+    assert len(loaded.for_split("train")) == 50 and len(loaded.for_split("test_unseen")) == 60
+    for scene, seen in SEEN_DRAWN_PER_SCENE.items():
+        assert len(loaded.for_split("train", scene_id=scene)) == seen, scene
+        assert len(loaded.for_split("test_unseen", scene_id=scene)) == seen + 10, f"{scene}: no unseen entry excluded"

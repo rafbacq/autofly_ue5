@@ -595,7 +595,8 @@ def target_registry_entries(spec: dict, report: dict, sources: dict) -> dict[str
 
 def update_pool_file(path: Path, spec: dict, *, use_placeholders: bool = False) -> list[str]:
     """Each imported entry gets its registry key; a candidate becomes imported (drawn), a placeholder only with
-    `use_placeholders`. Returns the names now imported."""
+    `use_placeholders`, and then keeps `"stand_in": true`, which every episode drawing it records (plan 6 step 2b).
+    Returns the names now imported."""
     path = Path(path)
     pool = json.loads(path.read_text())
     by_name = {t["name"]: t for t in pool["targets"]}
@@ -603,7 +604,9 @@ def update_pool_file(path: Path, spec: dict, *, use_placeholders: bool = False) 
     for model in spec["models"]:
         entry = by_name[model["target"]["name"]]
         entry["asset"] = model["id"]
-        if entry["status"] == "candidate" or (entry["status"] == "placeholder" and use_placeholders):
+        if entry["status"] == "placeholder" and use_placeholders:
+            entry["status"], entry["stand_in"] = "imported", True
+        if entry["status"] == "candidate":
             entry["status"] = "imported"
         if entry["status"] == "imported":
             imported.append(entry["name"])

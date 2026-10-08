@@ -168,8 +168,10 @@ git diff --stat assets/registry.json assets/targets.json
 - Poly Haven entries become `imported`.
 - Kenney entries stay `placeholder` without the flag. They are still probed in step 9.
 
-Whether the Kenney vehicles and people are drawn is **open with the user** (plan 5 C5). Without them the pool's only
+Whether the Kenney vehicles and people are drawn was **open with the user** (plan 5 C5). Without them the pool's only
 vehicle is the covered car, and it has no human at all, against 22 % vehicles and 17 % humans in the paper's mix.
+**Decided 2026-10-08 (plan 6 step 2b): they are drawn**, each marked `"stand_in": true`, which every episode's
+provenance records (`docs/decisions/2026-10-08-target-pool-diversity.md`). `--use-placeholders` writes the same mark.
 
 **On failure:** exit 2 with every problem listed. The registry and the pool are untouched.
 

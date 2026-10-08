@@ -40,7 +40,7 @@
         1.568
       ],
       "material": null,
-      "status": "placeholder",
+      "status": "imported",
       "source": {
         "source": "kenney",
         "id": "kenney_car-kit",
@@ -56,7 +56,8 @@
         2.038
       ],
       "pivot": "base",
-      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model",
+      "stand_in": true
     },
     {
       "name": "green hatchback",
@@ -69,7 +70,7 @@
         1.333
       ],
       "material": null,
-      "status": "placeholder",
+      "status": "imported",
       "source": {
         "source": "kenney",
         "id": "kenney_car-kit",
@@ -85,7 +86,8 @@
         1.466
       ],
       "pivot": "base",
-      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model",
+      "stand_in": true
     },
     {
       "name": "blue van",
@@ -98,7 +100,7 @@
         1.454
       ],
       "material": null,
-      "status": "placeholder",
+      "status": "imported",
       "source": {
         "source": "kenney",
         "id": "kenney_car-kit",
@@ -114,7 +116,8 @@
         1.963
       ],
       "pivot": "base",
-      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model",
+      "stand_in": true
     },
     {
       "name": "yellow taxi",
@@ -127,7 +130,7 @@
         1.454
       ],
       "material": null,
-      "status": "placeholder",
+      "status": "imported",
       "source": {
         "source": "kenney",
         "id": "kenney_car-kit",
@@ -143,7 +146,8 @@
         2.181
       ],
       "pivot": "base",
-      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model",
+      "stand_in": true
     },
     {
       "name": "police car",
@@ -156,7 +160,7 @@
         1.29
       ],
       "material": null,
-      "status": "placeholder",
+      "status": "imported",
       "source": {
         "source": "kenney",
         "id": "kenney_car-kit",
@@ -172,7 +176,8 @@
         1.677
       ],
       "pivot": "base",
-      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model",
+      "stand_in": true
     },
     {
       "name": "ambulance",
@@ -185,7 +190,7 @@
         1.23
       ],
       "material": null,
-      "status": "placeholder",
+      "status": "imported",
       "source": {
         "source": "kenney",
         "id": "kenney_car-kit",
@@ -201,7 +206,8 @@
         2.214
       ],
       "pivot": "base",
-      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model",
+      "stand_in": true
     },
     {
       "name": "red fire truck",
@@ -214,7 +220,7 @@
         1.176
       ],
       "material": null,
-      "status": "placeholder",
+      "status": "imported",
       "source": {
         "source": "kenney",
         "id": "kenney_car-kit",
@@ -230,7 +236,8 @@
         1.999
       ],
       "pivot": "base",
-      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model",
+      "stand_in": true
     },
     {
       "name": "green garbage truck",
@@ -243,7 +250,7 @@
         1.159
       ],
       "material": null,
-      "status": "placeholder",
+      "status": "imported",
       "source": {
         "source": "kenney",
         "id": "kenney_car-kit",
@@ -259,7 +266,8 @@
         1.854
       ],
       "pivot": "base",
-      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model",
+      "stand_in": true
     },
     {
       "name": "yellow suv",
@@ -272,7 +280,7 @@
         1.403
       ],
       "material": null,
-      "status": "placeholder",
+      "status": "imported",
       "source": {
         "source": "kenney",
         "id": "kenney_car-kit",
@@ -288,7 +296,8 @@
         1.824
       ],
       "pivot": "base",
-      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model",
+      "stand_in": true
     },
     {
       "name": "white pickup truck",
@@ -301,7 +310,7 @@
         1.457
       ],
       "material": null,
-      "status": "placeholder",
+      "status": "imported",
       "source": {
         "source": "kenney",
         "id": "kenney_car-kit",
@@ -317,7 +326,8 @@
         1.894
       ],
       "pivot": "base",
-      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model",
+      "stand_in": true
     },
     {
       "name": "crane",
@@ -330,7 +340,7 @@
         1.0
       ],
       "material": null,
-      "status": "placeholder",
+      "status": "imported",
       "source": {
         "source": "kenney",
         "id": "kenney_factory-kit",
@@ -346,7 +356,8 @@
         3.553
       ],
       "pivot": "base",
-      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model; a jib crane from Kenney's Factory Kit, the only CC0 crane found (the paper's may be a construction crane)"
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model; a jib crane from Kenney's Factory Kit, the only CC0 crane found (the paper's may be a construction crane)",
+      "stand_in": true
     },
     {
       "name": "green front loader",
@@ -359,7 +370,7 @@
         1.416
       ],
       "material": null,
-      "status": "placeholder",
+      "status": "imported",
       "source": {
         "source": "kenney",
         "id": "kenney_car-kit",
@@ -375,7 +386,8 @@
         2.141
       ],
       "pivot": "base",
-      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model",
+      "stand_in": true
     },
     {
       "name": "orange cylinder",
@@ -1256,7 +1268,7 @@
         1.512
       ],
       "material": null,
-      "status": "placeholder",
+      "status": "imported",
       "source": {
         "source": "kenney",
         "id": "kenney_car-kit",
@@ -1272,7 +1284,8 @@
         0.9
       ],
       "pivot": "base",
-      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model",
+      "stand_in": true
     },
     {
       "name": "wooden ladder",
@@ -1312,7 +1325,7 @@
         0.648
       ],
       "material": null,
-      "status": "placeholder",
+      "status": "imported",
       "source": {
         "source": "kenney",
         "id": "kenney_blocky-characters",
@@ -1328,7 +1341,8 @@
         1.75
       ],
       "pivot": "base",
-      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model",
+      "stand_in": true
     },
     {
       "name": "man in red shirt",
@@ -1341,7 +1355,7 @@
         0.648
       ],
       "material": null,
-      "status": "placeholder",
+      "status": "imported",
       "source": {
         "source": "kenney",
         "id": "kenney_blocky-characters",
@@ -1357,7 +1371,8 @@
         1.75
       ],
       "pivot": "base",
-      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model",
+      "stand_in": true
     },
     {
       "name": "bald man in green shirt",
@@ -1370,7 +1385,7 @@
         0.648
       ],
       "material": null,
-      "status": "placeholder",
+      "status": "imported",
       "source": {
         "source": "kenney",
         "id": "kenney_blocky-characters",
@@ -1386,7 +1401,8 @@
         1.75
       ],
       "pivot": "base",
-      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model",
+      "stand_in": true
     },
     {
       "name": "person in purple shirt",
@@ -1399,7 +1415,7 @@
         0.611
       ],
       "material": null,
-      "status": "placeholder",
+      "status": "imported",
       "source": {
         "source": "kenney",
         "id": "kenney_blocky-characters",
@@ -1415,7 +1431,8 @@
         1.65
       ],
       "pivot": "base",
-      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model",
+      "stand_in": true
     },
     {
       "name": "doctor in white coat",
@@ -1428,7 +1445,7 @@
         0.648
       ],
       "material": null,
-      "status": "placeholder",
+      "status": "imported",
       "source": {
         "source": "kenney",
         "id": "kenney_blocky-characters",
@@ -1444,7 +1461,8 @@
         1.75
       ],
       "pivot": "base",
-      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model",
+      "stand_in": true
     },
     {
       "name": "police officer",
@@ -1457,7 +1475,7 @@
         0.666
       ],
       "material": null,
-      "status": "placeholder",
+      "status": "imported",
       "source": {
         "source": "kenney",
         "id": "kenney_blocky-characters",
@@ -1473,7 +1491,8 @@
         1.798
       ],
       "pivot": "base",
-      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model",
+      "stand_in": true
     },
     {
       "name": "man in blue jacket",
@@ -1486,7 +1505,7 @@
         0.648
       ],
       "material": null,
-      "status": "placeholder",
+      "status": "imported",
       "source": {
         "source": "kenney",
         "id": "kenney_blocky-characters",
@@ -1502,7 +1521,8 @@
         1.75
       ],
       "pivot": "base",
-      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model",
+      "stand_in": true
     },
     {
       "name": "man in black suit",
@@ -1515,7 +1535,7 @@
         0.666
       ],
       "material": null,
-      "status": "placeholder",
+      "status": "imported",
       "source": {
         "source": "kenney",
         "id": "kenney_blocky-characters",
@@ -1531,7 +1551,8 @@
         1.798
       ],
       "pivot": "base",
-      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model",
+      "stand_in": true
     },
     {
       "name": "girl in yellow shirt",
@@ -1544,7 +1565,7 @@
         1.797
       ],
       "material": null,
-      "status": "placeholder",
+      "status": "imported",
       "source": {
         "source": "kenney",
         "id": "kenney_mini-characters",
@@ -1560,7 +1581,8 @@
         1.3
       ],
       "pivot": "base",
-      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model",
+      "stand_in": true
     },
     {
       "name": "woman in grey suit",
@@ -1573,7 +1595,7 @@
         2.127
       ],
       "material": null,
-      "status": "placeholder",
+      "status": "imported",
       "source": {
         "source": "kenney",
         "id": "kenney_mini-characters",
@@ -1589,7 +1611,8 @@
         1.649
       ],
       "pivot": "base",
-      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model",
+      "stand_in": true
     },
     {
       "name": "bronze whale statue",
@@ -1629,7 +1652,7 @@
         0.85
       ],
       "material": null,
-      "status": "placeholder",
+      "status": "imported",
       "source": {
         "source": "kenney",
         "id": "kenney_cube-pets",
@@ -1645,7 +1668,8 @@
         1.454
       ],
       "pivot": "base",
-      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model",
+      "stand_in": true
     },
     {
       "name": "elephant",
@@ -1658,7 +1682,7 @@
         1.8
       ],
       "material": null,
-      "status": "placeholder",
+      "status": "imported",
       "source": {
         "source": "kenney",
         "id": "kenney_cube-pets",
@@ -1674,7 +1698,8 @@
         2.576
       ],
       "pivot": "base",
-      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model"
+      "note": "low-poly stand-in (Kenney, CC0); a Fab session with the user may replace it with a photoreal model",
+      "stand_in": true
     }
   ]
 }

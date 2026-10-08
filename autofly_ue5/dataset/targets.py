@@ -12,6 +12,10 @@ as before.
       "status": "candidate|placeholder|manual|imported|primitive", "source": {"source", "id", "licence", "page"} or null,
       "height_m": ...}]}
 
+An optional `"stand_in": true` marks a low-poly stand-in (the Kenney models drawn for the vehicle and human categories
+until a Fab session replaces them, plan 6 step 2b): it is drawn like any imported entry, and every episode's record of
+its target and distractors carries the mark, so a dataset can filter them out later.
+
 Every entry carries all nine keys, so a misspelt key is a missing one and is refused; other keys are ignored. Only
 `primitive` (engine content) and `imported` entries are drawn, and each must be spawnable as it stands: its asset in the
 registry, one mesh (a runtime spawn places one: a model with a no-collision `cards` part would arrive without its
@@ -67,16 +71,18 @@ class TargetEntry:
     status: str
     source: dict | None = field(default=None, hash=False)
     height_m: float | None = None
+    stand_in: bool = False  # a low-poly stand-in, drawn until a better model replaces it (plan 6 step 2b)
 
     @property
     def usable(self) -> bool:
         return self.status in USABLE_STATUSES
 
     def to_json(self) -> dict:
-        """What an episode's provenance records of its target and each distractor (plan 5 C5, "Records")."""
+        """What an episode's provenance records of its target and each distractor (plan 5 C5, "Records"), the stand-in
+        mark included (plan 6 revision 1 item 7: such episodes can be filtered out later)."""
         return {"name": self.name, "category": self.category, "seen": self.seen, "asset": self.asset,
                 "scale": list(self.scale) if self.scale is not None else None, "material": self.material,
-                "status": self.status}
+                "status": self.status, "stand_in": self.stand_in}
 
 
 def _scale(value: Any, where: str) -> tuple[float, float, float] | None:
@@ -118,9 +124,13 @@ def _entry(raw: Any, where: str, registry: AssetRegistry) -> TargetEntry:
     for key in ("asset", "material"):
         if raw[key] is not None and not isinstance(raw[key], str):
             raise TargetPoolError(f"{where}: {key} must be a registry key or null, got {raw[key]!r}")
+    stand_in = raw.get("stand_in", False)
+    if not isinstance(stand_in, bool):
+        raise TargetPoolError(f"{where}: stand_in must be true or false where given, got {stand_in!r}")
     entry = TargetEntry(name=name, category=raw["category"], seen=raw["seen"], asset=raw["asset"],
                         scale=_scale(raw["scale"], where), material=raw["material"], status=raw["status"],
-                        source=raw["source"], height_m=float(height) if height is not None else None)
+                        source=raw["source"], height_m=float(height) if height is not None else None,
+                        stand_in=stand_in)
     if entry.usable:
         _check_spawnable(entry, where, registry)
     return entry
