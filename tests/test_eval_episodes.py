@@ -115,6 +115,12 @@ def test_a_test_seen_scene_is_pending_until_a_gate_record_of_it_passes(tmp_path)
     assert s06r["status_at_write"] == "pending" and "m4_s06r_gate.json" in s06r["pending_reason"]
     assert s05r["requires_gate"] == "docs/gates/m4_s05r_gate.json" and s06r["requires_gate"] == "docs/gates/m4_s06r_gate.json"
     assert sum(e["scene"] == "s06r" for e in doc["episodes"]) == 4, "a pending scene's seeds are frozen with the rest"
+    from autofly_ue5.evidence import COMMITTED_GATES_DIR
+
+    committed = condition_document("test_seen", scenes=("s06r",), episodes_per_scene=1, resolve=fake_resolver(),
+                                   gates_dir=COMMITTED_GATES_DIR / "no_such_dir")
+    assert " in docs/gates/no_such_dir" in committed["scenes"]["s06r"]["pending_reason"], \
+        "a committed file names the repository's gates, never one checkout's absolute path"
     _gates(tmp_path, m4_s06r_gate=False)
     assert m4_gate_status("s06r", gates) == {"ready": False, "gate": None,
                                              "reason": f"no passing m4_s06r_gate.json or m4_s06r_gate_run<N>.json in {gates}"}

@@ -139,8 +139,10 @@ def m4_gate_status(scene_id: str, gates_dir: Path = COMMITTED_GATES_DIR) -> dict
             continue
         if passed:
             return {"ready": True, "gate": path.name, "reason": None}
+    # Repository-relative where it can be: the reason goes into committed files, read from other checkouts.
+    where = gates_dir.relative_to(ROOT) if gates_dir.is_relative_to(ROOT) else gates_dir
     return {"ready": False, "gate": None,
-            "reason": f"no passing m4_{scene_id}_gate.json or m4_{scene_id}_gate_run<N>.json in {gates_dir}"}
+            "reason": f"no passing m4_{scene_id}_gate.json or m4_{scene_id}_gate_run<N>.json in {where}"}
 
 
 def _placeable_seeds(resolved: ResolvedScene, base: int, n: int) -> tuple[list[int], list[dict]]:
