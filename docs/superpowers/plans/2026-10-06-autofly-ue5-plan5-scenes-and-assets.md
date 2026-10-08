@@ -97,7 +97,10 @@ reachability and the live checks of §11. Then M5 trains one expert per train sc
   `s06_tree_clusters` (36 searsia bushes in single-species clusters plus 4 emergent trunk trees, grass; 1.171), both
   built, packaged, looked at and gated (`m4_s03_gate.json`, `m4_s06_gate.json`;
   `docs/decisions/2026-10-08-c4-s03-s06.md`: rocks wedge the actor as wood does; a bush-only scene offers the gate
-  no trunk to probe). Left: s04, s05 (+ snow exposure), s08, s10, s11, s12, s05r, s06r.
+  no trunk to probe). Done 2026-10-08 afternoon: `s04_stone_field` (gravel; 11 natural boulders and 22 stones painted
+  in the red/blue/yellow/green/white palette; detour 1.157) and `s05_standing_stones` (snow; 12 boulders stretched
+  into 4-6.7 m standing stones and 12 boulders; 1.142), built, packaged, looked at and gated (`m4_s04_gate.json`,
+  `m4_s05_gate.json`). Left: s08 (ruins: no asset yet), s10-s12 (Fab), s05r, s06r.
 - [ ] **C5. Target pool** (`assets/targets.json`, spec §6.4): 60 instances, 50 seen / 10 unseen, the Fig. 3c category
   mix, a name for instructions each. The sampler draws the target and 3-5 distractors from the split's pool *after*
   every existing draw, and the instruction names the target; s01's pool stays the orange cylinder so its golden setups
@@ -138,8 +141,10 @@ reachability and the live checks of §11. Then M5 trains one expert per train sc
   box extents (base x scale, yaw) for `check_map.py`, `validate/geometry.py` and `motion.py`'s `CircleFootprint`
   (fact 9); `_spawn_asset_name` checked against `world.list_assets()` for every target (spec §7.1: short names, base
   `UMaterial` only).
-- [ ] **C7. Exposure per scene**: the s01 procedure (`docs/gates/exposure_calibration.json`) on each built level, the
-  bias recorded in the level spec. Measured 2026-10-07 at -11 EV from the edge starts: s01 100-120, s02 98-133, s07
+- [x] **C7. Exposure per scene**: the s01 procedure (`docs/gates/exposure_calibration.json`) on each built level, the
+  bias recorded in the level spec. Done 2026-10-08: a scene file may set `exposure_bias_ev` (28ed27a); s05's snow is
+  3.95x grass's linear albedo, so -12 EV was estimated and confirmed on the first build (snapshots 97-123 of 255, no
+  saturated pixel); s04's gravel (1.45x grass) needs none (117-144 at -11 EV). Measured 2026-10-07 at -11 EV from the edge starts: s01 100-120, s02 98-133, s07
   126-153, s09 122-144 (mean of 255; the high ends have the sun in view), none saturated. The three new grounds sit
   within 40 levels of s01's 109 target: no recalibration needed for them; snow (s05, s10) will need one.
 - [ ] **C8. Build, package, live checks** per scene (`scripts/build_level.sh`, `package_sim.sh`, `validate/live_m1.py`):
