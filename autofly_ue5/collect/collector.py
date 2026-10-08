@@ -27,8 +27,9 @@ import numpy as np
 
 from autofly_ue5.dataset.raw import RawDatasetWriter
 from autofly_ue5.dataset.state import autofly_state
-from autofly_ue5.expert.episode import INSTRUCTION_TEMPLATES, spawn_spec
+from autofly_ue5.expert.episode import INSTRUCTION_TEMPLATES, EpisodeSetup, spawn_spec
 from autofly_ue5.scenes.model import SceneFile
+from autofly_ue5.sim.types import Observation
 
 DEFAULT_MAX_STEPS = 1_000  # far above AutoFlyEnv's 300-step limit: a guard, not a target
 DEFAULT_MAX_FAULT_RETRIES = 20
@@ -48,6 +49,13 @@ def dataset_instruction(scene: SceneFile, setup_instruction: str, target_name: s
     raise ValueError(f"{setup_instruction!r} was not made from any instruction template")
 
 
+def record_inputs(raw: Observation, setup: EpisodeSetup) -> tuple[np.ndarray, np.ndarray]:
+    """The front RGB frame (a copy) and state[9] a record holds for the observation `raw` of the episode `setup`: what
+    the dataset stores before each action, and what the evaluation harness hands a policy (autofly_ue5/evaluation), so
+    a policy is scored on exactly the inputs it was trained on."""
+    return np.array(raw.rgb, copy=True), autofly_state(raw, setup.start, setup.target_xy_z)
+
+
 def _fly(model, env, seed: int, *, deterministic: bool, max_steps: int) -> dict[str, Any]:
     obs, info = env.reset(seed=seed, options={"a0": "sector8"})
     base = env.unwrapped
@@ -59,8 +67,9 @@ def _fly(model, env, seed: int, *, deterministic: bool, max_steps: int) -> dict[
     for _ in range(max_steps):
         action, _ = model.predict(obs, deterministic=deterministic)
         command = np.clip(np.asarray(action, dtype=np.float32).ravel(), low, high)  # what AutoFlyEnv.step() flies
-        frames.append(np.array(raw.rgb, copy=True))
-        states.append(autofly_state(raw, setup.start, setup.target_xy_z))
+        rgb, state = record_inputs(raw, setup)
+        frames.append(rgb)
+        states.append(state)
         actions.append(command)
         times.append(raw.sim_time_ns)
         poses.append([raw.pose.x, raw.pose.y, raw.pose.z, raw.pose.yaw])

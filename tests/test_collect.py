@@ -84,6 +84,28 @@ def test_collected_episodes_hold_autofly_s_fields_in_time_order(tmp_path):
         assert prov["scene"]["sha256"] and prov["layout_sha256"] and len(prov["distractors"]) >= 3
 
 
+def test_each_record_s_frame_and_state_come_from_the_one_function_the_evaluation_harness_shares(tmp_path, monkeypatch):
+    # The harness (autofly_ue5/evaluation) hands a policy what a record holds before its action; both build it with
+    # collector.record_inputs, so a policy is never scored on inputs that differ from the ones it trained on.
+    import autofly_ue5.collect.collector as collector
+    from autofly_ue5.dataset.state import autofly_state
+
+    real = collector.record_inputs
+    calls = []
+
+    def spy(raw, setup):
+        rgb, state = real(raw, setup)
+        assert rgb is not raw.rgb and np.array_equal(rgb, raw.rgb), "a copy of the frame, not the simulator's buffer"
+        assert np.array_equal(state, autofly_state(raw, setup.start, setup.target_xy_z)) and state.dtype == np.float32
+        calls.append(raw.sim_time_ns)
+        return rgb, state
+
+    monkeypatch.setattr(collector, "record_inputs", spy)
+    _summary, root = _collect(tmp_path, n_keep=1)
+    entry = json.loads((root / "manifest.json").read_text())["episodes"][0]
+    assert calls == np.load(root / entry["path"] / "steps.npz")["sim_time_ns"].tolist(), "one call per record, in order"
+
+
 def test_the_first_record_is_the_aligned_start_with_the_expert_s_own_first_action(tmp_path):
     _summary, root = _collect(tmp_path, n_keep=1)
     entry = json.loads((root / "manifest.json").read_text())["episodes"][0]
