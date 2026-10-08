@@ -404,6 +404,10 @@ class AutoFlyEnv(gym.Env):
             if nearest is not None:
                 tag, gap = nearest
                 info["footprint_nearest"] = {"tag": tag, "asset": self._instances[tag].asset, "gap_m": round(gap, 4)}
+                # Training records keep counts only (the s02 smoke of 2026-10-08 logged "sim: 1" of 207 episodes and
+                # could not say what the body hit), so the log keeps each one.
+                print(f"SIM-CONTACT instance {self._instance}: physical contact with the nearest circle {tag} "
+                      f"({self._instances[tag].asset}) {gap:.2f} m away, forward {v_forward:.2f} m/s", file=sys.stderr)
         if static is not None:
             # Where the boundary was crossed, as for a mover contact; the key exists only on such a step, so every run
             # without a boundary keeps its infos exactly.

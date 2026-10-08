@@ -523,6 +523,30 @@ def test_each_step_checks_the_path_it_flew_not_only_where_it_ended(monkeypatch):
     raise AssertionError("no flight ended at the circle")
 
 
+def test_a_physical_contact_in_a_mesh_scene_is_logged_with_the_nearest_circle(capsys):
+    # A "sim" ending in a tree scene is what the rule exists to prevent; training keeps counts only, so the log line
+    # is the only way a 12 h run can say what the body hit (a spawned cylinder, wood outside its circle, or a miss).
+    from autofly_ue5.expert.footprint_contact import FootprintContactRule
+
+    _scene, layout = tree_scene_and_layout()
+    monkeypatch_rule = FootprintContactRule.contact
+    FootprintContactRule.contact = lambda self, a, b: None  # the rule never fires: the fake's wood ends the flight
+    try:
+        env = make_tree_env()
+        for seed in SEEDS:
+            steps, _ = _fly_at_a_tree(env, seed)
+            end = steps[-1][1]
+            if end["collision_source"] == "sim":
+                near = end["footprint_nearest"]
+                lines = [ln for ln in capsys.readouterr().err.splitlines() if ln.startswith("SIM-CONTACT")]
+                assert lines[-1] == (f"SIM-CONTACT instance 0: physical contact with the nearest circle {near['tag']} "
+                                     f"({near['asset']}) {near['gap_m']:.2f} m away, forward 2.00 m/s")
+                return
+        raise AssertionError("no flight reached the fake's wood")
+    finally:
+        FootprintContactRule.contact = monkeypatch_rule
+
+
 def test_each_ending_is_logged_with_where_it_happened(capsys):
     env = make_tree_env()
     for seed in SEEDS:
