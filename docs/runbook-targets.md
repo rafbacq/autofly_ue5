@@ -277,8 +277,10 @@ over an existing file. Do the same with the contact sheet (`m4_targets_probe_she
 - **Record a decision** (`docs/decisions/<date>-c6-targets-import.md`): what passed, what was dropped, the placeholder
   decision, and the probe's numbers.
 - **Collection can use the pool:** `collect_dataset.py ... --targets assets/targets.json` (runbook-m5.md §5).
-- **Still open in C6:** excluding a target that looks like the scene's own obstacles (s07 cubes, s09 poles, later
-  vehicles in s10/s11).
+- **Excluding a target that looks like the scene's own obstacles** (done 2026-10-08, plan 6 step 2c):
+  `assets/target_exclusions.json` beside the pool names, per scene, the registry assets never drawn there, with a reason
+  each (cylinders and barrels in s01, s01d and s09; cubes, the cabinet and the tool chest in s07; spheres in the rock
+  scenes). Later vehicles in s10/s11 get their entries there.
 
 ## Not verified offline
 

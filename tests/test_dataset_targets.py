@@ -158,3 +158,99 @@ def test_an_entry_waiting_for_a_manual_download_loads_and_is_never_drawn(tmp_pat
     entries = _with(7, status="manual")
     pool = TargetPool.load(write_pool(tmp_path / "targets.json", entries))
     assert not pool.entries[7].usable and "blue hatchback" not in {e.name for e in pool.for_split("test_unseen")}
+
+
+# --------------------------------------------------------------------------------------------------------
+# Per-scene exclusions (plan 6, step 2c and revision 1 item 7): a pool entry that looks like a scene's own obstacles is
+# never drawn there, so the instruction's target is never one of the pillars. A table beside the pool file, keyed by
+# registry asset (the shape), with a reason per asset.
+# --------------------------------------------------------------------------------------------------------
+def wide_pool_entries() -> list[dict]:
+    """The primitive pool plus a cone and two spheres: nine seen usable entries over four meshes, so a scene can lose
+    a shape and still fill an episode."""
+    return primitive_pool_entries() + [
+        _entry("orange cone", "geometry", "cone", [1.0, 1.0, 1.5], "orange", height_m=1.5),
+        _entry("grid sphere", "geometry", "sphere", [1.2, 1.2, 1.2], "grid", height_m=1.2),
+        _entry("orange sphere", "geometry", "sphere", [1.2, 1.2, 1.2], "orange", height_m=1.2),
+    ]
+
+
+WIDE_SEEN = SEEN_USABLE + ("orange cone", "grid sphere", "orange sphere")
+TABLE = {"version": 1, "scenes": {"s07": {"crate": "s07's obstacles are crates"},
+                                  "s01": {"cylinder": "s01's obstacles are cylinders"}}}
+
+
+def write_table(path: Path, table: dict | None = None) -> Path:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(TABLE if table is None else table, indent=1) + "\n")
+    return path
+
+
+def wide_pool(tmp_path: Path, table: dict | None = None):
+    """The wide pool with an exclusion table beside it (the pool's own file name, target_exclusions.json)."""
+    from autofly_ue5.dataset.targets import TargetPool
+
+    write_table(tmp_path / "target_exclusions.json", table)
+    return TargetPool.load(write_pool(tmp_path / "targets.json", wide_pool_entries()))
+
+
+def test_a_scene_s_exclusions_drop_the_named_assets_after_the_split_filter_in_file_order(tmp_path):
+    pool = wide_pool(tmp_path)
+    assert pool.for_split("train", scene_id="s07") == tuple(
+        e for e in pool.for_split("train") if e.asset != "crate"), "file order kept: the sampler's draws index it"
+    assert [e.name for e in pool.for_split("train", scene_id="s07")] == [
+        "orange cylinder", "grid pole", "grey boulder", "orange cone", "grid sphere", "orange sphere"]
+    assert [e.name for e in pool.for_split("train", scene_id="s01")] == [
+        "orange cube", "grid cube", "white box", "grey boulder", "orange cone", "grid sphere", "orange sphere"]
+    assert "orange slab" not in {e.name for e in pool.for_split("test_unseen", scene_id="s07")}, "unseen entries too"
+    # a scene the table does not name, and no scene at all, exclude nothing
+    assert tuple(e.name for e in pool.for_split("train", scene_id="s02")) == WIDE_SEEN
+    assert tuple(e.name for e in pool.for_split("train")) == WIDE_SEEN
+    # s01d flies s01's level but is its own scene: only an entry of its own excludes anything there
+    assert tuple(e.name for e in pool.for_split("train", scene_id="s01d")) == WIDE_SEEN
+
+
+def test_the_six_entry_floor_holds_after_a_scene_s_exclusions(tmp_path):
+    from autofly_ue5.dataset.targets import TargetPoolError
+
+    pool = wide_pool(tmp_path, {"version": 1, "scenes": {"s01": {"cylinder": "pillars", "sphere": "stones"}}})
+    with pytest.raises(TargetPoolError, match="s01"):
+        pool.for_split("train", scene_id="s01")  # 9 seen less 2 cylinders and 2 spheres: 5
+    assert len(pool.for_split("test_unseen", scene_id="s01")) == 6, "the unseen slab makes six there"
+
+
+def test_without_a_table_beside_the_pool_nothing_is_excluded(tmp_path):
+    from autofly_ue5.dataset.targets import TargetPool
+
+    pool = TargetPool.load(write_pool(tmp_path / "targets.json", wide_pool_entries()))
+    assert pool.exclusions is None and tuple(e.name for e in pool.for_split("train", scene_id="s07")) == WIDE_SEEN
+
+
+@pytest.mark.parametrize("table, match", [
+    ({"version": 2, "scenes": {}}, "version"),
+    ({"version": 1, "scenes": []}, "scenes"),
+    ({"version": 1, "scenes": {"s42": {"crate": "no such scene"}}}, "s42"),
+    ({"version": 1, "scenes": {"s07": {"tgt_barrel_01": "not an asset of this pool"}}}, "tgt_barrel_01"),
+    ({"version": 1, "scenes": {"s07": {"crate": ""}}}, "reason"),
+    ({"version": 1, "scenes": {"s07": {"crate": 3}}}, "reason"),
+    ({"version": 1, "scenes": {"s07": {}}}, "s07"),
+    ({"version": 1, "scenes": {"s07": ["crate"]}}, "s07"),
+])
+def test_a_malformed_exclusion_table_is_refused_with_a_reason(tmp_path, table, match):
+    from autofly_ue5.dataset.targets import TargetPoolError
+
+    with pytest.raises(TargetPoolError, match=match):
+        wide_pool(tmp_path, table)
+
+
+def test_the_pool_s_record_for_a_scene_names_what_it_draws_and_what_its_table_excluded(tmp_path):
+    pool = wide_pool(tmp_path)
+    table = tmp_path / "target_exclusions.json"
+    record = pool.to_json("train", scene_id="s07")
+    assert record == {"path": pool.path, "sha256": pool.sha256, "version": 1, "split": "train",
+                      "names": ["orange cylinder", "grid pole", "grey boulder", "orange cone", "grid sphere",
+                                "orange sphere"],
+                      "scene_id": "s07", "excluded": {"crate": "s07's obstacles are crates"},
+                      "exclusions": {"path": str(table), "sha256": hashlib.sha256(table.read_bytes()).hexdigest()}}
+    assert pool.to_json("train", scene_id="s02")["excluded"] == {}
+    assert json.loads(json.dumps(record)) == record

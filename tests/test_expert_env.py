@@ -348,6 +348,21 @@ def test_the_env_refuses_a_pool_its_scene_s_split_cannot_draw_from_before_launch
     assert not launched
 
 
+def test_the_env_draws_for_its_own_scene_after_the_pool_s_exclusions(tmp_path):
+    from autofly_ue5.dataset.targets import TargetPoolError
+    from tests.test_dataset_targets import wide_pool
+
+    env = make_env(target_pool=wide_pool(tmp_path / "a"))  # s01: its cylinders excluded
+    for seed in range(8):
+        env.reset(seed=seed)
+        assert all(e.asset != "cylinder" for e in (env.setup.target, *env.setup.distractor_entries))
+    env.close()
+    # and refuses, before anything launches, a table that leaves its scene fewer than six entries
+    small = wide_pool(tmp_path / "b", {"version": 1, "scenes": {"s01": {"cylinder": "pillars", "sphere": "stones"}}})
+    with pytest.raises(TargetPoolError, match="s01"):
+        make_env(target_pool=small)
+
+
 def test_the_vec_env_and_the_gate_s_env_hand_a_pool_through_and_default_to_none(tmp_path):
     from autofly_ue5.expert.vec import make_vec_env
     from scripts.m2_gate import build_eval_env

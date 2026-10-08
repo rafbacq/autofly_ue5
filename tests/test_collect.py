@@ -563,28 +563,67 @@ def test_the_pilot_cli_with_a_pool_lists_its_names_in_the_card_and_records_the_p
     pool = primitive_pool(tmp_path / "pool")
     record = _pilot(tmp_path, n_episodes=2, targets=path)
     assert record["status"] == "ok" and record["validation"]["pass"], record["error"]
-    assert record["target_name"] is None and record["target_pool"] == pool.to_json("train")
+    # the pool as the scene draws from it: its names after the scene's exclusions (none here), and which table
+    assert record["target_name"] is None and record["target_pool"] == pool.to_json("train", scene_id="s01")
+    assert record["target_pool"]["scene_id"] == "s01" and record["target_pool"]["excluded"] == {}
     root = tmp_path / "data" / "pilot"
     manifest = json.loads((root / "manifest.json").read_text())
     assert manifest["card"]["target_names"] == {name: "pool" for name in SEEN_USABLE}
     for entry in manifest["episodes"]:
         prov = json.loads((root / "provenance" / f"{entry['id']}.json").read_text())
-        assert prov["target_pool"] == pool.to_json("train") and prov["target"]["name"] == entry["target_name"]
+        assert prov["target_pool"] == record["target_pool"] and prov["target"]["name"] == entry["target_name"]
 
 
-def test_the_pilot_cli_refuses_a_bad_pool_or_a_target_name_beside_one_before_launching_anything(tmp_path):
-    from scripts.collect_dataset import main
+def test_the_pilot_cli_lists_only_what_its_scene_draws_after_the_pool_s_exclusions(tmp_path):
+    from tests.test_dataset_targets import WIDE_SEEN, wide_pool
+
+    pool = wide_pool(tmp_path / "pool")  # s01 excludes its cylinders
+    record = _pilot(tmp_path, n_episodes=2, targets=Path(pool.path))
+    assert record["status"] == "ok" and record["validation"]["pass"], record["error"]
+    names = [n for n in WIDE_SEEN if n not in ("orange cylinder", "grid pole")]
+    assert record["target_pool"]["names"] == names and set(record["target_pool"]["excluded"]) == {"cylinder"}
+    manifest = json.loads((tmp_path / "data" / "pilot" / "manifest.json").read_text())
+    assert manifest["card"]["target_names"] == {name: "pool" for name in names}
+
+
+def test_the_pilot_cli_refuses_a_table_that_leaves_its_scene_too_few_targets_before_launching(tmp_path, monkeypatch,
+                                                                                            capsys):
+    import scripts.collect_dataset as cli
+    from tests.test_dataset_targets import wide_pool
+
+    monkeypatch.setattr(cli, "checkpoint_obs_config", lambda path: None)  # the pool must be what refuses
+    monkeypatch.setattr(cli, "run", lambda **kwargs: pytest.fail("main() went on to collect"))
+    pool = wide_pool(tmp_path / "pool", {"version": 1, "scenes": {"s01": {"cylinder": "pillars", "sphere": "stones"}}})
+    checkpoint = tmp_path / "model.zip"
+    checkpoint.write_bytes(b"x")
+    assert cli.main(["--model", str(checkpoint), "--scene-config", "scene_autofly_s01_fast.jsonc", "--name", "pilot",
+                     "--data-root", str(tmp_path / "data"), "--out", str(tmp_path / "m3.json"), "--targets",
+                     pool.path, "--sim-root", str(tmp_path / "sim")]) == 2
+    assert "5 usable entries for split 'train' in scene 's01' after its exclusions" in capsys.readouterr().err
+    assert not (tmp_path / "m3.json").exists() and not (tmp_path / "data").exists()
+
+
+def test_the_pilot_cli_refuses_a_bad_pool_or_a_target_name_beside_one_before_launching_anything(tmp_path, monkeypatch,
+                                                                                               capsys):
+    import scripts.collect_dataset as cli
     from tests.test_dataset_targets import primitive_pool_entries, write_pool
 
+    # The checkpoint is not a model: its reader is stubbed so each refusal below is the pool's, not the checkpoint's.
+    monkeypatch.setattr(cli, "checkpoint_obs_config", lambda path: None)
+    monkeypatch.setattr(cli, "run", lambda **kwargs: pytest.fail("main() went on to collect"))
     checkpoint = tmp_path / "model.zip"
     checkpoint.write_bytes(b"x")
     common = ["--model", str(checkpoint), "--scene-config", "scene_autofly_s01_fast.jsonc", "--name", "pilot",
-              "--data-root", str(tmp_path / "data"), "--out", str(tmp_path / "m3.json")]
+              "--data-root", str(tmp_path / "data"), "--out", str(tmp_path / "m3.json"), "--sim-root",
+              str(tmp_path / "sim")]
     small = write_pool(tmp_path / "small.json", [e for e in primitive_pool_entries() if e["name"] != "white box"])
     good = write_pool(tmp_path / "good.json")
-    assert main([*common, "--targets", str(small)]) == 2, "five seen entries cannot fill a train episode"
-    assert main([*common, "--targets", str(tmp_path / "missing.json")]) == 2
-    assert main([*common, "--targets", str(good), "--target-name", "orange cylinder"]) == 2
+    assert cli.main([*common, "--targets", str(small)]) == 2, "five seen entries cannot fill a train episode"
+    assert "5 usable entries for split 'train'" in capsys.readouterr().err
+    assert cli.main([*common, "--targets", str(tmp_path / "missing.json")]) == 2
+    assert "missing.json" in capsys.readouterr().err
+    assert cli.main([*common, "--targets", str(good), "--target-name", "orange cylinder"]) == 2
+    assert "--target-name is the pool-free fallback" in capsys.readouterr().err
     assert not (tmp_path / "m3.json").exists() and not (tmp_path / "data").exists()
 
 

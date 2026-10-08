@@ -15,8 +15,9 @@ is recorded as M3's gate.
   run, and is refused where it contradicts the run's unless `--against-trained-shape` says that is the point. Recorded
   as `contact_rules` in the record and every episode's provenance (a pillar scene has none).
 - `--targets assets/targets.json` (plan 5 C5): each episode's target and distractors are drawn from the scene split's
-  pool and the instruction names the target; the card lists the pool's names with status "pool". Without it, M3's way:
-  the orange cylinder under `--target-name` (default "orange cylinder", a placeholder in the card). Not both.
+  pool, less what the scene's entry of the pool's exclusion table names (assets/target_exclusions.json, plan 6 step
+  2c), and the instruction names the target; the card lists the scene's names with status "pool". Without it, M3's
+  way: the orange cylinder under `--target-name` (default "orange cylinder", a placeholder in the card). Not both.
 - The gate record (default docs/gates/m3_gate.json, never written over) passes when the requested episodes were kept,
   the validator passes, and the engine-fault audit is clean. The TFDS read-back is recorded next to it.
 
@@ -135,7 +136,8 @@ def run(*, scene: str, model_path: Path, scene_config: str, name: str, n_episode
         raise ValueError("--target-name is the pool-free fallback; with --targets each episode's entry names its target")
     if pool is None and target_name is None:
         target_name = DEFAULT_TARGET_NAME
-    pool_record = pool.to_json(resolved.scene.split) if pool is not None else None
+    # As this scene draws from it: after its own exclusions (the pool's target_exclusions.json, plan 6 step 2c).
+    pool_record = pool.to_json(resolved.scene.split, scene_id=resolved.scene.id) if pool is not None else None
     sim_factory = sim_factory or scene_config_factory(scene_config, resolved.movable_objects, run_root=sim_root)
     load_model = load_model or (lambda p: default_sac_loader(p, device=device))
     obs_config = (obs_config_reader or checkpoint_obs_config)(model_path)
@@ -292,11 +294,12 @@ def main(argv: list[str] | None = None) -> int:
         if (args.data_root / args.name / "manifest.json").exists():
             raise FileExistsError(f"{args.data_root / args.name} already holds a dataset; pick a new --name")
         checkpoint_obs_config(args.model)  # offline: an unreadable checkpoint is refused before anything launches
-        if args.targets is not None:  # offline too: a pool the scene's split cannot draw from (TargetPoolError)
+        if args.targets is not None:  # offline too: a pool the scene cannot draw from, after its exclusions
             if args.target_name is not None:
                 raise ValueError("--target-name is the pool-free fallback; with --targets each episode's entry names its "
                                  "target")
-            TargetPool.load(args.targets).for_split(resolve_scene(args.scene).scene.split)
+            scene_file = resolve_scene(args.scene).scene
+            TargetPool.load(args.targets).for_split(scene_file.split, scene_id=scene_file.id)
     except (FileNotFoundError, FileExistsError, ValueError) as err:
         print(f"refusing to start: {err}", file=sys.stderr)
         return 2

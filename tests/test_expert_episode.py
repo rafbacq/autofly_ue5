@@ -409,6 +409,29 @@ def test_the_pool_s_draws_are_pinned_the_target_then_one_entry_per_distractor_po
         assert drawn.target == target and drawn.distractor_entries == expected, f"seed {seed}"
 
 
+def test_the_pool_s_draws_follow_the_scene_s_exclusions_in_the_same_pinned_form(tmp_path):
+    # Plan 6 step 2c: the scene's own entry of the pool's exclusion table removes entries before step 10, keeping file
+    # order, so the draws keep their pinned form over the scene's list (here s01 loses its cylinders).
+    from autofly_ue5.expert.episode import sample_setup
+    from tests.test_dataset_targets import wide_pool
+
+    scene, layout = scene_and_layout()
+    pool = wide_pool(tmp_path)
+    drawn_names = set()
+    for seed in range(60):
+        rng = np.random.default_rng(seed)
+        plain = sample_setup(scene, layout, rng)
+        rest = list(pool.for_split(scene.split, scene_id=scene.id))
+        target = rest.pop(int(rng.integers(len(rest))))
+        expected = tuple(rest.pop(int(rng.integers(len(rest)))) for _ in plain.distractors)
+        drawn = sample_setup(scene, layout, np.random.default_rng(seed), pool=pool)
+        assert drawn.target == target and drawn.distractor_entries == expected, f"seed {seed}"
+        objects = (drawn.target, *drawn.distractor_entries)
+        assert all(e.asset != "cylinder" for e in objects), "an excluded shape is never drawn, target or distractor"
+        drawn_names |= {e.name for e in objects}
+    assert {"orange cylinder", "grid pole"}.isdisjoint(drawn_names) and "orange cone" in drawn_names
+
+
 def test_a_train_scene_draws_every_seen_entry_and_never_an_unseen_one(tmp_path):
     import dataclasses
 

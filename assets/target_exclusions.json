@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "about": "Per scene, the registry assets whose target pool entries are never drawn there (target or distractor), because they look like that scene's own obstacles and would make the instruction's target one of them. Keyed by registry asset: an asset takes every colour of a primitive with it. A scene without an entry excludes nothing. Loaded with assets/targets.json (autofly_ue5/dataset/targets.py); plan 6 step 2c, revision 1 item 7; docs/decisions/2026-10-08-target-pool-diversity.md.",
+  "scenes": {
+    "s01": {
+      "cylinder": "s01's obstacles are white cylinders: a cylinder of any colour reads as one more pillar",
+      "tgt_barrel_01": "an upright 0.88 m barrel is a short cylinder: among pillars it reads as one",
+      "tgt_barrel_02": "an upright 0.88 m barrel is a short cylinder: among pillars it reads as one",
+      "tgt_wine_barrel_01": "an upright 0.87 m barrel is a short cylinder: among pillars it reads as one"
+    },
+    "s01d": {
+      "cylinder": "s01d flies s01's white cylinders: a cylinder of any colour reads as one more pillar",
+      "tgt_barrel_01": "an upright 0.88 m barrel is a short cylinder: among pillars it reads as one",
+      "tgt_barrel_02": "an upright 0.88 m barrel is a short cylinder: among pillars it reads as one",
+      "tgt_wine_barrel_01": "an upright 0.87 m barrel is a short cylinder: among pillars it reads as one"
+    },
+    "s09": {
+      "cylinder": "s09's obstacles are poles (cylinders) painted red, blue, yellow, green and white: a cylinder target in the same palette reads as one more pole",
+      "tgt_barrel_01": "an upright 0.88 m barrel is a short cylinder: among poles it reads as one",
+      "tgt_barrel_02": "an upright 0.88 m barrel is a short cylinder: among poles it reads as one",
+      "tgt_wine_barrel_01": "an upright 0.87 m barrel is a short cylinder: among poles it reads as one"
+    },
+    "s07": {
+      "cube": "s07's obstacles are stacked boxes (engine cubes): a cube of any colour reads as one more box",
+      "tgt_painted_wooden_cabinet": "the white cabinet is a closed box 1.2 m wide and tall: among stacked boxes it reads as one",
+      "tgt_metal_tool_chest": "the red tool chest is a closed box 0.65 m tall: among stacked boxes it reads as one"
+    },
+    "s03": {
+      "sphere": "a sphere on the ground reads as a rounded stone among the rocks"
+    },
+    "s04": {
+      "sphere": "s04 paints its stones red, blue, yellow, green and white, the spheres' palette: a sphere reads as one more painted stone"
+    },
+    "s05": {
+      "sphere": "a sphere on the ground reads as a rounded stone among the standing stones"
+    },
+    "s05r": {
+      "sphere": "a sphere on the ground reads as a rounded stone among the standing stones (s05r is s05's test_seen layout)"
+    }
+  }
+}

@@ -109,3 +109,32 @@ def test_the_paper_s_unseen_objects_are_unseen(pool):
     unseen = {t["name"] for t in pool if not t["seen"]}
     for word in ("crane", "tiger", "elephant", "traffic cone", "ladder"):
         assert any(word in name for name in unseen), word
+
+
+# Plan 6 step 2c / revision 1 item 7: what each scene must not draw because it looks like that scene's obstacles, by
+# registry asset (the shape): cylinders and the 0.88 m barrels among pillars and poles, cubes and the box-shaped cabinet
+# and tool chest among stacked boxes, spheres among rocks (s04 paints its stones in the spheres' palette).
+EXCLUSIONS = ROOT / "assets" / "target_exclusions.json"
+PILLARS = {"cylinder", "tgt_barrel_01", "tgt_barrel_02", "tgt_wine_barrel_01"}
+EXPECTED_EXCLUSIONS = {"s01": PILLARS, "s01d": PILLARS, "s09": PILLARS,
+                       "s07": {"cube", "tgt_painted_wooden_cabinet", "tgt_metal_tool_chest"},
+                       "s03": {"sphere"}, "s04": {"sphere"}, "s05": {"sphere"}, "s05r": {"sphere"}}
+
+
+def test_each_scene_excludes_the_targets_that_look_like_its_obstacles(pool):
+    from autofly_ue5.dataset.targets import TargetPool
+
+    table = json.loads(EXCLUSIONS.read_text())
+    assert {scene: set(assets) for scene, assets in table["scenes"].items()} == EXPECTED_EXCLUSIONS
+    assert all(isinstance(reason, str) and len(reason) > 20 for assets in table["scenes"].values()
+               for reason in assets.values()), "every exclusion says why"
+    loaded = TargetPool.load(TARGETS)  # the table beside the pool is the pool's own
+    assert loaded.exclusions is not None and loaded.exclusions.path == str(EXCLUSIONS)
+    by_asset = {}
+    for t in pool:
+        by_asset.setdefault(t["asset"], set()).add(t["name"])
+    for scene, assets in EXPECTED_EXCLUSIONS.items():
+        drawn = {e.name for e in loaded.for_split("test_unseen", scene_id=scene)}
+        for asset in assets:
+            assert by_asset[asset] and drawn.isdisjoint(by_asset[asset]), (scene, asset)
+    assert "orange cylinder" in {e.name for e in loaded.for_split("train", scene_id="s07")}, "only the scene's own"

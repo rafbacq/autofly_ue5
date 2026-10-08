@@ -51,6 +51,20 @@ class ResolvedScene:
         return tuple(sorted(inst.tag for inst in self.layout.instances))
 
 
+def known_scene_ids(scenes_dir: Path = SCENES_DIR) -> frozenset[str]:
+    """Every scene id a scene file claims (its "id"), for data keyed by scene (the target pool's exclusion table): a
+    name such data gives must be one of these, never a guess from a file name. Unreadable files claim nothing."""
+    ids = set()
+    for path in sorted(Path(scenes_dir).glob("*.json")):
+        try:
+            claimed = json.loads(path.read_text()).get("id")
+        except (json.JSONDecodeError, AttributeError):
+            continue
+        if isinstance(claimed, str):
+            ids.add(claimed)
+    return frozenset(ids)
+
+
 def _scene_file(scene_id: str, scenes_dir: Path) -> SceneFile:
     matches = sorted(Path(scenes_dir).glob(f"{scene_id}_*.json"))
     claimed = []

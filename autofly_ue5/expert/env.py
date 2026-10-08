@@ -86,7 +86,8 @@ class AutoFlyEnv(gym.Env):
     `target_pool` (plan 5 C5, `autofly_ue5.dataset.targets`): the objects a collection's targets and distractors are,
     handed to the sampler for every episode; the instruction then names the target. A collection-time choice: the
     trainer and the gate pass none, so the expert keeps flying to the orange cylinder it learned on. A pool the scene's
-    split cannot draw from (fewer than six usable entries) is refused here, before anything launches.
+    split cannot draw from (fewer than six usable entries, after the scene's own exclusions: the pool's
+    target_exclusions.json, keyed by this scene's id) is refused here, before anything launches.
     """
 
     metadata: dict[str, Any] = {"render_modes": []}
@@ -117,7 +118,8 @@ class AutoFlyEnv(gym.Env):
         super().__init__()
         self._footprint_shape = check_shape(footprint_shape)
         if target_pool is not None:
-            target_pool.for_split(scene.split)  # raises TargetPoolError for a split it cannot fill
+            # raises TargetPoolError for a split it cannot fill, after this scene's own exclusions (plan 6 step 2c)
+            target_pool.for_split(scene.split, scene_id=scene.id)
         self._target_pool = target_pool
         if not (math.isfinite(static_contact_m) and static_contact_m >= 0):
             raise ValueError(f"a static contact boundary must be a non-negative number of metres (0: physical contact "

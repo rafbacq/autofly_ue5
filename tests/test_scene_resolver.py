@@ -245,3 +245,15 @@ def test_a_scene_and_the_level_it_reuses_may_share_a_spawn_clearance(tmp_path):
     (scenes / S01.name).write_bytes(blob)
     resolved = resolve_scene("s01d", scenes_dir=scenes, levels_dir=levels)
     assert resolved.scene.spawn_clearance_m == resolved.base_scene.spawn_clearance_m == 1.7
+
+
+def test_the_known_scene_ids_are_the_ids_scene_files_claim(tmp_path):
+    # What a table keyed by scene id may name (the target pool's exclusions, plan 6 step 2c): never a guess from a name.
+    from autofly_ue5.scenes.resolve import known_scene_ids
+
+    claimed = {json.loads(p.read_text())["id"] for p in SCENES_DIR.glob("*.json")}
+    assert known_scene_ids() == claimed and {"s01", "s01d", "s05r", "s07", "s09"} <= claimed
+    (tmp_path / "s42_broken.json").write_text("{ not json")
+    (tmp_path / "s43_list.json").write_text("[]")
+    shutil.copy(S01, tmp_path / S01.name)
+    assert known_scene_ids(tmp_path) == {"s01"}

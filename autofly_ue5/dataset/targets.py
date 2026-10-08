@@ -19,10 +19,15 @@ leaves), a scale, and a material that is either none (the mesh's own) or a base 
 palette colour is a material instance, which Project AirSim's `setMaterial` cannot load (expert/episode.py
 `_runtime_material_path`): spawned, a "red cube" would be the mesh's own grey under a name that says red, so such an
 entry is refused here rather than recorded as a mislabelled episode.
+
+Per-scene exclusions (plan 6 step 2c, revision 1 item 7): `target_exclusions.json` beside the pool file names, per scene,
+the registry assets whose entries are never drawn there, because they look like that scene's own obstacles (a cylinder
+among pillars would make the instruction's target one of them). See `TargetExclusions`.
 """
 
 from __future__ import annotations
 
+import dataclasses
 import hashlib
 import json
 import math
@@ -43,6 +48,8 @@ SPLITS = ("train", "test_seen", "test_unseen")
 # without drawing an object twice.
 MIN_USABLE = 6
 ENTRY_KEYS = ("name", "category", "seen", "asset", "scale", "material", "status", "source", "height_m")
+EXCLUSIONS_FILE = "target_exclusions.json"  # beside the pool file: the pool's own data, loaded with it
+EXCLUSIONS_VERSION = 1
 
 
 class TargetPoolError(ValueError):
@@ -148,19 +155,84 @@ def _check_spawnable(entry: TargetEntry, where: str, registry: AssetRegistry) ->
 
 
 @dataclass(frozen=True)
-class TargetPool:
-    entries: tuple[TargetEntry, ...]
+class TargetExclusions:
+    """Per scene, the registry assets whose pool entries are never drawn there, each with the reason (plan 6 step 2c):
+
+        {"version": 1, "scenes": {"<scene id>": {"<registry asset>": "<why it looks like this scene's obstacles>"}}}
+
+    Keyed by asset, not by entry name: the shape is what reads as an obstacle, so an asset takes every colour of a
+    primitive with it (one added later too), and a model is its own asset. Keyed by the scene's own id: s01d flies s01's
+    level but draws by its own entry. A scene without an entry excludes nothing. Refused at load: a scene no scene file
+    claims, an asset no entry of the pool is drawn from, an empty entry, a missing reason."""
+
+    scenes: dict[str, dict[str, str]] = field(hash=False)
     path: str | None = None
     sha256: str | None = None
 
     @classmethod
-    def load(cls, path: Path, registry: AssetRegistry | None = None) -> "TargetPool":
+    def load(cls, path: Path, entries: tuple[TargetEntry, ...]) -> "TargetExclusions":
         raw = Path(path).read_bytes()
         try:
             data = json.loads(raw)
         except json.JSONDecodeError as err:
             raise TargetPoolError(f"{path}: not JSON ({err})") from err
-        return cls.from_json(data, registry=registry, path=str(path), sha256=hashlib.sha256(raw).hexdigest())
+        return cls.from_json(data, entries=entries, path=str(path), sha256=hashlib.sha256(raw).hexdigest())
+
+    @classmethod
+    def from_json(cls, data: Any, *, entries: tuple[TargetEntry, ...], path: str | None = None,
+                  sha256: str | None = None, scene_ids: frozenset[str] | None = None) -> "TargetExclusions":
+        from autofly_ue5.scenes.resolve import known_scene_ids
+
+        where = path or "the exclusion table"
+        if not isinstance(data, dict) or data.get("version") != EXCLUSIONS_VERSION:
+            got = data.get("version") if isinstance(data, dict) else data
+            raise TargetPoolError(f"{where}: version must be {EXCLUSIONS_VERSION}, got {got!r}")
+        if not isinstance(data.get("scenes"), dict):
+            raise TargetPoolError(f"{where}: 'scenes' must map a scene id to the assets it excludes, with a reason each")
+        known = scene_ids if scene_ids is not None else known_scene_ids()
+        assets = {e.asset for e in entries if e.asset is not None}
+        scenes: dict[str, dict[str, str]] = {}
+        for scene_id, excluded in data["scenes"].items():
+            if scene_id not in known:
+                raise TargetPoolError(f"{where}: scene {scene_id!r} is claimed by no scene file (known: {sorted(known)})")
+            if not isinstance(excluded, dict) or not excluded:
+                raise TargetPoolError(f"{where}: scene {scene_id!r} must map one or more registry assets to the reason "
+                                      f"each is excluded")
+            for asset, reason in excluded.items():
+                if asset not in assets:
+                    raise TargetPoolError(f"{where}: scene {scene_id!r} excludes {asset!r}, which no entry of the pool is "
+                                          f"drawn from")
+                if not isinstance(reason, str) or not reason.strip():
+                    raise TargetPoolError(f"{where}: scene {scene_id!r}, asset {asset!r}: give the reason it is excluded")
+            scenes[scene_id] = dict(excluded)
+        return cls(scenes=scenes, path=path, sha256=sha256)
+
+    def for_scene(self, scene_id: str | None) -> dict[str, str]:
+        """{asset: reason} for the assets `scene_id` never draws; empty for a scene without an entry, or no scene."""
+        return dict(self.scenes.get(scene_id, {})) if scene_id is not None else {}
+
+
+@dataclass(frozen=True)
+class TargetPool:
+    entries: tuple[TargetEntry, ...]
+    path: str | None = None
+    sha256: str | None = None
+    exclusions: TargetExclusions | None = None
+
+    @classmethod
+    def load(cls, path: Path, registry: AssetRegistry | None = None) -> "TargetPool":
+        """The pool file, with the exclusion table beside it (EXCLUSIONS_FILE) when there is one: the table is the
+        pool's own data, so every reader of the pool draws by it without being told to."""
+        raw = Path(path).read_bytes()
+        try:
+            data = json.loads(raw)
+        except json.JSONDecodeError as err:
+            raise TargetPoolError(f"{path}: not JSON ({err})") from err
+        pool = cls.from_json(data, registry=registry, path=str(path), sha256=hashlib.sha256(raw).hexdigest())
+        table = Path(path).with_name(EXCLUSIONS_FILE)
+        if table.is_file():
+            pool = dataclasses.replace(pool, exclusions=TargetExclusions.load(table, pool.entries))
+        return pool
 
     @classmethod
     def from_json(cls, data: Any, *, registry: AssetRegistry | None = None, path: str | None = None,
@@ -182,18 +254,33 @@ class TargetPool:
             seen_names[key] = entry.name
         return cls(entries=entries, path=path, sha256=sha256)
 
-    def for_split(self, split: str) -> tuple[TargetEntry, ...]:
+    def excluded(self, scene_id: str | None) -> dict[str, str]:
+        """{asset: reason} for the assets scene `scene_id` never draws (its entry of the exclusion table)."""
+        return self.exclusions.for_scene(scene_id) if self.exclusions is not None else {}
+
+    def for_split(self, split: str, *, scene_id: str | None = None) -> tuple[TargetEntry, ...]:
         """The entries a scene of `split` draws from, in file order (the sampler's draws index this tuple): seen targets
-        for train and test_seen, seen and unseen for test_unseen (spec §9 step 1). Refused under MIN_USABLE."""
+        for train and test_seen, seen and unseen for test_unseen (spec §9 step 1), less those whose asset scene
+        `scene_id` excludes (None: no scene, nothing excluded). Refused under MIN_USABLE, after the exclusions."""
         if split not in SPLITS:
             raise TargetPoolError(f"unknown split {split!r}; a scene's split is one of {SPLITS}")
-        usable = tuple(e for e in self.entries if e.usable and (e.seen or split == "test_unseen"))
+        excluded = self.excluded(scene_id)
+        usable = tuple(e for e in self.entries
+                       if e.usable and (e.seen or split == "test_unseen") and e.asset not in excluded)
         if len(usable) < MIN_USABLE:
-            raise TargetPoolError(f"{self.path or 'the target pool'}: {len(usable)} usable entries for split {split!r}; "
-                                  f"an episode needs {MIN_USABLE} different ones (a target and up to five distractors)")
+            after = f" in scene {scene_id!r} after its exclusions ({sorted(excluded)})" if excluded else ""
+            raise TargetPoolError(f"{self.path or 'the target pool'}: {len(usable)} usable entries for split {split!r}"
+                                  f"{after}; an episode needs {MIN_USABLE} different ones (a target and up to five "
+                                  f"distractors)")
         return usable
 
-    def to_json(self, split: str) -> dict:
-        """The pool a collection drew from, for its record and provenance: the file, its hash and the split's names."""
-        return {"path": self.path, "sha256": self.sha256, "version": VERSION, "split": split,
-                "names": [e.name for e in self.for_split(split)]}
+    def to_json(self, split: str, *, scene_id: str | None = None) -> dict:
+        """The pool a collection drew from, for its record and provenance: the file, its hash and the split's names; for
+        a scene, the names it draws, what its exclusions took out and why, and the table they came from."""
+        record = {"path": self.path, "sha256": self.sha256, "version": VERSION, "split": split,
+                  "names": [e.name for e in self.for_split(split, scene_id=scene_id)]}
+        if scene_id is not None:
+            table = self.exclusions
+            record.update(scene_id=scene_id, excluded=self.excluded(scene_id),
+                          exclusions={"path": table.path, "sha256": table.sha256} if table is not None else None)
+        return record

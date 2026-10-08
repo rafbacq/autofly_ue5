@@ -232,10 +232,11 @@ def sample_setup(
     distractors' entries. The movers come after every static draw so a static scene's episodes, which the M2 gate and
     its replays depend on, are drawn exactly as before; the pool comes after the movers for the same reason (plan 5 C5).
 
-    The pool's draws, pinned (tests/test_expert_episode.py): `rest` is the split's usable entries in file order
-    (`pool.for_split(scene.split)`); step 10 is `target = rest.pop(int(rng.integers(len(rest))))`, and step 11, for each
-    distractor position already drawn in order, `rest.pop(int(rng.integers(len(rest))))`. One integer per object, no
-    `rng.choice` (whose without-replacement algorithm is numpy's to change), and never an entry twice.
+    The pool's draws, pinned (tests/test_expert_episode.py): `rest` is the split's usable entries in file order, less
+    those the scene's own exclusions name (`pool.for_split(scene.split, scene_id=scene.id)`, plan 6 step 2c); step 10 is
+    `target = rest.pop(int(rng.integers(len(rest))))`, and step 11, for each distractor position already drawn in order,
+    `rest.pop(int(rng.integers(len(rest))))`. One integer per object, no `rng.choice` (whose without-replacement
+    algorithm is numpy's to change), and never an entry twice.
 
     The start, the target and the distractors keep `scene_spawn_clearance_m(scene)` from every obstacle. A scene's own
     clearance adds no draw and moves none: it only rejects candidates the default would have accepted, so a seed whose
@@ -323,7 +324,7 @@ def sample_setup(
     distractor_entries: tuple[TargetEntry, ...] = ()
     target_scale = TARGET_SCALE
     if pool is not None:
-        rest = list(pool.for_split(scene.split))
+        rest = list(pool.for_split(scene.split, scene_id=scene.id))
         if len(rest) < 1 + len(distractors):
             raise ValueError(f"the target pool has {len(rest)} usable entries for split {scene.split!r}: too few for a "
                              f"target and {len(distractors)} distractor entries without replacement")
