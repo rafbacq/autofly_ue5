@@ -237,6 +237,26 @@ spawn at once; the three Poly Haven models were absent one step after their firs
 asset is to be shown once in view after each launch, so that no recorded first frame misses its target. The probe's
 record says "failed" for those five, as written; nothing was re-run to make it pass.
 
+## 9. A new direction, and a pilot for every scene (plan 6, 2026-10-08)
+
+The lab mentor asked for diversity of objects and scenes and a working prototype that a VLA can be attached to, over
+expert quality or scene count. Plan 6 (`docs/superpowers/plans/2026-10-08-autofly-ue5-plan6-prototype-dataset.md`)
+therefore trains no new experts: each scene is flown by the best existing expert whose kept-rate is at least 0.25,
+and only successful, collision-free episodes are kept.
+
+![pilot screening](figures/pilot_screening.png)
+
+The screening (`docs/gates/m5_pilot_screening.json`) flew 30-40 stochastic episodes per pair under the task's rules.
+- **Box and pole scenes:** the accepted s01d mean flies s07 and s09 without a failure, 40 of 40 each.
+- **Rock and tree scenes:** the pillar experts fail (0.00-0.27); they learned to pass surfaces closely, which the mesh
+  scenes' 1.05 m outline rule ends. The s02 tree expert, trained under the more conservative circle, is the best on
+  every one: s02 0.83, s03 0.67, s04 0.63, s05 0.50, s06 0.27.
+- s06 tree clusters sits at the plan's 0.25 bar, so its collection costs about four flights per kept episode.
+
+Videos: `videos/screening/` holds two or three replays per scene, named by scene, pilot, episode and outcome. They
+are stochastic replays, so an outcome can differ from the screening's (s04 episode 0 crashed in screening and
+succeeds here).
+
 ## Numbers worth knowing
 
 - Simulation runs at 1 ms real-time update rate in lock-step at 5 Hz; four simulators plus an evaluator share one
