@@ -67,6 +67,23 @@
         -3.3273,
         42.8272
       ],
+      "parts": {
+        "solid": {
+          "ue_path": "/Game/AutoFly/Assets/boulder_01/boulder_01",
+          "base_size_m": [
+            1.2721,
+            1.8303,
+            1.0038
+          ],
+          "bounds_origin_cm": [
+            -11.2092,
+            -3.3273,
+            42.8272
+          ],
+          "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+          "fallback_triangles": 6612
+        }
+      },
       "profile_step_m": 0.25,
       "radius_profile_m": [
         0.9614,
@@ -118,6 +135,38 @@
         92.1195,
         168.6291
       ],
+      "parts": {
+        "solid": {
+          "ue_path": "/Game/AutoFly/Assets/island_tree_02/island_tree_02",
+          "base_size_m": [
+            4.2077,
+            3.9757,
+            3.39
+          ],
+          "bounds_origin_cm": [
+            5.1535,
+            91.5571,
+            167.799
+          ],
+          "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+          "fallback_triangles": 35746
+        },
+        "cards": {
+          "ue_path": "/Game/AutoFly/Assets/island_tree_02/Cards/island_tree_02_cards",
+          "base_size_m": [
+            3.8681,
+            4.0707,
+            2.1424
+          ],
+          "bounds_origin_cm": [
+            7.797,
+            92.1195,
+            231.8418
+          ],
+          "collision": "CTF_USE_SIMPLE_AS_COMPLEX",
+          "fallback_triangles": 71474
+        }
+      },
       "profile_step_m": 0.25,
       "radius_profile_m": [
         0.4072,
@@ -144,7 +193,7 @@
       "band_centre_offset_m": 0.9226,
       "triangles": 1072213,
       "nanite": true,
-      "nanite_fallback_triangles": 107221,
+      "nanite_fallback_triangles": 35746,
       "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
       "source": {
         "source": "polyhaven",
@@ -180,6 +229,38 @@
         21.3009,
         129.4062
       ],
+      "parts": {
+        "solid": {
+          "ue_path": "/Game/AutoFly/Assets/island_tree_03/island_tree_03",
+          "base_size_m": [
+            2.9583,
+            2.878,
+            2.5878
+          ],
+          "bounds_origin_cm": [
+            66.6825,
+            21.0794,
+            128.0409
+          ],
+          "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+          "fallback_triangles": 67661
+        },
+        "cards": {
+          "ue_path": "/Game/AutoFly/Assets/island_tree_03/Cards/island_tree_03_cards",
+          "base_size_m": [
+            2.3418,
+            2.9132,
+            2.1902
+          ],
+          "bounds_origin_cm": [
+            98.8827,
+            21.3009,
+            150.6487
+          ],
+          "collision": "CTF_USE_SIMPLE_AS_COMPLEX",
+          "fallback_triangles": 140870
+        }
+      },
       "profile_step_m": 0.25,
       "radius_profile_m": [
         1.0067,
@@ -203,7 +284,7 @@
       "band_centre_offset_m": 1.0115,
       "triangles": 2085320,
       "nanite": true,
-      "nanite_fallback_triangles": 208532,
+      "nanite_fallback_triangles": 67661,
       "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
       "source": {
         "source": "polyhaven",
@@ -239,6 +320,23 @@
         0.8438,
         38.1846
       ],
+      "parts": {
+        "solid": {
+          "ue_path": "/Game/AutoFly/Assets/namaqualand_boulder_02/namaqualand_boulder_02",
+          "base_size_m": [
+            2.5321,
+            1.2343,
+            0.8826
+          ],
+          "bounds_origin_cm": [
+            8.2065,
+            0.8438,
+            38.1846
+          ],
+          "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+          "fallback_triangles": 9796
+        }
+      },
       "profile_step_m": 0.25,
       "radius_profile_m": [
         1.3639,
@@ -291,6 +389,23 @@
         14.3122,
         72.1893
       ],
+      "parts": {
+        "solid": {
+          "ue_path": "/Game/AutoFly/Assets/namaqualand_boulder_03/namaqualand_boulder_03",
+          "base_size_m": [
+            2.4071,
+            3.0654,
+            1.4732
+          ],
+          "bounds_origin_cm": [
+            14.8738,
+            14.3122,
+            72.1893
+          ],
+          "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+          "fallback_triangles": 6482
+        }
+      },
       "profile_step_m": 0.25,
       "radius_profile_m": [
         1.684,
@@ -345,6 +460,23 @@
         21.7164,
         92.0846
       ],
+      "parts": {
+        "solid": {
+          "ue_path": "/Game/AutoFly/Assets/namaqualand_boulder_04/namaqualand_boulder_04",
+          "base_size_m": [
+            2.5222,
+            2.4964,
+            1.9005
+          ],
+          "bounds_origin_cm": [
+            -7.9216,
+            21.7164,
+            92.0846
+          ],
+          "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+          "fallback_triangles": 5906
+        }
+      },
       "profile_step_m": 0.25,
       "radius_profile_m": [
         1.4599,
@@ -400,6 +532,23 @@
         -2.3969,
         25.9339
       ],
+      "parts": {
+        "solid": {
+          "ue_path": "/Game/AutoFly/Assets/namaqualand_boulder_05/namaqualand_boulder_05",
+          "base_size_m": [
+            1.364,
+            0.748,
+            0.5383
+          ],
+          "bounds_origin_cm": [
+            4.694,
+            -2.3969,
+            25.9339
+          ],
+          "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+          "fallback_triangles": 8960
+        }
+      },
       "profile_step_m": 0.25,
       "radius_profile_m": [
         0.729,
@@ -451,6 +600,23 @@
         -5.4876,
         30.7363
       ],
+      "parts": {
+        "solid": {
+          "ue_path": "/Game/AutoFly/Assets/namaqualand_boulder_06/namaqualand_boulder_06",
+          "base_size_m": [
+            0.675,
+            1.2119,
+            0.6516
+          ],
+          "bounds_origin_cm": [
+            1.6764,
+            -5.4876,
+            30.7363
+          ],
+          "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+          "fallback_triangles": 10910
+        }
+      },
       "profile_step_m": 0.25,
       "radius_profile_m": [
         0.6313,
@@ -502,6 +668,38 @@
         1.8143,
         131.5928
       ],
+      "parts": {
+        "solid": {
+          "ue_path": "/Game/AutoFly/Assets/quiver_tree_01/quiver_tree_01",
+          "base_size_m": [
+            0.616,
+            0.4558,
+            2.4345
+          ],
+          "bounds_origin_cm": [
+            -1.3451,
+            2.7105,
+            117.5447
+          ],
+          "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+          "fallback_triangles": 3696
+        },
+        "cards": {
+          "ue_path": "/Game/AutoFly/Assets/quiver_tree_01/Cards/quiver_tree_01_cards",
+          "base_size_m": [
+            1.1812,
+            0.9685,
+            0.7133
+          ],
+          "bounds_origin_cm": [
+            4.3578,
+            1.8143,
+            231.7002
+          ],
+          "collision": "CTF_USE_SIMPLE_AS_COMPLEX",
+          "fallback_triangles": 11314
+        }
+      },
       "profile_step_m": 0.25,
       "radius_profile_m": [
         0.1282,
@@ -525,7 +723,7 @@
       "band_centre_offset_m": 0.0472,
       "triangles": 150124,
       "nanite": true,
-      "nanite_fallback_triangles": 15011,
+      "nanite_fallback_triangles": 3696,
       "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
       "source": {
         "source": "polyhaven",
@@ -562,6 +760,23 @@
         2.5099,
         16.3056
       ],
+      "parts": {
+        "solid": {
+          "ue_path": "/Game/AutoFly/Assets/sand_rocks_small_01/sand_rocks_small_01",
+          "base_size_m": [
+            4.6266,
+            3.8831,
+            0.5349
+          ],
+          "bounds_origin_cm": [
+            -16.169,
+            2.5099,
+            16.3056
+          ],
+          "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+          "fallback_triangles": 73946
+        }
+      },
       "profile_step_m": 0.25,
       "radius_profile_m": [
         2.4581,
@@ -612,6 +827,38 @@
         22.8128,
         159.0056
       ],
+      "parts": {
+        "solid": {
+          "ue_path": "/Game/AutoFly/Assets/searsia_burchellii/searsia_burchellii_large",
+          "base_size_m": [
+            3.9813,
+            4.9793,
+            3.239
+          ],
+          "bounds_origin_cm": [
+            27.4578,
+            20.2397,
+            159.0056
+          ],
+          "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+          "fallback_triangles": 19787
+        },
+        "cards": {
+          "ue_path": "/Game/AutoFly/Assets/searsia_burchellii/Cards/searsia_burchellii_large_cards",
+          "base_size_m": [
+            4.1581,
+            5.0485,
+            3.1863
+          ],
+          "bounds_origin_cm": [
+            30.5598,
+            22.8128,
+            159.4248
+          ],
+          "collision": "CTF_USE_SIMPLE_AS_COMPLEX",
+          "fallback_triangles": 16367
+        }
+      },
       "profile_step_m": 0.25,
       "radius_profile_m": [
         1.3248,
@@ -637,7 +884,7 @@
       "band_centre_offset_m": 0.3814,
       "triangles": 361558,
       "nanite": true,
-      "nanite_fallback_triangles": 36154,
+      "nanite_fallback_triangles": 19787,
       "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
       "source": {
         "source": "polyhaven",
@@ -673,6 +920,38 @@
         11.9172,
         126.5057
       ],
+      "parts": {
+        "solid": {
+          "ue_path": "/Game/AutoFly/Assets/searsia_burchellii/searsia_burchellii_medium",
+          "base_size_m": [
+            3.1517,
+            2.3318,
+            2.5307
+          ],
+          "bounds_origin_cm": [
+            -3.4403,
+            2.8531,
+            123.6687
+          ],
+          "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+          "fallback_triangles": 9673
+        },
+        "cards": {
+          "ue_path": "/Game/AutoFly/Assets/searsia_burchellii/Cards/searsia_burchellii_medium_cards",
+          "base_size_m": [
+            3.5754,
+            2.6142,
+            2.5559
+          ],
+          "bounds_origin_cm": [
+            -18.3349,
+            11.9172,
+            128.0806
+          ],
+          "collision": "CTF_USE_SIMPLE_AS_COMPLEX",
+          "fallback_triangles": 11353
+        }
+      },
       "profile_step_m": 0.25,
       "radius_profile_m": [
         1.0698,
@@ -696,7 +975,7 @@
       "band_centre_offset_m": 0.2189,
       "triangles": 210262,
       "nanite": true,
-      "nanite_fallback_triangles": 21026,
+      "nanite_fallback_triangles": 9673,
       "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
       "source": {
         "source": "polyhaven",
@@ -732,6 +1011,38 @@
         -8.6807,
         93.0472
       ],
+      "parts": {
+        "solid": {
+          "ue_path": "/Game/AutoFly/Assets/searsia_burchellii/searsia_burchellii_small",
+          "base_size_m": [
+            1.6459,
+            2.2443,
+            1.9357
+          ],
+          "bounds_origin_cm": [
+            -14.3237,
+            -10.1235,
+            93.0472
+          ],
+          "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+          "fallback_triangles": 2468
+        },
+        "cards": {
+          "ue_path": "/Game/AutoFly/Assets/searsia_burchellii/Cards/searsia_burchellii_small_cards",
+          "base_size_m": [
+            1.6549,
+            2.1147,
+            1.8598
+          ],
+          "bounds_origin_cm": [
+            -14.4227,
+            -0.7593,
+            94.4179
+          ],
+          "collision": "CTF_USE_SIMPLE_AS_COMPLEX",
+          "fallback_triangles": 1982
+        }
+      },
       "profile_step_m": 0.25,
       "radius_profile_m": [
         0.8177,
@@ -752,7 +1063,7 @@
       "band_centre_offset_m": 0.199,
       "triangles": 44516,
       "nanite": true,
-      "nanite_fallback_triangles": 4451,
+      "nanite_fallback_triangles": 2468,
       "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
       "source": {
         "source": "polyhaven",
@@ -788,6 +1099,38 @@
         13.8768,
         114.531
       ],
+      "parts": {
+        "solid": {
+          "ue_path": "/Game/AutoFly/Assets/searsia_lucida/searsia_lucida_a",
+          "base_size_m": [
+            1.7641,
+            1.9657,
+            2.3389
+          ],
+          "bounds_origin_cm": [
+            6.8941,
+            13.8768,
+            114.531
+          ],
+          "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+          "fallback_triangles": 7327
+        },
+        "cards": {
+          "ue_path": "/Game/AutoFly/Assets/searsia_lucida/Cards/searsia_lucida_a_cards",
+          "base_size_m": [
+            1.806,
+            1.8826,
+            2.1769
+          ],
+          "bounds_origin_cm": [
+            8.5567,
+            17.9413,
+            121.8876
+          ],
+          "collision": "CTF_USE_SIMPLE_AS_COMPLEX",
+          "fallback_triangles": 4012
+        }
+      },
       "profile_step_m": 0.25,
       "radius_profile_m": [
         0.3888,
@@ -810,7 +1153,7 @@
       "band_centre_offset_m": 0.163,
       "triangles": 113405,
       "nanite": true,
-      "nanite_fallback_triangles": 11339,
+      "nanite_fallback_triangles": 7327,
       "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
       "source": {
         "source": "polyhaven",
@@ -846,6 +1189,38 @@
         -9.8075,
         97.9088
       ],
+      "parts": {
+        "solid": {
+          "ue_path": "/Game/AutoFly/Assets/searsia_lucida/searsia_lucida_b",
+          "base_size_m": [
+            1.4584,
+            1.4981,
+            1.9939
+          ],
+          "bounds_origin_cm": [
+            0.6405,
+            -10.5888,
+            97.8996
+          ],
+          "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+          "fallback_triangles": 6288
+        },
+        "cards": {
+          "ue_path": "/Game/AutoFly/Assets/searsia_lucida/Cards/searsia_lucida_b_cards",
+          "base_size_m": [
+            1.4566,
+            1.5237,
+            1.8393
+          ],
+          "bounds_origin_cm": [
+            0.0043,
+            -9.8075,
+            105.6472
+          ],
+          "collision": "CTF_USE_SIMPLE_AS_COMPLEX",
+          "fallback_triangles": 2574
+        }
+      },
       "profile_step_m": 0.25,
       "radius_profile_m": [
         0.402,
@@ -866,7 +1241,7 @@
       "band_centre_offset_m": 0.0981,
       "triangles": 88629,
       "nanite": true,
-      "nanite_fallback_triangles": 8861,
+      "nanite_fallback_triangles": 6288,
       "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
       "source": {
         "source": "polyhaven",
@@ -902,6 +1277,38 @@
         -1.7819,
         81.8874
       ],
+      "parts": {
+        "solid": {
+          "ue_path": "/Game/AutoFly/Assets/searsia_lucida/searsia_lucida_c",
+          "base_size_m": [
+            1.4912,
+            1.2337,
+            1.6798
+          ],
+          "bounds_origin_cm": [
+            -3.9629,
+            -2.2137,
+            81.8874
+          ],
+          "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+          "fallback_triangles": 4934
+        },
+        "cards": {
+          "ue_path": "/Game/AutoFly/Assets/searsia_lucida/Cards/searsia_lucida_c_cards",
+          "base_size_m": [
+            1.5089,
+            1.2493,
+            1.5033
+          ],
+          "bounds_origin_cm": [
+            -3.4286,
+            -1.7819,
+            90.549
+          ],
+          "collision": "CTF_USE_SIMPLE_AS_COMPLEX",
+          "fallback_triangles": 2825
+        }
+      },
       "profile_step_m": 0.25,
       "radius_profile_m": [
         0.4373,
@@ -921,7 +1328,7 @@
       "band_centre_offset_m": 0.0435,
       "triangles": 77603,
       "nanite": true,
-      "nanite_fallback_triangles": 7760,
+      "nanite_fallback_triangles": 4934,
       "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
       "source": {
         "source": "polyhaven",
@@ -957,6 +1364,38 @@
         5.1052,
         69.7795
       ],
+      "parts": {
+        "solid": {
+          "ue_path": "/Game/AutoFly/Assets/searsia_lucida/searsia_lucida_d",
+          "base_size_m": [
+            1.0699,
+            0.9241,
+            1.4236
+          ],
+          "bounds_origin_cm": [
+            -3.124,
+            5.2087,
+            69.7795
+          ],
+          "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+          "fallback_triangles": 3611
+        },
+        "cards": {
+          "ue_path": "/Game/AutoFly/Assets/searsia_lucida/Cards/searsia_lucida_d_cards",
+          "base_size_m": [
+            1.0953,
+            0.9539,
+            1.3258
+          ],
+          "bounds_origin_cm": [
+            -3.556,
+            5.1052,
+            74.6319
+          ],
+          "collision": "CTF_USE_SIMPLE_AS_COMPLEX",
+          "fallback_triangles": 2019
+        }
+      },
       "profile_step_m": 0.25,
       "radius_profile_m": [
         0.237,
@@ -975,7 +1414,7 @@
       "band_centre_offset_m": 0.1126,
       "triangles": 56320,
       "nanite": true,
-      "nanite_fallback_triangles": 5632,
+      "nanite_fallback_triangles": 3611,
       "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
       "source": {
         "source": "polyhaven",
@@ -1011,6 +1450,38 @@
         0.2411,
         49.8773
       ],
+      "parts": {
+        "solid": {
+          "ue_path": "/Game/AutoFly/Assets/searsia_lucida/searsia_lucida_e",
+          "base_size_m": [
+            1.0206,
+            0.6535,
+            1.025
+          ],
+          "bounds_origin_cm": [
+            0.8117,
+            -2.4519,
+            49.8773
+          ],
+          "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+          "fallback_triangles": 1792
+        },
+        "cards": {
+          "ue_path": "/Game/AutoFly/Assets/searsia_lucida/Cards/searsia_lucida_e_cards",
+          "base_size_m": [
+            1.0339,
+            0.7159,
+            1.0056
+          ],
+          "bounds_origin_cm": [
+            0.2412,
+            0.2411,
+            50.3364
+          ],
+          "collision": "CTF_USE_SIMPLE_AS_COMPLEX",
+          "fallback_triangles": 976
+        }
+      },
       "profile_step_m": 0.25,
       "radius_profile_m": [
         0.2637,
@@ -1028,7 +1499,7 @@
       "band_centre_offset_m": 0.3026,
       "triangles": 27701,
       "nanite": true,
-      "nanite_fallback_triangles": 2770,
+      "nanite_fallback_triangles": 1792,
       "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
       "source": {
         "source": "polyhaven",
@@ -1064,6 +1535,38 @@
         -3.1823,
         36.3504
       ],
+      "parts": {
+        "solid": {
+          "ue_path": "/Game/AutoFly/Assets/searsia_lucida/searsia_lucida_f",
+          "base_size_m": [
+            0.6246,
+            0.4181,
+            0.7386
+          ],
+          "bounds_origin_cm": [
+            -1.2003,
+            -3.4447,
+            36.3504
+          ],
+          "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+          "fallback_triangles": 446
+        },
+        "cards": {
+          "ue_path": "/Game/AutoFly/Assets/searsia_lucida/Cards/searsia_lucida_f_cards",
+          "base_size_m": [
+            0.6576,
+            0.4832,
+            0.7215
+          ],
+          "bounds_origin_cm": [
+            -1.0348,
+            -3.1823,
+            36.4118
+          ],
+          "collision": "CTF_USE_SIMPLE_AS_COMPLEX",
+          "fallback_triangles": 276
+        }
+      },
       "profile_step_m": 0.25,
       "radius_profile_m": [
         0.249,
@@ -1079,7 +1582,7 @@
       "band_centre_offset_m": null,
       "triangles": 7232,
       "nanite": true,
-      "nanite_fallback_triangles": 723,
+      "nanite_fallback_triangles": 446,
       "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
       "source": {
         "source": "polyhaven",
@@ -1115,6 +1618,38 @@
         0.7588,
         38.7524
       ],
+      "parts": {
+        "solid": {
+          "ue_path": "/Game/AutoFly/Assets/searsia_lucida/searsia_lucida_g",
+          "base_size_m": [
+            0.3411,
+            0.2967,
+            0.7868
+          ],
+          "bounds_origin_cm": [
+            -1.6097,
+            -0.653,
+            38.7524
+          ],
+          "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+          "fallback_triangles": 381
+        },
+        "cards": {
+          "ue_path": "/Game/AutoFly/Assets/searsia_lucida/Cards/searsia_lucida_g_cards",
+          "base_size_m": [
+            0.3817,
+            0.3123,
+            0.769
+          ],
+          "bounds_origin_cm": [
+            -1.7517,
+            1.3879,
+            39.0108
+          ],
+          "collision": "CTF_USE_SIMPLE_AS_COMPLEX",
+          "fallback_triangles": 248
+        }
+      },
       "profile_step_m": 0.25,
       "radius_profile_m": [
         0.1428,
@@ -1131,7 +1666,7 @@
       "band_centre_offset_m": null,
       "triangles": 6302,
       "nanite": true,
-      "nanite_fallback_triangles": 630,
+      "nanite_fallback_triangles": 381,
       "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
       "source": {
         "source": "polyhaven",
@@ -1167,6 +1702,38 @@
         76.3612,
         225.4267
       ],
+      "parts": {
+        "solid": {
+          "ue_path": "/Game/AutoFly/Assets/tree_small_02/tree_small_02",
+          "base_size_m": [
+            2.5141,
+            4.0574,
+            4.4166
+          ],
+          "bounds_origin_cm": [
+            16.1675,
+            76.4504,
+            218.4203
+          ],
+          "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
+          "fallback_triangles": 12309
+        },
+        "cards": {
+          "ue_path": "/Game/AutoFly/Assets/tree_small_02/Cards/tree_small_02_cards",
+          "base_size_m": [
+            2.9167,
+            4.2925,
+            3.0743
+          ],
+          "bounds_origin_cm": [
+            14.9357,
+            76.3612,
+            299.5492
+          ],
+          "collision": "CTF_USE_SIMPLE_AS_COMPLEX",
+          "fallback_triangles": 193938
+        }
+      },
       "profile_step_m": 0.25,
       "radius_profile_m": [
         0.112,
@@ -1198,7 +1765,7 @@
       "band_centre_offset_m": 0.6966,
       "triangles": 2062487,
       "nanite": true,
-      "nanite_fallback_triangles": 206248,
+      "nanite_fallback_triangles": 12309,
       "collision": "CTF_USE_COMPLEX_AS_SIMPLE",
       "source": {
         "source": "polyhaven",

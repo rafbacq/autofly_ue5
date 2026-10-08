@@ -164,6 +164,11 @@ class FakeDrone:
         elif blocked_at == 0.0:
             self.x, self.y, self.z = end
             self.actor = start
+            if self.exit_normal is not None:  # the plugin reports the contact that stopped the sweep, normal included
+                n = self.exit_normal
+                self.world.pending_events.append({"type": "collision", "sim_time_ns": self.world.t + 1, "object_name": "canopy",
+                                                  "impact_point": {"x": start[0], "y": start[1], "z": start[2]},
+                                                  "normal": {"x": n[0], "y": n[1], "z": n[2]}})
         else:
             hit = tuple(s + blocked_at * (e - s) for s, e in zip(start, end))
             self.x, self.y, self.z = hit
@@ -299,7 +304,7 @@ def test_reset_from_under_a_canopy_retraces_before_climbing():
     assert poses[0] == (5.2, 0.0, -20.0), "the climb that the canopy blocked"
     assert poses[1] == (3.7, 0.0, -2.0), "1.5 m straight back along the heading, at the actor's altitude"
     assert poses[2] == (3.7, 0.0, -20.0) and poses[3] == (-20.0, 10.0, -20.0) and poses[4] == (-20.0, 10.0, -2.0)
-    assert sim.last_reset_retrace_m == 1.5 and sim.last_reset_escape == ("retrace", 1.5)
+    assert sim.last_reset_escape == ("retrace", 1.5) and sim.last_reset_attempts == 1
 
 
 def test_reset_from_below_a_canopy_notices_the_snapped_back_kinematics():
@@ -318,8 +323,7 @@ def test_reset_from_below_a_canopy_notices_the_snapped_back_kinematics():
     assert poses[0] == (5.2, 0.0, -20.0), "the climb that hit the canopy at 3 m"
     assert poses[1][0] == pytest.approx(3.7) and poses[1][2] == pytest.approx(-3.0, abs=0.15), "back 1.5 m from where the actor stopped (just under the canopy)"
     assert poses[2][:2] == pytest.approx((3.7, 0.0)) and poses[2][2] == -20.0
-    assert sim.last_reset_retrace_m == 1.5
-    assert sim.last_reset_escape == ("retrace", 1.5), "the snap-back's collision event had an upward normal: a nudge up is blocked too"
+    assert sim.last_reset_escape == ("retrace", 1.5)
 
 
 def test_reset_after_a_grazing_crash_nudges_out_along_the_collision_normal():
@@ -341,11 +345,12 @@ def test_reset_after_a_grazing_crash_nudges_out_along_the_collision_normal():
     assert obs.pose == Pose(-20.0, 10.0, -2.0, 1.0)
     poses = [(round(p["translation"]["x"], 3), round(p["translation"]["y"], 3), round(p["translation"]["z"], 3)) for p in sim._drone.poses[before:]]
     assert poses[0] == (5.6, 0.0, -20.0), "the plain climb, blocked from inside the canopy"
-    assert poses[1] == (5.6, 0.5, -2.0), "0.5 m along the normal, +y, at the actor's altitude: this one lands"
-    assert poses[2] == (5.6, 0.5, -20.0), "but the climb from there is still under leaves"
-    # the body is out of the card it was overlapping: the retraces now sweep free space, and the second one clears the canopy
-    assert sim.last_reset_escape == ("retrace", 4.0)
-    assert poses[-3][:2] == pytest.approx((0.1, 2.0)) and poses[-2] == (-20.0, 10.0, -20.0) and poses[-1] == (-20.0, 10.0, -2.0)
+    assert poses[1] == (5.6, 0.4, -2.0), "0.4 m along the reported normal, +y, at the actor's altitude: out of the card"
+    assert poses[2] == (4.1, 0.4, -2.0), "then the retrace, an ordinary sweep now, back the way it came"
+    assert poses[3] == (4.1, 0.4, -20.0), "x = 4.1 is still under the canopy (x >= 4): blocked again"
+    assert poses[4] == (4.1, 0.8, -2.0) and poses[5][:2] == pytest.approx((0.1, 0.8)), "nudge, then the longer retrace, out from under"
+    assert poses[-2] == (-20.0, 10.0, -20.0) and poses[-1] == (-20.0, 10.0, -2.0)
+    assert sim.last_reset_escape == ("retrace", 4.0) and sim.last_reset_attempts == 2
 
 
 def test_reset_gives_up_when_no_retrace_frees_the_actor():

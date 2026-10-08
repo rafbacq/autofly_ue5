@@ -54,9 +54,13 @@ ROBOT = "Drone1"
 CAMERA = "FrontCamera"
 NO_EPISODE_NS = 2**62
 CAMERA_RECHECK_S = 0.2
-# reset's escape ladder: a plain climb; then a nudge along the last collision's normal (the direction UE lets a
-# penetrating actor leave by) and a climb; then climbs after backing the actor out along its heading by this much
-RESET_ESCAPES = (("climb", 0.0), ("normal", 0.5), ("normal", 1.5), ("retrace", 1.5), ("retrace", 4.0), ("retrace", 8.0))
+# reset's escape (ProjectAirSimSimulator._escape_to): up to this many climb attempts, each blocked one followed by a
+# nudge of RESET_NUDGE_M along the sum of the last RESET_NORMALS_USED contact normals the blocked sweeps reported (when
+# any) and a retrace along the heading of RESET_RETRACE_M[attempt]
+RESET_ESCAPE_ATTEMPTS = 8
+RESET_NUDGE_M = 0.4
+RESET_NORMALS_USED = 3
+RESET_RETRACE_M = (1.5, 4.0, 8.0)
 FRAME_KEYS = ("rgb", "depth")
 # A refused move is accepted when the object already sits this close to the requested pose (read back after the
 # refusal). The probe read moves back to within 3e-6 m (docs/gates/m2d_mover_probe.json).
@@ -136,8 +140,8 @@ class ProjectAirSimSimulator:
         self._camera_offset_m = camera_offset_m
         self._camera_pose_tolerance_m = camera_pose_tolerance_m
         self._camera_xyz: tuple[float, float, float] | None = None  # the last frame's camera position: where the actor really is
-        self.last_reset_retrace_m = 0.0  # how far the last reset had to back the actor out before it could climb
-        self.last_reset_escape: tuple[str, float] = ("climb", 0.0)  # the RESET_ESCAPES rung the last reset climbed from
+        self.last_reset_escape: tuple[str, float] = ("climb", 0.0)  # the last move before the climb that freed the last reset
+        self.last_reset_attempts = 0  # how many climbs the last reset needed beyond the first
         self._reset_position_tolerance_m = reset_position_tolerance_m
         self._reset_yaw_tolerance_rad = reset_yaw_tolerance_rad
         self._max_speed_m_s = max_speed_m_s
@@ -289,51 +293,64 @@ class ProjectAirSimSimulator:
 
     def _escape_to(self, safe_z: float) -> None:
         """Get the Unreal actor up to the safe altitude. The actor follows the kinematics by a *swept* move every tick
-        (UnrealRobot.cpp MoveRobotToUnrealPose), so a teleport straight up from under a tree's canopy leaves it where
-        it is, among the leaf cards, while the kinematics rise (CameraPoseError: s02's first crash check, 2026-10-07,
-        18 m then 50 m), or stops it at the first leaf it sweeps into, whereupon the kinematics snap back to it (a
-        hop that did not land). The AutoFly action space only ever moves the body forward, so a horizontal move straight
-        back along the heading retraces space the drone has just flown through (UE ignores the initial overlap it is
-        moving out of); from there, farther from the canopy's edge each time, the climb is free. The plain climb comes
-        first: it is what every reset since M1 has done, and it lands everywhere but under an overhang."""
+        (UnrealRobot.cpp MoveRobotToUnrealPose), and UE lets a penetrating actor move only *out of* each contact it
+        starts in (PrimitiveComponent.cpp ShouldIgnoreHitResult: the move's dot with the contact's normal must exceed
+        0.01): a branch above the body blocks every horizontal move, a twig behind it every climb, and a plain climb
+        from under a canopy left the actor where it was while the kinematics rose (s02's live checks, 2026-10-07;
+        CameraPoseError 18 m, then a reset "settled" 38 m off after the kinematics snapped back to a stopped actor).
+
+        Each blocked sweep reports the contact that stopped it, normal included. So, per attempt: climb; when the
+        climb is stopped, nudge along the sum of the normals the recent blocked moves reported (positive against each
+        of them, which is what UE allows: out of the penetration), then retrace along the heading (the body-forward
+        action space makes that recently flown, free space, and once out of penetration a retrace is an ordinary
+        sweep: out from under the branch), and climb again. A nudge alone only ducks under the same branch. Every hop is
+        checked for having landed with its camera."""
         current = self._current_pose()
-        normal = self._last_collision_normal()
+        normals: list[tuple[float, float, float]] = list(self._collision_normals())
         last: Exception | None = None
-        tried = []
-        for kind, metres in RESET_ESCAPES:
-            if kind == "normal" and normal is None:
-                continue
-            tried.append((kind, metres))
+        tried: list[tuple[str, float]] = []
+        for attempt in range(RESET_ESCAPE_ATTEMPTS):
             try:
-                if kind == "climb":
-                    self._hop(Pose(current.x, current.y, safe_z, current.yaw))
-                else:
-                    # from where the actor really is (the last frame's camera, less the mount), not where the
-                    # kinematics were left by a blocked climb
-                    ax, ay, az = self._actor_position(current)
-                    if kind == "normal":
-                        step = (ax + metres * normal[0], ay + metres * normal[1], az + metres * normal[2])
-                    else:
-                        step = (ax - metres * math.cos(current.yaw), ay - metres * math.sin(current.yaw), az)
-                    self._hop(Pose(step[0], step[1], min(step[2], -0.5), current.yaw))  # never into the ground
-                    ax, ay, _ = self._actor_position(current)
-                    self._hop(Pose(ax, ay, safe_z, current.yaw))
-                self.last_reset_retrace_m = metres if kind == "retrace" else 0.0
-                self.last_reset_escape = (kind, metres)
+                ax, ay, _ = self._actor_position(current)
+                self._hop(Pose(ax, ay, safe_z, current.yaw))
+                self.last_reset_escape = (tried[-1][0] if tried else "climb", tried[-1][1] if tried else 0.0)
+                self.last_reset_attempts = attempt
                 return
             except (CameraPoseError, ResetPoseError) as err:
                 last = err
+                normals += self._collision_normals()
+            moves = []
+            recent = normals[-RESET_NORMALS_USED:]
+            total = tuple(sum(n[i] for n in recent) for i in range(3))
+            length = math.sqrt(sum(c * c for c in total))
+            if length > 1e-6:
+                moves.append(("normal", RESET_NUDGE_M, tuple(c / length for c in total)))
+            back = RESET_RETRACE_M[min(attempt, len(RESET_RETRACE_M) - 1)]
+            moves.append(("retrace", back, (-math.cos(current.yaw), -math.sin(current.yaw), 0.0)))
+            for kind, metres, d in moves:
+                # from where the actor really is (the last frame's camera, less the mount), never into the ground
+                ax, ay, az = self._actor_position(current)
+                tried.append((kind, metres))
+                try:
+                    self._hop(Pose(ax + metres * d[0], ay + metres * d[1], min(az + metres * d[2], -0.5), current.yaw))
+                except (CameraPoseError, ResetPoseError) as err:
+                    last = err
+                    normals += self._collision_normals()
         # the last rung's own class, so the fault keeps its meaning for expert/faults.py: a hop that did not land is a
         # start fault (ResetPoseError: reset again), a camera left behind is a step fault (CameraPoseError)
-        raise type(last)(f"reset could not free the Unreal actor: every escape was stopped ({tried}); last: {last}") from last
+        raise type(last)(f"reset could not free the Unreal actor in {RESET_ESCAPE_ATTEMPTS} attempts ({tried}); last: {last}") from last
 
-    def _last_collision_normal(self) -> tuple[float, float, float] | None:
-        """The push-out direction of the last step's last collision (NED unit vector), if the step had one."""
-        if self._last_obs is None or not self._last_obs.step_collisions:
-            return None
-        n = self._last_obs.step_collisions[-1].normal
-        length = math.sqrt(sum(c * c for c in n))
-        return tuple(c / length for c in n) if length > 1e-6 else None
+    def _collision_normals(self) -> list[tuple[float, float, float]]:
+        """The push-out directions (NED unit vectors) of the last step's collisions, if any."""
+        if self._last_obs is None:
+            return []
+        out = []
+        for event in self._last_obs.step_collisions:
+            n = event.normal
+            length = math.sqrt(sum(c * c for c in n))
+            if length > 1e-6:
+                out.append(tuple(c / length for c in n))
+        return out
 
     def _actor_position(self, kinematics: Pose) -> tuple[float, float, float]:
         """Where the Unreal actor's body is: the last camera position less its mount, when a frame has been seen."""

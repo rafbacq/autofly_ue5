@@ -78,3 +78,31 @@ editor's Python); simple convex collision from the whole mesh (hulls around the 
   to the dying server. Wait for the process to go.
 - `scripts/probe_canopy_reset.py`'s run reported "no collision" for every trial after its third reset although the
   same approach collides when flown fresh; unexplained, and the probe is to be re-run after the collision split.
+
+
+## Follow-up the same night: the split, and what wood does
+
+The split was built (`gltf.split_by_opacity`, the import's two meshes, `parts` in the registry, two actors per carded
+instance from `level_spec.py`, the builder's NoCollision for the cards actor; s02 rebuilt: 54 actors, bounds exact,
+layout unchanged since the whole model's box is the union of the parts to the millimetre). Two more things learned:
+
+- **UE boxes no non-colliding actor.** `GetComponentsBoundingBox()` skips components without collision, so the plugin
+  reports an empty box for every cards actor (`m4_s02_gate_run2.json`: 27 "found" actors 5-36 m off, all at the
+  origin). The map check now records a cards actor as present-without-box; its placement is the level builder's check
+  (0.0 cm) and its presence shows in the depth probes' card pixels.
+- **Wood wedges too.** With collision on trunk and branches only, the gate's crash still wedged the actor once
+  (`m4_s02_gate_run2.json`), and the crash-and-reset probe (`docs/gates/m4_s02_wood_crash_reset_probe.json`) wedged
+  2 of 4 crashes beyond eight attempts of an escape that now follows UE's own rule (a nudge along the sum of the
+  normals the blocked sweeps report, then a retrace, then the climb). An island tree's branches are a 4 m cage of
+  330k triangles; a body under one branch and beside a twig has no direction that is "out of" both. A wedged actor
+  also cannot fly afterwards (the first probe's "no collision" trials).
+
+**Decision: in tree scenes the body never reaches wood.** The task's contact rule for a mesh obstacle is geometric,
+at the footprint circle the layout already carries (the band radius: every branch the drone's band meets lies inside
+it), evaluated by the environment each step exactly as s01d's 1 m mover rule is. The physical collision mesh stays as
+a backstop. This goes into `expert/env.py` before any expert trains on s02 (plan 5 / M5); the gate's crash check
+remains physical, runs last, and for a mesh records its reset outcome without requiring it.
+
+`docs/gates/m4_s02_gate_run3.json` **passed** with that ordering: 54 actors present (27 boxed within 2.4 µm), depth
+within 2-17 mm on trunk interiors with 92-100 % inliers, the crash 8.95 m against 8.68 predicted on wood, and the reset
+recovered on its second attempt (a 4 m retrace).

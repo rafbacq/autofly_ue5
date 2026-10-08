@@ -1,0 +1,154 @@
+{
+  "scene": "s02",
+  "scene_config": "scene_autofly_s02_fast.jsonc",
+  "altitudes_m": [
+    2.0,
+    2.5
+  ],
+  "started": "2026-10-07 22:13:59",
+  "trials": [
+    {
+      "tag": "obs_0000",
+      "altitude_m": 2.0,
+      "approach": [
+        -5.610426762510664,
+        -10.994126762510664,
+        -2.0,
+        0.7853981633974483
+      ],
+      "collision": {
+        "step": 22,
+        "object": "StaticMeshActor_1",
+        "impact": [
+          -0.2975958585739136,
+          -5.883458137512207,
+          -2.2721643447875977
+        ],
+        "normal": [
+          -0.507728636264801,
+          -0.5077270269393921,
+          0.6960063576698303
+        ],
+        "pose": [
+          -0.6547263860702515,
+          -6.038417816162109,
+          -2.1629347801208496,
+          0.7853967136658347
+        ]
+      },
+      "reset": {
+        "escape": [
+          "retrace",
+          1.5
+        ],
+        "steps": 7,
+        "seconds": 0.56,
+        "camera_pose_error_m": 1.5370211256204287e-06,
+        "pose_error_m": 0.0007189512253813878
+      },
+      "outcome": "reset ok"
+    },
+    {
+      "tag": "obs_0001",
+      "altitude_m": 2.0,
+      "approach": [
+        -24.8227,
+        -19.9618,
+        -2.0,
+        0.0
+      ],
+      "collision": {
+        "step": 26,
+        "object": "StaticMeshActor_3",
+        "impact": [
+          -16.03764533996582,
+          -19.88599967956543,
+          -2.0487022399902344
+        ],
+        "normal": [
+          -0.6956948637962341,
+          -0.002508403267711401,
+          -0.7183330059051514
+        ],
+        "pose": [
+          -16.412616729736328,
+          -19.962095260620117,
+          -2.2011730670928955,
+          -9.61922351058321e-09
+        ]
+      },
+      "reset": {
+        "escape": [
+          "retrace",
+          1.5
+        ],
+        "steps": 7,
+        "seconds": 0.77,
+        "camera_pose_error_m": 1.5290714892718966e-06,
+        "pose_error_m": 0.006997942924749458
+      },
+      "outcome": "reset ok"
+    },
+    {
+      "tag": "obs_0002",
+      "altitude_m": 2.0,
+      "approach": [
+        6.5405999999999995,
+        1.3089999999999993,
+        -2.0,
+        1.5707963267948966
+      ],
+      "collision": {
+        "step": 21,
+        "object": "StaticMeshActor_5",
+        "impact": [
+          6.509607315063477,
+          8.38104248046875,
+          -2.1873865127563477
+        ],
+        "normal": [
+          -2.1830553009749565e-07,
+          -0.9999980926513672,
+          -0.0019629874732345343
+        ],
+        "pose": [
+          6.54058837890625,
+          7.885329723358154,
+          -2.1853859424591064,
+          1.5707963680836672
+        ]
+      },
+      "outcome": "ResetPoseError: reset could not free the Unreal actor in 8 attempts ([('normal', 0.4), ('retrace', 1.5), ('normal', 0.4), ('retrace', 4.0), ('normal', 0.4), ('retrace', 8.0), ('normal', 0.4), ('retrace', 8.0), ('normal', 0.4), ('retrace', 8.0), ('normal', 0.4), ('retrace', 8.0), ('normal', 0.4), ('retrace', 8.0), ('normal', 0.4), ('retrace', 8.0)]); last: reset hop to Pose(x=6.540593970940662, y=-0.12146224975585174, z=-2.1853880882263184, yaw=1.5707963680836672) settled at Pose(x=6.54059362411499, y=7.878537654876709, z=-2.1853740215301514, yaw=1.570796461157046): 8.000 m off (the actor was stopped on the way)",
+      "retry": {
+        "ok": false,
+        "error": "CameraPoseError: reset could not free the Unreal actor in 8 attempts ([('retrace', 1.5), ('retrace', 4.0), ('retrace', 8.0), ('retrace', 8.0), ('retrace', 8.0), ('retrace', 8.0), ('retrace', 8.0), ('retrace', 8.0)]); last: camera at step 27800000000 ns is 8.000 m from kinematics + mount offset (tolerance 0.1 m); the Unreal actor was probably stopped by a sweep"
+      }
+    },
+    {
+      "tag": "obs_0000",
+      "altitude_m": 2.5,
+      "approach": [
+        -5.610426762510664,
+        -10.994126762510664,
+        -2.5,
+        0.7853981633974483
+      ],
+      "outcome": "CameraPoseError: reset could not free the Unreal actor in 8 attempts ([('retrace', 1.5), ('retrace', 4.0), ('retrace', 8.0), ('retrace', 8.0), ('retrace', 8.0), ('retrace', 8.0), ('retrace', 8.0), ('retrace', 8.0)]); last: camera at step 31000000000 ns is 8.000 m from kinematics + mount offset (tolerance 0.1 m); the Unreal actor was probably stopped by a sweep",
+      "retry": {
+        "ok": false,
+        "error": "CameraPoseError: reset could not free the Unreal actor in 8 attempts ([('retrace', 1.5), ('retrace', 4.0), ('retrace', 8.0), ('retrace', 8.0), ('retrace', 8.0), ('retrace', 8.0), ('retrace', 8.0), ('retrace', 8.0)]); last: camera at step 34200000000 ns is 8.000 m from kinematics + mount offset (tolerance 0.1 m); the Unreal actor was probably stopped by a sweep"
+      }
+    }
+  ],
+  "summary": {
+    "outcomes": {
+      "reset ok": 2,
+      "ResetPoseError": 1,
+      "CameraPoseError": 1
+    },
+    "escapes": {
+      "retrace 1.5": 2
+    },
+    "finished": "2026-10-07 22:14:24"
+  }
+}

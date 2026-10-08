@@ -141,6 +141,18 @@ def set_complex_collision(mesh):
     return enum_name(sms.get_collision_complexity(mesh))
 
 
+def set_no_collision(mesh):
+    """Simple-as-complex with no simple primitives: the mesh blocks nothing, in sweeps or queries. The level builder
+    also disables collision on the actor; this keeps the asset itself harmless wherever it is placed."""
+    sms = unreal.get_editor_subsystem(unreal.StaticMeshEditorSubsystem)
+    sms.remove_collisions(mesh)
+    body = mesh.get_editor_property("body_setup")
+    check(body is not None, "body setup of " + mesh.get_path_name())
+    body.set_editor_property("collision_trace_flag", unreal.CollisionTraceFlag.CTF_USE_SIMPLE_AS_COMPLEX)
+    return {"collision_trace_flag": enum_name(sms.get_collision_complexity(mesh)),
+            "simple_collision_primitives": int(sms.get_simple_collision_count(mesh))}
+
+
 def describe_mesh(mesh):
     bounds = mesh.get_bounds()
     origin, extent = bounds.origin, bounds.box_extent
@@ -196,6 +208,43 @@ def import_model(model):
     got = {m["name"] for m in entry["meshes"]}
     entry["missing_nodes"] = sorted(wanted - got)
     entry["extra_meshes"] = sorted(got - wanted)
+    entry["cards_meshes"] = import_cards(model, by_mesh) if model.get("gltf_cards") else []
+
+
+def import_cards(model, by_mesh):
+    """The alpha-card primitives (gltf.split_by_opacity) as their own meshes under <destination>/Cards, Nanite on,
+    collision off, materials Masked, renamed <key>_cards. The level builder spawns them beside the solid part without
+    collision: the depth camera sees leaves, the body stops at wood (2026-10-07)."""
+    destination = model["destination"] + "/Cards"
+    reported, listed = import_file(model["gltf_cards"], destination, model_pipeline())
+    keep_resident(listed)
+    meshes = static_meshes_under(listed)
+    check(meshes, "no static mesh came out of " + model["gltf_cards"] + " (imported: " + str(reported) + ")")
+    out = []
+    for mesh in meshes:
+        info = describe_mesh(mesh)
+        info["source_triangles"] = info["triangles"]
+        if SPEC.get("nanite", True):
+            info.update(enable_nanite(mesh))
+        else:
+            info["nanite_enabled"] = False
+        info.update(set_no_collision(mesh))
+        info["foliage"] = ue_materials.mask_foliage_of(mesh, SPEC.get("alpha_cutoff", ue_materials.DEFAULT_ALPHA_CUTOFF))
+        check(not any(s["blend_mode"] == "BLEND_TRANSLUCENT" for s in info["foliage"]["slots"]), "translucent slots left on " + mesh.get_name())
+        check(unreal.EditorAssetLibrary.save_loaded_asset(mesh, False), "save " + mesh.get_path_name())
+        out.append(info)
+    if len(model["nodes"]) == 1 and len(out) == 1:
+        by_mesh = {out[0]["name"]: model["nodes"][0]}
+    for info in out:
+        node = by_mesh.get(info["name"])
+        info["imported_name"] = info["name"]
+        info["node"] = node["name"] if node else None
+        if node is not None:
+            target = destination + "/" + node["key"] + "_cards"
+            if info["path"] != target:
+                check(unreal.EditorAssetLibrary.rename_asset(info["path"], target), "rename %s to %s" % (info["path"], target))
+            info["name"], info["path"] = node["key"] + "_cards", target
+    return out
 
 
 def import_texture(path, destination, kind):

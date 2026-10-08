@@ -222,7 +222,10 @@ class TriangleSet:
 
 @dataclass(frozen=True)
 class Mesh:
-    """An imported model standing on its pivot (base pivot), placed at an actor location, yaw and scale."""
+    """An imported model standing on its pivot (base pivot), placed at an actor location, yaw and scale. The actor
+    under the instance's tag is the model's solid part (wood, rock: the collision mesh); a model with alpha cards has a
+    second actor, <tag>_cards, at the same transform and without collision (level_spec.py). The whole model's box
+    (bounds_*) decides where the camera can look at it; each actor's own box is what the simulator reports for it."""
 
     tag: str
     x: float
@@ -231,13 +234,29 @@ class Mesh:
     actor_z: float  # NED z of the actor (the ground top for a base pivot)
     yaw: float
     scale: Vec3  # UE actor scale (x, y, z)
-    bounds_centre_local_m: Vec3  # UE local axes, from the registry's bounds_origin_cm
+    bounds_centre_local_m: Vec3  # the whole model, UE local axes, from the registry's bounds_origin_cm
     bounds_half_local_m: Vec3  # half of base_size_m
     triangles: TriangleSet
+    solid_centre_local_m: Vec3 | None = None  # the solid part's own box; None: the whole is the solid
+    solid_half_local_m: Vec3 | None = None
+    cards_centre_local_m: Vec3 | None = None  # the cards part's own box; None: no cards actor
+    cards_half_local_m: Vec3 | None = None
     kind: str = "mesh"
 
     def world_bbox(self) -> tuple[list[float], list[float]]:
+        centre = self.solid_centre_local_m if self.solid_centre_local_m is not None else self.bounds_centre_local_m
+        half = self.solid_half_local_m if self.solid_half_local_m is not None else self.bounds_half_local_m
+        return _aabb_of_yawed_box(centre, half, self.scale, self.yaw, (self.x, self.y, self.actor_z))
+
+    def whole_world_bbox(self) -> tuple[list[float], list[float]]:
         return _aabb_of_yawed_box(self.bounds_centre_local_m, self.bounds_half_local_m, self.scale, self.yaw, (self.x, self.y, self.actor_z))
+
+    @property
+    def cards_tag(self) -> str | None:
+        return f"{self.tag}_cards" if self.cards_centre_local_m is not None else None
+
+    def cards_world_bbox(self) -> tuple[list[float], list[float]]:
+        return _aabb_of_yawed_box(self.cards_centre_local_m, self.cards_half_local_m, self.scale, self.yaw, (self.x, self.y, self.actor_z))
 
     @property
     def top_altitude_m(self) -> float:
@@ -260,7 +279,7 @@ class Mesh:
     def _t_max(self, origin: Vec3) -> float:
         # the rays need not reach past the mesh's far side: a tight bound keeps the height prefilter to the band they
         # cross (a 12 m probe's window rays rise 0.14 m over their length, a 200 m horizon would rise 2.3 m)
-        centre, size = self.world_bbox()
+        centre, size = self.whole_world_bbox()
         return math.dist(origin, centre) + math.hypot(*size) / 2 + 0.5
 
     def surface_distance(self, origin: Vec3, direction: Vec3) -> float | None:
@@ -335,9 +354,13 @@ def obstacle_from_instance(inst: dict, registry: AssetRegistry, library: MeshLib
         if library is None or inst["asset"] not in library:
             raise ValueError(f"asset {inst['asset']!r} is an imported mesh: a MeshLibrary holding it is required")
         origin = asset.bounds_origin_cm or (0.0, 0.0, 0.0)
+        solid, cards = asset.solid_part, asset.cards_part
         return Mesh(**common, actor_z=float(inst["z_center"]), yaw=float(inst["yaw"]), scale=scale,
                     bounds_centre_local_m=tuple(c / 100.0 for c in origin), bounds_half_local_m=tuple(s / 2 for s in asset.base_size_m),
-                    triangles=library[inst["asset"]])
+                    triangles=library[inst["asset"]],
+                    solid_centre_local_m=tuple(c / 100.0 for c in solid.bounds_origin_cm), solid_half_local_m=tuple(s / 2 for s in solid.base_size_m),
+                    cards_centre_local_m=tuple(c / 100.0 for c in cards.bounds_origin_cm) if cards else None,
+                    cards_half_local_m=tuple(s / 2 for s in cards.base_size_m) if cards else None)
     raise ValueError(f"no geometry for pivot {asset.pivot!r} with footprint {asset.footprint!r}")
 
 
@@ -350,12 +373,17 @@ def mesh_keys(data: dict, registry: AssetRegistry) -> set[str]:
     return {inst["asset"] for inst in data["layout"]["instances"] if registry.assets[inst["asset"]].pivot == "base"}
 
 
-def bbox_error(obstacle: Obstacle, bounds: tuple[Vec3, Vec3] | None) -> dict:
-    """How far the simulator's world-axis box of an actor (centre, size) is from the layout's prediction."""
+def bbox_error(obstacle: Obstacle, bounds: tuple[Vec3, Vec3] | None, *, part: str = "solid") -> dict:
+    """How far the simulator's world-axis box of an actor (centre, size) is from the layout's prediction: the solid
+    part under the instance's tag, or a mesh's cards actor (`part="cards"`)."""
     if bounds is None:
         return {"found": False}
-    centre, size = obstacle.world_bbox()
     got_centre, got_size = bounds
+    if part == "cards" and max(abs(s) for s in got_size) < 1e-3:
+        # UE's GetComponentsBoundingBox skips non-colliding components: the plugin finds the actor (so it is in the
+        # level, under its tag) but can report no box for it. Its placement is the level builder's check (build time).
+        return {"found": True, "box_unavailable": True, "reason": "no collision: the simulator reports no bounds for a non-colliding actor"}
+    centre, size = obstacle.cards_world_bbox() if part == "cards" else obstacle.world_bbox()
     return {"found": True, "center_error_m": math.dist(got_centre, centre), "size_error_m": max(abs(a - b) for a, b in zip(got_size, size))}
 
 

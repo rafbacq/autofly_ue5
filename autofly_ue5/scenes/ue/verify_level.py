@@ -36,6 +36,13 @@ def main():
         err = max(abs(g - w) for g, w in zip([loc.x, loc.y, loc.z], a["location_cm"]))
         worst = max(worst, err)
         check(err <= TOL_CM, "%s location error %.3f cm" % (a["tag"], err))
+        # an alpha-cards actor must block nothing; everything else must block (level_spec.py "collision")
+        component = found[0].get_editor_property("static_mesh_component")
+        enabled = str(component.get_collision_enabled()).split(".")[-1].split(":")[0]
+        if a.get("collision", True):
+            check(enabled != "NO_COLLISION", "%s has collision disabled" % a["tag"])
+        else:
+            check(enabled == "NO_COLLISION", "%s should have no collision, has %s" % (a["tag"], enabled))
     obstacle_tags = sorted(t for t in by_tag if t.startswith("obs_"))
     check(len(obstacle_tags) == len(SPEC["actors"]), "obstacle tag count %d != %d" % (len(obstacle_tags), len(SPEC["actors"])))
     check(len(by_tag.get("SunSky", [])) == 1, "SunSky actor missing")

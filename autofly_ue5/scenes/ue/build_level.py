@@ -106,6 +106,10 @@ def spawn_exposure_volume(spec, eas):
     return volume
 
 
+def enum_name(value):
+    return str(value).split(".")[-1].split(":")[0]
+
+
 def spawn_mesh(a, eas, materials):
     mesh = unreal.load_asset(a["mesh"])
     check(mesh is not None, "mesh " + a["mesh"])
@@ -114,7 +118,12 @@ def spawn_mesh(a, eas, materials):
     actor.set_actor_scale3d(unreal.Vector(*a["scale"]))
     component = actor.get_editor_property("static_mesh_component")
     component.set_mobility(unreal.ComponentMobility.MOVABLE)
-    component.set_collision_profile_name("BlockAll")
+    if a.get("collision", True):
+        component.set_collision_profile_name("BlockAll")
+    else:
+        # alpha cards (leaves, twigs): rendered, never collided with (level_spec.py)
+        component.set_collision_profile_name("NoCollision")
+        component.set_collision_enabled(unreal.CollisionEnabled.NO_COLLISION)
     if materials[a["material"]] is not None:
         component.set_material(0, materials[a["material"]])
     actor.set_actor_label(a["tag"])
@@ -133,7 +142,8 @@ def spawn_mesh(a, eas, materials):
     location_err = max(abs(g - w) for g, w in zip([location.x, location.y, location.z], a["location_cm"]))
     scale_err = max(abs(g - w) for g, w in zip([scale.x, scale.y, scale.z], a["scale"]))
     yaw_err = abs(((actor.get_actor_rotation().yaw - a["yaw_deg"]) + 180.0) % 360.0 - 180.0)
-    REPORT["actors"].append({"tag": a["tag"], "local_origin_cm": got_origin, "local_extent_cm": got_extent,
+    REPORT["actors"].append({"tag": a["tag"], "collision": enum_name(component.get_collision_enabled()),
+                             "local_origin_cm": got_origin, "local_extent_cm": got_extent,
                              "origin_err_cm": origin_err, "extent_err_cm": extent_err, "location_err_cm": location_err,
                              "scale_err": scale_err, "yaw_err_deg": yaw_err})
     check(origin_err <= TOL_CM, "%s local bounds origin %s != %s (pivot not where the registry says?)" % (a["tag"], got_origin, want["origin"]))

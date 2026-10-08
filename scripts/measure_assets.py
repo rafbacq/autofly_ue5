@@ -21,7 +21,7 @@ import argparse  # noqa: E402
 import json  # noqa: E402
 import time  # noqa: E402
 
-from autofly_ue5.scenes.gltf import load_meshes, measure  # noqa: E402
+from autofly_ue5.scenes.gltf import load_meshes, measure, part_extents  # noqa: E402
 
 DEFAULT_BAND_M = (1.0, 3.0)  # the altitude band of spec §6.1
 
@@ -38,8 +38,11 @@ def measure_sources(sources_path: Path, *, band_m: tuple[float, float] = DEFAULT
             path = downloads / asset["source"] / asset["id"] / f["path"]
             for mesh in load_meshes(path):
                 m = measure(mesh, band_m=band_m)
+                # the two static meshes the import makes of a model with alpha cards (gltf.split_by_opacity): the box of
+                # each is what the import's bounds check compares against
+                parts = {"solid": part_extents(mesh, opaque=True), "cards": part_extents(mesh, opaque=False)}
                 meshes.append({"asset": asset["id"], "source": asset["source"], "file": f["path"], "node": mesh.name,
-                               "mesh": mesh.mesh_name, "node_transformed": mesh.transformed, **m})
+                               "mesh": mesh.mesh_name, "node_transformed": mesh.transformed, **m, "parts": parts})
     return {"format": "autofly_ue5_asset_measurements/1", "measured": time.strftime("%Y-%m-%d %H:%M:%S"),
             "sources": str(sources_path), "band_m": list(band_m), "frame": "glTF: x right, y up, z towards the viewer; metres",
             "meshes": meshes}

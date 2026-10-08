@@ -6,13 +6,18 @@ stale "fact". Standing rules live in `CLAUDE.md`; this file is the reasoning and
 
 ## Traps: read these before touching the simulator path
 
-- **A crash into foliage can wedge the Unreal actor beyond any teleport (2026-10-07, s02).** The plugin moves the
-  actor to the kinematics by a collision sweep every tick. Wedged among leaf cards, every sweep is blocked at its
-  start and FastPhysics re-pins the kinematics to the actor each tick: climbs, nudges, retraces and far teleports all
-  return the same pose with a collision event. `reset()` now climbs out by a ladder (`RESET_ESCAPES`: climb, a nudge
-  along the collision normal, retraces of 1.5/4/8 m), which frees shallow contacts; deep ones need leaf cards without
-  collision (`docs/decisions/2026-10-07-m4-live-checks-and-foliage.md`). Convex solids (pillars, boxes, trunks) never
-  wedge.
+- **A crash into a tree can wedge the Unreal actor beyond any teleport (2026-10-07, s02).** The plugin moves the
+  actor to the kinematics by a collision sweep every tick, and UE lets a penetrating actor move only *out of* each
+  contact (dot with its normal > 0.01): under a branch and beside a twig there is no such direction. Climbs, nudges,
+  retraces and far teleports then all return the same pose with a collision event, and the wedged actor cannot fly
+  (every later trial reads "no collision"). `reset()` escapes by UE's own rule (a nudge along the sum of the normals
+  the blocked sweeps report, a retrace, a climb; `_escape_to`), which frees shallow contacts, but 2 of 4 crashes into
+  wood stayed wedged (`docs/gates/m4_s02_wood_crash_reset_probe.json`). So the body must never reach wood: tree
+  scenes end episodes at the footprint circle, geometrically (`docs/decisions/2026-10-07-m4-live-checks-and-foliage.md`).
+  Convex solids (pillars, boxes) never wedge.
+- **UE reports no box for a non-colliding actor (2026-10-07).** `GetComponentsBoundingBox()` skips components
+  without collision, so the plugin's bounding box of a `<tag>_cards` actor is empty (found, centre at the origin).
+  Placement of such actors is the level builder's check; the gate records them as present without a box.
 - **A client that died without `close()` hijacks the next launch on its ports (2026-10-07).** It hangs on
   projectairsim's non-daemon thread, and its nng dialers reconnect to whatever next listens on the same ports: two
   launches in a row failed with "Timeout waiting to get topic info". Kill the dead client before relaunching the slot.

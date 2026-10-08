@@ -38,6 +38,7 @@ import subprocess  # noqa: E402
 import time  # noqa: E402
 
 from autofly_ue5.paths import ENGINE_DIR, RUNS_DIR, UE_CACHE_ENV, UE_PROJECT_DIR, UPROJECT, ZEN_DATA_DIR  # noqa: E402
+from autofly_ue5.scenes.gltf import split_by_opacity  # noqa: E402
 
 ASSETS_ROOT = "/Game/AutoFly/Assets"
 MATERIALS_ROOT = "/Game/AutoFly/Materials/Ground"
@@ -68,8 +69,14 @@ def _node_key(asset_id: str, node: str, n_nodes: int) -> str:
     return asset_id if n_nodes == 1 else name
 
 
-def plan_import(sources: dict, measurements: dict, *, assets_root: str = ASSETS_ROOT, materials_root: str = MATERIALS_ROOT) -> dict:
+def plan_import(sources: dict, measurements: dict, *, assets_root: str = ASSETS_ROOT, materials_root: str = MATERIALS_ROOT,
+                split_dir: Path | None = None) -> dict:
+    """A model whose measurements show alpha cards (leaves, twigs: `parts.cards`) is split into two glTF files
+    (`gltf.split_by_opacity`, under `split_dir`): the editor imports the solid part under the registry key, with
+    collision, and the cards part as `<key>_cards`, without. The drone's collision mesh is then wood and rock only,
+    while the depth camera sees both (2026-10-07: a crash into a canopy wedged the actor among the cards)."""
     downloads = Path(sources["downloads_dir"])
+    split_dir = Path(split_dir) if split_dir is not None else WORK_DIR / "split"
     by_asset: dict[str, list[dict]] = {}
     for m in measurements["meshes"]:
         by_asset.setdefault(m["asset"], []).append(m)
@@ -80,13 +87,18 @@ def plan_import(sources: dict, measurements: dict, *, assets_root: str = ASSETS_
             nodes = by_asset.get(asset["id"], [])
             if not nodes:
                 raise ValueError(f"{asset['id']} has no measurements: run scripts/measure_assets.py first")
-            models.append({"id": asset["id"], "gltf": str(downloads / asset["source"] / asset["id"] / gltf),
-                           "destination": f"{assets_root}/{asset['id']}",
-                           # key: the registry name the editor renames the mesh to; mesh: the glTF mesh name Interchange
-                           # names the asset after (sanitised), which is how the two are matched
-                           "nodes": [{"name": n["node"], "key": _node_key(asset["id"], n["node"], len(nodes)),
-                                      "mesh": sanitize_name(n.get("mesh", n["node"])), "extent_m": n["extent_m"],
-                                      "triangles": n["triangles"]} for n in nodes]})
+            gltf_path = downloads / asset["source"] / asset["id"] / gltf
+            model = {"id": asset["id"], "gltf": str(gltf_path), "gltf_cards": None,
+                     "destination": f"{assets_root}/{asset['id']}",
+                     # key: the registry name the editor renames the mesh to; mesh: the glTF mesh name Interchange
+                     # names the asset after (sanitised), which is how the two are matched
+                     "nodes": [{"name": n["node"], "key": _node_key(asset["id"], n["node"], len(nodes)),
+                                "mesh": sanitize_name(n.get("mesh", n["node"])), "extent_m": n["extent_m"],
+                                "triangles": n["triangles"], "parts": n.get("parts")} for n in nodes]}
+            if any((n.get("parts") or {}).get("cards") for n in nodes):
+                parts = split_by_opacity(gltf_path, split_dir / asset["id"])
+                model["gltf"], model["gltf_cards"] = str(parts["solid"]), str(parts["cards"])
+            models.append(model)
         else:
             folder = downloads / asset["source"] / asset["id"]
             prefix = f"{asset['id']}_{asset['resolution']}"
@@ -127,6 +139,7 @@ def check_report(spec: dict, measurements: dict, report: dict) -> list[str]:
         problems.append(f"the editor reported pass={report.get('pass')}: {report.get('error')}")
     measured = {(m["asset"], m["node"]): m for m in measurements["meshes"]}
     reported = _reported_meshes(spec, report)
+    reported_cards = _reported_meshes(spec, report, part="cards_meshes", suffix="_cards")
     for model in spec["models"]:
         for node in model["nodes"]:
             key = (model["id"], node["name"])
@@ -134,14 +147,20 @@ def check_report(spec: dict, measurements: dict, report: dict) -> list[str]:
             if mesh is None:
                 problems.append(f"{model['id']}: node {node['name']} produced no static mesh")
                 continue
-            ext = [2.0 * e / 100.0 for e in mesh["box_extent_cm"]]  # UE half-extents in cm -> full extents in m
-            gx, gy, gz = measured[key]["extent_m"]  # glTF: x, y up, z
-            tol = lambda a: max(EXTENT_TOLERANCE * a, 0.02)  # noqa: E731
-            if abs(ext[2] - gy) > tol(gy):
-                problems.append(f"{model['id']}/{node['name']}: height {ext[2]:.3f} m in UE, {gy:.3f} m in the glTF")
-            if not (abs(ext[0] - gx) <= tol(gx) and abs(ext[1] - gz) <= tol(gz)) and \
-                    not (abs(ext[0] - gz) <= tol(gz) and abs(ext[1] - gx) <= tol(gx)):
-                problems.append(f"{model['id']}/{node['name']}: horizontal extents {ext[:2]} in UE, ({gx:.3f}, {gz:.3f}) in the glTF")
+            parts = measured[key].get("parts") or {}
+            solid_extent = (parts.get("solid") or {}).get("extent_m", measured[key]["extent_m"])
+            problems += _extent_problems(f"{model['id']}/{node['name']}", mesh, solid_extent)
+            cards_measured = parts.get("cards")
+            cards_mesh = reported_cards.get(key)
+            if cards_measured and cards_mesh is None:
+                problems.append(f"{model['id']}/{node['name']}: its alpha cards produced no static mesh")
+            elif cards_measured:
+                problems += _extent_problems(f"{model['id']}/{node['name']} (cards)", cards_mesh, cards_measured["extent_m"])
+                if cards_mesh.get("collision_trace_flag") != "CTF_USE_SIMPLE_AS_COMPLEX" or cards_mesh.get("simple_collision_primitives", 1) != 0:
+                    problems.append(f"{model['id']}/{node['name']} (cards): must have no collision (simple-as-complex with no primitives), "
+                                    f"got {cards_mesh.get('collision_trace_flag')} with {cards_mesh.get('simple_collision_primitives')} primitives")
+            elif cards_mesh is not None:
+                problems.append(f"{model['id']}/{node['name']}: a cards mesh was imported but the measurements show no cards")
             if spec.get("nanite") and not mesh.get("nanite_enabled"):
                 problems.append(f"{model['id']}/{node['name']}: Nanite is not enabled")
             if spec.get("collision") == "complex_as_simple" and mesh.get("collision_trace_flag") != "CTF_USE_COMPLEX_AS_SIMPLE":
@@ -162,39 +181,74 @@ def check_report(spec: dict, measurements: dict, report: dict) -> list[str]:
     return problems
 
 
-def _reported_meshes(spec: dict, report: dict) -> dict:
+def _extent_problems(label: str, mesh: dict, gltf_extent: list) -> list[str]:
+    """UE's box of an imported mesh against the glTF's (x, y up, z): the height must match, and the horizontal pair
+    either way round (UE's y is glTF's z)."""
+    ext = [2.0 * e / 100.0 for e in mesh["box_extent_cm"]]  # UE half-extents in cm -> full extents in m
+    gx, gy, gz = gltf_extent
+    tol = lambda a: max(EXTENT_TOLERANCE * a, 0.02)  # noqa: E731
+    problems = []
+    if abs(ext[2] - gy) > tol(gy):
+        problems.append(f"{label}: height {ext[2]:.3f} m in UE, {gy:.3f} m in the glTF")
+    if not (abs(ext[0] - gx) <= tol(gx) and abs(ext[1] - gz) <= tol(gz)) and \
+            not (abs(ext[0] - gz) <= tol(gz) and abs(ext[1] - gx) <= tol(gx)):
+        problems.append(f"{label}: horizontal extents {ext[:2]} in UE, ({gx:.3f}, {gz:.3f}) in the glTF")
+    return problems
+
+
+def _reported_meshes(spec: dict, report: dict, *, part: str = "meshes", suffix: str = "") -> dict:
     """(model id, node name) -> the static mesh the editor reported for it: by its registry key (the editor renames to
-    it), by the node name, or by the glTF mesh name Interchange used; a one-node model's one mesh matches regardless."""
+    it, plus `suffix` for a cards part), by the node name, or by the glTF mesh name Interchange used; a one-node
+    model's one mesh matches regardless."""
     out = {}
     for model in spec["models"]:
         reported = next((m for m in report.get("models", []) if m["id"] == model["id"]), None)
         if reported is None:
             continue
-        meshes = reported.get("meshes", [])
+        meshes = reported.get(part, [])
         if len(model["nodes"]) == 1 and len(meshes) == 1:
             out[(model["id"], model["nodes"][0]["name"])] = meshes[0]
             continue
         by_name = {m["name"]: m for m in meshes}
         by_name.update({m.get("imported_name"): m for m in meshes if m.get("imported_name")})
         for node in model["nodes"]:
-            mesh = by_name.get(node["key"]) or by_name.get(node["name"]) or by_name.get(node["mesh"])
+            mesh = by_name.get(node["key"] + suffix) or by_name.get(node["name"]) or by_name.get(node["mesh"])
             if mesh is not None:
                 out[(model["id"], node["name"])] = mesh
     return out
+
+
+def _union_box(meshes: list[dict]) -> tuple[list[float], list[float]]:
+    """Centre and half-extents (UE cm) of the box containing every mesh's local box."""
+    lo = [min(m["origin_cm"][i] - m["box_extent_cm"][i] for m in meshes) for i in range(3)]
+    hi = [max(m["origin_cm"][i] + m["box_extent_cm"][i] for m in meshes) for i in range(3)]
+    return [(a + b) / 2.0 for a, b in zip(lo, hi)], [(b - a) / 2.0 for a, b in zip(lo, hi)]
+
+
+def _part_entry(mesh: dict) -> dict:
+    return {"ue_path": mesh["path"], "base_size_m": [round(2.0 * h / 100.0, 4) for h in mesh["box_extent_cm"]],
+            "bounds_origin_cm": [round(o, 4) for o in mesh["origin_cm"]], "collision": mesh.get("collision_trace_flag"),
+            "fallback_triangles": mesh.get("fallback_triangles")}
 
 
 def registry_entries(spec: dict, sources: dict, measurements: dict, report: dict) -> tuple[dict, dict]:
     by_id = {a["id"]: a for a in sources["assets"]}
     measured = {(m["asset"], m["node"]): m for m in measurements["meshes"]}
     reported = _reported_meshes(spec, report)
+    reported_cards = _reported_meshes(spec, report, part="cards_meshes", suffix="_cards")
     assets: dict[str, dict] = {}
     for model in spec["models"]:
         source = by_id[model["id"]]
         for node in model["nodes"]:
             mesh = reported[(model["id"], node["name"])]
+            cards = reported_cards.get((model["id"], node["name"]))
             m = measured[(model["id"], node["name"])]
             key = _node_key(model["id"], node["name"], len(model["nodes"]))
-            half = mesh["box_extent_cm"]
+            # the whole model's box is the union of its parts' (what UE reported for the one mesh before the split)
+            origin, half = _union_box([mesh] + ([cards] if cards else []))
+            parts = {"solid": _part_entry(mesh)}
+            if cards:
+                parts["cards"] = _part_entry(cards)
             assets[key] = {
                 "ue_path": mesh["path"],
                 "base_size_m": [round(2.0 * h / 100.0, 4) for h in half],
@@ -204,7 +258,10 @@ def registry_entries(spec: dict, sources: dict, measurements: dict, report: dict
                 "role": "obstacle",
                 "seen": None,
                 "measured_extent_cm_at_unit_scale": [round(h, 4) for h in half],
-                "bounds_origin_cm": [round(o, 4) for o in mesh["origin_cm"]],
+                "bounds_origin_cm": [round(o, 4) for o in origin],
+                # the actors the level builder spawns for one instance: the solid part (collision) under the tag, the
+                # alpha cards (no collision) as <tag>_cards (plan 5, 2026-10-07)
+                "parts": parts,
                 "profile_step_m": m["profile_step_m"],
                 "radius_profile_m": m["radius_profile_m"],
                 "ground_radius_m": m["ground_radius_m"],

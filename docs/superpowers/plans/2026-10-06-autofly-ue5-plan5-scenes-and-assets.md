@@ -114,8 +114,10 @@ reachability and the live checks of §11. Then M5 trains one expert per train sc
   (`validate/obstacles.py`, `docs/decisions/2026-10-07-m4-live-checks-and-foliage.md`): **s09 and s07 passed**
   (`docs/gates/m4_s09_gate.json`, `m4_s07_gate.json`); **s02 failed** on its crash check -- a crash into a canopy can
   wedge the swept Unreal actor among the leaf cards beyond any teleport. Also found and fixed: glTF BLEND leaves were
-  Translucent and invisible to the depth camera (now Masked). Next: import cards as a no-collision companion mesh
-  (collision on wood only), re-run s02 as a new record, re-run the canopy reset probe.
+  Translucent and invisible to the depth camera (now Masked). Cards are now a no-collision companion mesh
+  (`<key>_cards`), and **`m4_s02_gate_run3.json` passed**; wood still wedges a body that reaches it (2 of 4 crashes),
+  so tree scenes will end episodes at the footprint circle (geometric contact, as s01d's movers) -- to build into
+  `expert/env.py` before M5 trains on s02.
 - [ ] **C9. Status**: CLAUDE.md's table, spec §6.3 wording where a scene's phrase changed, MEMORY.md's learnings.
 
 ## Not in M4

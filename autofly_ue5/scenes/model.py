@@ -92,6 +92,15 @@ class SceneFile:
 
 
 @dataclass(frozen=True)
+class AssetPart:
+    """One of the static meshes an imported model became (scripts/import_assets.py): its UE path and local box."""
+
+    ue_path: str
+    base_size_m: tuple[float, float, float]
+    bounds_origin_cm: tuple[float, float, float]
+
+
+@dataclass(frozen=True)
 class AssetEntry:
     name: str
     ue_path: str
@@ -109,6 +118,20 @@ class AssetEntry:
     radius_profile_m: tuple[float | None, ...] | None = None
     ground_radius_m: float | None = None
     bounds_origin_cm: tuple[float, float, float] | None = None  # the mesh's local bounds centre (UE cm); (0, 0, 0) for primitives
+    # A model imported as two meshes (plan 5, 2026-10-07): "solid" (wood, rock: collision) under the instance's tag and
+    # "cards" (alpha-tested leaves and twigs: no collision) as <tag>_cards, both at the instance's transform. None: the
+    # one mesh at `ue_path` is the whole. base_size_m and bounds_origin_cm above describe the whole either way.
+    parts: dict[str, AssetPart] | None = None
+
+    @property
+    def solid_part(self) -> AssetPart:
+        if self.parts and "solid" in self.parts:
+            return self.parts["solid"]
+        return AssetPart(self.ue_path, self.base_size_m, self.bounds_origin_cm or (0.0, 0.0, 0.0))
+
+    @property
+    def cards_part(self) -> AssetPart | None:
+        return self.parts.get("cards") if self.parts else None
 
 
 @dataclass(frozen=True)
@@ -252,6 +275,9 @@ def load_registry(path: Path = ASSET_REGISTRY) -> AssetRegistry:
                               if a.get("radius_profile_m") is not None else None),
             ground_radius_m=float(a["ground_radius_m"]) if a.get("ground_radius_m") is not None else None,
             bounds_origin_cm=(tuple(float(v) for v in a["bounds_origin_cm"]) if a.get("bounds_origin_cm") is not None else None),
+            parts=({k: AssetPart(ue_path=part["ue_path"], base_size_m=tuple(float(v) for v in part["base_size_m"]),
+                                 bounds_origin_cm=tuple(float(v) for v in part["bounds_origin_cm"]))
+                    for k, part in a["parts"].items()} if a.get("parts") else None),
         )
         for name, a in data["assets"].items()
     }

@@ -155,3 +155,82 @@ def test_the_material_key_for_a_ground_is_its_purpose_when_the_list_knows_one(tm
 
     assert material_key("PavingStones070") == "paving" and GROUND_KEYS["Ground054"] == "sand"
     assert material_key("Paving1") == "paving1", "an unknown set falls back to its lower-cased id"
+
+
+def _gltf_with_cards(path):
+    """A glTF whose JSON suffices for the split (buffers are never read by it): one node, trunk + leaf primitives."""
+    doc = {"asset": {"version": "2.0"}, "scene": 0, "scenes": [{"nodes": [0]}], "nodes": [{"name": "tree_x_a_LOD0", "mesh": 0}],
+           "materials": [{"name": "bark", "alphaMode": "OPAQUE"}, {"name": "leaves", "alphaMode": "BLEND"}],
+           "meshes": [{"name": "Cube.070", "primitives": [{"attributes": {"POSITION": 0}, "indices": 1, "material": 0},
+                                                           {"attributes": {"POSITION": 2}, "indices": 3, "material": 1}]}],
+           "accessors": [{"bufferView": 0, "componentType": 5126, "count": 3, "type": "VEC3"}] * 4,
+           "bufferViews": [{"buffer": 0, "byteOffset": 0, "byteLength": 36}], "buffers": [{"uri": "model.bin", "byteLength": 36}],
+           "images": [{"uri": "leaf.png"}]}
+    path.write_text(json.dumps(doc))
+    (path.parent / "model.bin").write_bytes(b"\\0" * 36)
+    (path.parent / "leaf.png").write_bytes(b"png")
+
+
+def _measurements_with_cards():
+    m = _measurements()
+    m["meshes"] = m["meshes"][:1]
+    m["meshes"][0]["parts"] = {"solid": {"extent_m": [2.6, 3.4, 2.4], "base_m": 0.0, "top_m": 3.4, "triangles": 600},
+                               "cards": {"extent_m": [2.8, 2.0, 2.6], "base_m": 1.5, "top_m": 3.5, "triangles": 400}}
+    return m
+
+
+def _report_with_cards():
+    return {"pass": True, "models": [{"id": "tree_x", "destination": "/Game/AutoFly/Assets/tree_x",
+        "meshes": [{"name": "tree_x", "imported_name": "Cube_070", "path": "/Game/AutoFly/Assets/tree_x/tree_x",
+                    "box_extent_cm": [130.0, 120.0, 170.0], "origin_cm": [0.0, 5.0, 170.0], "triangles": 600, "vertices": 300,
+                    "nanite_enabled": True, "collision_trace_flag": "CTF_USE_COMPLEX_AS_SIMPLE", "materials": [],
+                    "foliage": {"changed": [], "slots": [{"material": "/Game/AutoFly/Assets/tree_x/M_bark", "blend_mode": "BLEND_OPAQUE"}]}}],
+        "cards_meshes": [{"name": "tree_x_cards", "imported_name": "Cube_070", "path": "/Game/AutoFly/Assets/tree_x/Cards/tree_x_cards",
+                          "box_extent_cm": [140.0, 130.0, 100.0], "origin_cm": [10.0, 0.0, 250.0], "triangles": 400, "vertices": 200,
+                          "nanite_enabled": True, "collision_trace_flag": "CTF_USE_SIMPLE_AS_COMPLEX", "simple_collision_primitives": 0,
+                          "materials": [],
+                          "foliage": {"changed": [{"material": "/Game/AutoFly/Assets/tree_x/Cards/MI_leaves", "blend_mode": "BLEND_MASKED", "alpha_cutoff": 0.5}],
+                                      "slots": [{"material": "/Game/AutoFly/Assets/tree_x/Cards/MI_leaves", "blend_mode": "BLEND_MASKED"}]}}]}],
+        "materials": [{"id": "Paving1", "name": "M_Paving1", "path": "/Game/AutoFly/Materials/Ground/M_Paving1",
+                       "connected": ["MP_BASE_COLOR", "MP_NORMAL", "MP_ROUGHNESS", "MP_AMBIENT_OCCLUSION"], "tiling": 173.913, "textures": {}}]}
+
+
+def test_a_model_with_alpha_cards_is_planned_as_two_files(tmp_path):
+    from scripts.import_assets import check_report, plan_import, registry_entries
+
+    sources = _sources(tmp_path)
+    _gltf_with_cards(tmp_path / "downloads" / "polyhaven" / "tree_x" / "tree_x_2k.gltf")
+    measurements = _measurements_with_cards()
+    spec = plan_import(sources, measurements, split_dir=tmp_path / "split")
+    (model,) = spec["models"]
+    assert model["gltf"].endswith("split/tree_x/tree_x_2k_solid.gltf") and model["gltf_cards"].endswith("split/tree_x/tree_x_2k_cards.gltf")
+    assert (tmp_path / "split" / "tree_x" / "model.bin").exists() and (tmp_path / "split" / "tree_x" / "leaf.png").exists()
+    assert json.loads(open(model["gltf_cards"]).read())["meshes"][0]["name"] == "Cube.070"
+    assert model["nodes"][0]["parts"]["cards"]["triangles"] == 400
+    # the report checks each part against its own extents, and the cards part for having no collision
+    assert check_report(spec, measurements, _report_with_cards()) == []
+    no_cards = _report_with_cards()
+    no_cards["models"][0]["cards_meshes"] = []
+    assert any("produced no static mesh" in p for p in check_report(spec, measurements, no_cards))
+    colliding = _report_with_cards()
+    colliding["models"][0]["cards_meshes"][0]["collision_trace_flag"] = "CTF_USE_COMPLEX_AS_SIMPLE"
+    assert any("must have no collision" in p for p in check_report(spec, measurements, colliding))
+    wrong_size = _report_with_cards()
+    wrong_size["models"][0]["cards_meshes"][0]["box_extent_cm"] = [140.0, 130.0, 60.0]
+    assert any("(cards): height" in p for p in check_report(spec, measurements, wrong_size))
+    # the registry entry: the whole box is the union of the parts (x [-130, 150], y [-130, 130], z [0, 350] cm)
+    assets, _ = registry_entries(spec, sources, measurements, _report_with_cards())
+    entry = assets["tree_x"]
+    assert entry["ue_path"] == "/Game/AutoFly/Assets/tree_x/tree_x"
+    assert entry["bounds_origin_cm"] == [10.0, 0.0, 175.0] and entry["base_size_m"] == [2.8, 2.6, 3.5]
+    assert entry["parts"]["solid"]["ue_path"].endswith("/tree_x") and entry["parts"]["cards"]["ue_path"].endswith("/Cards/tree_x_cards")
+    assert entry["parts"]["cards"]["base_size_m"] == [2.8, 2.6, 2.0] and entry["parts"]["cards"]["bounds_origin_cm"] == [10.0, 0.0, 250.0]
+    assert entry["parts"]["cards"]["collision"] == "CTF_USE_SIMPLE_AS_COMPLEX"
+
+
+def test_a_model_without_cards_is_planned_from_its_own_file(tmp_path):
+    from scripts.import_assets import plan_import
+
+    spec = plan_import(_sources(tmp_path), _measurements(), split_dir=tmp_path / "split")
+    assert spec["models"][0]["gltf"].endswith("tree_x/tree_x_2k.gltf") and spec["models"][0]["gltf_cards"] is None
+    assert not (tmp_path / "split").exists()

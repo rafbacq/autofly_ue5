@@ -59,6 +59,11 @@ def main(argv: list[str] | None = None) -> int:
             result = bbox_error(o, _bounds(world, o.tag, BoxAlignment.WORLD_AXIS))
             result["tag"], result["kind"] = o.tag, o.kind
             report["obstacles"].append(result)
+            cards_tag = getattr(o, "cards_tag", None)
+            if cards_tag:  # found, but boxless: a non-colliding actor has no bounds in the plugin's report
+                result = bbox_error(o, _bounds(world, cards_tag, BoxAlignment.WORLD_AXIS), part="cards")
+                result["tag"], result["kind"] = cards_tag, "cards"
+                report["obstacles"].append(result)
         ground = _bounds(world, GROUND_TAG, BoxAlignment.WORLD_AXIS)
         report["ground_top_z_ned"] = ground[0][2] - ground[1][2] / 2.0 if ground else None
     except Exception as err:
@@ -66,11 +71,12 @@ def main(argv: list[str] | None = None) -> int:
     finally:
         client.disconnect()
     found = [o for o in report["obstacles"] if o["found"]]
-    report["max_center_error_m"] = max((o["center_error_m"] for o in found), default=None)
-    report["max_size_error_m"] = max((o["size_error_m"] for o in found), default=None)
+    boxed = [o for o in found if not o.get("box_unavailable")]
+    report["max_center_error_m"] = max((o["center_error_m"] for o in boxed), default=None)
+    report["max_size_error_m"] = max((o["size_error_m"] for o in boxed), default=None)
     report["pass"] = (
-        "error" not in report and len(found) == len(report["obstacles"]) > 0
-        and all(o["center_error_m"] < TOL_M and o["size_error_m"] < TOL_M for o in found)
+        "error" not in report and len(found) == len(report["obstacles"]) > 0 and len(boxed) > 0
+        and all(o["center_error_m"] < TOL_M and o["size_error_m"] < TOL_M for o in boxed)
         and report.get("ground_top_z_ned") is not None and abs(report["ground_top_z_ned"]) < 0.02
     )
     args.out.parent.mkdir(parents=True, exist_ok=True)

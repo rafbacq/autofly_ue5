@@ -84,3 +84,30 @@ def test_full_s01_spec():
     assert white["ue_path"] == "/Game/AutoFly/Materials/MI_White" and white["rgba"] == [0.9, 0.9, 0.9, 1.0]
     for actor, inst in zip(spec["actors"], layout.instances):
         assert actor["location_cm"][2] == pytest.approx(inst.height_m * 50.0, abs=0.01)  # base on the ground
+
+
+def test_a_model_with_alpha_cards_spawns_two_actors_at_one_transform():
+    import dataclasses
+
+    from autofly_ue5.scenes.model import AssetEntry, AssetPart
+
+    tree = AssetEntry(name="tree", ue_path="/Game/AutoFly/Assets/tree/tree", base_size_m=(2.8, 2.6, 3.5), pivot="base",
+                      footprint="circle", category="nature", role="obstacle", seen=None, measured_extent_cm_at_unit_scale=(140.0, 130.0, 175.0),
+                      profile_step_m=0.25, radius_profile_m=(1.4,) * 14, ground_radius_m=1.4, bounds_origin_cm=(10.0, 0.0, 175.0),
+                      parts={"solid": AssetPart("/Game/AutoFly/Assets/tree/tree", (2.6, 2.4, 3.4), (0.0, 5.0, 170.0)),
+                             "cards": AssetPart("/Game/AutoFly/Assets/tree/Cards/tree_cards", (2.8, 2.6, 2.0), (10.0, 0.0, 250.0))})
+    registry = dataclasses.replace(REGISTRY, assets={**REGISTRY.assets, "tree": tree})
+    inst = Instance(tag="obs_0000", asset="tree", x=1.0, y=-2.0, z_center=0.0, yaw=0.5, scale=(1.2, 1.2, 1.2), material="mesh",
+                    radius_m=1.68, height_m=4.2)
+    actors = layout_to_level_spec(Layout("s02", 1, Bounds(-35, 35, -35, 35), (inst,)), SCENE, registry)["actors"]
+    assert [a["tag"] for a in actors] == ["obs_0000", "obs_0000_cards"]
+    solid, cards = actors
+    assert solid["mesh"].endswith("/tree") and solid["collision"] is True
+    assert solid["expected_local_bounds_cm"] == {"origin": [0.0, 5.0, 170.0], "extent": [130.0, 120.0, 170.0]}
+    assert cards["mesh"].endswith("/Cards/tree_cards") and cards["collision"] is False
+    assert cards["expected_local_bounds_cm"] == {"origin": [10.0, 0.0, 250.0], "extent": [140.0, 130.0, 100.0]}
+    for key in ("location_cm", "yaw_deg", "scale", "material"):
+        assert solid[key] == cards[key]
+    # an entry without parts spawns one colliding actor, as before
+    plain = layout_to_level_spec(Layout("s02", 1, Bounds(-35, 35, -35, 35), (dataclasses.replace(inst, asset="cylinder", material="white"),)), SCENE, REGISTRY)["actors"]
+    assert len(plain) == 1 and plain[0]["collision"] is True

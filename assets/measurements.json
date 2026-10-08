@@ -1,6 +1,6 @@
 {
   "format": "autofly_ue5_asset_measurements/1",
-  "measured": "2026-10-07 17:22:05",
+  "measured": "2026-10-07 21:51:56",
   "sources": "/home/nvidiasims/research_uav/autofly_ue5/assets/sources.json",
   "band_m": [
     1.0,
@@ -44,7 +44,25 @@
         0.8937,
         0.7953
       ],
-      "ground_radius_m": 0.9671
+      "ground_radius_m": 0.9671,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            1.2721,
+            1.0038,
+            1.8303
+          ],
+          "base_m": -0.0736,
+          "top_m": 0.9302,
+          "centre_m": [
+            -0.1121,
+            0.4283,
+            -0.0333
+          ],
+          "triangles": 66122
+        },
+        "cards": null
+      }
     },
     {
       "asset": "island_tree_02",
@@ -92,7 +110,39 @@
         3.2338,
         2.5347
       ],
-      "ground_radius_m": 3.3162
+      "ground_radius_m": 3.3162,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            4.2077,
+            3.39,
+            3.9757
+          ],
+          "base_m": -0.017,
+          "top_m": 3.373,
+          "centre_m": [
+            0.0515,
+            1.678,
+            0.9156
+          ],
+          "triangles": 357469
+        },
+        "cards": {
+          "extent_m": [
+            3.8681,
+            2.1424,
+            4.0707
+          ],
+          "base_m": 1.2472,
+          "top_m": 3.3896,
+          "centre_m": [
+            0.078,
+            2.3184,
+            0.9212
+          ],
+          "triangles": 714744
+        }
+      }
     },
     {
       "asset": "island_tree_03",
@@ -137,7 +187,39 @@
         0.6243,
         0.3166
       ],
-      "ground_radius_m": 2.2136
+      "ground_radius_m": 2.2136,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            2.9583,
+            2.5878,
+            2.878
+          ],
+          "base_m": -0.0135,
+          "top_m": 2.5743,
+          "centre_m": [
+            0.6668,
+            1.2804,
+            0.2108
+          ],
+          "triangles": 676616
+        },
+        "cards": {
+          "extent_m": [
+            2.3418,
+            2.1902,
+            2.9132
+          ],
+          "base_m": 0.4114,
+          "top_m": 2.6016,
+          "centre_m": [
+            0.9888,
+            1.5065,
+            0.213
+          ],
+          "triangles": 1408704
+        }
+      }
     },
     {
       "asset": "namaqualand_boulder_02",
@@ -175,7 +257,25 @@
         1.1472,
         0.6127
       ],
-      "ground_radius_m": 1.381
+      "ground_radius_m": 1.381,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            2.5321,
+            0.8826,
+            1.2343
+          ],
+          "base_m": -0.0595,
+          "top_m": 0.8232,
+          "centre_m": [
+            0.0821,
+            0.3818,
+            0.0084
+          ],
+          "triangles": 97964
+        },
+        "cards": null
+      }
     },
     {
       "asset": "namaqualand_boulder_03",
@@ -215,7 +315,25 @@
         1.3916,
         1.1556
       ],
-      "ground_radius_m": 1.684
+      "ground_radius_m": 1.684,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            2.4071,
+            1.4732,
+            3.0654
+          ],
+          "base_m": -0.0147,
+          "top_m": 1.4585,
+          "centre_m": [
+            0.1487,
+            0.7219,
+            0.1431
+          ],
+          "triangles": 64826
+        },
+        "cards": null
+      }
     },
     {
       "asset": "namaqualand_boulder_04",
@@ -257,7 +375,25 @@
         1.2636,
         1.0856
       ],
-      "ground_radius_m": 1.4768
+      "ground_radius_m": 1.4768,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            2.5222,
+            1.9005,
+            2.4964
+          ],
+          "base_m": -0.0294,
+          "top_m": 1.8711,
+          "centre_m": [
+            -0.0792,
+            0.9208,
+            0.2172
+          ],
+          "triangles": 59066
+        },
+        "cards": null
+      }
     },
     {
       "asset": "namaqualand_boulder_05",
@@ -294,7 +430,25 @@
         0.727,
         0.3229
       ],
-      "ground_radius_m": 0.729
+      "ground_radius_m": 0.729,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            1.364,
+            0.5383,
+            0.748
+          ],
+          "base_m": -0.0098,
+          "top_m": 0.5285,
+          "centre_m": [
+            0.0469,
+            0.2593,
+            -0.024
+          ],
+          "triangles": 89618
+        },
+        "cards": null
+      }
     },
     {
       "asset": "namaqualand_boulder_06",
@@ -331,7 +485,25 @@
         0.6646,
         0.637
       ],
-      "ground_radius_m": 0.6646
+      "ground_radius_m": 0.6646,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.675,
+            0.6516,
+            1.2119
+          ],
+          "base_m": -0.0185,
+          "top_m": 0.6332,
+          "centre_m": [
+            0.0168,
+            0.3074,
+            -0.0549
+          ],
+          "triangles": 109114
+        },
+        "cards": null
+      }
     },
     {
       "asset": "quiver_tree_01",
@@ -376,7 +548,39 @@
         0.672,
         0.618
       ],
-      "ground_radius_m": 0.672
+      "ground_radius_m": 0.672,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.616,
+            2.4345,
+            0.4558
+          ],
+          "base_m": -0.0418,
+          "top_m": 2.3927,
+          "centre_m": [
+            -0.0135,
+            1.1754,
+            0.0271
+          ],
+          "triangles": 36970
+        },
+        "cards": {
+          "extent_m": [
+            1.1812,
+            0.7133,
+            0.9685
+          ],
+          "base_m": 1.9604,
+          "top_m": 2.6736,
+          "centre_m": [
+            0.0436,
+            2.317,
+            0.0181
+          ],
+          "triangles": 113154
+        }
+      }
     },
     {
       "asset": "sand_rocks_small_01",
@@ -412,7 +616,25 @@
         2.4581,
         1.7595
       ],
-      "ground_radius_m": 2.4752
+      "ground_radius_m": 2.4752,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            4.6266,
+            0.5349,
+            3.8831
+          ],
+          "base_m": -0.1044,
+          "top_m": 0.4305,
+          "centre_m": [
+            -0.1617,
+            0.1631,
+            0.0251
+          ],
+          "triangles": 739469
+        },
+        "cards": null
+      }
     },
     {
       "asset": "searsia_burchellii",
@@ -459,7 +681,39 @@
         1.0041,
         0.906
       ],
-      "ground_radius_m": 2.8942
+      "ground_radius_m": 2.8942,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            3.9813,
+            3.239,
+            4.9793
+          ],
+          "base_m": -0.0295,
+          "top_m": 3.2096,
+          "centre_m": [
+            0.2746,
+            1.5901,
+            0.2024
+          ],
+          "triangles": 197888
+        },
+        "cards": {
+          "extent_m": [
+            4.1581,
+            3.1863,
+            5.0485
+          ],
+          "base_m": 0.0011,
+          "top_m": 3.1874,
+          "centre_m": [
+            0.3056,
+            1.5942,
+            0.2281
+          ],
+          "triangles": 163670
+        }
+      }
     },
     {
       "asset": "searsia_burchellii",
@@ -504,7 +758,39 @@
         1.2292,
         1.2151
       ],
-      "ground_radius_m": 2.0029
+      "ground_radius_m": 2.0029,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            3.1517,
+            2.5307,
+            2.3318
+          ],
+          "base_m": -0.0287,
+          "top_m": 2.502,
+          "centre_m": [
+            -0.0344,
+            1.2367,
+            0.0285
+          ],
+          "triangles": 96730
+        },
+        "cards": {
+          "extent_m": [
+            3.5754,
+            2.5559,
+            2.6142
+          ],
+          "base_m": 0.0028,
+          "top_m": 2.5588,
+          "centre_m": [
+            -0.1833,
+            1.2808,
+            0.1192
+          ],
+          "triangles": 113532
+        }
+      }
     },
     {
       "asset": "searsia_burchellii",
@@ -546,7 +832,39 @@
         0.8509,
         0.6562
       ],
-      "ground_radius_m": 1.2237
+      "ground_radius_m": 1.2237,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            1.6459,
+            1.9357,
+            2.2443
+          ],
+          "base_m": -0.0374,
+          "top_m": 1.8983,
+          "centre_m": [
+            -0.1432,
+            0.9305,
+            -0.1012
+          ],
+          "triangles": 24690
+        },
+        "cards": {
+          "extent_m": [
+            1.6549,
+            1.8598,
+            2.1147
+          ],
+          "base_m": 0.0143,
+          "top_m": 1.8741,
+          "centre_m": [
+            -0.1442,
+            0.9442,
+            -0.0076
+          ],
+          "triangles": 19826
+        }
+      }
     },
     {
       "asset": "searsia_lucida",
@@ -590,7 +908,39 @@
         0.7524,
         0.2498
       ],
-      "ground_radius_m": 1.184
+      "ground_radius_m": 1.184,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            1.7641,
+            2.3389,
+            1.9657
+          ],
+          "base_m": -0.0241,
+          "top_m": 2.3148,
+          "centre_m": [
+            0.0689,
+            1.1453,
+            0.1388
+          ],
+          "triangles": 73282
+        },
+        "cards": {
+          "extent_m": [
+            1.806,
+            2.1769,
+            1.8826
+          ],
+          "base_m": 0.1304,
+          "top_m": 2.3073,
+          "centre_m": [
+            0.0856,
+            1.2189,
+            0.1794
+          ],
+          "triangles": 40123
+        }
+      }
     },
     {
       "asset": "searsia_lucida",
@@ -632,7 +982,39 @@
         0.883,
         0.4423
       ],
-      "ground_radius_m": 0.8899
+      "ground_radius_m": 0.8899,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            1.4584,
+            1.9939,
+            1.4981
+          ],
+          "base_m": -0.018,
+          "top_m": 1.976,
+          "centre_m": [
+            0.0064,
+            0.979,
+            -0.1059
+          ],
+          "triangles": 62886
+        },
+        "cards": {
+          "extent_m": [
+            1.4566,
+            1.8393,
+            1.5237
+          ],
+          "base_m": 0.1368,
+          "top_m": 1.9761,
+          "centre_m": [
+            0.0,
+            1.0565,
+            -0.0981
+          ],
+          "triangles": 25743
+        }
+      }
     },
     {
       "asset": "searsia_lucida",
@@ -673,7 +1055,39 @@
         0.909,
         0.4683
       ],
-      "ground_radius_m": 0.9258
+      "ground_radius_m": 0.9258,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            1.4912,
+            1.6798,
+            1.2337
+          ],
+          "base_m": -0.021,
+          "top_m": 1.6588,
+          "centre_m": [
+            -0.0396,
+            0.8189,
+            -0.0221
+          ],
+          "triangles": 49351
+        },
+        "cards": {
+          "extent_m": [
+            1.5089,
+            1.5033,
+            1.2493
+          ],
+          "base_m": 0.1539,
+          "top_m": 1.6571,
+          "centre_m": [
+            -0.0343,
+            0.9055,
+            -0.0178
+          ],
+          "triangles": 28252
+        }
+      }
     },
     {
       "asset": "searsia_lucida",
@@ -713,7 +1127,39 @@
         0.5739,
         0.4132
       ],
-      "ground_radius_m": 0.5923
+      "ground_radius_m": 0.5923,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            1.0699,
+            1.4236,
+            0.9241
+          ],
+          "base_m": -0.014,
+          "top_m": 1.4096,
+          "centre_m": [
+            -0.0312,
+            0.6978,
+            0.0521
+          ],
+          "triangles": 36125
+        },
+        "cards": {
+          "extent_m": [
+            1.0953,
+            1.3258,
+            0.9539
+          ],
+          "base_m": 0.0834,
+          "top_m": 1.4092,
+          "centre_m": [
+            -0.0356,
+            0.7463,
+            0.0511
+          ],
+          "triangles": 20195
+        }
+      }
     },
     {
       "asset": "searsia_lucida",
@@ -752,7 +1198,39 @@
         0.3694,
         0.3308
       ],
-      "ground_radius_m": 0.5494
+      "ground_radius_m": 0.5494,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            1.0206,
+            1.025,
+            0.6535
+          ],
+          "base_m": -0.0137,
+          "top_m": 1.0113,
+          "centre_m": [
+            0.0081,
+            0.4988,
+            -0.0245
+          ],
+          "triangles": 17936
+        },
+        "cards": {
+          "extent_m": [
+            1.0339,
+            1.0056,
+            0.7159
+          ],
+          "base_m": 0.0006,
+          "top_m": 1.0061,
+          "centre_m": [
+            0.0024,
+            0.5034,
+            0.0024
+          ],
+          "triangles": 9765
+        }
+      }
     },
     {
       "asset": "searsia_lucida",
@@ -789,7 +1267,39 @@
         0.3454,
         0.317
       ],
-      "ground_radius_m": 0.3454
+      "ground_radius_m": 0.3454,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.6246,
+            0.7386,
+            0.4181
+          ],
+          "base_m": -0.0058,
+          "top_m": 0.7328,
+          "centre_m": [
+            -0.012,
+            0.3635,
+            -0.0344
+          ],
+          "triangles": 4471
+        },
+        "cards": {
+          "extent_m": [
+            0.6576,
+            0.7215,
+            0.4832
+          ],
+          "base_m": 0.0034,
+          "top_m": 0.7249,
+          "centre_m": [
+            -0.0103,
+            0.3641,
+            -0.0318
+          ],
+          "triangles": 2761
+        }
+      }
     },
     {
       "asset": "searsia_lucida",
@@ -827,7 +1337,39 @@
         0.2008,
         0.2191
       ],
-      "ground_radius_m": 0.2191
+      "ground_radius_m": 0.2191,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            0.3411,
+            0.7868,
+            0.2967
+          ],
+          "base_m": -0.0059,
+          "top_m": 0.7809,
+          "centre_m": [
+            -0.0161,
+            0.3875,
+            -0.0065
+          ],
+          "triangles": 3815
+        },
+        "cards": {
+          "extent_m": [
+            0.3817,
+            0.769,
+            0.3123
+          ],
+          "base_m": 0.0056,
+          "top_m": 0.7746,
+          "centre_m": [
+            -0.0175,
+            0.3901,
+            0.0139
+          ],
+          "triangles": 2487
+        }
+      }
     },
     {
       "asset": "tree_small_02",
@@ -880,7 +1422,39 @@
         2.2259,
         1.0183
       ],
-      "ground_radius_m": 2.9249
+      "ground_radius_m": 2.9249,
+      "parts": {
+        "solid": {
+          "extent_m": [
+            2.5141,
+            4.4166,
+            4.0574
+          ],
+          "base_m": -0.0241,
+          "top_m": 4.3925,
+          "centre_m": [
+            0.1617,
+            2.1842,
+            0.7645
+          ],
+          "triangles": 123107
+        },
+        "cards": {
+          "extent_m": [
+            2.9167,
+            3.0743,
+            4.2925
+          ],
+          "base_m": 1.4583,
+          "top_m": 4.5326,
+          "centre_m": [
+            0.1494,
+            2.9955,
+            0.7636
+          ],
+          "triangles": 1939380
+        }
+      }
     }
   ]
 }

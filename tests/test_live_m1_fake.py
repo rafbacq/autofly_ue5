@@ -1,5 +1,6 @@
 import math
 
+import numpy as np
 import pytest
 
 from autofly_ue5.paths import SCENES_DIR
@@ -83,6 +84,25 @@ def test_map_check_reads_every_actor_s_box():
     assert check_map(sim, shifted)["pass"] is False and check_map(sim, shifted)["max_center_error_m"] == pytest.approx(0.1)
     missing = check_map(sim, OBSTACLES[:5])  # obs_0000... are not actors the fake knows
     assert missing["pass"] is False and missing["found"] == 0
+
+
+def test_a_cards_actor_is_found_without_a_box():
+    import dataclasses
+
+    from autofly_ue5.scenes.model import AssetEntry, AssetPart
+    from autofly_ue5.validate.obstacles import MeshLibrary, bbox_error, obstacle_from_instance
+
+    v = np.array([[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0]], float)
+    entry = AssetEntry(name="tree", ue_path="/Game/AutoFly/Assets/tree/tree", base_size_m=(1.0, 1.0, 1.0), pivot="base", footprint="circle",
+                       category="nature", role="obstacle", seen=None, measured_extent_cm_at_unit_scale=None, bounds_origin_cm=(0.0, 0.0, 50.0),
+                       parts={"solid": AssetPart("/Game/AutoFly/Assets/tree/tree", (1.0, 1.0, 1.0), (0.0, 0.0, 50.0)),
+                              "cards": AssetPart("/Game/AutoFly/Assets/tree/Cards/tree_cards", (1.0, 1.0, 0.5), (0.0, 0.0, 75.0))})
+    reg = dataclasses.replace(REGISTRY, assets={**REGISTRY.assets, "tree": entry})
+    obs = obstacle_from_instance({"tag": "obs_0000", "asset": "tree", "x": 0.0, "y": 0.0, "z_center": 0.0, "yaw": 0.0, "scale": [1, 1, 1],
+                                  "material": "mesh", "radius_m": 0.5, "height_m": 1.0}, reg, MeshLibrary.from_arrays({"tree": (v, np.array([[0, 1, 2], [0, 2, 3]]))}))
+    row = bbox_error(obs, ((0.0, 0.0, 0.0), (0.0, 0.0, 0.0)), part="cards")
+    assert row == {"found": True, "box_unavailable": True, "reason": row["reason"]}
+    assert bbox_error(obs, ((0.0, 0.0, -0.75), (1.0, 1.0, 0.5)), part="cards")["center_error_m"] == pytest.approx(0.0, abs=1e-9)
 
 
 def test_probe_choice_on_a_scene_of_low_boxes_skips_what_the_camera_overflies():

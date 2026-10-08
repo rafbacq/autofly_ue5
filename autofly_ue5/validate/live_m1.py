@@ -73,6 +73,7 @@ GROUND_TOP_TOL_M = 0.02
 SILHOUETTE_BAND_M = 0.3
 # the share of a probe window's on-obstacle pixels that must measure within their own tolerance of the ray cast
 MIN_INLIER_SHARE = 0.8
+CRASH_STEPS = 40  # 16 m at 2 m/s: the 6 m probe's solid surface is up to 9 m off for a tree whose footprint is its canopy
 
 
 @dataclass(frozen=True)
@@ -184,17 +185,19 @@ def check_depth(sim: Simulator, probes: list[Probe], frames_dir: Path | None = N
 
 def check_crash(sim: Simulator, probe: Probe, poses: ScenePoses) -> dict:
     """Fly at the probe's obstacle from its pose until the simulator reports a collision: the impact must lie within
-    0.5 m of the obstacle's footprint circle and about where the depth probe put the surface (the camera's planar depth
-    plus its 0.4 m offset from the body, within 1 m: a box corner or a branch may meet the body before the ray's
-    surface does), and a reset afterwards must restore the view."""
+    0.5 m of the obstacle's footprint circle and about where the depth probe put the solid surface (the camera's planar
+    depth plus its 0.4 m offset from the body, within 1 m: a box corner or a branch may meet the body before the ray's
+    surface does), and a reset afterwards must restore the view. A tree's trunk from the 6 m probe is 9 m off: the
+    flight allows CRASH_STEPS steps, 2 m/s from a hover."""
     reference = sim.reset(poses.field_view)
     sim.reset(probe.pose)
     ux, uy = math.cos(probe.pose.yaw), math.sin(probe.pose.yaw)
-    # the collision mesh is every triangle, leaf cards included: the body meets the nearest of them across its width,
-    # which the 16 x 16 window spans at the 6 m probe; a solid obstacle's window is its surface
-    contact_m = float(np.min(probe.predicted_m))
-    out: dict = {"pass": False, "reason": "no collision within 25 steps", "expected_contact_m": contact_m}
-    for step in range(25):
+    # the collision mesh is the solid geometry (a tree's leaf cards are their own actor without collision): the body
+    # meets the nearest of it across its width, which the 16 x 16 window spans at the 6 m probe; a solid obstacle's
+    # window is its surface
+    contact_m = float(np.min(probe.predicted_opaque_m))
+    out: dict = {"pass": False, "reason": f"no collision within {CRASH_STEPS} steps", "expected_contact_m": contact_m}
+    for step in range(CRASH_STEPS):
         sim.command_velocity(2.0, 0.0, 0.0)
         sim.step(DT)
         obs = sim.observe()
@@ -212,12 +215,14 @@ def check_crash(sim: Simulator, probe: Probe, poses: ScenePoses) -> dict:
                    "pass": obs.collided and impact_from_footprint <= 0.5 and abs(travel - expected_travel) <= 1.0}
             break
     # A reset after a crash must bring the Unreal actor and its camera back (research gotcha 6); the backend raises
-    # CameraPoseError when it cannot.
+    # CameraPoseError when it cannot. For a mesh that is recorded, not required: a body that reaches wood can wedge
+    # the swept actor beyond any teleport (s02, 2026-10-07: 2 of 4 crashes), so tree scenes end an episode at the
+    # footprint circle before contact and this crash is the gate's last act.
     try:
         after = sim.reset(poses.field_view)
     except Exception as err:
-        out["reset_after_crash"] = {"error": f"{type(err).__name__}: {err}", "pass": False}
-        out["pass"] = False
+        out["reset_after_crash"] = {"error": f"{type(err).__name__}: {err}", "pass": False, "required": probe.solid}
+        out["pass"] = bool(out["pass"]) and not probe.solid
         return out
     depth = depth_agreement(reference.depth, after.depth)
     reset_ok = (
@@ -225,10 +230,11 @@ def check_crash(sim: Simulator, probe: Probe, poses: ScenePoses) -> dict:
         and (depth["median_relative_diff"] is None or depth["median_relative_diff"] <= 0.05)
     )
     out["reset_after_crash"] = {"camera_pose_error_m": after.camera_pose_error_m, "depth": depth,
-                                "rgb_mean_abs_diff": mean_abs_diff(reference.rgb, after.rgb), "pass": reset_ok,
-                                # the escape the backend's reset climbed from (sim/airsim_backend.RESET_ESCAPES)
-                                "escape": list(getattr(sim, "last_reset_escape", ("climb", 0.0)))}
-    out["pass"] = bool(out["pass"]) and reset_ok
+                                "rgb_mean_abs_diff": mean_abs_diff(reference.rgb, after.rgb), "pass": reset_ok, "required": probe.solid,
+                                # the escape the backend's reset climbed from (sim/airsim_backend._escape_to)
+                                "escape": list(getattr(sim, "last_reset_escape", ("climb", 0.0))),
+                                "attempts": getattr(sim, "last_reset_attempts", 0)}
+    out["pass"] = bool(out["pass"]) and (reset_ok or not probe.solid)
     return out
 
 
@@ -317,20 +323,29 @@ def check_spawn_destroy(sim: Simulator, poses: ScenePoses) -> dict:
 
 def check_map(sim: Simulator, obstacles: list[Obstacle], *, tolerance_m: float = 0.05) -> dict:
     """Every layout actor's world-axis box as the simulator reports it against the layout's prediction (centre and
-    size within tolerance_m), and the ground's top at z = 0: the packaged binary carries this layout, placed as built."""
+    size within tolerance_m), and the ground's top at z = 0: the packaged binary carries this layout, placed as built.
+    A tree's cards actor must be found; it has no box to report (no collision), so its placement rests on the level
+    builder's check and on the depth probes' card pixels."""
     rows = []
     for o in obstacles:
         row = bbox_error(o, sim.object_bounds(o.tag))
         row["tag"], row["kind"] = o.tag, o.kind
         rows.append(row)
+        cards_tag = getattr(o, "cards_tag", None)
+        if cards_tag:  # a tree's leaf cards: their own actor, without collision, at the same transform
+            row = bbox_error(o, sim.object_bounds(cards_tag), part="cards")
+            row["tag"], row["kind"] = cards_tag, "cards"
+            rows.append(row)
     ground = sim.object_bounds(GROUND_TAG)
     ground_top = ground[0][2] - ground[1][2] / 2.0 if ground else None
     found = [r for r in rows if r["found"]]
-    return {"obstacles": rows, "checked": len(rows), "found": len(found),
-            "max_center_error_m": max((r["center_error_m"] for r in found), default=None),
-            "max_size_error_m": max((r["size_error_m"] for r in found), default=None),
+    boxed = [r for r in found if not r.get("box_unavailable")]  # a cards actor is found but has no box (no collision)
+    return {"obstacles": rows, "checked": len(rows), "found": len(found), "boxed": len(boxed),
+            "max_center_error_m": max((r["center_error_m"] for r in boxed), default=None),
+            "max_size_error_m": max((r["size_error_m"] for r in boxed), default=None),
             "ground_top_z_ned": ground_top, "tolerance_m": tolerance_m,
-            "pass": (len(found) == len(rows) > 0 and all(r["center_error_m"] < tolerance_m and r["size_error_m"] < tolerance_m for r in found)
+            "pass": (len(found) == len(rows) > 0 and len(boxed) > 0
+                     and all(r["center_error_m"] < tolerance_m and r["size_error_m"] < tolerance_m for r in boxed)
                      and ground_top is not None and abs(ground_top) < GROUND_TOP_TOL_M)}
 
 
@@ -388,10 +403,11 @@ def main(argv: list[str] | None = None) -> int:
         ("map_matches_layout", lambda: check_map(sim, obstacles)),
         ("rgb_changes_with_pose", lambda: check_rgb_changes(sim, poses)),
         ("depth_matches_geometry", lambda: check_depth(sim, probes, frames_dir)),
-        ("crash_raises_collision", lambda: check_crash(sim, probes[1], poses)),
         ("velocity_tracking", lambda: check_tracking(sim, poses)),
         ("one_step_per_record", lambda: check_one_step(sim, poses)),
         ("spawn_destroy_packaged", lambda: check_spawn_destroy(sim, poses)),
+        # last: a crash into a tree can leave the actor wedged (check_crash), and nothing may follow it
+        ("crash_raises_collision", lambda: check_crash(sim, probes[1], poses)),
     ]
     # Xid lines are counted from this run's start without journalctl's -k (which implies -b, the current boot only).
     run_started = time.strftime("%Y-%m-%d %H:%M:%S")

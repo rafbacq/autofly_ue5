@@ -201,3 +201,97 @@ def measure(mesh: MeshGeometry, *, band_m: tuple[float, float] = (1.0, 3.0)) -> 
         result["band_centre_offset_m"] = round(float(np.hypot(*centre)), 4)
         result["band_radius_about_centre_m"] = round(float(np.hypot(*(xz - centre).T).max()), 4)
     return result
+
+
+def part_extents(mesh: MeshGeometry, *, opaque: bool) -> dict | None:
+    """The box of the triangles whose material is opaque (or not): what UE's bounds of the split part should read.
+    None when the mesh has no such triangles."""
+    flags = mesh.triangle_opaque if mesh.triangle_opaque is not None else np.ones(len(mesh.triangles), bool)
+    tris = mesh.triangles[flags == opaque]
+    if len(tris) == 0:
+        return None
+    v = mesh.local_vertices[np.unique(tris)]
+    return {"extent_m": [round(float(e), 4) for e in (v.max(axis=0) - v.min(axis=0))],
+            "base_m": round(float(v[:, 1].min()), 4), "top_m": round(float(v[:, 1].max()), 4),
+            "centre_m": [round(float(c), 4) for c in (v.max(axis=0) + v.min(axis=0)) / 2.0], "triangles": int(len(tris))}
+
+
+def split_by_opacity(path: Path, out_dir: Path) -> dict[str, Path | None]:
+    """Write two copies of a glTF next to each other in `out_dir`: `<stem>_solid.gltf` holding the primitives whose
+    material is opaque, `<stem>_cards.gltf` the others (alphaMode BLEND or MASK: leaves, twigs). Meshes left without a
+    primitive are dropped along with the nodes that carried them; node and mesh names are kept, so Interchange names
+    the imported meshes as it would have for the whole file. Buffers and images are shared: every URI the file names is
+    linked (or copied) into `out_dir`. Returns the two paths; "cards" is None for a file without any.
+
+    Why: imported as one static mesh, a tree's leaf cards were part of its complex collision, and a drone that crashed
+    into a canopy wedged among them beyond any teleport (s02's live checks, 2026-10-07). The level builder spawns the
+    cards part without collision; the depth camera still sees it."""
+    path = Path(path)
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    gltf = json.loads(path.read_text())
+    materials = gltf.get("materials", [])
+
+    def is_opaque(prim: dict) -> bool:
+        return "material" not in prim or materials[prim["material"]].get("alphaMode", "OPAQUE") == "OPAQUE"
+
+    def filtered(keep_opaque: bool) -> dict | None:
+        doc = json.loads(json.dumps(gltf))
+        kept_meshes: dict[int, int] = {}
+        meshes = []
+        for i, mesh in enumerate(doc.get("meshes", [])):
+            prims = [p for p in mesh.get("primitives", []) if is_opaque(p) == keep_opaque]
+            if prims:
+                kept_meshes[i] = len(meshes)
+                meshes.append({**mesh, "primitives": prims})
+        if not meshes:
+            return None
+        doc["meshes"] = meshes
+        # nodes: drop a mesh reference that is gone, drop a node left with nothing (no mesh, no children), remap indices
+        nodes = doc.get("nodes", [])
+        for node in nodes:
+            if "mesh" in node:
+                if node["mesh"] in kept_meshes:
+                    node["mesh"] = kept_meshes[node["mesh"]]
+                else:
+                    del node["mesh"]
+        alive = [i for i, n in enumerate(nodes) if "mesh" in n or n.get("children")]
+        # a node kept only for children all of which are gone is dropped too (one pass suffices for Poly Haven's flat files)
+        remap = {old: new for new, old in enumerate(alive)}
+        new_nodes = []
+        for i in alive:
+            n = dict(nodes[i])
+            if "children" in n:
+                n["children"] = [remap[c] for c in n["children"] if c in remap]
+                if not n["children"]:
+                    del n["children"]
+            new_nodes.append(n)
+        doc["nodes"] = new_nodes
+        for scene in doc.get("scenes", []):
+            scene["nodes"] = [remap[c] for c in scene.get("nodes", []) if c in remap]
+        return doc
+
+    for section in ("buffers", "images"):
+        for item in gltf.get(section, []):
+            uri = item.get("uri")
+            if uri and not uri.startswith("data:"):
+                target = out_dir / uri
+                target.parent.mkdir(parents=True, exist_ok=True)  # Poly Haven keeps images under textures/
+                if not target.exists():
+                    source = (path.parent / uri).resolve()
+                    try:
+                        target.symlink_to(source)
+                    except OSError:
+                        target.write_bytes(source.read_bytes())
+    out: dict[str, Path | None] = {}
+    for name, keep_opaque in (("solid", True), ("cards", False)):
+        doc = filtered(keep_opaque)
+        if doc is None:
+            out[name] = None
+            continue
+        target = out_dir / f"{path.stem}_{name}.gltf"
+        target.write_text(json.dumps(doc))
+        out[name] = target
+    if out["solid"] is None:
+        raise ValueError(f"{path}: no opaque primitive at all")
+    return out

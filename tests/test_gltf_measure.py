@@ -137,6 +137,22 @@ def test_the_measurement_script_records_every_model_of_the_sources(tmp_path):
     assert [m["asset"] for m in report["meshes"]] == ["demo", "demo"] and [m["node"] for m in report["meshes"]] == ["demo_a", "demo_b"]
     assert report["meshes"][0]["band_radius_m"] == pytest.approx(0.3) and report["meshes"][1]["band_radius_m"] is None
     assert report["band_m"] == [1.0, 3.0]
+    # every node's parts: all of these are opaque, so the solid part is the whole and there are no cards
+    assert report["meshes"][0]["parts"]["solid"]["extent_m"] == report["meshes"][0]["extent_m"] and report["meshes"][0]["parts"]["cards"] is None
+
+
+def test_part_extents_follow_the_material_opacity(tmp_path):
+    from autofly_ue5.scenes.gltf import load_meshes, part_extents
+
+    _write_gltf(tmp_path / "m.gltf", [("trunk", _column(0.2, 3.0), None), ("leaves", _column(1.0, 1.0, base=2.0), None)],
+                alpha_modes={"leaves": "BLEND"})
+    by_name = {m.name: m for m in load_meshes(tmp_path / "m.gltf")}
+    solid = part_extents(by_name["trunk"], opaque=True)
+    assert solid["extent_m"] == pytest.approx([0.4, 3.0, 0.4], abs=1e-3) and solid["base_m"] == 0.0 and solid["triangles"] == 128
+    assert part_extents(by_name["trunk"], opaque=False) is None
+    cards = part_extents(by_name["leaves"], opaque=False)
+    assert cards["extent_m"] == pytest.approx([2.0, 1.0, 2.0], abs=1e-3) and cards["base_m"] == pytest.approx(2.0) and cards["top_m"] == pytest.approx(3.0)
+    assert part_extents(by_name["leaves"], opaque=True) is None
 
 
 def test_the_radius_profile_gives_the_footprint_at_any_scale(tmp_path):
@@ -176,3 +192,55 @@ def test_each_triangle_knows_whether_its_material_is_opaque(tmp_path):
     by_name = {m.name: m for m in load_meshes(tmp_path / "model.gltf")}
     assert by_name["trunk"].triangle_opaque.all() and len(by_name["trunk"].triangle_opaque) == len(trunk[1])
     assert not by_name["leaves"].triangle_opaque.any() and len(by_name["leaves"].triangle_opaque) == len(leaves[1])
+
+
+def test_a_gltf_splits_into_its_solid_and_card_primitives(tmp_path):
+    from autofly_ue5.scenes.gltf import load_meshes, split_by_opacity
+
+    src = tmp_path / "src"
+    src.mkdir()
+    trunk = _column(0.2, 3.0)
+    leaves = _column(1.0, 1.0, base=2.0)
+    rock = _column(0.5, 0.8)
+    # one node whose mesh holds a trunk and a leaf primitive, one all-rock node (no cards at all)
+    _write_gltf(src / "tree.gltf", [("tree", trunk, None), ("rock", rock, None)], alpha_modes={"tree": "OPAQUE"})
+    gltf = json.loads((src / "tree.gltf").read_text())
+    # give the tree mesh a second, BLEND primitive sharing the file's buffers: the leaves
+    import numpy as np
+    blob = (src / "model.bin").read_bytes()
+    lv = np.asarray(leaves[0], dtype="<f4"); li = np.asarray(leaves[1], dtype="<u4").ravel()
+    gltf["bufferViews"] += [{"buffer": 0, "byteOffset": len(blob), "byteLength": lv.nbytes},
+                            {"buffer": 0, "byteOffset": len(blob) + lv.nbytes, "byteLength": li.nbytes}]
+    blob += lv.tobytes() + li.tobytes()
+    gltf["buffers"][0]["byteLength"] = len(blob)
+    gltf["accessors"] += [{"bufferView": len(gltf["bufferViews"]) - 2, "componentType": 5126, "count": len(lv), "type": "VEC3",
+                           "min": lv.min(axis=0).tolist(), "max": lv.max(axis=0).tolist()},
+                          {"bufferView": len(gltf["bufferViews"]) - 1, "componentType": 5125, "count": len(li), "type": "SCALAR"}]
+    gltf["materials"].append({"name": "leaves", "alphaMode": "BLEND", "doubleSided": True})
+    gltf["meshes"][0]["primitives"].append({"attributes": {"POSITION": len(gltf["accessors"]) - 2}, "indices": len(gltf["accessors"]) - 1,
+                                            "mode": 4, "material": len(gltf["materials"]) - 1})
+    gltf["images"] = [{"uri": "textures/leaf.png"}]
+    (src / "textures").mkdir()
+    (src / "textures" / "leaf.png").write_bytes(b"not really a png")
+    (src / "tree.gltf").write_text(json.dumps(gltf))
+    (src / "model.bin").write_bytes(blob)
+
+    out = tmp_path / "split"
+    parts = split_by_opacity(src / "tree.gltf", out)
+    assert set(parts) == {"solid", "cards"} and parts["solid"].parent == out and parts["cards"].parent == out
+    solid = {m.name: m for m in load_meshes(parts["solid"])}
+    cards = {m.name: m for m in load_meshes(parts["cards"])}
+    # the solid file keeps both nodes (trunk, rock) with only opaque triangles; the cards file keeps the tree node only
+    assert set(solid) == {"tree", "rock"} and set(cards) == {"tree"}
+    assert len(solid["tree"].triangles) == len(trunk[1]) and solid["tree"].triangle_opaque.all()
+    assert len(cards["tree"].triangles) == len(leaves[1]) and not cards["tree"].triangle_opaque.any()
+    assert cards["tree"].local_vertices[:, 1].min() == pytest.approx(2.0), "the leaves start at 2 m"
+    # the split files reference the original buffers and images by relative name, present next to them
+    assert (out / "model.bin").exists() and (out / "textures" / "leaf.png").exists()
+    assert json.loads(parts["cards"].read_text())["meshes"][0]["name"] == "mesh_tree", "mesh names survive, so Interchange names the import the same way"
+    # a file without cards yields no cards part (and its solid part is the whole file)
+    rock_dir = tmp_path / "rock_src"
+    rock_dir.mkdir()
+    _write_gltf(rock_dir / "rock.gltf", [("rock", rock, None)])
+    rock_parts = split_by_opacity(rock_dir / "rock.gltf", tmp_path / "split3")
+    assert rock_parts["cards"] is None and len(load_meshes(rock_parts["solid"])) == 1

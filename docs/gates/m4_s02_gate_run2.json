@@ -1,0 +1,687 @@
+{
+  "scene": "s02",
+  "map": "/Game/AutoFly/Maps/S02",
+  "layout": "/home/nvidiasims/research_uav/autofly_ue5/runs/levels/s02.layout.json",
+  "scene_sha256": "29a5235e2c2956844a9852ba230e742e35201a1d6fd4c5f3d6ad4f974ed70fd2",
+  "layout_sha256": "d17f29f39ca36fb3ea07d3079359ddd0909311690ad09f9406dd28666d16d0ab",
+  "obstacle_kinds": {
+    "mesh": 27
+  },
+  "checks": {
+    "map_matches_layout": {
+      "obstacles": [
+        {
+          "found": true,
+          "center_error_m": 4.0861099238991187e-07,
+          "size_error_m": 4.6981894982423e-05,
+          "tag": "obs_0000",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 5.806866674610977,
+          "size_error_m": 4.425516944898621,
+          "tag": "obs_0000_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.1611556982014355e-06,
+          "size_error_m": 5.410192495602928e-05,
+          "tag": "obs_0001",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 24.350763361654774,
+          "size_error_m": 5.292527777297414,
+          "tag": "obs_0001_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 4.6265628508383923e-07,
+          "size_error_m": 5.689161965705125e-05,
+          "tag": "obs_0002",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 12.66058068482643,
+          "size_error_m": 5.705050354403088,
+          "tag": "obs_0002_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 6.711387517294642e-07,
+          "size_error_m": 5.73818735176701e-05,
+          "tag": "obs_0003",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 24.117055068215606,
+          "size_error_m": 6.016128905464306,
+          "tag": "obs_0003_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 2.3504128636369406e-06,
+          "size_error_m": 4.287104248046347e-05,
+          "tag": "obs_0004",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 24.8731958662569,
+          "size_error_m": 3.8978326834492223,
+          "tag": "obs_0004_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.7774940036158407e-06,
+          "size_error_m": 4.534740173367524e-05,
+          "tag": "obs_0005",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 26.332196957002765,
+          "size_error_m": 3.1834649421708057,
+          "tag": "obs_0005_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.7331297055567427e-06,
+          "size_error_m": 4.167688232437072e-05,
+          "tag": "obs_0006",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 29.092858656081184,
+          "size_error_m": 3.4653654690549454,
+          "tag": "obs_0006_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 4.79591524598131e-07,
+          "size_error_m": 4.891496582049015e-05,
+          "tag": "obs_0007",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 2.042283579649888,
+          "size_error_m": 3.878022457343576,
+          "tag": "obs_0007_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.0735383537855092e-06,
+          "size_error_m": 5.161788063379191e-05,
+          "tag": "obs_0008",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 24.386361985515986,
+          "size_error_m": 4.868580874515254,
+          "tag": "obs_0008_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.1591366127821499e-06,
+          "size_error_m": 3.235584354044363e-05,
+          "tag": "obs_0009",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 11.437641459903723,
+          "size_error_m": 5.099519375642545,
+          "tag": "obs_0009_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.3918982594605254e-06,
+          "size_error_m": 3.842619978122741e-05,
+          "tag": "obs_0010",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 20.296393714301093,
+          "size_error_m": 5.57351877497043,
+          "tag": "obs_0010_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.3581248456744252e-06,
+          "size_error_m": 4.266599429048057e-05,
+          "tag": "obs_0011",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 19.641270340018178,
+          "size_error_m": 4.529909989394983,
+          "tag": "obs_0011_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.8258903289329357e-06,
+          "size_error_m": 3.159072632641369e-05,
+          "tag": "obs_0012",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 27.482022368083435,
+          "size_error_m": 5.475877330555202,
+          "tag": "obs_0012_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.8287338967863992e-06,
+          "size_error_m": 4.486306237883042e-05,
+          "tag": "obs_0013",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 13.914715273387674,
+          "size_error_m": 2.524574990309455,
+          "tag": "obs_0013_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.474406616237438e-06,
+          "size_error_m": 3.4708904653069084e-05,
+          "tag": "obs_0014",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 19.636925805986955,
+          "size_error_m": 2.5092027415682416,
+          "tag": "obs_0014_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.3534426575898882e-06,
+          "size_error_m": 4.689068796004392e-05,
+          "tag": "obs_0015",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 32.263444395801145,
+          "size_error_m": 2.3175277399999996,
+          "tag": "obs_0015_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 4.714887214473904e-07,
+          "size_error_m": 4.405633156912003e-05,
+          "tag": "obs_0016",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 17.005942037645806,
+          "size_error_m": 2.19061447,
+          "tag": "obs_0016_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.7649846907426103e-06,
+          "size_error_m": 2.5980353088428387e-05,
+          "tag": "obs_0017",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 24.582289919625453,
+          "size_error_m": 2.007843166250484,
+          "tag": "obs_0017_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 7.062310204575185e-07,
+          "size_error_m": 2.8901594238295303e-05,
+          "tag": "obs_0018",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 18.35647506512978,
+          "size_error_m": 2.18511461521634,
+          "tag": "obs_0018_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 8.371284022378211e-07,
+          "size_error_m": 3.064501525873453e-05,
+          "tag": "obs_0019",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 9.765754019342497,
+          "size_error_m": 2.106401940242396,
+          "tag": "obs_0019_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.2911603521822476e-06,
+          "size_error_m": 2.6704693298240656e-05,
+          "tag": "obs_0020",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 18.979368536364806,
+          "size_error_m": 2.0057579226395834,
+          "tag": "obs_0020_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 8.354122241495846e-07,
+          "size_error_m": 4.3449713134968704e-05,
+          "tag": "obs_0021",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 9.13559241305361,
+          "size_error_m": 1.2028208897699808,
+          "tag": "obs_0021_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 6.062466909110805e-07,
+          "size_error_m": 4.362905273413986e-05,
+          "tag": "obs_0022",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 20.602951179598417,
+          "size_error_m": 1.6293875777967226,
+          "tag": "obs_0022_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 5.047354747068317e-07,
+          "size_error_m": 4.034186096202319e-05,
+          "tag": "obs_0023",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 4.850726373822084,
+          "size_error_m": 1.3384344696620558,
+          "tag": "obs_0023_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.1622736383196895e-06,
+          "size_error_m": 4.0946847533973596e-05,
+          "tag": "obs_0024",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 18.535610105649404,
+          "size_error_m": 1.1741139763740955,
+          "tag": "obs_0024_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 5.441152297558836e-07,
+          "size_error_m": 4.4707019042800056e-05,
+          "tag": "obs_0025",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 36.675848281140304,
+          "size_error_m": 1.378391146865676,
+          "tag": "obs_0025_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 7.554647383455314e-07,
+          "size_error_m": 4.115081787103847e-05,
+          "tag": "obs_0026",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 14.415076715862757,
+          "size_error_m": 1.50102635574985,
+          "tag": "obs_0026_cards",
+          "kind": "cards"
+        }
+      ],
+      "checked": 54,
+      "found": 54,
+      "max_center_error_m": 36.675848281140304,
+      "max_size_error_m": 6.016128905464306,
+      "ground_top_z_ned": 0.0,
+      "tolerance_m": 0.05,
+      "pass": false
+    },
+    "rgb_changes_with_pose": {
+      "diff_pillar_vs_empty": 41.540120442708336,
+      "diff_pillar_repeat": 4.9457550048828125,
+      "brightness_pillar_view": 99.05121358235677,
+      "brightness_empty_view": 136.36992899576822,
+      "pass": true
+    },
+    "depth_matches_geometry": {
+      "probes": [
+        {
+          "tag": "obs_0000",
+          "kind": "mesh",
+          "solid": false,
+          "distance_m": 3.0,
+          "altitude_m": 1.2,
+          "window": [
+            [
+              120,
+              136
+            ],
+            [
+              120,
+              136
+            ]
+          ],
+          "pixels": {
+            "solid": 128,
+            "interior": 43,
+            "card": 14,
+            "empty": 114
+          },
+          "measured_m": 5.44140625,
+          "expected_m": 5.44334602355957,
+          "error_m": 0.0019397735595703125,
+          "tolerance_m": 0.15,
+          "inlier_share": 1.0,
+          "min_inlier_share": 0.8,
+          "card_no_nearer_share": 1.0,
+          "beyond_share_off_target": 0.9912280701754386,
+          "window_spread_predicted_m": 0.770451545715332,
+          "window_spread_measured_m": 0.765625,
+          "pose": [
+            1.1311999559402466,
+            -10.786600112915039,
+            -1.1967531442642212,
+            1.5707964611537621
+          ],
+          "hfov_consistent": null,
+          "pass": true
+        },
+        {
+          "tag": "obs_0002",
+          "kind": "mesh",
+          "solid": false,
+          "distance_m": 6.0,
+          "altitude_m": 1.2,
+          "window": [
+            [
+              120,
+              136
+            ],
+            [
+              120,
+              136
+            ]
+          ],
+          "pixels": {
+            "solid": 121,
+            "interior": 23,
+            "card": 8,
+            "empty": 127
+          },
+          "measured_m": 8.9375,
+          "expected_m": 8.928962707519531,
+          "error_m": 0.00853729248046875,
+          "tolerance_m": 0.15,
+          "inlier_share": 1.0,
+          "min_inlier_share": 0.8,
+          "card_no_nearer_share": 1.0,
+          "beyond_share_off_target": 1.0,
+          "window_spread_predicted_m": 0.6531457901000977,
+          "window_spread_measured_m": 0.640625,
+          "pose": [
+            6.540599822998047,
+            1.309000015258789,
+            -1.1980218887329102,
+            1.5707964611537626
+          ],
+          "hfov_consistent": null,
+          "pass": true
+        },
+        {
+          "tag": "obs_0002",
+          "kind": "mesh",
+          "solid": false,
+          "distance_m": 10.0,
+          "altitude_m": 1.2,
+          "window": [
+            [
+              120,
+              136
+            ],
+            [
+              120,
+              136
+            ]
+          ],
+          "pixels": {
+            "solid": 93,
+            "interior": 13,
+            "card": 41,
+            "empty": 122
+          },
+          "measured_m": 12.7578125,
+          "expected_m": 12.774409294128418,
+          "error_m": 0.01659679412841797,
+          "tolerance_m": 0.2,
+          "inlier_share": 0.9230769230769231,
+          "min_inlier_share": 0.8,
+          "card_no_nearer_share": 0.9512195121951219,
+          "beyond_share_off_target": 1.0,
+          "window_spread_predicted_m": 0.4848155975341797,
+          "window_spread_measured_m": 0.484375,
+          "pose": [
+            6.540599822998047,
+            -2.690999984741211,
+            -1.1986762285232544,
+            1.5707964611537626
+          ],
+          "hfov_consistent": null,
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    "crash_raises_collision": {
+      "steps_to_collision": 26,
+      "object_name": "StaticMeshActor_5",
+      "target": "obs_0002",
+      "kind": "mesh",
+      "impact_point": [
+        6.654739856719971,
+        10.262351036071777,
+        -1.4283186197280884
+      ],
+      "normal": [
+        -1.0100161773607397e-07,
+        -0.7688347101211548,
+        0.6394475698471069
+      ],
+      "impact_from_footprint_m": -2.546377794123492,
+      "footprint_radius_m": 3.484,
+      "travel_to_impact_m": 8.953351036071778,
+      "expected_travel_m": 8.684113883972168,
+      "collided_flag": true,
+      "camera_pose_error_at_collision_m": 0.005812207840976665,
+      "pass": false,
+      "reset_after_crash": {
+        "error": "ResetPoseError: reset could not free the Unreal actor: every escape was stopped ([('climb', 0.0), ('normal', 0.5), ('normal', 1.5), ('retrace', 1.5), ('retrace', 4.0), ('retrace', 8.0)]); last: reset hop to Pose(x=6.540621601272012, y=1.759935951232916, z=-1.393183708190918, yaw=1.570796364961783) settled at Pose(x=6.540621757507324, y=9.759934425354004, z=-1.3931907415390015, yaw=1.5707964611537746): 8.000 m off (the actor was stopped on the way)",
+        "pass": false
+      }
+    }
+  },
+  "probes": [
+    {
+      "tag": "obs_0000",
+      "kind": "mesh",
+      "distance_m": 3.0,
+      "expected_depth_m": 5.44334602355957,
+      "window_spread_m": 0.770451545715332,
+      "pose": [
+        1.1311999999999995,
+        -10.7866,
+        -1.2,
+        1.5707963267948966
+      ]
+    },
+    {
+      "tag": "obs_0002",
+      "kind": "mesh",
+      "distance_m": 6.0,
+      "expected_depth_m": 8.928962707519531,
+      "window_spread_m": 0.6531457901000977,
+      "pose": [
+        6.5405999999999995,
+        1.3089999999999993,
+        -1.2,
+        1.5707963267948966
+      ]
+    },
+    {
+      "tag": "obs_0002",
+      "kind": "mesh",
+      "distance_m": 10.0,
+      "expected_depth_m": 12.774409294128418,
+      "window_spread_m": 0.4848155975341797,
+      "pose": [
+        6.5405999999999995,
+        -2.6910000000000007,
+        -1.2,
+        1.5707963267948966
+      ]
+    }
+  ],
+  "poses": {
+    "open": [
+      -31.0,
+      -25.0,
+      -2.0,
+      1.5707963267948966
+    ],
+    "field_view": [
+      -31.0,
+      0.0,
+      -2.0,
+      0.0
+    ],
+    "empty_view": [
+      -31.0,
+      0.0,
+      -2.0,
+      3.141592653589793
+    ],
+    "spawn": [
+      -31.0,
+      -10.0,
+      -2.0,
+      0.0
+    ],
+    "spawn_view": [
+      -31.0,
+      -13.0,
+      -2.0,
+      1.5707963267948966
+    ]
+  },
+  "frames_dir": "runs/m4/s02/frames_run2",
+  "scene_config": {
+    "file": "scene_autofly_s02_fast.jsonc",
+    "sha256": "2ba549af66881da610be7c47c58fa936ac7ca022ec4a52d9d7541ec98ca35ebc"
+  },
+  "check_map": {},
+  "package_manifest": {
+    "description": "Fingerprints the packaged Development Linux binary and content archive (pak) actually produced by scripts/package_sim.sh, plus the git tree that produced them. built_from_git_head is the repo's HEAD at package time, which routinely precedes the commit that later records this file -- packaging happens before committing, not after. working_tree_dirty says whether uncommitted changes were present in that tree (e.g. an in-progress fix not yet committed). Do not compare built_from_git_head to the current HEAD to judge freshness; that comparison is circular. Gate on binary.sha256 instead.",
+    "binary": {
+      "path": "ue_project/Packaged/Development/Linux/Blocks/Binaries/Linux/Blocks",
+      "sha256": "fd845a8c58f095af8ba52849d07ea2768ad48712ba7800a4bcfe7760f0efaade"
+    },
+    "paks": {
+      "ue_project/Packaged/Development/Linux/Blocks/Content/Paks/Blocks-Linux.pak": "d6ede9101c4a8c741914b59886acac0e179598b66e31f64c37091bb314872772"
+    },
+    "built_from_git_head": "0e27380bd8ebad57ec3b5c9c5d45d9d05a4cb7e8",
+    "working_tree_dirty": true,
+    "level_spec_sha256": "188f9e4118945b7966fa3a03281e0c1663b0e2193c228430bdc06287a40f955a",
+    "level_verify": {
+      "map_path": "/Game/AutoFly/Maps/S01",
+      "pass": true,
+      "obstacles": 80,
+      "worst_location_error_cm": 0.0,
+      "game_mode": "/Script/ProjectAirSim.ProjectAirSimGameMode"
+    },
+    "engine_build_version": {
+      "MajorVersion": 5,
+      "MinorVersion": 7,
+      "PatchVersion": 4,
+      "Changelist": 51494982,
+      "CompatibleChangelist": 47537391,
+      "IsLicenseeVersion": 0,
+      "IsPromotedBuild": 1,
+      "BranchName": "++UE5+Release-5.7"
+    }
+  },
+  "package_matches_manifest": true,
+  "launch_s": 2.5482741949963383,
+  "error": "ResetPoseError: reset could not free the Unreal actor: every escape was stopped ([('climb', 0.0), ('retrace', 1.5), ('retrace', 4.0), ('retrace', 8.0)]); last: reset hop to Pose(x=6.5406228861218985, y=1.7599359512329853, z=-1.3931843042373657, yaw=1.5707964611537746) settled at Pose(x=6.540621757507324, y=9.75993537902832, z=-1.3931893110275269, yaw=1.5707971355047565): 8.000 m off (the actor was stopped on the way)",
+  "faults": {
+    "xid_since": "2026-10-07 22:05:34",
+    "xid_before": 0,
+    "xid_after": 0,
+    "boot_id": "026d5453-feb4-429b-abf0-fb4146123ce7",
+    "device_lost": {
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst5/sim.log": 0
+    },
+    "kernel_journal_readable": true
+  },
+  "faults_ok": true,
+  "pass": false
+}

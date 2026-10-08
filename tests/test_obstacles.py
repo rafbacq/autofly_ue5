@@ -215,3 +215,30 @@ def test_a_tree_with_leaf_cards_is_probed_on_its_clear_trunk_pixels():
     face = {math.pi / 2: 0.2, -math.pi / 2: 0.2, math.pi: 0.2}.get(round(p.pose.yaw, 6), None)
     if face is not None:
         assert p.expected_depth_m == pytest.approx(3.0 + 3.4 - face, abs=0.02)
+
+
+def test_a_mesh_with_cards_reports_its_two_actors_boxes():
+    import dataclasses
+
+    from autofly_ue5.scenes.model import AssetEntry, AssetPart
+    from autofly_ue5.validate.obstacles import MeshLibrary, bbox_error, obstacle_from_instance
+
+    v, f = _box_mesh_gltf_frame(1.0, 3.0)
+    entry = AssetEntry(name="tree", ue_path="/Game/AutoFly/Assets/tree/tree", base_size_m=(2.8, 2.6, 3.5), pivot="base",
+                       footprint="circle", category="nature", role="obstacle", seen=None, measured_extent_cm_at_unit_scale=(140.0, 130.0, 175.0),
+                       profile_step_m=0.25, radius_profile_m=(1.4,) * 14, ground_radius_m=1.4, bounds_origin_cm=(10.0, 0.0, 175.0),
+                       parts={"solid": AssetPart("/Game/AutoFly/Assets/tree/tree", (2.6, 2.4, 3.4), (0.0, 5.0, 170.0)),
+                              "cards": AssetPart("/Game/AutoFly/Assets/tree/Cards/tree_cards", (2.8, 2.6, 2.0), (10.0, 0.0, 250.0))})
+    reg = dataclasses.replace(_registry(), assets={**_registry().assets, "tree": entry})
+    obs = obstacle_from_instance(_instance(asset="tree", x=10.0, y=0.0, z_center=0.0, yaw=0.0, scale=[1.0, 1.0, 1.0], radius_m=1.4, height_m=3.5),
+                                 reg, MeshLibrary.from_arrays({"tree": (v, f)}))
+    assert obs.cards_tag == "obs_0000_cards"
+    centre, size = obs.world_bbox()
+    assert centre == pytest.approx([10.0, 0.05, -1.7]) and size == pytest.approx([2.6, 2.4, 3.4]), "the tag's actor is the solid part"
+    centre, size = obs.cards_world_bbox()
+    assert centre == pytest.approx([10.1, 0.0, -2.5]) and size == pytest.approx([2.8, 2.6, 2.0])
+    centre, size = obs.whole_world_bbox()
+    assert centre == pytest.approx([10.1, 0.0, -1.75]) and size == pytest.approx([2.8, 2.6, 3.5])
+    assert obs.top_altitude_m == pytest.approx(3.5), "the camera's view of it is the whole model's"
+    assert bbox_error(obs, ((10.1, 0.0, -2.5), (2.8, 2.6, 2.0)), part="cards")["center_error_m"] == pytest.approx(0.0, abs=1e-9)
+    assert bbox_error(obs, ((10.1, 0.0, -2.5), (2.8, 2.6, 2.0)))["size_error_m"] == pytest.approx(1.4)

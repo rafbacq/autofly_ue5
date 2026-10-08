@@ -37,11 +37,12 @@ def _extent_cm(base_size_m: tuple[float, float, float], scale: tuple[float, floa
     return [round(b * s * 50.0, 4) for b, s in zip(base_size_m, scale)]
 
 
-def _local_bounds_cm(asset) -> dict:
-    """The mesh's own bounds at unit scale, which the builder reads from the component (pivot- and yaw-independent):
-    the centre is the origin an import recorded (scripts/import_assets.py), (0, 0, 0) for engine primitives."""
-    origin = asset.bounds_origin_cm if asset.bounds_origin_cm is not None else (0.0, 0.0, 0.0)
-    return {"origin": [round(float(v), 4) for v in origin], "extent": _extent_cm(asset.base_size_m, (1.0, 1.0, 1.0))}
+def _local_bounds_cm(part) -> dict:
+    """A mesh's own bounds at unit scale, which the builder reads from the component (pivot- and yaw-independent):
+    the centre is the origin an import recorded (scripts/import_assets.py), (0, 0, 0) for engine primitives.
+    `part` is an AssetPart or an AssetEntry (whose bounds_origin_cm may be None)."""
+    origin = part.bounds_origin_cm if part.bounds_origin_cm is not None else (0.0, 0.0, 0.0)
+    return {"origin": [round(float(v), 4) for v in origin], "extent": _extent_cm(part.base_size_m, (1.0, 1.0, 1.0))}
 
 
 def layout_to_level_spec(layout: Layout, scene: SceneFile, registry: AssetRegistry) -> dict:
@@ -54,22 +55,38 @@ def layout_to_level_spec(layout: Layout, scene: SceneFile, registry: AssetRegist
         "yaw_deg": 0.0,
         "scale": list(ground_scale),
         "material": scene.ground,
+        "collision": True,
         "expected_extent_cm": _extent_cm(cube.base_size_m, ground_scale),
         "expected_local_bounds_cm": _local_bounds_cm(cube),
     }
     actors = []
     for inst in layout.instances:
         asset = registry.assets[inst.asset]
+        solid = asset.solid_part
+        transform = {"location_cm": [round(v, 4) for v in ned_to_ue_cm(inst.x, inst.y, inst.z_center)],
+                     "yaw_deg": ned_yaw_deg_to_ue_yaw_deg(math.degrees(inst.yaw)), "scale": list(inst.scale)}
         actors.append({
             "tag": inst.tag,
-            "mesh": asset.ue_path,
-            "location_cm": [round(v, 4) for v in ned_to_ue_cm(inst.x, inst.y, inst.z_center)],
-            "yaw_deg": ned_yaw_deg_to_ue_yaw_deg(math.degrees(inst.yaw)),
-            "scale": list(inst.scale),
+            "mesh": solid.ue_path,
+            **transform,
             "material": inst.material,
-            "expected_extent_cm": _extent_cm(asset.base_size_m, inst.scale),
-            "expected_local_bounds_cm": _local_bounds_cm(asset),
+            "collision": True,
+            "expected_extent_cm": _extent_cm(solid.base_size_m, inst.scale),
+            "expected_local_bounds_cm": _local_bounds_cm(solid),
         })
+        cards = asset.cards_part
+        if cards is not None:
+            # the alpha cards (leaves, twigs) as their own actor without collision: seen by the cameras, flown through
+            # by the body, so a crash never wedges the swept actor among them (2026-10-07)
+            actors.append({
+                "tag": f"{inst.tag}_cards",
+                "mesh": cards.ue_path,
+                **transform,
+                "material": inst.material,
+                "collision": False,
+                "expected_extent_cm": _extent_cm(cards.base_size_m, inst.scale),
+                "expected_local_bounds_cm": _local_bounds_cm(cards),
+            })
     used = sorted({scene.ground} | {inst.material for inst in layout.instances})
     materials = []
     for name in used:
