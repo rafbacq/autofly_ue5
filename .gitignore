@@ -75,3 +75,4 @@ ue_project/*.xcodeproj/
 
 # status reports: the figures and records are committed, the videos (copies of runs/viz renders and dataset playbacks) are not
 results/**/videos/
+final_results/videos/
