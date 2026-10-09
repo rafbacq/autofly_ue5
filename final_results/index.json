@@ -1,7 +1,7 @@
 {
   "version": 1,
   "tool": "scripts/build_final_results.py",
-  "built": "2026-10-09 04:48:39",
+  "built": "2026-10-09 04:50:20",
   "manifest": {
     "path": "docs/final_results_manifest.json",
     "sha256": "5fb2ca49da9261a4c94974a7f7b863c41ccd480549516829a934bf944b8f8a3c"
@@ -12,9 +12,9 @@
       "dest": "README.md",
       "source": "docs/final_results_README.md",
       "caption": "The report: what was built and measured, linking every figure, video and record below (written last, from the records)",
-      "bytes": 14998,
-      "sha256": "e520321f2d14ef1d3df518464fc3abc8854846936943c1808ccebf4c70f489a7",
-      "status": "copied"
+      "bytes": 15063,
+      "sha256": "5c5e7b9edc4896ea8b9c71fb64b945eb1932a725c85285c3de6cd720e319ae38",
+      "status": "replaced"
     },
     {
       "dest": "dataset/autofly_ue5_proto_split.json",
@@ -22,7 +22,7 @@
       "caption": "The frozen train/val split: every episode's assignment, stratified by scene and target",
       "bytes": 163335,
       "sha256": "623bd6d11b85bb2609b2c30af41a6103b41329a1fb7e74a07028eddab717c70e",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "dataset/card.json",
@@ -30,7 +30,7 @@
       "caption": "The card's numbers",
       "bytes": 208940,
       "sha256": "69f3008697f0eb82f26334ff9fa182f9cb78b9d084a8c95481cd299a09bacf6b",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "dataset/dataset_card.md",
@@ -38,7 +38,7 @@
       "caption": "The dataset card: counts by scene, target and category, the instruction templates, the splits and the privileged state fields (autofly_ue5/dataset/card.py)",
       "bytes": 86501,
       "sha256": "ca46fe75d377814ecf57eef73b094601d186da7326b04e0914b1c652a0b1d68b",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "dataset/dataset_statistics.json",
@@ -46,7 +46,7 @@
       "caption": "Per-dimension normalisation statistics of action and state over the train split, in OpenVLA's schema",
       "bytes": 2679,
       "sha256": "72e2c71eb7ae18c3444d16bbaddd88e2e3b60e161a40d7461b444be25b45d9ad",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "dataset/merge.json",
@@ -54,7 +54,7 @@
       "caption": "What the merged export holds: its stores and their provenance, every episode's split, shard and metadata",
       "bytes": 1778063,
       "sha256": "63c3f44fd6b17ddce575324b78270ee9fae479a21aced90d23e8115b2355f9da",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "dataset/target_exclusions.json",
@@ -62,7 +62,7 @@
       "caption": "Per scene, the targets not drawn because they look like the scene's own obstacles",
       "bytes": 2787,
       "sha256": "751f052244b536568dfc32ea9ab23eeafe36e4ef89b1ed8477147cd61ea12cef",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "dataset/targets.json",
@@ -70,7 +70,7 @@
       "caption": "The 60-entry target pool: name, category, seen or unseen, source, stand-in mark",
       "bytes": 43515,
       "sha256": "0a8bfa72f11d2c590b6d3a42a222450875c5347d3e26030029648f49f36ae7b7",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "dataset/tfds/dataset_info.json",
@@ -78,7 +78,7 @@
       "caption": "TFDS's dataset info: the splits and their shards",
       "bytes": 2778,
       "sha256": "55af589163de2de528a29a2ff2a45be8e685085ecb06140adf6240d3bea538bc",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "dataset/tfds/features.json",
@@ -86,7 +86,7 @@
       "caption": "TFDS's feature spec: AutoFly's four step fields and the episode metadata",
       "bytes": 6946,
       "sha256": "5b123f0aa830afa41fb9e306c66c6dd9218e42f4caada4d1742235e69c7c9fc8",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "dataset/tfds_check.json",
@@ -94,7 +94,7 @@
       "caption": "TFDS read every episode of the merged dataset back exactly (scripts/check_rlds_with_tfds.py)",
       "bytes": 464,
       "sha256": "10676c6b85c18656e69fd6663be48d21eb8c11300a2aa507b771af1b4f650607",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "dataset/vla_loader_check.json",
@@ -102,7 +102,7 @@
       "caption": "The merged dataset iterated through an OpenVLA-style RLDS pipeline (scripts/check_vla_loader.py)",
       "bytes": 4276,
       "sha256": "61469b877ac436b05765e766677d7eae61f7ce83e1749fc00fb3d169fcf92187",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "docs/decisions/2026-09-15-plan1-rulings.md",
@@ -110,7 +110,7 @@
       "caption": "Every decision, ruling and incident report, dated",
       "bytes": 58478,
       "sha256": "920bf7531a3795b2814782a65fbde563a39994561a71ad4e9247628a7d34ee75",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "docs/decisions/2026-09-25-code-review-findings.md",
@@ -118,7 +118,7 @@
       "caption": "Every decision, ruling and incident report, dated",
       "bytes": 8074,
       "sha256": "0b437bd15fd44dda26b0b2a486afcb723f41541605532aa847ec358f39ce84a1",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "docs/decisions/2026-10-02-dynamic-obstacles.md",
@@ -126,7 +126,7 @@
       "caption": "Every decision, ruling and incident report, dated",
       "bytes": 14830,
       "sha256": "44d9127339bc30609027b6aafcb8076693ccf648255bd34f0a52b9fe7993fca2",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "docs/decisions/2026-10-02-m2-closeout.md",
@@ -134,7 +134,7 @@
       "caption": "Every decision, ruling and incident report, dated",
       "bytes": 3139,
       "sha256": "011523aba343cf0442ea733a762874bc3a683379db90175887538b46095d96b5",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "docs/decisions/2026-10-02-m4-asset-survey.md",
@@ -142,7 +142,7 @@
       "caption": "Every decision, ruling and incident report, dated",
       "bytes": 5495,
       "sha256": "2475590cc73b70b4870b2f39b11bd6b4ef9715ac8f10747c4254222659bc34f3",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "docs/decisions/2026-10-03-m2d-closeout.md",
@@ -150,7 +150,7 @@
       "caption": "Every decision, ruling and incident report, dated",
       "bytes": 4033,
       "sha256": "77eb556cdfdcb1b78e1fc6244b8daf4ecabc5a58103bc5474b9d90284921cb27",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "docs/decisions/2026-10-03-m2d-session0-crash.md",
@@ -158,7 +158,7 @@
       "caption": "Every decision, ruling and incident report, dated",
       "bytes": 3594,
       "sha256": "c0282630f0c9b7695bf9a59548f2b511e0717df043baf9eec3a507a70f870c33",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "docs/decisions/2026-10-03-m3-a0-and-collection.md",
@@ -166,7 +166,7 @@
       "caption": "Every decision, ruling and incident report, dated",
       "bytes": 5172,
       "sha256": "b5e4377ed3a2d36bf1a8fc0909c2105ffd9d8a7173e76a776076616dd6704367",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "docs/decisions/2026-10-03-m3-review-findings.md",
@@ -174,7 +174,7 @@
       "caption": "Every decision, ruling and incident report, dated",
       "bytes": 3037,
       "sha256": "bebed3936407d2d8ba413415531e16cca286b40d97e4ee816521fae073e952c7",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "docs/decisions/2026-10-03-s01d-r2-plan.md",
@@ -182,7 +182,7 @@
       "caption": "Every decision, ruling and incident report, dated",
       "bytes": 4219,
       "sha256": "ae2d7317000abc03f19cd9429d0d213b73b340c0887b47e5898c079b3a42035b",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "docs/decisions/2026-10-03-s01d-r2-stopped-r3-from-scratch.md",
@@ -190,7 +190,7 @@
       "caption": "Every decision, ruling and incident report, dated",
       "bytes": 3378,
       "sha256": "93e8dfd995daf51ae9c637884ec96d15eeb4e6e8e532d5c982136fe363c40476",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "docs/decisions/2026-10-03-training-throughput.md",
@@ -198,7 +198,7 @@
       "caption": "Every decision, ruling and incident report, dated",
       "bytes": 3760,
       "sha256": "a09290f2ea36203f08cff84d4e79a1a93622b73b77b6cf68e6bfae26edea55e9",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "docs/decisions/2026-10-04-r3-host-freeze-and-resume.md",
@@ -206,7 +206,7 @@
       "caption": "Every decision, ruling and incident report, dated",
       "bytes": 6143,
       "sha256": "269e0492524ff300197b6f385ebceb6337a5080d0bc910844412b5898fc6fa01",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "docs/decisions/2026-10-04-s01d-r4-clearance-penalty.md",
@@ -214,7 +214,7 @@
       "caption": "Every decision, ruling and incident report, dated",
       "bytes": 4542,
       "sha256": "9dc9207840a9cde3b0392a49c25605710a2592cde10b7fe09dd661788697eb00",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "docs/decisions/2026-10-05-s01d-r5-margins.md",
@@ -222,7 +222,7 @@
       "caption": "Every decision, ruling and incident report, dated",
       "bytes": 8207,
       "sha256": "5e4bf5e21d2d9b3861926916e6bcf1bc284312610dbccba8d9c0e9dee073d228",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "docs/decisions/2026-10-06-dataset-rebalancing.md",
@@ -230,7 +230,7 @@
       "caption": "Every decision, ruling and incident report, dated",
       "bytes": 12133,
       "sha256": "738a1769944f4d5fdb57607a57681353b8b55a07f6e2293eaf61eeca6860e107",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "docs/decisions/2026-10-06-s01d-r6-plan.md",
@@ -238,7 +238,7 @@
       "caption": "Every decision, ruling and incident report, dated",
       "bytes": 15207,
       "sha256": "1eb7a9460ec25d37aa162ce8d07c3f4743c7aefeeaf00e875d697e1c7f85d687",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "docs/decisions/2026-10-07-m4-live-checks-and-foliage.md",
@@ -246,7 +246,7 @@
       "caption": "Every decision, ruling and incident report, dated",
       "bytes": 9252,
       "sha256": "acdff1bbb667b0185e7ccf171dd907ff2e4fec942a89af9ffeffacbebc832580",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "docs/decisions/2026-10-07-s01d-accepted-at-0.935.md",
@@ -254,7 +254,7 @@
       "caption": "Every decision, ruling and incident report, dated",
       "bytes": 5022,
       "sha256": "e8116f194bf5456b4c597a35fd9c03ca30e0e79178392ff62b58009cf8270cbf",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "docs/decisions/2026-10-08-c4-s03-s06.md",
@@ -262,7 +262,7 @@
       "caption": "Every decision, ruling and incident report, dated",
       "bytes": 5041,
       "sha256": "0923587ebf5dde123374ba30409f6caf0751258e17a6e802507dae0d85cce14d",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "docs/decisions/2026-10-08-footprint-contact-rule.md",
@@ -270,7 +270,7 @@
       "caption": "Every decision, ruling and incident report, dated",
       "bytes": 23619,
       "sha256": "b014af970a87d461c37531c54b51687e9d5bef04bb8f3a28f5f60e044e4091c1",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "docs/decisions/2026-10-08-m5-s02-r1-evaluation-plan.md",
@@ -278,7 +278,7 @@
       "caption": "Every decision, ruling and incident report, dated",
       "bytes": 5131,
       "sha256": "be08d55404bd3af74d65114c49422ffbc2127e160a13d969621af59a76125c02",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "docs/decisions/2026-10-08-reset-hold-and-warmup.md",
@@ -286,7 +286,7 @@
       "caption": "Every decision, ruling and incident report, dated",
       "bytes": 2800,
       "sha256": "9a027b2528f6dc4be4b9904758686096b1b73232a645bef8043e43b89d0561d5",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "docs/decisions/2026-10-08-sparse-first-detection.md",
@@ -294,7 +294,7 @@
       "caption": "Every decision, ruling and incident report, dated",
       "bytes": 2095,
       "sha256": "15d5b62983f609ed95837877534b282b0322ab085ede2a7c83c99212a2bebc0e",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "docs/decisions/2026-10-08-target-pool-diversity.md",
@@ -302,7 +302,7 @@
       "caption": "Every decision, ruling and incident report, dated",
       "bytes": 4778,
       "sha256": "6fc24fc7b905fa515a2f2d2ba300cde65f464d15dd16eb6d350f5f2b0b17f750",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "docs/design_spec.md",
@@ -310,15 +310,15 @@
       "caption": "The design spec: the task, scenes, experts, the dataset format and the milestones",
       "bytes": 44916,
       "sha256": "6b39f0014ca5fef4c23d75d80752e973b33a1e053b6541ece07d6d4c3359c79b",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "docs/plan6_prototype_dataset.md",
       "source": "docs/superpowers/plans/2026-10-08-autofly-ue5-plan6-prototype-dataset.md",
       "caption": "Plan 6 with revision 1: what complete means for this phase, and its done checks",
-      "bytes": 12785,
-      "sha256": "c99e66c5f20a383c40577abfff734be64f0aa0e74e1b604946d3aea98b341bcd",
-      "status": "copied"
+      "bytes": 14957,
+      "sha256": "3fc5a22d5d2aa8ef792d320f0b37695fb6caf7cff9f5b04747a519f1417b42b6",
+      "status": "replaced"
     },
     {
       "dest": "docs/runbooks/runbook-m2.md",
@@ -326,7 +326,7 @@
       "caption": "The live procedures: training, gates, collection, rebalancing and the target probes",
       "bytes": 9107,
       "sha256": "a3d72295ad22093ea9545ba6433c528e340cc389039846a046acf1635ce58f10",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "docs/runbooks/runbook-m2d.md",
@@ -334,7 +334,7 @@
       "caption": "The live procedures: training, gates, collection, rebalancing and the target probes",
       "bytes": 18511,
       "sha256": "87672beff80b1bf2536962f8fb150fcbc11e0806e861e3892cb76cbb5e0d937a",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "docs/runbooks/runbook-m3.md",
@@ -342,7 +342,7 @@
       "caption": "The live procedures: training, gates, collection, rebalancing and the target probes",
       "bytes": 4129,
       "sha256": "b392fdc6a89971127f8c1d21e0735f5a7c9f93f9dc03877ab5a4422be5f5d531",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "docs/runbooks/runbook-m5.md",
@@ -350,7 +350,7 @@
       "caption": "The live procedures: training, gates, collection, rebalancing and the target probes",
       "bytes": 37817,
       "sha256": "e32af9f8c4d2ed779c2fdab586c6bc12a216d8d3c61cfbd5c14ca81c38a99872",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "docs/runbooks/runbook-rebalance.md",
@@ -358,7 +358,7 @@
       "caption": "The live procedures: training, gates, collection, rebalancing and the target probes",
       "bytes": 15488,
       "sha256": "b3c829fc00abf8a3bce851ea50a7de1e226dc1a74620a76a87e8048c0514d094",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "docs/runbooks/runbook-targets.md",
@@ -366,7 +366,7 @@
       "caption": "The live procedures: training, gates, collection, rebalancing and the target probes",
       "bytes": 16849,
       "sha256": "486485d2ab663100902518aada266eea9c07060f61c1e205efcc11527b230c20",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/contact_rule/s02_footprint_endings.json",
@@ -374,7 +374,7 @@
       "caption": "The numbers s02_footprint_endings.png draws",
       "bytes": 839019,
       "sha256": "880e47ff3d0bcc601d0c547b5df2d5fb65287afc24c9df9043b1461bb08b218d",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/contact_rule/s02_footprint_endings.png",
@@ -382,7 +382,7 @@
       "caption": "s02 run 1's footprint endings measured against the trees' real geometry: a median 2.70 m from any leaf, which led to the outline rule (scripts/footprint_endings_figure.py)",
       "bytes": 957469,
       "sha256": "50173a03aeec3a1faf2f1969f1707b1b6b31dfef25beaea14784a467c0bee39d",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/contact_rule/s02_footprint_rule.json",
@@ -390,7 +390,7 @@
       "caption": "The numbers s02_footprint_rule.png draws",
       "bytes": 32598,
       "sha256": "59287f00c9a444f0327f96650ef94f69e399d2cc5a4a1ba62225c15d19df99c6",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/contact_rule/s02_footprint_rule.png",
@@ -398,7 +398,7 @@
       "caption": "The footprint contact rule for mesh scenes: 40 scripted flights at s02's trees end 0.51-0.88 m from the circle, so no rotor tip enters it (scripts/footprint_rule_figure.py)",
       "bytes": 608972,
       "sha256": "bd96bc878ffdb041749868ca476879f690da1c57e4b6a61d010f6a0da1695890",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/dataset/actions_states.png",
@@ -406,7 +406,7 @@
       "caption": "The final dataset's stores: composition by scene, category and target; kept-rates per store and scene; every kept trajectory per scene; action and state distributions; lengths and PER; first frames; target close-ups (scripts/dataset_figures.py)",
       "bytes": 198379,
       "sha256": "3b1f2ac0e1ed0bad46b020e18632cc9c52d7880b73d49371cf4f7e006ef57437",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/dataset/composition.png",
@@ -414,7 +414,7 @@
       "caption": "The final dataset's stores: composition by scene, category and target; kept-rates per store and scene; every kept trajectory per scene; action and state distributions; lengths and PER; first frames; target close-ups (scripts/dataset_figures.py)",
       "bytes": 298450,
       "sha256": "c98da1ae2fbaaea0ffd683c350a04d58a604663559c3eafa402b3b06ecba6ad7",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/dataset/crossing.json",
@@ -422,7 +422,7 @@
       "caption": "Per scene: the share of kept flights entering the field's core, and obstacles within 2 m of the straight start-target line in kept and rejected flights",
       "bytes": 458,
       "sha256": "e1bb1ef542702e36dbf39e23a9fb1da59185de59ccd568d330a0636fd59f6fce",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/dataset/dataset_figures.json",
@@ -430,7 +430,7 @@
       "caption": "Every number the final dataset's figures draw",
       "bytes": 115472,
       "sha256": "95b7689e6a08a4af89f34a585b7f5aabab84611372878fb3344646149fdb747e",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/dataset/first_frames_s01.png",
@@ -438,7 +438,7 @@
       "caption": "The final dataset's stores: composition by scene, category and target; kept-rates per store and scene; every kept trajectory per scene; action and state distributions; lengths and PER; first frames; target close-ups (scripts/dataset_figures.py)",
       "bytes": 2236077,
       "sha256": "b124db594cb45afa66de4e85b5eb5bb9e3b3c7d8843f799212ff8269f8cda1bd",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/dataset/first_frames_s01d.png",
@@ -446,7 +446,7 @@
       "caption": "The final dataset's stores: composition by scene, category and target; kept-rates per store and scene; every kept trajectory per scene; action and state distributions; lengths and PER; first frames; target close-ups (scripts/dataset_figures.py)",
       "bytes": 2237264,
       "sha256": "adaba5647147334c6afd06cf506bff53f686cd85a4404e0ac4c28cc5c5af6292",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/dataset/first_frames_s02.png",
@@ -454,7 +454,7 @@
       "caption": "The final dataset's stores: composition by scene, category and target; kept-rates per store and scene; every kept trajectory per scene; action and state distributions; lengths and PER; first frames; target close-ups (scripts/dataset_figures.py)",
       "bytes": 2493402,
       "sha256": "bfb839c665a7f5866ff72cdf788a6bb634550beb7b791b09bf01ce5b4558b989",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/dataset/first_frames_s03.png",
@@ -462,7 +462,7 @@
       "caption": "The final dataset's stores: composition by scene, category and target; kept-rates per store and scene; every kept trajectory per scene; action and state distributions; lengths and PER; first frames; target close-ups (scripts/dataset_figures.py)",
       "bytes": 2547928,
       "sha256": "68fff244c1ba5775f42780507ad58d2d8890a2a4e8aeef01450f1f5a6ae5e01e",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/dataset/first_frames_s04.png",
@@ -470,7 +470,7 @@
       "caption": "The final dataset's stores: composition by scene, category and target; kept-rates per store and scene; every kept trajectory per scene; action and state distributions; lengths and PER; first frames; target close-ups (scripts/dataset_figures.py)",
       "bytes": 2658852,
       "sha256": "05123b24243bc88256f0265c05567df3e66fe712a7213f98f8da51b575794021",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/dataset/first_frames_s05.png",
@@ -478,7 +478,7 @@
       "caption": "The final dataset's stores: composition by scene, category and target; kept-rates per store and scene; every kept trajectory per scene; action and state distributions; lengths and PER; first frames; target close-ups (scripts/dataset_figures.py)",
       "bytes": 2188378,
       "sha256": "53dfbbb28ce2a8dfcb4cf9c68d71b4d90eba10d2150eb05d60fd90b91f12183f",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/dataset/first_frames_s06.png",
@@ -486,7 +486,7 @@
       "caption": "The final dataset's stores: composition by scene, category and target; kept-rates per store and scene; every kept trajectory per scene; action and state distributions; lengths and PER; first frames; target close-ups (scripts/dataset_figures.py)",
       "bytes": 2562796,
       "sha256": "8d6197e8c39a3d03af82bd2117031059bf7a3b74c148864b13cfc41f93865c2d",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/dataset/first_frames_s07.png",
@@ -494,7 +494,7 @@
       "caption": "The final dataset's stores: composition by scene, category and target; kept-rates per store and scene; every kept trajectory per scene; action and state distributions; lengths and PER; first frames; target close-ups (scripts/dataset_figures.py)",
       "bytes": 2323387,
       "sha256": "d820f0876b6e31b86947694a9faca4823fbb69f29c18755d9b8bb74aa1ac037a",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/dataset/first_frames_s09.png",
@@ -502,7 +502,7 @@
       "caption": "The final dataset's stores: composition by scene, category and target; kept-rates per store and scene; every kept trajectory per scene; action and state distributions; lengths and PER; first frames; target close-ups (scripts/dataset_figures.py)",
       "bytes": 2625122,
       "sha256": "f75f5eff044768c0ce7204c41a5ff70e18e2c0ce3d68ec3b6a75e4a3428ab74f",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/dataset/kept_rates.png",
@@ -510,7 +510,7 @@
       "caption": "The final dataset's stores: composition by scene, category and target; kept-rates per store and scene; every kept trajectory per scene; action and state distributions; lengths and PER; first frames; target close-ups (scripts/dataset_figures.py)",
       "bytes": 383036,
       "sha256": "4b3166b9d14adf37e4c7d8dfa824d0855c5a43ea0900e94dafe5392b0921d04a",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/dataset/lengths_per.png",
@@ -518,7 +518,7 @@
       "caption": "The final dataset's stores: composition by scene, category and target; kept-rates per store and scene; every kept trajectory per scene; action and state distributions; lengths and PER; first frames; target close-ups (scripts/dataset_figures.py)",
       "bytes": 157441,
       "sha256": "da06d6974f7f4e4f16eaa300a19f244f2bf6167f86aacae4d85d79820ebad140",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/dataset/targets_closeup.png",
@@ -526,7 +526,7 @@
       "caption": "The final dataset's stores: composition by scene, category and target; kept-rates per store and scene; every kept trajectory per scene; action and state distributions; lengths and PER; first frames; target close-ups (scripts/dataset_figures.py)",
       "bytes": 4829878,
       "sha256": "5fc6662c6f1db79e56d4dc95eaa244d9ab7486ddab9efdcbe7db53471ccaedc1",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/dataset/trajectories_s01.png",
@@ -534,7 +534,7 @@
       "caption": "The final dataset's stores: composition by scene, category and target; kept-rates per store and scene; every kept trajectory per scene; action and state distributions; lengths and PER; first frames; target close-ups (scripts/dataset_figures.py)",
       "bytes": 882274,
       "sha256": "2dd150b987a627a4cc0e34011166a157f99540a7a332f6bb960afea71b8d8f72",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/dataset/trajectories_s01d.png",
@@ -542,7 +542,7 @@
       "caption": "The final dataset's stores: composition by scene, category and target; kept-rates per store and scene; every kept trajectory per scene; action and state distributions; lengths and PER; first frames; target close-ups (scripts/dataset_figures.py)",
       "bytes": 919202,
       "sha256": "adbef95d4d1f96d22218654d79b92f79cd51e248348fe2e94416b734f0539e2a",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/dataset/trajectories_s02.png",
@@ -550,7 +550,7 @@
       "caption": "The final dataset's stores: composition by scene, category and target; kept-rates per store and scene; every kept trajectory per scene; action and state distributions; lengths and PER; first frames; target close-ups (scripts/dataset_figures.py)",
       "bytes": 873541,
       "sha256": "669c771df0301c8c1c70ddff9f28caf3db2dcdfc79f7b895b3bd847516001a8b",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/dataset/trajectories_s03.png",
@@ -558,7 +558,7 @@
       "caption": "The final dataset's stores: composition by scene, category and target; kept-rates per store and scene; every kept trajectory per scene; action and state distributions; lengths and PER; first frames; target close-ups (scripts/dataset_figures.py)",
       "bytes": 841199,
       "sha256": "44783821c109e4b1ddc85b535a63d50f41040b03e078ca1a61f40a12f4cc491d",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/dataset/trajectories_s04.png",
@@ -566,7 +566,7 @@
       "caption": "The final dataset's stores: composition by scene, category and target; kept-rates per store and scene; every kept trajectory per scene; action and state distributions; lengths and PER; first frames; target close-ups (scripts/dataset_figures.py)",
       "bytes": 914550,
       "sha256": "fa863733bd01e8c493c680fd301c82602df9b506cf2b44993c0832bf45b7bcfb",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/dataset/trajectories_s05.png",
@@ -574,7 +574,7 @@
       "caption": "The final dataset's stores: composition by scene, category and target; kept-rates per store and scene; every kept trajectory per scene; action and state distributions; lengths and PER; first frames; target close-ups (scripts/dataset_figures.py)",
       "bytes": 840558,
       "sha256": "adffa1eafcbf232ac1f55ee335b855c40a19ad65a9c30a3398ea1b48476cfc4f",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/dataset/trajectories_s06.png",
@@ -582,7 +582,7 @@
       "caption": "The final dataset's stores: composition by scene, category and target; kept-rates per store and scene; every kept trajectory per scene; action and state distributions; lengths and PER; first frames; target close-ups (scripts/dataset_figures.py)",
       "bytes": 889060,
       "sha256": "58d41272c13b66b3c87a65847ac230b1c6e9ab617e26244fab57a793f506099a",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/dataset/trajectories_s07.png",
@@ -590,7 +590,7 @@
       "caption": "The final dataset's stores: composition by scene, category and target; kept-rates per store and scene; every kept trajectory per scene; action and state distributions; lengths and PER; first frames; target close-ups (scripts/dataset_figures.py)",
       "bytes": 901743,
       "sha256": "d277db025de7e4415c74c40acd5b9e4a286253b9ffe52ce9190242f1f215f20d",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/dataset/trajectories_s09.png",
@@ -598,7 +598,7 @@
       "caption": "The final dataset's stores: composition by scene, category and target; kept-rates per store and scene; every kept trajectory per scene; action and state distributions; lengths and PER; first frames; target close-ups (scripts/dataset_figures.py)",
       "bytes": 860273,
       "sha256": "5ad9fefb5c1bc41ffd9cdb78f15b8fb82873fffe56208ffef237784491474033",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/experts/gates.png",
@@ -606,7 +606,7 @@
       "caption": "Every gated expert on its 200 held-out episodes, outcome by outcome: s01 passed at 0.98 (M2); s01d climbed from 0.775 to 0.935 over six runs against the 0.95 bar and was accepted at 0.935",
       "bytes": 81365,
       "sha256": "2b94bb846a0a42d60bb7b933b9e635fb76dbdf799366e6f85de1e3715c8b57fd",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/experts/maps/s01_m2_best_model_ep027_map.png",
@@ -614,7 +614,7 @@
       "caption": "Top-down maps of the rendered expert flights on s01 and s01d (scripts/render_episodes.py)",
       "bytes": 87067,
       "sha256": "19b22f12f0418dcf282a9ed874ed24cd3cd23bd6d89c5412bfacd1dcb22960b8",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/experts/maps/s01_m2_best_model_overview.png",
@@ -622,7 +622,7 @@
       "caption": "Top-down maps of the rendered expert flights on s01 and s01d (scripts/render_episodes.py)",
       "bytes": 152435,
       "sha256": "5760f24c5158d00af9d951f018e0f94445db00294aa8723a85ed8db2ce0a1086",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/experts/maps/s01d_run1_best_model_overview.png",
@@ -630,7 +630,7 @@
       "caption": "Top-down maps of the rendered expert flights on s01 and s01d (scripts/render_episodes.py)",
       "bytes": 154978,
       "sha256": "6984e198de07746ca045bedcc066d39e9e2ef16dd005972fc77ca2e75223ae3c",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/experts/maps/s01d_run6_mean_ep091_mover_collision_map.png",
@@ -638,7 +638,7 @@
       "caption": "Top-down maps of the rendered expert flights on s01 and s01d (scripts/render_episodes.py)",
       "bytes": 106301,
       "sha256": "ce504f03e5f5a3b689ca65026c4d989929a95fcd789651c4ebeac51a0c136dc0",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/experts/maps/s01d_run6_mean_overview.png",
@@ -646,7 +646,7 @@
       "caption": "Top-down maps of the rendered expert flights on s01 and s01d (scripts/render_episodes.py)",
       "bytes": 462405,
       "sha256": "26f592c1a25239dbc3dd96e3c8ccd8c0c5b9eb9bdb5961c4979a5fe84aa5ff4b",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/experts/maps/s02_r1_pick_outline_overview.png",
@@ -654,7 +654,7 @@
       "caption": "Top-down maps of the rendered expert flights on s01 and s01d (scripts/render_episodes.py)",
       "bytes": 53475,
       "sha256": "34bd40174dbb8e8a0e35ad0c818049915d977045253b441d16839e79a4f3eb50",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/experts/s02_r1_training.json",
@@ -662,7 +662,7 @@
       "caption": "The numbers s02_r1_training.png draws (scripts/m5_training_figure.py)",
       "bytes": 2771,
       "sha256": "a98ba60e52744bc031ecd0b556bae9ce44dd8c5ad56967bc4831fee7c7c24911",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/experts/s02_r1_training.png",
@@ -670,7 +670,7 @@
       "caption": "s02 run 1 (sparse trees, 12 h, 640,916 steps): training outcomes and the eval watch under the task's rules",
       "bytes": 224702,
       "sha256": "96729c4f358b10a3dd576357f913023038bc1a6adcc33233afc829400d5a96a3",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/experts/training.png",
@@ -678,7 +678,7 @@
       "caption": "Training success of the s01 and s01d runs (rolling 300 episodes, each run's own rules) and their 20-episode evaluations along the way",
       "bytes": 239493,
       "sha256": "c935da46bb6f82a29329f401897cfffbecbbb19e369ccd08455852359f77e599",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/harness_results.png",
@@ -686,7 +686,7 @@
       "caption": "Closed-loop evaluation per condition, scene and policy: success, collision and out-of-bounds rates with Wilson 95 % intervals and PER over successes, the pilots' kept-rate intervals behind the expert (scripts/harness_figures.py)",
       "bytes": 265152,
       "sha256": "28c96fecadb373c2bf762b5b0c998b28f1313e50eb697b36287947f8e43e994b",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/m3_pilot/path_efficiency.png",
@@ -694,7 +694,7 @@
       "caption": "The M3 pilot's path efficiency: flown lengths against the straight line, PER between 0.956 and 0.994",
       "bytes": 114497,
       "sha256": "834acaddf36bd4ed48297b362f2a351f05758e56100a5eccde4ee9fa1054c66f",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/m3_pilot/rebalance.png",
@@ -702,7 +702,7 @@
       "caption": "The M3 pilot's rebalancing: the detector's confidence against the distance to the target, the phase split against the threshold, and where the transitions happen (P0 0.652 / 0.348 at 0.7)",
       "bytes": 413034,
       "sha256": "d569f44d0f03184675c91c74bea1a5beb448ec15e6980bb3629f1f1e4318ae3c",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/pilots/pilot_screening.png",
@@ -710,7 +710,7 @@
       "caption": "Pilot screening: each candidate expert's kept-rate per scene, 30-40 stochastic episodes per pair under the task's rules (m5_pilot_screening.json)",
       "bytes": 141744,
       "sha256": "a37c1e706dba777829dba0abba4130cf30f04c009e33ff607916d408418d8357",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/pipeline.png",
@@ -718,7 +718,7 @@
       "caption": "The system in eight stages: scenes, expert pilots, collector, raw stores, the merged dataset, rebalancing, the next phase's VLA and the closed-loop evaluation harness (scripts/pipeline_diagram.py)",
       "bytes": 260926,
       "sha256": "abaa8610b9b7f063f47bfc315a3c496220ca8a9a86f92fb4244934dd027b2100",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/rebalance_phases.png",
@@ -726,7 +726,7 @@
       "caption": "The final dataset's rebalancing: records per phase overall and per scene against the paper's 0.73 / 0.27, and the resampling weights against its 0.68 / 1.85 (scripts/rebalance_figures.py)",
       "bytes": 182912,
       "sha256": "8e57bd1422c3a07505cf72245a0f69352d23d026fb7005f5a628a9efbd8b503b",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/rebalance_targets.png",
@@ -734,7 +734,7 @@
       "caption": "Per target, the distance at each episode's first confident detection and the share of its episodes never detected (scripts/rebalance_figures.py)",
       "bytes": 308323,
       "sha256": "f76296ecfd067b31a8ba0b76dc9f9aa82f68e1b1bc774174c847aa0146f9909d",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/scenes/layouts.png",
@@ -742,7 +742,7 @@
       "caption": "The scene generator's placement types: s01's jittered grid, poisson scatter, clusters and stacks, with reachability and the crossing detour",
       "bytes": 224482,
       "sha256": "3f3d7e22446555b7993870f6d0b03b0d1b2ac7d38bacfbc8e25be936f23393ac",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/scenes/layouts_c4.json",
@@ -750,7 +750,7 @@
       "caption": "The numbers layouts_c4.png draws",
       "bytes": 3224,
       "sha256": "44ee5ecd5c783094d487ecb86652c013e1807f2aa30f594f8416ebbaadb6430a",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/scenes/layouts_c4.png",
@@ -758,7 +758,7 @@
       "caption": "s03 scattered rocks and s06 tree clusters as laid out, accepted by the layout rule (worst crossing detours 1.167 and 1.171 against 1.25)",
       "bytes": 267142,
       "sha256": "a4ff443732c1ecd01afe248abc952d73f5b4c1333735f9d3507b73fd39977c2e",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/scenes/snapshots/s01_snapshots.json",
@@ -766,7 +766,7 @@
       "caption": "Per-pose brightness and depth-at-surface numbers of each snapshot sheet",
       "bytes": 3188,
       "sha256": "3c6e53419b35554a45f445947f59283692dfc6f1375c4c1a89ed5d33043fe895",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/scenes/snapshots/s01_snapshots.png",
@@ -774,7 +774,7 @@
       "caption": "Every built scene through the drone's cameras (s01-s07, s09 and the test_seen layouts s05r, s06r): RGB and depth from each edge's start and close to three obstacles (scripts/scene_snapshots.py)",
       "bytes": 770411,
       "sha256": "9a8e3c157070a60dae81f21274e6a1ab42b3b664ebf9f3b5a18b46d7ff00326e",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/scenes/snapshots/s02_snapshots.json",
@@ -782,7 +782,7 @@
       "caption": "Per-pose brightness and depth-at-surface numbers of each snapshot sheet",
       "bytes": 3738,
       "sha256": "c3c7d56cf04656a8e12ff510d33ab4cea39102bec1363f4f56d3f9686506927e",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/scenes/snapshots/s02_snapshots.png",
@@ -790,7 +790,7 @@
       "caption": "Every built scene through the drone's cameras (s01-s07, s09 and the test_seen layouts s05r, s06r): RGB and depth from each edge's start and close to three obstacles (scripts/scene_snapshots.py)",
       "bytes": 721656,
       "sha256": "886829300eda1e0ebeb56a6da5c0a8e6482588d1b9c19ed4ef815be3c3a913ff",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/scenes/snapshots/s03_snapshots.json",
@@ -798,7 +798,7 @@
       "caption": "Per-pose brightness and depth-at-surface numbers of each snapshot sheet",
       "bytes": 3703,
       "sha256": "21ddc8d968f399df3b18a13085e2b8f9ac8b38ffc9c187be504dd4f3d279129d",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/scenes/snapshots/s03_snapshots.png",
@@ -806,7 +806,7 @@
       "caption": "Every built scene through the drone's cameras (s01-s07, s09 and the test_seen layouts s05r, s06r): RGB and depth from each edge's start and close to three obstacles (scripts/scene_snapshots.py)",
       "bytes": 713978,
       "sha256": "8ed08a93283c04d8ecb94e375c5ff8c276e7147adf6e08dec793f22da982561b",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/scenes/snapshots/s04_snapshots.json",
@@ -814,7 +814,7 @@
       "caption": "Per-pose brightness and depth-at-surface numbers of each snapshot sheet",
       "bytes": 3737,
       "sha256": "47d19eb2505a017dcf65835969303e046122e6686bffb5989c1179ec135b97f5",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/scenes/snapshots/s04_snapshots.png",
@@ -822,7 +822,7 @@
       "caption": "Every built scene through the drone's cameras (s01-s07, s09 and the test_seen layouts s05r, s06r): RGB and depth from each edge's start and close to three obstacles (scripts/scene_snapshots.py)",
       "bytes": 756123,
       "sha256": "3b8c7e0d3e46c7cbe76688385ef64d536c7c7534570686b561b74f0cdd5b7c7b",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/scenes/snapshots/s05_snapshots.json",
@@ -830,7 +830,7 @@
       "caption": "Per-pose brightness and depth-at-surface numbers of each snapshot sheet",
       "bytes": 3712,
       "sha256": "687a412864852afee104656f81c3b0291337e3c3742398bb41e7dfe6fd5d0686",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/scenes/snapshots/s05_snapshots.png",
@@ -838,7 +838,7 @@
       "caption": "Every built scene through the drone's cameras (s01-s07, s09 and the test_seen layouts s05r, s06r): RGB and depth from each edge's start and close to three obstacles (scripts/scene_snapshots.py)",
       "bytes": 653308,
       "sha256": "dc883479e902f101e0d2470efa3b462d48bcc44829dc012e2e845cf113f38d5b",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/scenes/snapshots/s05r_snapshots.json",
@@ -846,7 +846,7 @@
       "caption": "Per-pose brightness and depth-at-surface numbers of each snapshot sheet",
       "bytes": 3740,
       "sha256": "e0bc59549783d38ef2c03a45ced2def2bf22d2752a1fb7bf10625c5614073809",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/scenes/snapshots/s05r_snapshots.png",
@@ -854,7 +854,7 @@
       "caption": "Every built scene through the drone's cameras (s01-s07, s09 and the test_seen layouts s05r, s06r): RGB and depth from each edge's start and close to three obstacles (scripts/scene_snapshots.py)",
       "bytes": 674630,
       "sha256": "1c2947eaf97f707d6b9281250093ef03419a816b5766533b936f32d03c6bcc79",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/scenes/snapshots/s06_snapshots.json",
@@ -862,7 +862,7 @@
       "caption": "Per-pose brightness and depth-at-surface numbers of each snapshot sheet",
       "bytes": 3757,
       "sha256": "78288baca0380cd6079cbf8caaa7758b85e64e63b856e18071b31773a8e13725",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/scenes/snapshots/s06_snapshots.png",
@@ -870,7 +870,7 @@
       "caption": "Every built scene through the drone's cameras (s01-s07, s09 and the test_seen layouts s05r, s06r): RGB and depth from each edge's start and close to three obstacles (scripts/scene_snapshots.py)",
       "bytes": 729806,
       "sha256": "b6c034283006f27be57f0355985314f717aaaeda44d6a4ee563ced01228fbe94",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/scenes/snapshots/s06r_snapshots.json",
@@ -878,7 +878,7 @@
       "caption": "Per-pose brightness and depth-at-surface numbers of each snapshot sheet",
       "bytes": 3173,
       "sha256": "6c74ec974e565f4a252d9f6348090af46b0f305ccfc5d13216f41760997c6909",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/scenes/snapshots/s06r_snapshots.png",
@@ -886,7 +886,7 @@
       "caption": "Every built scene through the drone's cameras (s01-s07, s09 and the test_seen layouts s05r, s06r): RGB and depth from each edge's start and close to three obstacles (scripts/scene_snapshots.py)",
       "bytes": 632445,
       "sha256": "162e2c77bcdf7917e7c4d7bbd60661776da5af219e08acef4fd0ebb720ca008c",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/scenes/snapshots/s07_snapshots.json",
@@ -894,7 +894,7 @@
       "caption": "Per-pose brightness and depth-at-surface numbers of each snapshot sheet",
       "bytes": 3712,
       "sha256": "c67931e57e7d53f7083e6ec7760b21d0927c944c221a4c77023f5b32758d75d8",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/scenes/snapshots/s07_snapshots.png",
@@ -902,7 +902,7 @@
       "caption": "Every built scene through the drone's cameras (s01-s07, s09 and the test_seen layouts s05r, s06r): RGB and depth from each edge's start and close to three obstacles (scripts/scene_snapshots.py)",
       "bytes": 654463,
       "sha256": "349157410478ebf94b6bfa6a1e3036110e65977de7fa5e428f29c86243cbf02e",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/scenes/snapshots/s09_snapshots.json",
@@ -910,7 +910,7 @@
       "caption": "Per-pose brightness and depth-at-surface numbers of each snapshot sheet",
       "bytes": 3737,
       "sha256": "563c21ae21058e37c4b94391852a5edb475e3ce32a8ab4603a8046ddb9063c88",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/scenes/snapshots/s09_snapshots.png",
@@ -918,7 +918,7 @@
       "caption": "Every built scene through the drone's cameras (s01-s07, s09 and the test_seen layouts s05r, s06r): RGB and depth from each edge's start and close to three obstacles (scripts/scene_snapshots.py)",
       "bytes": 905233,
       "sha256": "518fba8118ba11c2e6c88c83278b915cd54968cca3c2516c14d4bdb2a8f0043f",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/targets/m4_targets_probe_run2_sheet.png",
@@ -926,7 +926,7 @@
       "caption": "The 60 targets re-probed with settle steps (m4_targets_probe_run2.json)",
       "bytes": 1748709,
       "sha256": "b8d731f9ebf6eca14e8915ff33b7b23f4901d8226eb4590509df49aee071d0d9",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/targets/targets_contact_sheet.png",
@@ -934,7 +934,7 @@
       "caption": "The 60 pool targets spawned live on s01 in front of the drone, one step after spawning (the first probe, m4_targets_probe.json)",
       "bytes": 1731437,
       "sha256": "e71d24b9767adb762af9edbec21773e89a5d568d628328e0030542237138f8fc",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/thin_slice/actions_states.png",
@@ -942,7 +942,7 @@
       "caption": "The thin slice, one 50-kept store per training scene under collection conditions (450 kept of 676 flights): composition, kept-rates, every kept trajectory per scene, action and state distributions, lengths and PER, first frames, target close-ups (scripts/dataset_figures.py)",
       "bytes": 199532,
       "sha256": "52e9be18f37936990dded9e92e5cb79165ad3ad4a796a1df68b1b89beea2651a",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/thin_slice/composition.png",
@@ -950,7 +950,7 @@
       "caption": "The thin slice, one 50-kept store per training scene under collection conditions (450 kept of 676 flights): composition, kept-rates, every kept trajectory per scene, action and state distributions, lengths and PER, first frames, target close-ups (scripts/dataset_figures.py)",
       "bytes": 286279,
       "sha256": "88eed5bdacb7a9157e8fbc204f6bf0f253f260ab31c5731238b87996a03b0e42",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/thin_slice/dataset_figures.json",
@@ -958,7 +958,7 @@
       "caption": "Every number the thin-slice figures draw",
       "bytes": 92075,
       "sha256": "edeb982e0d8868104d7ddc343a7f9693a8376fb6ca037ac15eb89c214adfcd26",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/thin_slice/first_frames_s01.png",
@@ -966,7 +966,7 @@
       "caption": "The thin slice, one 50-kept store per training scene under collection conditions (450 kept of 676 flights): composition, kept-rates, every kept trajectory per scene, action and state distributions, lengths and PER, first frames, target close-ups (scripts/dataset_figures.py)",
       "bytes": 2183415,
       "sha256": "5023ee934455426b57a37614cb857a01ec1bdfc327ee10b3024e1d0580e319e5",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/thin_slice/first_frames_s01d.png",
@@ -974,7 +974,7 @@
       "caption": "The thin slice, one 50-kept store per training scene under collection conditions (450 kept of 676 flights): composition, kept-rates, every kept trajectory per scene, action and state distributions, lengths and PER, first frames, target close-ups (scripts/dataset_figures.py)",
       "bytes": 2220629,
       "sha256": "9ea6eae6b66295354afc6202fcef6bab81df1a81eb83fe393515303980b94de8",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/thin_slice/first_frames_s02.png",
@@ -982,7 +982,7 @@
       "caption": "The thin slice, one 50-kept store per training scene under collection conditions (450 kept of 676 flights): composition, kept-rates, every kept trajectory per scene, action and state distributions, lengths and PER, first frames, target close-ups (scripts/dataset_figures.py)",
       "bytes": 2512883,
       "sha256": "a06163fde34173bc0613d27fd8d63005040e8c15dce412dd7f70717037bda0b8",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/thin_slice/first_frames_s03.png",
@@ -990,7 +990,7 @@
       "caption": "The thin slice, one 50-kept store per training scene under collection conditions (450 kept of 676 flights): composition, kept-rates, every kept trajectory per scene, action and state distributions, lengths and PER, first frames, target close-ups (scripts/dataset_figures.py)",
       "bytes": 2518655,
       "sha256": "b7a09e719895d8d049712a3a218555bf0b21444ebb0c9d25e9549b35e9e70ebd",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/thin_slice/first_frames_s04.png",
@@ -998,7 +998,7 @@
       "caption": "The thin slice, one 50-kept store per training scene under collection conditions (450 kept of 676 flights): composition, kept-rates, every kept trajectory per scene, action and state distributions, lengths and PER, first frames, target close-ups (scripts/dataset_figures.py)",
       "bytes": 2665790,
       "sha256": "8fa1072570f2b2d9eb6d0ff54c3e108762c2c17ea3d21364bb78c537f510e9a3",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/thin_slice/first_frames_s05.png",
@@ -1006,7 +1006,7 @@
       "caption": "The thin slice, one 50-kept store per training scene under collection conditions (450 kept of 676 flights): composition, kept-rates, every kept trajectory per scene, action and state distributions, lengths and PER, first frames, target close-ups (scripts/dataset_figures.py)",
       "bytes": 2198405,
       "sha256": "2559f57c71ca4e6ee9c180287fb0f3231649b4be36ddc42634096f192dd5a57a",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/thin_slice/first_frames_s06.png",
@@ -1014,7 +1014,7 @@
       "caption": "The thin slice, one 50-kept store per training scene under collection conditions (450 kept of 676 flights): composition, kept-rates, every kept trajectory per scene, action and state distributions, lengths and PER, first frames, target close-ups (scripts/dataset_figures.py)",
       "bytes": 2565674,
       "sha256": "3ef570c9e79195efc549a3d3d9585049262b2cb5a688a17b988d132b3283ec12",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/thin_slice/first_frames_s07.png",
@@ -1022,7 +1022,7 @@
       "caption": "The thin slice, one 50-kept store per training scene under collection conditions (450 kept of 676 flights): composition, kept-rates, every kept trajectory per scene, action and state distributions, lengths and PER, first frames, target close-ups (scripts/dataset_figures.py)",
       "bytes": 2346129,
       "sha256": "ccaae5164ce3da0df2b9ed93e118e11daa0d6d729bc7dc555a5cd1addbc25901",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/thin_slice/first_frames_s09.png",
@@ -1030,7 +1030,7 @@
       "caption": "The thin slice, one 50-kept store per training scene under collection conditions (450 kept of 676 flights): composition, kept-rates, every kept trajectory per scene, action and state distributions, lengths and PER, first frames, target close-ups (scripts/dataset_figures.py)",
       "bytes": 2628333,
       "sha256": "dc10aa2fb0cd49b4932d4bc35028c2d763bd6261f73414f514587cac015022be",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/thin_slice/kept_rates.png",
@@ -1038,7 +1038,7 @@
       "caption": "The thin slice, one 50-kept store per training scene under collection conditions (450 kept of 676 flights): composition, kept-rates, every kept trajectory per scene, action and state distributions, lengths and PER, first frames, target close-ups (scripts/dataset_figures.py)",
       "bytes": 116360,
       "sha256": "dffbaecb85bf0b36158935583f57f16eeb32567dcc2d489aff910ff00f844447",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/thin_slice/lengths_per.png",
@@ -1046,7 +1046,7 @@
       "caption": "The thin slice, one 50-kept store per training scene under collection conditions (450 kept of 676 flights): composition, kept-rates, every kept trajectory per scene, action and state distributions, lengths and PER, first frames, target close-ups (scripts/dataset_figures.py)",
       "bytes": 156704,
       "sha256": "2202c10016c5b2bca7db29f20d4e190ca9752975799b65c616f90bc5d84ea9bd",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/thin_slice/targets_closeup.png",
@@ -1054,7 +1054,7 @@
       "caption": "The thin slice, one 50-kept store per training scene under collection conditions (450 kept of 676 flights): composition, kept-rates, every kept trajectory per scene, action and state distributions, lengths and PER, first frames, target close-ups (scripts/dataset_figures.py)",
       "bytes": 4714671,
       "sha256": "1c017ddf1873995c0d14d18a24c0e29ddebde68932ccc762bbec85eaaf725c74",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/thin_slice/trajectories_s01.png",
@@ -1062,7 +1062,7 @@
       "caption": "The thin slice, one 50-kept store per training scene under collection conditions (450 kept of 676 flights): composition, kept-rates, every kept trajectory per scene, action and state distributions, lengths and PER, first frames, target close-ups (scripts/dataset_figures.py)",
       "bytes": 431893,
       "sha256": "cea3015cad8dee33c16ab51424bf1a3dc29a7037961c28555b2ab1272b92c87b",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/thin_slice/trajectories_s01d.png",
@@ -1070,7 +1070,7 @@
       "caption": "The thin slice, one 50-kept store per training scene under collection conditions (450 kept of 676 flights): composition, kept-rates, every kept trajectory per scene, action and state distributions, lengths and PER, first frames, target close-ups (scripts/dataset_figures.py)",
       "bytes": 443724,
       "sha256": "6b83f743b1c0b866335906e2276fc0a14d256849865baaa620a9e2ad27a74a42",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/thin_slice/trajectories_s02.png",
@@ -1078,7 +1078,7 @@
       "caption": "The thin slice, one 50-kept store per training scene under collection conditions (450 kept of 676 flights): composition, kept-rates, every kept trajectory per scene, action and state distributions, lengths and PER, first frames, target close-ups (scripts/dataset_figures.py)",
       "bytes": 475472,
       "sha256": "c64ab3dced33f745820926592ff7900eeb049af2fcdcef40c26f0f39e4bd4dc6",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/thin_slice/trajectories_s03.png",
@@ -1086,7 +1086,7 @@
       "caption": "The thin slice, one 50-kept store per training scene under collection conditions (450 kept of 676 flights): composition, kept-rates, every kept trajectory per scene, action and state distributions, lengths and PER, first frames, target close-ups (scripts/dataset_figures.py)",
       "bytes": 461799,
       "sha256": "e34e509626524f4f1179dd7854865911a5238cd14df895844c0a91c682f4fb1b",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/thin_slice/trajectories_s04.png",
@@ -1094,7 +1094,7 @@
       "caption": "The thin slice, one 50-kept store per training scene under collection conditions (450 kept of 676 flights): composition, kept-rates, every kept trajectory per scene, action and state distributions, lengths and PER, first frames, target close-ups (scripts/dataset_figures.py)",
       "bytes": 470277,
       "sha256": "0c3fc0a697fcf0444fcd3b74f0fc1e682bc85ce7f1fe08e05e7a1310e46254a4",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/thin_slice/trajectories_s05.png",
@@ -1102,7 +1102,7 @@
       "caption": "The thin slice, one 50-kept store per training scene under collection conditions (450 kept of 676 flights): composition, kept-rates, every kept trajectory per scene, action and state distributions, lengths and PER, first frames, target close-ups (scripts/dataset_figures.py)",
       "bytes": 431315,
       "sha256": "95e582b379436176ba931150fbf5eea940dc3e4d7cb0c3eeb20c06ae6acbed29",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/thin_slice/trajectories_s06.png",
@@ -1110,7 +1110,7 @@
       "caption": "The thin slice, one 50-kept store per training scene under collection conditions (450 kept of 676 flights): composition, kept-rates, every kept trajectory per scene, action and state distributions, lengths and PER, first frames, target close-ups (scripts/dataset_figures.py)",
       "bytes": 479422,
       "sha256": "e6a6f4a719d021533487296eed50dff83c726034f11ea3ef1d3c57ff3f8bdf82",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/thin_slice/trajectories_s07.png",
@@ -1118,7 +1118,7 @@
       "caption": "The thin slice, one 50-kept store per training scene under collection conditions (450 kept of 676 flights): composition, kept-rates, every kept trajectory per scene, action and state distributions, lengths and PER, first frames, target close-ups (scripts/dataset_figures.py)",
       "bytes": 440121,
       "sha256": "c89f9b8e97f8f62b900ad3c6b9c087d7fc4e29730d460ef2b9270e80c7b07386",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "figures/thin_slice/trajectories_s09.png",
@@ -1126,7 +1126,7 @@
       "caption": "The thin slice, one 50-kept store per training scene under collection conditions (450 kept of 676 flights): composition, kept-rates, every kept trajectory per scene, action and state distributions, lengths and PER, first frames, target close-ups (scripts/dataset_figures.py)",
       "bytes": 407751,
       "sha256": "03ceb7a6afe77011413f4664d4bbc2ff2d56ba9cd666285e1c83fbb58846e4ea",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/campaign_final.json",
@@ -1134,7 +1134,7 @@
       "caption": "The final collection campaign's plan: four more 50-kept stores per scene, every job's exact command",
       "bytes": 53220,
       "sha256": "32eac65469099ac9479429344001104a09c6da697a64eacf68cfca505ce27404",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/campaign_thin_t1.json",
@@ -1142,7 +1142,7 @@
       "caption": "The thin slice's campaign plan, first part: every job's exact command (scripts/collect_campaign.py)",
       "bytes": 13259,
       "sha256": "865fbf5a2d84dba5ec0d49d674978d8fa9c242840218018aa369f4ef2d578a68",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/campaign_thin_t2a.json",
@@ -1150,7 +1150,7 @@
       "caption": "The thin slice's campaign plan, second part (a)",
       "bytes": 2083,
       "sha256": "e072bc4e623270114821098ef3234035328814f240b301c5d8841abc1261aefd",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/campaign_thin_t2b.json",
@@ -1158,7 +1158,7 @@
       "caption": "The thin slice's campaign plan, second part (b)",
       "bytes": 2083,
       "sha256": "5595ba314fc1a4dcb9374f83a2d087ec4d5a8621ccc35eafda973cf167dda8be",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/s01_c0.json",
@@ -1166,7 +1166,7 @@
       "caption": "Each store's collector record: its pilot, seed slice, every flight's outcome and the first-frame checks (scripts/collect_dataset.py)",
       "bytes": 9514,
       "sha256": "cae885b187e8856d0cee47edff899c49814479bae9e580158c84821b332efc81",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/s01_c1.json",
@@ -1174,7 +1174,7 @@
       "caption": "Each store's collector record: its pilot, seed slice, every flight's outcome and the first-frame checks (scripts/collect_dataset.py)",
       "bytes": 20251,
       "sha256": "776f713c72abf65b0f7ae08364e42c110b1fe62c4df38df227c41109d418564e",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/s01_c2.json",
@@ -1182,7 +1182,7 @@
       "caption": "Each store's collector record: its pilot, seed slice, every flight's outcome and the first-frame checks (scripts/collect_dataset.py)",
       "bytes": 20353,
       "sha256": "a1eb74e5cb46add5b5c9d4234828c092b678e7c073f305c1c430f816ee31b923",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/s01_c3.json",
@@ -1190,7 +1190,7 @@
       "caption": "Each store's collector record: its pilot, seed slice, every flight's outcome and the first-frame checks (scripts/collect_dataset.py)",
       "bytes": 20242,
       "sha256": "730ab569217c7b3577149b95664a0725c489e526cb2de360023f5890cb0d657c",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/s01_c4.json",
@@ -1198,7 +1198,7 @@
       "caption": "Each store's collector record: its pilot, seed slice, every flight's outcome and the first-frame checks (scripts/collect_dataset.py)",
       "bytes": 20331,
       "sha256": "5d9e890c844fd914af5c20d2c613af6a97927566a44a8de2bcbf932c116d2087",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/s01d_c0.json",
@@ -1206,7 +1206,7 @@
       "caption": "Each store's collector record: its pilot, seed slice, every flight's outcome and the first-frame checks (scripts/collect_dataset.py)",
       "bytes": 9486,
       "sha256": "8e998bc7cbe5893a14fec5d704ba4fef633eeeefb85f3fa72846493a96f8a07b",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/s01d_c1.json",
@@ -1214,7 +1214,7 @@
       "caption": "Each store's collector record: its pilot, seed slice, every flight's outcome and the first-frame checks (scripts/collect_dataset.py)",
       "bytes": 20236,
       "sha256": "13c61e24a6be52727eb7065c6544f155790d513e85aad0388ed2a61105146e6f",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/s01d_c2.json",
@@ -1222,7 +1222,7 @@
       "caption": "Each store's collector record: its pilot, seed slice, every flight's outcome and the first-frame checks (scripts/collect_dataset.py)",
       "bytes": 20213,
       "sha256": "bd517da9053e725886b61ba80be7ce635815cb9cdc934a85dfbbfa752a783b82",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/s01d_c3.json",
@@ -1230,7 +1230,7 @@
       "caption": "Each store's collector record: its pilot, seed slice, every flight's outcome and the first-frame checks (scripts/collect_dataset.py)",
       "bytes": 20339,
       "sha256": "734dcfc547e2b11f261e3da294254c513318c18daf3be5656b00ca0b621b760f",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/s01d_c4.json",
@@ -1238,7 +1238,7 @@
       "caption": "Each store's collector record: its pilot, seed slice, every flight's outcome and the first-frame checks (scripts/collect_dataset.py)",
       "bytes": 20354,
       "sha256": "d8c48739444cb4b27f431633fabe170fdf9f955df66a0bf4e3d201f5f8318c7c",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/s02_c0.json",
@@ -1246,7 +1246,7 @@
       "caption": "Each store's collector record: its pilot, seed slice, every flight's outcome and the first-frame checks (scripts/collect_dataset.py)",
       "bytes": 10049,
       "sha256": "d7c5927abaeaf58b6d849bdf73d0caa5a91e0c4bc331dea0526f5f473beb0080",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/s02_c1.json",
@@ -1254,7 +1254,7 @@
       "caption": "Each store's collector record: its pilot, seed slice, every flight's outcome and the first-frame checks (scripts/collect_dataset.py)",
       "bytes": 22619,
       "sha256": "267b53fb41633552fd79e6b67f030a899c7ed07c600f5756241c22c84b268b17",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/s02_c2.json",
@@ -1262,7 +1262,7 @@
       "caption": "Each store's collector record: its pilot, seed slice, every flight's outcome and the first-frame checks (scripts/collect_dataset.py)",
       "bytes": 22711,
       "sha256": "81b655df240ce4cf34190acc8ecd009cf923682e2f7e6720667e41a3fb7b1270",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/s02_c3.json",
@@ -1270,7 +1270,7 @@
       "caption": "Each store's collector record: its pilot, seed slice, every flight's outcome and the first-frame checks (scripts/collect_dataset.py)",
       "bytes": 22640,
       "sha256": "0c117885e91049e0f46d538197c226f23f500562e95071186fba55daeb2eb4a5",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/s02_c4.json",
@@ -1278,7 +1278,7 @@
       "caption": "Each store's collector record: its pilot, seed slice, every flight's outcome and the first-frame checks (scripts/collect_dataset.py)",
       "bytes": 22461,
       "sha256": "8eb92316a315cd28ceb29ac004b902f4d3b725464cbf64d3a518ae5f2e8879d0",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/s03_c0.json",
@@ -1286,7 +1286,7 @@
       "caption": "Each store's collector record: its pilot, seed slice, every flight's outcome and the first-frame checks (scripts/collect_dataset.py)",
       "bytes": 10037,
       "sha256": "66af124f4879b3088b6ac20957ec8d0dc97ba08ccec99ef06f77ca4066f27d59",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/s03_c1.json",
@@ -1294,7 +1294,7 @@
       "caption": "Each store's collector record: its pilot, seed slice, every flight's outcome and the first-frame checks (scripts/collect_dataset.py)",
       "bytes": 22068,
       "sha256": "ce5f8b5790485484a6a228309232751fd1cb44378c95fb959fd1e0926f1d8b48",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/s03_c2.json",
@@ -1302,7 +1302,7 @@
       "caption": "Each store's collector record: its pilot, seed slice, every flight's outcome and the first-frame checks (scripts/collect_dataset.py)",
       "bytes": 21999,
       "sha256": "58a2989a8de6d7afc04e610c3a8050fa31782865b88e76fc91bf726e568fa3de",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/s03_c3.json",
@@ -1310,7 +1310,7 @@
       "caption": "Each store's collector record: its pilot, seed slice, every flight's outcome and the first-frame checks (scripts/collect_dataset.py)",
       "bytes": 22083,
       "sha256": "9c28f7d065b3c9ab83144d4002eab75e19912f15c81d2b687cbf353d7ad6c4da",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/s03_c4.json",
@@ -1318,7 +1318,7 @@
       "caption": "Each store's collector record: its pilot, seed slice, every flight's outcome and the first-frame checks (scripts/collect_dataset.py)",
       "bytes": 21963,
       "sha256": "b113be430ef5e0b492f869865b59a6b33e605acebacefe051cc9c5e3e6b95e66",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/s04_c0.json",
@@ -1326,7 +1326,7 @@
       "caption": "Each store's collector record: its pilot, seed slice, every flight's outcome and the first-frame checks (scripts/collect_dataset.py)",
       "bytes": 10159,
       "sha256": "aba281339c4d3c8b48dd308d8aa338f1148bfc71fbab3f4fff032780c1ee4630",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/s04_c1.json",
@@ -1334,7 +1334,7 @@
       "caption": "Each store's collector record: its pilot, seed slice, every flight's outcome and the first-frame checks (scripts/collect_dataset.py)",
       "bytes": 22060,
       "sha256": "6ebb5b134cbe7d2f96ef77c9bf8c0cb14d38e246759391b99c1fa60e4e91fdc3",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/s04_c2.json",
@@ -1342,7 +1342,7 @@
       "caption": "Each store's collector record: its pilot, seed slice, every flight's outcome and the first-frame checks (scripts/collect_dataset.py)",
       "bytes": 22141,
       "sha256": "52162baff5dca214120d40bfb6ed546aa5379d02c71510e63fc21118ca0c2ca8",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/s04_c3.json",
@@ -1350,7 +1350,7 @@
       "caption": "Each store's collector record: its pilot, seed slice, every flight's outcome and the first-frame checks (scripts/collect_dataset.py)",
       "bytes": 22083,
       "sha256": "a8ba6d07f8aed366f2d6eb2d5f5335ee59744a0f7b445e4ccef2693b4ccdfbeb",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/s04_c4.json",
@@ -1358,7 +1358,7 @@
       "caption": "Each store's collector record: its pilot, seed slice, every flight's outcome and the first-frame checks (scripts/collect_dataset.py)",
       "bytes": 21844,
       "sha256": "ee6e830429383bdb1547a59e60623bbc20b78ac57076974eec5c765208d67458",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/s05_c0.json",
@@ -1366,7 +1366,7 @@
       "caption": "Each store's collector record: its pilot, seed slice, every flight's outcome and the first-frame checks (scripts/collect_dataset.py)",
       "bytes": 9936,
       "sha256": "f0921aab4695f4f0d5b2f8041c9030a655feadacc52b62ff6d9b9e0b2fde0fcc",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/s05_c1.json",
@@ -1374,7 +1374,7 @@
       "caption": "Each store's collector record: its pilot, seed slice, every flight's outcome and the first-frame checks (scripts/collect_dataset.py)",
       "bytes": 22100,
       "sha256": "26508248c2048449fef76dbb7951d465e3f6344444e0f15a0e1be0b50564755f",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/s05_c2.json",
@@ -1382,7 +1382,7 @@
       "caption": "Each store's collector record: its pilot, seed slice, every flight's outcome and the first-frame checks (scripts/collect_dataset.py)",
       "bytes": 21859,
       "sha256": "db7cdd735b142ee95635a28b9548d52dfc907f2c068bb2f6f2f92c9c6de5400b",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/s05_c3.json",
@@ -1390,7 +1390,7 @@
       "caption": "Each store's collector record: its pilot, seed slice, every flight's outcome and the first-frame checks (scripts/collect_dataset.py)",
       "bytes": 21974,
       "sha256": "fd05fc8df4a96ace141ddd6bac4ba0e494661d82b51f117add941f2f78c72c58",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/s05_c4.json",
@@ -1398,7 +1398,7 @@
       "caption": "Each store's collector record: its pilot, seed slice, every flight's outcome and the first-frame checks (scripts/collect_dataset.py)",
       "bytes": 22059,
       "sha256": "6c5f9b8fc36ce03647045871f7809ab741e01ad3f15cdea2342038561b0db195",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/s06_c0.json",
@@ -1406,7 +1406,7 @@
       "caption": "Each store's collector record: its pilot, seed slice, every flight's outcome and the first-frame checks (scripts/collect_dataset.py)",
       "bytes": 10074,
       "sha256": "129f6d431f5c1aea52a983120bc9e45448015ac7e5a79fe8fb1a090178f16a67",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/s06_c1.json",
@@ -1414,7 +1414,7 @@
       "caption": "Each store's collector record: its pilot, seed slice, every flight's outcome and the first-frame checks (scripts/collect_dataset.py)",
       "bytes": 22554,
       "sha256": "4f0254c5280044e7a964e04567e668d130c498024cb385783aab2f2e5608650e",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/s06_c2.json",
@@ -1422,7 +1422,7 @@
       "caption": "Each store's collector record: its pilot, seed slice, every flight's outcome and the first-frame checks (scripts/collect_dataset.py)",
       "bytes": 22711,
       "sha256": "c2e66ba21d29aab9ac265a66100c745d8195e0852e568a741c152c614c09816f",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/s06_c3.json",
@@ -1430,7 +1430,7 @@
       "caption": "Each store's collector record: its pilot, seed slice, every flight's outcome and the first-frame checks (scripts/collect_dataset.py)",
       "bytes": 22692,
       "sha256": "7fc334a84c9d1e6f471253a582623960cd9892526f1aa79cf328a06ded19a042",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/s06_c4.json",
@@ -1438,7 +1438,7 @@
       "caption": "Each store's collector record: its pilot, seed slice, every flight's outcome and the first-frame checks (scripts/collect_dataset.py)",
       "bytes": 22720,
       "sha256": "39d0990de9eb2509de495c6b3636b14290792f967f55b221a5f1468390b1ff15",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/s07_c0.json",
@@ -1446,7 +1446,7 @@
       "caption": "Each store's collector record: its pilot, seed slice, every flight's outcome and the first-frame checks (scripts/collect_dataset.py)",
       "bytes": 9567,
       "sha256": "af5d84465f477a4dd8b8c12c176e86a6a94dfb69e552d0de284e9a0bf7694dab",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/s07_c1.json",
@@ -1454,7 +1454,7 @@
       "caption": "Each store's collector record: its pilot, seed slice, every flight's outcome and the first-frame checks (scripts/collect_dataset.py)",
       "bytes": 20847,
       "sha256": "f2ad16ec8c7798c45e536813144917abd4d4f0bf68cbd432c3b3f752a92bf306",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/s07_c2.json",
@@ -1462,7 +1462,7 @@
       "caption": "Each store's collector record: its pilot, seed slice, every flight's outcome and the first-frame checks (scripts/collect_dataset.py)",
       "bytes": 20822,
       "sha256": "2830e8aefaac5d744a0174e5c36af15253da544b8de99254b3073998a681d12c",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/s07_c3.json",
@@ -1470,7 +1470,7 @@
       "caption": "Each store's collector record: its pilot, seed slice, every flight's outcome and the first-frame checks (scripts/collect_dataset.py)",
       "bytes": 20740,
       "sha256": "e3c8c0781817a1a731d576705aa7b52fa8cde0fa58e72955bb872c89753264b9",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/s07_c4.json",
@@ -1478,7 +1478,7 @@
       "caption": "Each store's collector record: its pilot, seed slice, every flight's outcome and the first-frame checks (scripts/collect_dataset.py)",
       "bytes": 20646,
       "sha256": "bb1a06c76abe381684c18d63bd81679b3338c80a6d81ece2cde4e1c23ba27e6c",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/s09_c0.json",
@@ -1486,7 +1486,7 @@
       "caption": "Each store's collector record: its pilot, seed slice, every flight's outcome and the first-frame checks (scripts/collect_dataset.py)",
       "bytes": 9633,
       "sha256": "a72530074047e0c3a56611492d081799aa01dd1d1ce00deb36b28edda1db51c4",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/s09_c1.json",
@@ -1494,7 +1494,7 @@
       "caption": "Each store's collector record: its pilot, seed slice, every flight's outcome and the first-frame checks (scripts/collect_dataset.py)",
       "bytes": 20177,
       "sha256": "19601cc1df0a7768f34faa2238eddcf52d101acec53f5a825d6d6cc57b6ff5b5",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/s09_c2.json",
@@ -1502,7 +1502,7 @@
       "caption": "Each store's collector record: its pilot, seed slice, every flight's outcome and the first-frame checks (scripts/collect_dataset.py)",
       "bytes": 20403,
       "sha256": "bb7624174ad181441cb17104aec2d3ecfd8b44d9d05b6c1b42b9c8ad9effe4f2",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/s09_c3.json",
@@ -1510,7 +1510,7 @@
       "caption": "Each store's collector record: its pilot, seed slice, every flight's outcome and the first-frame checks (scripts/collect_dataset.py)",
       "bytes": 20268,
       "sha256": "19d52bcdf586a7ba9e876cf893326286fe883ba16e85c9934f1cd042831a9ebc",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/collect/s09_c4.json",
@@ -1518,7 +1518,7 @@
       "caption": "Each store's collector record: its pilot, seed slice, every flight's outcome and the first-frame checks (scripts/collect_dataset.py)",
       "bytes": 20298,
       "sha256": "0347593b7c274ecb0bdcc28faa2cbab1976cb32fe859f18ce7fe69ff7c204dc7",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/gates/m0_gate.json",
@@ -1526,7 +1526,7 @@
       "caption": "M0: UE 5.7.4 + Project AirSim installed and smoke-tested (passed 2026-09-15)",
       "bytes": 2764,
       "sha256": "7545346dbb31aea763f030dad2bb2e6808c043eb3360900cb92b8d0f3ca81cff",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/gates/m1_crash_reset_probe.json",
@@ -1534,7 +1534,7 @@
       "caption": "Crash-then-reset probe: none of 30 first resets after a crash missed its pose",
       "bytes": 23411,
       "sha256": "cb1b51709bb26d7b73eb240d4d37842b4ff6b7d6dbc5973b88871e68afc125fb",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/gates/m1_gate.json",
@@ -1542,7 +1542,7 @@
       "caption": "M1: scene s01 built from JSON, packaged and checked live (passed 2026-09-16)",
       "bytes": 13234,
       "sha256": "e7f133156ab70c82f76265081c5e2aaf58af01b0c79afad962a6152daaf412c7",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/gates/m1_gate_fast.json",
@@ -1550,7 +1550,7 @@
       "caption": "M1's checks on the 1 ms real-time update rate the experts trained and collected on",
       "bytes": 12725,
       "sha256": "2a99fdc62fdac3aebee868b7816fb191417d3c3359a1c2cb53431032e432d945",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/gates/m2_gate.json",
@@ -1558,7 +1558,7 @@
       "caption": "M2: the s01 expert's gate, 0.98 deterministic over 200 held-out episodes (passed 2026-09-26)",
       "bytes": 433942,
       "sha256": "3f9438f26650c6143cca421ec82cff705666eeadcbd8e4cf5abfcb439a4202e3",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/gates/m2_gate_audit.json",
@@ -1566,7 +1566,7 @@
       "caption": "M2's gate audited for episodes that started away from their start",
       "bytes": 1623,
       "sha256": "c694c9469be5891fa442ba981fda5ae687f27f121d95c2666a969b44f96253c7",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/gates/m2_train.json",
@@ -1574,7 +1574,7 @@
       "caption": "M2: the s01 expert's training record",
       "bytes": 7489,
       "sha256": "8294b7fe4b2dd2f10a583c6524c6fc823a2e3341a9a70a88da229d66cc494de8",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/gates/m2d_gate.json",
@@ -1582,7 +1582,7 @@
       "caption": "M2d run 1 on moving pillars: 0.775 (best_model), failed against 0.95",
       "bytes": 519405,
       "sha256": "1487dc03ee5c21b266f3efda63a929dd823116cd208309314d58f636ab59b352",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/gates/m2d_mover_probe.json",
@@ -1590,7 +1590,7 @@
       "caption": "Moving a baked pillar live: moves land within microns, show in the same step's depth and collide at once",
       "bytes": 2669,
       "sha256": "de9cf2cafbfddaae31a3c80fa2b3ddd40f4be53a149a175d4b2013fc1302130b",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/gates/m2d_r5_gate.json",
@@ -1598,7 +1598,7 @@
       "caption": "M2d run 5 (training contact margins): 0.885, failed",
       "bytes": 141394,
       "sha256": "272577b0ebb0c043c976a0b4bf002aebbe1d3cb4c9016bbb39a43a35793dad09",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/gates/m2d_r6_gate.json",
@@ -1606,7 +1606,7 @@
       "caption": "M2d run 6 (step 240k, pre-registered): 0.920, failed",
       "bytes": 140811,
       "sha256": "2d1f48b798dbe2d266d4409f7f833e3b896a47893c564a06c1205c80489aff93",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/gates/m2d_r6_swa_gate.json",
@@ -1614,7 +1614,7 @@
       "caption": "M2d run 6, the mean of 31 checkpoints (250k-550k): 0.935, failed against 0.95; accepted by the user for collection on 2026-10-07",
       "bytes": 141224,
       "sha256": "5013d0d89521bd428b1e0b522243a17e971b2f1c7543fd9a413e9abbe6fffc29",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/gates/m2d_r6_swa_sources.json",
@@ -1622,7 +1622,7 @@
       "caption": "The checkpoints averaged into the accepted s01d expert, with their sha256",
       "bytes": 5486,
       "sha256": "79c0df625bef042b27ba22e61a6e2f756625e692a0dc602509f25c37452a5c52",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/gates/m2d_r6s1_avg_confirm.json",
@@ -1630,7 +1630,7 @@
       "caption": "That mean on 200 unflown episodes: 0.930 (0.925 over both sets of 200)",
       "bytes": 141420,
       "sha256": "2e740b2f8295f4d7e7cd190c88499e020314be8596138682e75e9f8b23e98d67",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/gates/m2d_r6s1_avg_gate.json",
@@ -1638,7 +1638,7 @@
       "caption": "M2d run 6 session 1, the mean of its 250k-1,060k checkpoints: 0.920, failed",
       "bytes": 141604,
       "sha256": "b54e409c94a895abf365c7bfc2d01896fa0c0dec918c5109b3d7edb73726cea5",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/gates/m3_a0_probe.json",
@@ -1646,7 +1646,7 @@
       "caption": "a0's aligned start costs the s01 expert nothing: 50 of 50 with it, 49 of 50 without",
       "bytes": 20856,
       "sha256": "92f25fa847a8eb6881ea209af36be5bfc4d6080b4c68d6b568c4e7018c3fbf4c",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/gates/m3_gate.json",
@@ -1654,7 +1654,7 @@
       "caption": "M3: collector, dataset writer and validator on a 100-episode s01 pilot that TFDS read back exactly (passed 2026-10-03)",
       "bytes": 6586,
       "sha256": "b26df85c48f893c4cf3eb043507ccf587f35c0fac37aef12f0ab3aa160295129",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/gates/m4_s02_gate.json",
@@ -1662,7 +1662,7 @@
       "caption": "s02 sparse trees, first live gate: failed its crash check (a crash into a canopy wedged the actor)",
       "bytes": 14536,
       "sha256": "f0f050d1f9689aa307755328d111b630c56a507ab7aa02f5087d0fe9de18183c",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/gates/m4_s02_gate_run2.json",
@@ -1670,7 +1670,7 @@
       "caption": "s02's second live gate: failed (layout and crash checks)",
       "bytes": 20389,
       "sha256": "75d48119add62a8a8fecc843c74081efb6e1c4389c0194d35a2a002f2476af69",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/gates/m4_s02_gate_run3.json",
@@ -1678,7 +1678,7 @@
       "caption": "s02's third live gate: passed, with the leaf cards in a no-collision mesh",
       "bytes": 27819,
       "sha256": "8c51c00dfb2a1c0278c03ac05639f6327fb8cbfa202ec143f0e2006dda6a9b7a",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/gates/m4_s02_gate_run4.json",
@@ -1686,7 +1686,7 @@
       "caption": "s02's fourth live gate record: passed",
       "bytes": 27818,
       "sha256": "b5a7ba25fad611bef47c3304efa34b806dd37050e29edf4009d70dea1750182f",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/gates/m4_s02_wood_crash_reset_probe.json",
@@ -1694,7 +1694,7 @@
       "caption": "Crashes into wood: 2 of 4 left the actor wedged, which the footprint rule answers",
       "bytes": 4954,
       "sha256": "f95532e8557482cd93de29506ba13265c1e6991b7077cd321d8a09c0cb6c238f",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/gates/m4_s03_gate.json",
@@ -1702,7 +1702,7 @@
       "caption": "s03 scattered rocks: live gate passed",
       "bytes": 22002,
       "sha256": "eb84dec1ec3e5cbd122f7e151baf78d17e44b0df9271fedcef9afe4dbbf89220",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/gates/m4_s04_gate.json",
@@ -1710,7 +1710,7 @@
       "caption": "s04 stone field: live gate passed",
       "bytes": 22457,
       "sha256": "2603415aef88dd37a0a6bdf5f6b9e2ce2a69dafaf7b13561f3320004ca48a938",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/gates/m4_s05_gate.json",
@@ -1718,7 +1718,7 @@
       "caption": "s05 standing stones on snow: live gate passed",
       "bytes": 20617,
       "sha256": "008ab6f4fed5858f4341848c6d68ec324d795d72fb4be089739c94bd047abaea",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/gates/m4_s05r_gate.json",
@@ -1726,7 +1726,7 @@
       "caption": "s05r, a test_seen layout of s05's elements: live gate passed",
       "bytes": 21104,
       "sha256": "8d2ce99ff09353b4ea6e98fe709d6a6122d85229dc2a0efc385ddc17736838ab",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/gates/m4_s06_gate.json",
@@ -1734,7 +1734,7 @@
       "caption": "s06 tree clusters: live gate passed",
       "bytes": 33361,
       "sha256": "35acfb6932ce1e879a339c6d7a19ca9733d46c1a731a9a1ef351a4283b2155d3",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/gates/m4_s06r_gate.json",
@@ -1742,7 +1742,7 @@
       "caption": "s06r, a test_seen layout of s06's elements: live gate passed",
       "bytes": 33582,
       "sha256": "4c9a86c8aea9172d589302b4c852a843a86b461d77c197a83ad94f35b1d4f3a9",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/gates/m4_s07_gate.json",
@@ -1750,7 +1750,7 @@
       "caption": "s07 stacked boxes: live gate passed",
       "bytes": 27905,
       "sha256": "f268ed8dd919ac3bfa043ae19ec3adcd6318bc17e80380ed6debd3fd52d62b5b",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/gates/m4_s09_gate.json",
@@ -1758,7 +1758,7 @@
       "caption": "s09 coloured poles: live gate passed",
       "bytes": 30256,
       "sha256": "1eec62f0dc99c313f1b5645c585cdacb8adb0bf52fa74fbadb7901bd9d5cbcf5",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/gates/m4_targets_probe.json",
@@ -1766,7 +1766,7 @@
       "caption": "The 60 pool targets spawned live, first probe: 55 of 60 visible one step after spawning, the other five loading on first use (recorded as failed)",
       "bytes": 100947,
       "sha256": "b17aec8da7d08e172fb936f498c6910dfee093da96e49f37875b037efa3c16c0",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/gates/m4_targets_probe_run2.json",
@@ -1774,7 +1774,7 @@
       "caption": "The 60 targets re-probed with settle steps: passed",
       "bytes": 123246,
       "sha256": "dd4a6874406e5960d4317444e8ca17e6837639e2ac5a5167f548f7e46ffe8d22",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/gates/m5_pilot_screening.json",
@@ -1782,7 +1782,7 @@
       "caption": "Pilot screening: which existing expert flies which scene, by kept-rate",
       "bytes": 24018,
       "sha256": "34a04fad12b2225fb23139e65df70d24e04294ce6c8bd6a7ebc9b2ec9e5fe193",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/gates/m5_s02_avg_sources.json",
@@ -1790,7 +1790,7 @@
       "caption": "The checkpoints averaged into s02 run 1's pick, with their sha256",
       "bytes": 5283,
       "sha256": "e4e044afceb6f691f10b5b99cfa2682732c0f76b88fbe0bb0050436a17dd0840",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/gates/m5_s02_gate.json",
@@ -1798,7 +1798,7 @@
       "caption": "s02 run 1's pick gated under the circle rule: 0.580, failed",
       "bytes": 160764,
       "sha256": "a796b9aa3c35271447a5599b30f5ade95c190757f67b567c6a9a2818055361a6",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/gates/m5_s02_gate_outline.json",
@@ -1806,7 +1806,7 @@
       "caption": "The same pick on the same 200 episodes under the outline rule (the separately named record)",
       "bytes": 145214,
       "sha256": "ce0cb6c93c2feefa13bcc93240e4877287e78b99641dde95ce9ce02a5f0c59e7",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/gates/m5_s02_train.json",
@@ -1814,7 +1814,7 @@
       "caption": "s02 run 1's training record (12 h, the circle rule with a 0.2 m training margin)",
       "bytes": 6838,
       "sha256": "cc5a87a1c3c3a10d670f5c6df06fe6bf6dcf5643d6f4b0bf9104aef66571c1e9",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/gates/plan6_pilots.json",
@@ -1822,7 +1822,7 @@
       "caption": "Plan 6's pilots: each training scene's checkpoint and its kept-rate under collection conditions from the thin slice, with the Wilson lower bound against the 0.25 bar, the crossing check and PER",
       "bytes": 14691,
       "sha256": "d41fa851eacd6efa804f303a79f312f826d1d5ada7976aa3f8641fce5cfa0a09",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/harness/conditions/seen.json",
@@ -1830,7 +1830,7 @@
       "caption": "The frozen evaluation episodes per condition (seen, test_seen, unseen_targets): each scene pinned by sha256, seeds from the harness's own range (autofly_ue5/evaluation/episodes.py)",
       "bytes": 15024,
       "sha256": "adaa9f7c582ce4e71164dc64aa2df81292e082285bca32194d363879cd37196a",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/harness/conditions/test_seen.json",
@@ -1838,7 +1838,7 @@
       "caption": "The frozen evaluation episodes per condition (seen, test_seen, unseen_targets): each scene pinned by sha256, seeds from the harness's own range (autofly_ue5/evaluation/episodes.py)",
       "bytes": 3904,
       "sha256": "9c188a81112dbd3c998e91bb075b6ebf340f0faf66c1db8e569bd83d76b6bae6",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/harness/conditions/unseen_targets.json",
@@ -1846,7 +1846,7 @@
       "caption": "The frozen evaluation episodes per condition (seen, test_seen, unseen_targets): each scene pinned by sha256, seeds from the harness's own range (autofly_ue5/evaluation/episodes.py)",
       "bytes": 15840,
       "sha256": "7b6b0fcb8e998c0fbecc1dcc8234d12887e41444463bacf725853c830d675f96",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/harness/seen_expert_s01.json",
@@ -1854,7 +1854,7 @@
       "caption": "The harness records, one per policy, condition and scene group: every episode's outcome, path, PER and the policy's description (scripts/eval_harness.py)",
       "bytes": 62891,
       "sha256": "dff00173e8f3f871470450da2f28deffe9f90179daf8da1e8120f99f2c211833",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/harness/seen_expert_s01.md",
@@ -1862,7 +1862,7 @@
       "caption": "Each harness record's summary table",
       "bytes": 1461,
       "sha256": "82794daff8f596ab8957fdd92cdeae111455c6d885cb6aaf17c638b300751797",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/harness/seen_expert_s01d_s07_s09.json",
@@ -1870,7 +1870,7 @@
       "caption": "The harness records, one per policy, condition and scene group: every episode's outcome, path, PER and the policy's description (scripts/eval_harness.py)",
       "bytes": 183552,
       "sha256": "fac18d6f1ddd504f325a1f7283d177653975ac8a769b73367b8fb819141a8cb7",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/harness/seen_expert_s01d_s07_s09.md",
@@ -1878,7 +1878,7 @@
       "caption": "Each harness record's summary table",
       "bytes": 1690,
       "sha256": "a67b7097de666db3a7e5cc4916c47c488aa95678f3520dac96ce201be6a6f028",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/harness/seen_expert_s02_to_s06.json",
@@ -1886,7 +1886,7 @@
       "caption": "The harness records, one per policy, condition and scene group: every episode's outcome, path, PER and the policy's description (scripts/eval_harness.py)",
       "bytes": 324414,
       "sha256": "68e8c32d03a5c6ae56c20a59b8615ef217ad3feb311277539eee6460c1c9e5c5",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/harness/seen_expert_s02_to_s06.md",
@@ -1894,7 +1894,7 @@
       "caption": "Each harness record's summary table",
       "bytes": 1874,
       "sha256": "92cd0e58d83441fba2c620b6da729c2939ba6e2bb35292fe43a0dea997742c5d",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/harness/seen_hover_s01_s05.json",
@@ -1902,7 +1902,7 @@
       "caption": "The harness records, one per policy, condition and scene group: every episode's outcome, path, PER and the policy's description (scripts/eval_harness.py)",
       "bytes": 56987,
       "sha256": "6505e82af0e14aead6531df9d5e82b190a8e575010ad2f65b3b8c9ca9569d0aa",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/harness/seen_hover_s01_s05.md",
@@ -1910,7 +1910,7 @@
       "caption": "Each harness record's summary table",
       "bytes": 1258,
       "sha256": "159b139c29a6403d9783165f98970d8be2d6377f66a25eb30b012d8646806b8f",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/harness/seen_scripted_privileged.json",
@@ -1918,7 +1918,7 @@
       "caption": "The harness records, one per policy, condition and scene group: every episode's outcome, path, PER and the policy's description (scripts/eval_harness.py)",
       "bytes": 595946,
       "sha256": "f3c77166f292263e16c560939ad3f97c05344c82586244dabc0c96820196afae",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/harness/seen_scripted_privileged.md",
@@ -1926,7 +1926,7 @@
       "caption": "Each harness record's summary table",
       "bytes": 2023,
       "sha256": "e14fd971da7eaa0f2abc79d4e571928bdd8f96ec20080a08a43b76dba6e1262e",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/harness/test_seen_expert_s02.json",
@@ -1934,7 +1934,7 @@
       "caption": "The harness records, one per policy, condition and scene group: every episode's outcome, path, PER and the policy's description (scripts/eval_harness.py)",
       "bytes": 133459,
       "sha256": "414d10cbcc94f922ebe1c054c5f2fa476f9af79a1ba1a7826670f128de4b5d73",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/harness/test_seen_expert_s02.md",
@@ -1942,7 +1942,7 @@
       "caption": "Each harness record's summary table",
       "bytes": 1581,
       "sha256": "1eddbdea488e626122cbae05e51c7317093269b7240f94bc666e94f27c85f6b3",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/harness/test_seen_scripted.json",
@@ -1950,7 +1950,7 @@
       "caption": "The harness records, one per policy, condition and scene group: every episode's outcome, path, PER and the policy's description (scripts/eval_harness.py)",
       "bytes": 137277,
       "sha256": "1a5a9c80290915cec5ae7308de6fb78c3e71704207fe406eceb2ecbf8ed9f0ea",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/harness/test_seen_scripted.md",
@@ -1958,7 +1958,7 @@
       "caption": "Each harness record's summary table",
       "bytes": 1434,
       "sha256": "ce2cef9850f5d1684323b8a34ffffbd69f27090bea3696f0c16e4d94531c0b1a",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/harness/unseen_expert_s01.json",
@@ -1966,7 +1966,7 @@
       "caption": "The harness records, one per policy, condition and scene group: every episode's outcome, path, PER and the policy's description (scripts/eval_harness.py)",
       "bytes": 66926,
       "sha256": "adcf455c9099c58acd7044b0d2cfcd598a8cfecc529b281c21b3332b5c265d35",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/harness/unseen_expert_s01.md",
@@ -1974,7 +1974,7 @@
       "caption": "Each harness record's summary table",
       "bytes": 1481,
       "sha256": "0ce03ca77d875227db27f19ffaebabc33536c6e54c1cc1c1f88885e8291c4e3c",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/harness/unseen_expert_s01d_s07_s09.json",
@@ -1982,7 +1982,7 @@
       "caption": "The harness records, one per policy, condition and scene group: every episode's outcome, path, PER and the policy's description (scripts/eval_harness.py)",
       "bytes": 195955,
       "sha256": "20c594ae856aa2f75e44317ae857c7ae48242dd85e6d2db6d439c7d1d303d759",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/harness/unseen_expert_s01d_s07_s09.md",
@@ -1990,7 +1990,7 @@
       "caption": "Each harness record's summary table",
       "bytes": 1710,
       "sha256": "73cee7b99e75e73d9e7f5d19a76a7ca0aa92deec46e7680c69af501eae4c9fc0",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/harness/unseen_expert_s02_to_s06.json",
@@ -1998,7 +1998,7 @@
       "caption": "The harness records, one per policy, condition and scene group: every episode's outcome, path, PER and the policy's description (scripts/eval_harness.py)",
       "bytes": 343418,
       "sha256": "40c9897193d9f99cc011418c6e5ab8de972d76f70f77c656ae87b7c013d8268f",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/harness/unseen_expert_s02_to_s06.md",
@@ -2006,7 +2006,7 @@
       "caption": "Each harness record's summary table",
       "bytes": 1894,
       "sha256": "d039fba840538c60361d04d57ed17ca68ee8064027e11da420355c3f7cb4c4d9",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/harness_results.json",
@@ -2014,7 +2014,7 @@
       "caption": "Every number harness_results.png draws, with plan 6's done check: the expert's success interval against its pilot's kept-rate interval, and the scripted baseline below it",
       "bytes": 90211,
       "sha256": "17446321738cef2c4d2332c2bf08e8339df4f72977a1cea68c71bc7ea0edb9cc",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/harness_results.md",
@@ -2022,7 +2022,7 @@
       "caption": "The evaluation as README tables",
       "bytes": 9134,
       "sha256": "b89cd95230e344509c034337545dfa9dd872fa3386380073f710c7eb34c761b9",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/m3_pilot/s01_pilot_path_efficiency.json",
@@ -2030,7 +2030,7 @@
       "caption": "The M3 pilot's path efficiency per episode",
       "bytes": 28331,
       "sha256": "c4ca646daa5153f229981070b0a6e72a89748a12335d498e711f11822da5c352",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/m3_pilot/s01_pilot_rebalance.json",
@@ -2038,7 +2038,7 @@
       "caption": "The M3 pilot's rebalance document (data/s01_pilot/rebalance.json)",
       "bytes": 26452,
       "sha256": "5f9b948441fdc58689457c95a9936f779034b0b3181051f87ada3aec403ad72e",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/rebalance/rebalance.json",
@@ -2046,7 +2046,7 @@
       "caption": "The final dataset's rebalance document: every episode's first confident detection, its phases and the weights (scripts/rebalance_dataset.py)",
       "bytes": 929632,
       "sha256": "ac95fec3024b0ff5834f6f1cbcb8d892eddcd6d0ab5f91e8776d52ba17399021",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/rebalance/rebalance_summary.json",
@@ -2054,7 +2054,7 @@
       "caption": "Every number the rebalancing figures draw",
       "bytes": 95597,
       "sha256": "45d3c584ff97cf9dbf2fbf39e4f47bd004a0a43a7e1bff5ee8f6565594823480",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/rebalance/rebalance_summary.md",
@@ -2062,7 +2062,7 @@
       "caption": "The rebalancing as README tables",
       "bytes": 4579,
       "sha256": "a49e09433b7e0203fbf760f762d12f26b9abfa045d61e463b32af2c482cd80bd",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/rebalance/sparse_live_check.json",
@@ -2070,7 +2070,7 @@
       "caption": "The sparse search run by the detector itself on three pilot episodes: the same first detections as the dense scores",
       "bytes": 2991,
       "sha256": "f958fe28c59623da5754b823bd7534eee7222665b08714180759cdfc43d93077",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/rebalance/sparse_study.json",
@@ -2078,7 +2078,7 @@
       "caption": "The sparse first-detection search replayed on the M3 pilot's dense scores, every stride and alert level: stride 8 and alert 0.5 chosen (scripts/sparse_search_study.py)",
       "bytes": 332909,
       "sha256": "eb00f7071b038a80db253467a864bac07688bd17ebd7cd5309bd1ed70a9123d7",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/rebalance/sparse_study.md",
@@ -2086,7 +2086,7 @@
       "caption": "The sparse search study's table",
       "bytes": 15941,
       "sha256": "d093160d9b5ec87cf63f2ec5105b8f9ae14387b41bfa52847073af90bab18425",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/scenes/s01_white_pillars.json",
@@ -2094,7 +2094,7 @@
       "caption": "The eleven scene files: obstacles and their placement, ground, exposure, split",
       "bytes": 539,
       "sha256": "a6b461b38cf65867d6f97a749a2a0a0b9d1aa1eec3f71b2b2028017c22ef7acc",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/scenes/s01d_moving_pillars.json",
@@ -2102,7 +2102,7 @@
       "caption": "The eleven scene files: obstacles and their placement, ground, exposure, split",
       "bytes": 1016,
       "sha256": "4f3e7b6981d0cd26bd8f2b5643bd1f6e62e61687c2f16342298fe94f898a22a1",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/scenes/s02_sparse_trees.json",
@@ -2110,7 +2110,7 @@
       "caption": "The eleven scene files: obstacles and their placement, ground, exposure, split",
       "bytes": 2523,
       "sha256": "29a5235e2c2956844a9852ba230e742e35201a1d6fd4c5f3d6ad4f974ed70fd2",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/scenes/s03_scattered_rocks.json",
@@ -2118,7 +2118,7 @@
       "caption": "The eleven scene files: obstacles and their placement, ground, exposure, split",
       "bytes": 2188,
       "sha256": "9a26486a0241f2863b2ae461fc97f350a216eb8f30fe2f3828dfdd23d93a9635",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/scenes/s04_stone_field.json",
@@ -2126,7 +2126,7 @@
       "caption": "The eleven scene files: obstacles and their placement, ground, exposure, split",
       "bytes": 2383,
       "sha256": "57c296d609612de00f9ff867469515340c3ea41074bb0e9071e6a2ef1aa7fd36",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/scenes/s05_standing_stones.json",
@@ -2134,7 +2134,7 @@
       "caption": "The eleven scene files: obstacles and their placement, ground, exposure, split",
       "bytes": 1857,
       "sha256": "c117c882125ebb009953a4fd3152eb19415ed6a13b2c610506e3b970d4678b35",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/scenes/s05r_standing_stones.json",
@@ -2142,7 +2142,7 @@
       "caption": "The eleven scene files: obstacles and their placement, ground, exposure, split",
       "bytes": 1862,
       "sha256": "1db976d773b28aad5d779d42baa64dd1e87d0b373266c623bf21fe0c78208992",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/scenes/s06_tree_clusters.json",
@@ -2150,7 +2150,7 @@
       "caption": "The eleven scene files: obstacles and their placement, ground, exposure, split",
       "bytes": 2896,
       "sha256": "dd93377e1b638f4d958918d0b02e058a2f5efc425a7caea8b792f19544dbef3e",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/scenes/s06r_tree_clusters.json",
@@ -2158,7 +2158,7 @@
       "caption": "The eleven scene files: obstacles and their placement, ground, exposure, split",
       "bytes": 2901,
       "sha256": "1e00e89315a1502159c1ec81c31685ca17abed9a5c529db83f8d399fb633c581",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/scenes/s07_stacked_boxes.json",
@@ -2166,7 +2166,7 @@
       "caption": "The eleven scene files: obstacles and their placement, ground, exposure, split",
       "bytes": 773,
       "sha256": "d6e6e7b86bd902811c3f88c6695720a5d2db4059135e59ea8b44f3614b6285a8",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/scenes/s09_coloured_poles.json",
@@ -2174,7 +2174,7 @@
       "caption": "The eleven scene files: obstacles and their placement, ground, exposure, split",
       "bytes": 790,
       "sha256": "6d9fb1923afed2c31da8dd13dcf7c7b47a9793418e68b84eae8f78c6e1b9e4b4",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/screening/s02__s01d_mean.json",
@@ -2182,7 +2182,7 @@
       "caption": "The screening's per-pair records: each candidate expert's stochastic episodes on each scene",
       "bytes": 35860,
       "sha256": "2505ef7522f55d8c031299ab5a5508c6b5c8d286b4261a60ac3c6db42e47fbaf",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/screening/s02__s02_pick.json",
@@ -2190,7 +2190,7 @@
       "caption": "The screening's per-pair records: each candidate expert's stochastic episodes on each scene",
       "bytes": 28516,
       "sha256": "cacc6f3d10f2fe5721b8de9bc24b91e6853ebe8e4ed426df3e1071e89ca8128c",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/screening/s03__s01_best.json",
@@ -2198,7 +2198,7 @@
       "caption": "The screening's per-pair records: each candidate expert's stochastic episodes on each scene",
       "bytes": 37556,
       "sha256": "1ed46c76afd7f1612822c7fca74c19cbb17f136b52b104d3fa6037cc56154f56",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/screening/s03__s01d_mean.json",
@@ -2206,7 +2206,7 @@
       "caption": "The screening's per-pair records: each candidate expert's stochastic episodes on each scene",
       "bytes": 35487,
       "sha256": "b7df81cf75a8de32ef8df8202685b3ce2b044eeed56d9ff4048d864d5f97cb98",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/screening/s03__s02_pick.json",
@@ -2214,7 +2214,7 @@
       "caption": "The screening's per-pair records: each candidate expert's stochastic episodes on each scene",
       "bytes": 30246,
       "sha256": "26948d8e447fd65f0409aae6ccf557ab9e8e67cb6800808480ca429abbdc111b",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/screening/s04__s01_best.json",
@@ -2222,7 +2222,7 @@
       "caption": "The screening's per-pair records: each candidate expert's stochastic episodes on each scene",
       "bytes": 37006,
       "sha256": "9161875cc28fcd57456b011943ad865d11b36dc475c90c29023d399b862aed81",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/screening/s04__s01d_mean.json",
@@ -2230,7 +2230,7 @@
       "caption": "The screening's per-pair records: each candidate expert's stochastic episodes on each scene",
       "bytes": 36040,
       "sha256": "d323b3f5ccd763788e9cd906d105d0136185367665c60970201e92c2294eaa57",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/screening/s04__s02_pick.json",
@@ -2238,7 +2238,7 @@
       "caption": "The screening's per-pair records: each candidate expert's stochastic episodes on each scene",
       "bytes": 30120,
       "sha256": "44acb6c879310696762f49b590389e890a94e436396daa904703a6d44c2c6632",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/screening/s05__s01_best.json",
@@ -2246,7 +2246,7 @@
       "caption": "The screening's per-pair records: each candidate expert's stochastic episodes on each scene",
       "bytes": 36807,
       "sha256": "94beba0a746370b55e039a6ecff8ceed7eaacacf57e858664d82ec0d2182e65b",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/screening/s05__s01d_mean.json",
@@ -2254,7 +2254,7 @@
       "caption": "The screening's per-pair records: each candidate expert's stochastic episodes on each scene",
       "bytes": 34683,
       "sha256": "3b5c381a49cf738923b81674cf48096e0a65735ea9297cb06ae4c80379f159e0",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/screening/s05__s02_pick.json",
@@ -2262,7 +2262,7 @@
       "caption": "The screening's per-pair records: each candidate expert's stochastic episodes on each scene",
       "bytes": 30563,
       "sha256": "778481baadeda75b43dc97a17e3caa257a7c3d2ab937af91d2f6026b5bedfc7c",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/screening/s06__s01d_mean.json",
@@ -2270,7 +2270,7 @@
       "caption": "The screening's per-pair records: each candidate expert's stochastic episodes on each scene",
       "bytes": 37190,
       "sha256": "095770d1c27612a70db3c2eaf23f626d8984589c3be091fa7b1d1c6df32da10b",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/screening/s06__s02_pick.json",
@@ -2278,7 +2278,7 @@
       "caption": "The screening's per-pair records: each candidate expert's stochastic episodes on each scene",
       "bytes": 33266,
       "sha256": "eb303257e5ebd525d1b33b3c4dd23d1f6dbaceb193af0ac3a82b2ef8f1d6302d",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/screening/s07__s01_best.json",
@@ -2286,7 +2286,7 @@
       "caption": "The screening's per-pair records: each candidate expert's stochastic episodes on each scene",
       "bytes": 32920,
       "sha256": "18b8b98ea99bad77d2e96042823d49016b15534b8c48abacbdedf5fd0fe230c2",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/screening/s07__s01d_mean.json",
@@ -2294,7 +2294,7 @@
       "caption": "The screening's per-pair records: each candidate expert's stochastic episodes on each scene",
       "bytes": 32825,
       "sha256": "23fcc1b68a55eebdd9928c8dd099a916bc872cdfcb9d70223c98fad32f3807e5",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/screening/s09__s01_best.json",
@@ -2302,7 +2302,7 @@
       "caption": "The screening's per-pair records: each candidate expert's stochastic episodes on each scene",
       "bytes": 32833,
       "sha256": "9be84694234fde595f9de67a7d9290c41d51607356c5c4654fcf283b61f9b610",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/screening/s09__s01d_mean.json",
@@ -2310,7 +2310,7 @@
       "caption": "The screening's per-pair records: each candidate expert's stochastic episodes on each scene",
       "bytes": 32834,
       "sha256": "6895ae12badd88d3f8f29d85f4fed6106041445c61149635d3abc0e484dd80bc",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/thin_slice/dataset_card.md",
@@ -2318,7 +2318,7 @@
       "caption": "The thin slice's merged export card: the export, statistics and card proven on real pool data before the campaign",
       "bytes": 22149,
       "sha256": "60f20d5c018dfa9004e774310daf5c1adbe3db2e86abdf1c46968a8093835739",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/thin_slice/tfds_check.json",
@@ -2326,7 +2326,7 @@
       "caption": "TFDS read the thin slice's merged export back (scripts/check_rlds_with_tfds.py)",
       "bytes": 458,
       "sha256": "80509011bf281b127c8166f46631ce535d765b82378cbae249022b59e0db8e06",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "records/thin_slice/vla_loader_check.json",
@@ -2334,7 +2334,7 @@
       "caption": "The OpenVLA-style loader iterated the thin slice's merged export (scripts/check_vla_loader.py)",
       "bytes": 4306,
       "sha256": "b935180a80aaf4f340d14e1f286d1a113d15a78a40e2fe9e856e6152d9235efe",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "videos/dataset/montage_9_scenes.json",
@@ -2342,7 +2342,7 @@
       "caption": "Which episodes the dataset videos show",
       "bytes": 2873,
       "sha256": "520a9717a0823300fe39b575a78178ba8b591e768c0197b51c0128df2a346043",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "videos/dataset/montage_9_scenes.mp4",
@@ -2350,7 +2350,7 @@
       "caption": "The final dataset played back: a montage of one kept episode per scene, and one episode per scene with its instruction, state and action (scripts/dataset_montage_video.py)",
       "bytes": 19430855,
       "sha256": "40dbbf0d4d4a66197ae62abeec417b27039a4a21574e349cd0bfb78cca39e6ad",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "videos/dataset/s01_s01_402000026.mp4",
@@ -2358,7 +2358,7 @@
       "caption": "The final dataset played back: a montage of one kept episode per scene, and one episode per scene with its instruction, state and action (scripts/dataset_montage_video.py)",
       "bytes": 3321990,
       "sha256": "be30a77f69911019036839fe79cd80b9d3a002ba2ad2f91dec0152cb13a7e7c2",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "videos/dataset/s01d_s01d_412000027.mp4",
@@ -2366,7 +2366,7 @@
       "caption": "The final dataset played back: a montage of one kept episode per scene, and one episode per scene with its instruction, state and action (scripts/dataset_montage_video.py)",
       "bytes": 3774123,
       "sha256": "2a0d95ed86eba97b196195025d64ea50420786c4ccb7e4c6096bd18bc1a65676",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "videos/dataset/s02_s02_422000031.mp4",
@@ -2374,7 +2374,7 @@
       "caption": "The final dataset played back: a montage of one kept episode per scene, and one episode per scene with its instruction, state and action (scripts/dataset_montage_video.py)",
       "bytes": 3967408,
       "sha256": "484d97d140128391163964a06f60ce33b67c300298bd9de3c4fc94794f61ac0c",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "videos/dataset/s03_s03_432000038.mp4",
@@ -2382,7 +2382,7 @@
       "caption": "The final dataset played back: a montage of one kept episode per scene, and one episode per scene with its instruction, state and action (scripts/dataset_montage_video.py)",
       "bytes": 3396911,
       "sha256": "7fdf3bc024ae2fa67c4dd2003e1dfe41aff92277b573f17ce42becfb8b75761e",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "videos/dataset/s04_s04_442000053.mp4",
@@ -2390,7 +2390,7 @@
       "caption": "The final dataset played back: a montage of one kept episode per scene, and one episode per scene with its instruction, state and action (scripts/dataset_montage_video.py)",
       "bytes": 4256433,
       "sha256": "5990f475041abe18ed52476eff09e29b2fd8b82fb1e72e0c31975547d69f11ce",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "videos/dataset/s05_s05_452000052.mp4",
@@ -2398,7 +2398,7 @@
       "caption": "The final dataset played back: a montage of one kept episode per scene, and one episode per scene with its instruction, state and action (scripts/dataset_montage_video.py)",
       "bytes": 2381529,
       "sha256": "cb3e171936b8be053c2a5cb511f2ae09032e648671b48e13b984b502d80fba3e",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "videos/dataset/s06_s06_462000062.mp4",
@@ -2406,7 +2406,7 @@
       "caption": "The final dataset played back: a montage of one kept episode per scene, and one episode per scene with its instruction, state and action (scripts/dataset_montage_video.py)",
       "bytes": 4255834,
       "sha256": "5a63351f220e938990a993363c2c2d2e49a383383cf70b0faaf057c2a43282f6",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "videos/dataset/s07_s07_472000025.mp4",
@@ -2414,7 +2414,7 @@
       "caption": "The final dataset played back: a montage of one kept episode per scene, and one episode per scene with its instruction, state and action (scripts/dataset_montage_video.py)",
       "bytes": 3530742,
       "sha256": "77a5474dfa6b700bb31e0e91b719ce74402bcca769f6f81056493bd3cb986652",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "videos/dataset/s09_s09_482000028.mp4",
@@ -2422,7 +2422,7 @@
       "caption": "The final dataset played back: a montage of one kept episode per scene, and one episode per scene with its instruction, state and action (scripts/dataset_montage_video.py)",
       "bytes": 3450771,
       "sha256": "85d771cef589663c0bc8c504721ae99ec98d05a2badde3882d6e4e3ff607e7fc",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "videos/experts/s01_m2_best_model_ep027_success.mp4",
@@ -2430,7 +2430,7 @@
       "caption": "The s01 expert (M2, best_model): a clean crossing of the pillar field and one of its four gate collisions; front RGB, the depth it flies on, the path from above (scripts/render_episodes.py)",
       "bytes": 2768398,
       "sha256": "0030510b39a74a368b30acea028c8929178c64f481ee2577fb310e07274089ea",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "videos/experts/s01_m2_best_model_ep175_collision.mp4",
@@ -2438,7 +2438,7 @@
       "caption": "The s01 expert (M2, best_model): a clean crossing of the pillar field and one of its four gate collisions; front RGB, the depth it flies on, the path from above (scripts/render_episodes.py)",
       "bytes": 809701,
       "sha256": "0da8b3e4eaab5dbef4266d0e3adb5814cd8a16905127820eb32d1bcba002ac7b",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "videos/experts/s01d_run1_best_model_ep037_collision.mp4",
@@ -2446,7 +2446,7 @@
       "caption": "The s01d experts among moving pillars: run 1 hit by a mover from out of view; the accepted run 6 mean weaving past movers, its remaining failure (a near miss past a yielding mover) and an exit",
       "bytes": 2652525,
       "sha256": "1ea04b613c33bdfd4f022820087f6783135fe46aed04c1ad8f3806a66deff3de",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "videos/experts/s01d_run6_mean_ep000_success.mp4",
@@ -2454,7 +2454,7 @@
       "caption": "The s01d experts among moving pillars: run 1 hit by a mover from out of view; the accepted run 6 mean weaving past movers, its remaining failure (a near miss past a yielding mover) and an exit",
       "bytes": 4954793,
       "sha256": "06604a346d3d9f9e92ba2503a5c35809e23cdbdcddf39401f1a6efd2f0037f41",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "videos/experts/s01d_run6_mean_ep012_out_of_bounds.mp4",
@@ -2462,7 +2462,7 @@
       "caption": "The s01d experts among moving pillars: run 1 hit by a mover from out of view; the accepted run 6 mean weaving past movers, its remaining failure (a near miss past a yielding mover) and an exit",
       "bytes": 2657369,
       "sha256": "ea7074f076bddcd2e61021e7f04c212a2cc7f937024d8810fe18543595de8fed",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "videos/experts/s01d_run6_mean_ep091_mover_collision.mp4",
@@ -2470,7 +2470,7 @@
       "caption": "The s01d experts among moving pillars: run 1 hit by a mover from out of view; the accepted run 6 mean weaving past movers, its remaining failure (a near miss past a yielding mover) and an exit",
       "bytes": 4246018,
       "sha256": "b41243ae7bedeba0b3ec4ed4eef7c78520de217074719485568363d13efcc80e",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "videos/experts/s02_r1_pick_outline_ep001_success.mp4",
@@ -2478,7 +2478,7 @@
       "caption": "The s02 tree expert replaying three of its outline-rule gate episodes (two successes, one ending at a tree's outline): camera RGB, depth and a top-down map",
       "bytes": 4337505,
       "sha256": "b00cfd59c3848ab0c3b5af202492c2ce928274208a2af0a4ece44fb519c9dc17",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "videos/experts/s02_r1_pick_outline_ep002_success.mp4",
@@ -2486,7 +2486,7 @@
       "caption": "The s02 tree expert replaying three of its outline-rule gate episodes (two successes, one ending at a tree's outline): camera RGB, depth and a top-down map",
       "bytes": 4625687,
       "sha256": "aa861d4a7c64ccceeb721b6a54e5f389be0fcde45ef0c54a75faf32415d8f659",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "videos/experts/s02_r1_pick_outline_ep007_collision.mp4",
@@ -2494,7 +2494,7 @@
       "caption": "The s02 tree expert replaying three of its outline-rule gate episodes (two successes, one ending at a tree's outline): camera RGB, depth and a top-down map",
       "bytes": 2089132,
       "sha256": "bd39eaf02c5d07760d42c08b478f291d9bf8a998c60cee63d5969d2b1c599094",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "videos/m3_pilot/dataset_s01_400000000.mp4",
@@ -2502,7 +2502,7 @@
       "caption": "Three M3 pilot episodes played back from the dataset: instruction, state, action, Grounding DINO's confidence and the phase the rebalancing assigns (scripts/dataset_episode_video.py)",
       "bytes": 3107227,
       "sha256": "5f72a1d35e14c63a9199f1eb84897c74f8159eee35bd72a236bfe0f3b7d06918",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "videos/m3_pilot/dataset_s01_400000009.mp4",
@@ -2510,7 +2510,7 @@
       "caption": "Three M3 pilot episodes played back from the dataset: instruction, state, action, Grounding DINO's confidence and the phase the rebalancing assigns (scripts/dataset_episode_video.py)",
       "bytes": 2964019,
       "sha256": "18eda1eb53152773366350bb4419ddd981bf209a4c2b392b3c7cc4f23b40040a",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "videos/m3_pilot/dataset_s01_400000026.mp4",
@@ -2518,7 +2518,7 @@
       "caption": "Three M3 pilot episodes played back from the dataset: instruction, state, action, Grounding DINO's confidence and the phase the rebalancing assigns (scripts/dataset_episode_video.py)",
       "bytes": 3499311,
       "sha256": "d855d9668d7258e68d07b506372a8a2df66f7ece2c94c3d39b07d2f654287ba5",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "videos/pilots/s03_s02_pick_ep000_out_of_bounds.mp4",
@@ -2526,7 +2526,7 @@
       "caption": "Pilot replays per scene (s03-s07, s09), named by scene, pilot, episode and outcome; stochastic replays, so an outcome can differ from the screening's",
       "bytes": 3022493,
       "sha256": "6d9c7f5fc9775a272531096e8e47373a0e30dc9315a79ff5674f7a4f8881f136",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "videos/pilots/s03_s02_pick_ep001_success.mp4",
@@ -2534,7 +2534,7 @@
       "caption": "Pilot replays per scene (s03-s07, s09), named by scene, pilot, episode and outcome; stochastic replays, so an outcome can differ from the screening's",
       "bytes": 4001368,
       "sha256": "aff69e8735b2501211660948cf4e970f08f344ab3418d37787a11efa1016f4bc",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "videos/pilots/s03_s02_pick_ep007_collision.mp4",
@@ -2542,7 +2542,7 @@
       "caption": "Pilot replays per scene (s03-s07, s09), named by scene, pilot, episode and outcome; stochastic replays, so an outcome can differ from the screening's",
       "bytes": 2799435,
       "sha256": "6f1a479caefc154e4928bbaec1ab495f2f1096cba4e7d255177c17d29e5882b2",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "videos/pilots/s04_s02_pick_ep000_success.mp4",
@@ -2550,7 +2550,7 @@
       "caption": "Pilot replays per scene (s03-s07, s09), named by scene, pilot, episode and outcome; stochastic replays, so an outcome can differ from the screening's",
       "bytes": 3672135,
       "sha256": "ae3e15574c9bbb547cd1b03505fe15dae2cb3e386b2701f25e361fa2c78ebeb9",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "videos/pilots/s04_s02_pick_ep002_success.mp4",
@@ -2558,7 +2558,7 @@
       "caption": "Pilot replays per scene (s03-s07, s09), named by scene, pilot, episode and outcome; stochastic replays, so an outcome can differ from the screening's",
       "bytes": 4149025,
       "sha256": "93afa8b6924c72c6d2bbd4d46440c3e44a4da3593758987436970c16da648bb8",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "videos/pilots/s04_s02_pick_ep004_success.mp4",
@@ -2566,7 +2566,7 @@
       "caption": "Pilot replays per scene (s03-s07, s09), named by scene, pilot, episode and outcome; stochastic replays, so an outcome can differ from the screening's",
       "bytes": 4030281,
       "sha256": "98843a2018c9f209f9952ec8b1289e89d901032bac21a9c6cceb864be830b647",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "videos/pilots/s05_s02_pick_ep000_success.mp4",
@@ -2574,7 +2574,7 @@
       "caption": "Pilot replays per scene (s03-s07, s09), named by scene, pilot, episode and outcome; stochastic replays, so an outcome can differ from the screening's",
       "bytes": 2798601,
       "sha256": "143adfb2f31590ab5a1840d8784c8d12dda87eddeaa3729cb672fb2bcbf351e9",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "videos/pilots/s05_s02_pick_ep001_success.mp4",
@@ -2582,7 +2582,7 @@
       "caption": "Pilot replays per scene (s03-s07, s09), named by scene, pilot, episode and outcome; stochastic replays, so an outcome can differ from the screening's",
       "bytes": 3188385,
       "sha256": "446a9488699e5b5e8b304f69512cc44bd6cc60d621b664ee9197d98fd1fe9c12",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "videos/pilots/s05_s02_pick_ep004_success.mp4",
@@ -2590,7 +2590,7 @@
       "caption": "Pilot replays per scene (s03-s07, s09), named by scene, pilot, episode and outcome; stochastic replays, so an outcome can differ from the screening's",
       "bytes": 2763339,
       "sha256": "b4758c03c400676822944cee478bd16d2f8d0b84d322bec722d49276c6e1df23",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "videos/pilots/s06_s02_pick_ep000_collision.mp4",
@@ -2598,7 +2598,7 @@
       "caption": "Pilot replays per scene (s03-s07, s09), named by scene, pilot, episode and outcome; stochastic replays, so an outcome can differ from the screening's",
       "bytes": 4512027,
       "sha256": "b5aca6db9e9212e30e6820ba2cf270a8047ab9c71c9b95bd799b2c46decd96e1",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "videos/pilots/s06_s02_pick_ep001_collision.mp4",
@@ -2606,7 +2606,7 @@
       "caption": "Pilot replays per scene (s03-s07, s09), named by scene, pilot, episode and outcome; stochastic replays, so an outcome can differ from the screening's",
       "bytes": 2386344,
       "sha256": "d78b7bb4355035eb9af6289675dd1600804ab0f65cbfa83e008e43001f67b9a6",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "videos/pilots/s06_s02_pick_ep007_success.mp4",
@@ -2614,7 +2614,7 @@
       "caption": "Pilot replays per scene (s03-s07, s09), named by scene, pilot, episode and outcome; stochastic replays, so an outcome can differ from the screening's",
       "bytes": 4663019,
       "sha256": "4e3655b9a1ab91d9561c406b989b9a583e5040453ec28a25ee950c7a5af8096a",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "videos/pilots/s07_s01d_mean_ep000_success.mp4",
@@ -2622,7 +2622,7 @@
       "caption": "Pilot replays per scene (s03-s07, s09), named by scene, pilot, episode and outcome; stochastic replays, so an outcome can differ from the screening's",
       "bytes": 2980790,
       "sha256": "12d120f5140240f0c39fc851202435b8d0c04b42375ca2214536ab26a3c043d7",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "videos/pilots/s07_s01d_mean_ep001_success.mp4",
@@ -2630,7 +2630,7 @@
       "caption": "Pilot replays per scene (s03-s07, s09), named by scene, pilot, episode and outcome; stochastic replays, so an outcome can differ from the screening's",
       "bytes": 2650915,
       "sha256": "751e812891e1d2fdaab872496e68cc6f4d85234c9aade76b07a1eecb156a04d8",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "videos/pilots/s09_s01d_mean_ep000_success.mp4",
@@ -2638,7 +2638,7 @@
       "caption": "Pilot replays per scene (s03-s07, s09), named by scene, pilot, episode and outcome; stochastic replays, so an outcome can differ from the screening's",
       "bytes": 3947704,
       "sha256": "da77d9a819d0b80602ab612d64ab72d57bb0e6616957adb8c5a81376e6a1c156",
-      "status": "copied"
+      "status": "unchanged"
     },
     {
       "dest": "videos/pilots/s09_s01d_mean_ep001_success.mp4",
@@ -2646,7 +2646,7 @@
       "caption": "Pilot replays per scene (s03-s07, s09), named by scene, pilot, episode and outcome; stochastic replays, so an outcome can differ from the screening's",
       "bytes": 4744557,
       "sha256": "bbfbb158ab225872d9d6bd5cf9d6e257f5c03768f008e0c6f50b72bc6e7c00fd",
-      "status": "copied"
+      "status": "unchanged"
     }
   ],
   "skipped": [],

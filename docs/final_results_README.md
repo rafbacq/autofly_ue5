@@ -107,7 +107,7 @@ Kept flights cross the obstacle field (84-94 % of them enter its core in every s
 ![actions and states](figures/dataset/actions_states.png)
 
 Episodes are 171-195 records long (median by scene), 66-71 m flown. The experts fly close to the shortest path (path
-efficiency 0.91-0.99 by scene): the paper's learned models score 0.73-0.78, so the data shows near-optimal flight for a
+efficiency 0.90-0.99 by scene): the paper's learned models score 0.73-0.78, so the data shows near-optimal flight for a
 VLA to imitate. What the drone sees first, per scene: `figures/dataset/first_frames_<scene>.png`.
 
 ## 4. VLA readiness
@@ -167,8 +167,8 @@ generalises only moderately to new arrangements.
 
 As in AutoFly's appendix, every record before the first frame where Grounding DINO (tiny) gives the instruction's
 target more than 0.7 confidence is *obstacle avoidance*, every record from it on *target seeking*, and each phase gets a
-resampling weight towards an even mix. A sparse search found each episode's first detection with about 59 detector
-calls instead of about 180, and kept every transition of the dense run on the pilot dataset
+resampling weight towards an even mix. A sparse search found each episode's first detection with 44.5 detector
+calls on average instead of scoring all of its ~188 records, after keeping every transition of the dense run on the pilot dataset
 (`docs/decisions/2026-10-08-sparse-first-detection.md`).
 
 ![rebalancing](figures/rebalance_phases.png)
@@ -195,11 +195,11 @@ calls instead of about 180, and kept every transition of the dense run on the pi
   uniformly over [-1, 1] m/s while the altitude holds near 2 m: SAC keeps its exploration noise in the vertical
   channel (`figures/dataset/actions_states.png`). A VLA imitating it should expect that channel to be mostly noise
   around a steady altitude.
-- **Stand-ins.** 682 episodes target a Kenney low-poly model (cars, trucks, people, animals); `target_stand_in` in the
+- **Stand-ins.** 682 episodes target a Kenney low-poly model (vehicles and people); `target_stand_in` in the
   metadata filters them.
 - **Language.** Two instruction templates, kept verbatim from AutoFly (including its "avioding"), and one obstacle phrase
   per scene, so every instruction is a function of scene and target.
-- **First frames.** A target 60-80 m away covers 1-4 pixels. Each simulator session first shows every target to the
+- **First frames.** A target 60-80 m away spans a few pixels (1-3 for a chair, about 10 for a truck). Each simulator session first shows every target to the
   camera up close until the depth sees it, and every episode waits 5 frames after its spawns. An automatic check then
   found the target in 801 judgeable first frames and missed it in 52 (6 %): 41 of those rest on 1-2 pixels, most of the
   rest are open-frame objects (tables, chairs) whose projected centre shows the background.

@@ -152,3 +152,18 @@ The review's points were checked against the code and adopted, except where note
 | VLA-ready | The OpenVLA-style loader iterates the merged dataset; `dataset_statistics.json` matches the schema; the expert flown through the harness lands within the CI of its kept-rate and the scripted baseline below it |
 | Rebalancing | The sparse search matches the dense scores on the s01 pilot; `rebalance.json` for the merged dataset |
 | final_results | Every link in its README resolves |
+
+## Completion (2026-10-09)
+
+| Item | Check | Result |
+|---|---|---|
+| Scenes | The gate records pass: s01-s07, s09, s01d's mover probe, s05r | Pass, and s06r too (`m4_s06r_gate.json`, once the 6 m probe had fallbacks) |
+| Targets | Every target spawned live; first frames show the target | The probe passed all 60 after the hold (`m4_targets_probe_run2.json`); every collection session warmed every pair until the depth camera saw it (all 9 scenes, every pair drawn). The in-flight first-frame check flags 52 of 853 judgeable frames (6 %): 41 rest on 1-2 pixels, most of the rest are open-frame objects (tables, chairs) whose projected centre shows the background. Not a strict pass of "every drawn target", reported as such |
+| Pilots | `plan6_pilots.json`: Wilson lower bound >= 0.25 with the crossing check | Pass on all 9 (lowest s06, 0.31); 84-94 % of kept flights cross the field's core |
+| Dataset | Validator on every store; >= 200 per training scene; every seen target; TFDS reads it back | Pass: 36 stores, 1,800 episodes (200 per scene), 50 seen targets, TFDS matched all 1,800 |
+| VLA-ready | OpenVLA-style loader; statistics schema; harness expert within its kept-rate's CI, scripted below | Pass on all three (`data/autofly_ue5_proto/vla_loader_check.json`, `docs/gates/plan6_harness/`) |
+| Rebalancing | Sparse search matches dense on the s01 pilot; `rebalance.json` for the merged dataset | Pass: the sparse search (stride 8, alert 0.5) kept all 100 of the pilot's dense transitions; the union document `runs/rebalance/final/rebalance.json` covers all 1,800 episodes: P0 0.691 / 0.309, weights 0.723 / 1.621, 147 episodes never detected, every target detected somewhere. 24 % of first detections fall off target (pilot: 1 %) |
+| final_results | Every link in its README resolves | Pass: 330 files built from `docs/final_results_manifest.json`; `scripts/build_final_results.py check` resolves all 24 README links |
+
+Deviations from the plan as written: the thin slice is not part of the dataset (the reset's warm-up came after it); the
+final campaign collected 200 fresh episodes per scene in four 50-episode stores; the 400-per-scene stretch was not run.
