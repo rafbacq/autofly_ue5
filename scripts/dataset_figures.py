@@ -645,7 +645,7 @@ def draw_trajectories(path: Path, scene: str, resolved: ResolvedScene | None, sh
         ax.legend(handles=handles, loc="upper left", bbox_to_anchor=(0.0, -0.6 / 7.0), ncol=2, fontsize=8.5)
         title = f"{scene_label(scene)}: {_plural(len(lines), 'kept trajectory', 'kept trajectories')}"
         if endings:
-            title += f", {_plural(len(endings), 'end')} of rejected flights"
+            title += f", and where {_plural(len(endings), 'rejected flight')} ended"
         ax.set_title(f"{title}\n{_plural(len(stores), 'store')}: {_wrap(', '.join(stores), 80)}", fontsize=10.5)
         fig.subplots_adjust(left=0.1, right=0.98, top=1 - 0.75 / height, bottom=legend_in / height)
         fig.savefig(path, dpi=130)
