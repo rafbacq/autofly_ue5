@@ -1,0 +1,1039 @@
+{
+  "description": "Expert exit gate on scene s07 (spec Sec8/Sec9.5; Task 9 of plan 2, M2d for s01d).",
+  "scene": "s07",
+  "obs_config": {
+    "depth_frames": 1,
+    "depth_dtype": "float32"
+  },
+  "reward_version": "3-scene-reward-overrides",
+  "reward_config": {
+    "k_p": 1.0,
+    "k_h": 0.1,
+    "k_t": 0.01,
+    "r_success": 10.0,
+    "r_collision": 10.0,
+    "r_bounds": 5.0,
+    "success_radius_m": 5.0,
+    "success_yaw_deg": 15.0,
+    "align_radius_m": 10.0,
+    "step_limit": 300,
+    "altitude_band_m": [
+      1.0,
+      3.0
+    ]
+  },
+  "contact_rules": null,
+  "scene_config": {
+    "file": "scene_autofly_s07_fast.jsonc",
+    "sha256": "ff609452edf4de6a505405318df18a743579bdf59a43a2186c665d7b552fb51e"
+  },
+  "eval_seed_base": 300107000,
+  "episodes_requested_per_condition": 40,
+  "conditions_requested": [
+    "stochastic"
+  ],
+  "priority_order": [
+    "s01_best:stochastic"
+  ],
+  "checkpoints": {
+    "s01_best": {
+      "path": "runs/expert/s01_r2/best/best_model.zip",
+      "sha256": "8c2c7500041907a98d5d696b9007e30578731ff5136f63c384270c0f4fcbf8dc",
+      "deterministic": {
+        "status": "not_run",
+        "error": null
+      },
+      "stochastic": {
+        "status": "ok",
+        "error": null,
+        "episodes_requested": 40,
+        "n_episodes": 40,
+        "success_rate": 0.825,
+        "collision_rate": 0.1,
+        "timeout_rate": 0.0,
+        "out_of_bounds_rate": 0.075,
+        "mean_steps": 169.375,
+        "mean_final_distance_m": 11.240227056524462,
+        "mean_return": 65.56106959616412,
+        "episodes_retried": 0,
+        "fault_counts": {
+          "CameraPoseError": 0,
+          "StepTimingError": 0,
+          "StaleStateError": 0,
+          "CommandTimeoutError": 0,
+          "Timeout": 0,
+          "ConnectionReset": 0,
+          "KinematicsJumpError": 0,
+          "SimRequestTimeoutError": 0,
+          "ObjectMoveRefusedError": 0,
+          "FrameTimeoutError": 0,
+          "FrameTimestampError": 0,
+          "ResetPoseError": 0,
+          "StartCollisionError": 0,
+          "SetPoseError": 0,
+          "EpisodeSetupError": 0,
+          "SimExitedError": 0,
+          "SimReadyTimeout": 0,
+          "SimConnectionLostError": 0
+        },
+        "collision_sources": {
+          "sim": 4
+        },
+        "per_episode": [
+          {
+            "seed": 300107000,
+            "outcome": "success",
+            "steps": 171,
+            "final_distance_m": 4.964317828389292,
+            "is_success": true,
+            "return": 69.39386699912245,
+            "final_pose": [
+              -27.60759162902832,
+              -12.079604148864746,
+              -2.291229248046875,
+              2.9784948538872276
+            ],
+            "final_bearing_deg": -11.822044640019424,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300107001,
+            "outcome": "success",
+            "steps": 162,
+            "final_distance_m": 4.782881207955272,
+            "is_success": true,
+            "return": 69.07025007109384,
+            "final_pose": [
+              28.69384765625,
+              -26.16082000732422,
+              -1.9157341718673706,
+              0.2902039301589584
+            ],
+            "final_bearing_deg": -11.144639841134826,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300107002,
+            "outcome": "success",
+            "steps": 215,
+            "final_distance_m": 4.785681910906559,
+            "is_success": true,
+            "return": 88.70063280075429,
+            "final_pose": [
+              -29.510395050048828,
+              -27.42505645751953,
+              -1.8427162170410156,
+              -2.554299005804938
+            ],
+            "final_bearing_deg": 14.717640941177331,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300107003,
+            "outcome": "success",
+            "steps": 172,
+            "final_distance_m": 4.957840444124256,
+            "is_success": true,
+            "return": 69.03712803825907,
+            "final_pose": [
+              28.328041076660156,
+              -27.509885787963867,
+              -2.0606088638305664,
+              -0.17800634111115166
+            ],
+            "final_bearing_deg": -0.08692210964060174,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300107004,
+            "outcome": "success",
+            "steps": 191,
+            "final_distance_m": 4.911654425344755,
+            "is_success": true,
+            "return": 71.51808213155994,
+            "final_pose": [
+              2.8685803413391113,
+              28.063730239868164,
+              -1.7872905731201172,
+              1.93242685185552
+            ],
+            "final_bearing_deg": 0.04621958523586041,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300107005,
+            "outcome": "collision",
+            "steps": 42,
+            "final_distance_m": 64.82045556907173,
+            "is_success": false,
+            "return": -0.02588824538720047,
+            "final_pose": [
+              -1.8443909883499146,
+              -22.234209060668945,
+              -1.87417471408844,
+              -0.10393895068788007
+            ],
+            "final_bearing_deg": 64.09554221151738,
+            "oob_kind": null,
+            "collision_source": "sim",
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300107006,
+            "outcome": "success",
+            "steps": 163,
+            "final_distance_m": 4.793228287055389,
+            "is_success": true,
+            "return": 68.49559036867892,
+            "final_pose": [
+              -10.30530071258545,
+              27.449399948120117,
+              -2.507861375808716,
+              1.5467094919159459
+            ],
+            "final_bearing_deg": -9.858932018022038,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300107007,
+            "outcome": "success",
+            "steps": 183,
+            "final_distance_m": 4.6365544128220915,
+            "is_success": true,
+            "return": 75.50765495384385,
+            "final_pose": [
+              -30.44761848449707,
+              29.492313385009766,
+              -1.9810577630996704,
+              1.9870381225511655
+            ],
+            "final_bearing_deg": -3.7838552168323263,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300107008,
+            "outcome": "success",
+            "steps": 185,
+            "final_distance_m": 4.781437978781645,
+            "is_success": true,
+            "return": 72.09413744049552,
+            "final_pose": [
+              14.475679397583008,
+              -29.862655639648438,
+              -1.8237314224243164,
+              -1.5023642679363802
+            ],
+            "final_bearing_deg": -0.7594745095659884,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300107009,
+            "outcome": "collision",
+            "steps": 124,
+            "final_distance_m": 35.80666458177963,
+            "is_success": false,
+            "return": 29.44194106501979,
+            "final_pose": [
+              5.161574363708496,
+              -6.795349597930908,
+              -2.348289728164673,
+              1.4116964126816576
+            ],
+            "final_bearing_deg": -45.80453570393659,
+            "oob_kind": null,
+            "collision_source": "sim",
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300107010,
+            "outcome": "success",
+            "steps": 189,
+            "final_distance_m": 4.670045150200612,
+            "is_success": true,
+            "return": 74.40381192093105,
+            "final_pose": [
+              -30.870275497436523,
+              28.21721649169922,
+              -1.762527346611023,
+              1.7935248277609461
+            ],
+            "final_bearing_deg": 8.2954931576341,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300107011,
+            "outcome": "success",
+            "steps": 203,
+            "final_distance_m": 4.62915487505921,
+            "is_success": true,
+            "return": 83.94727703633124,
+            "final_pose": [
+              30.031957626342773,
+              -30.025449752807617,
+              -2.107820510864258,
+              -0.43569506607501657
+            ],
+            "final_bearing_deg": -4.8993707175877175,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300107012,
+            "outcome": "success",
+            "steps": 176,
+            "final_distance_m": 4.883915764238682,
+            "is_success": true,
+            "return": 71.04057810542369,
+            "final_pose": [
+              5.007976055145264,
+              28.02161407470703,
+              -1.9799317121505737,
+              1.3485623875361443
+            ],
+            "final_bearing_deg": 1.8460767591627472,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300107013,
+            "outcome": "success",
+            "steps": 178,
+            "final_distance_m": 4.70429518917448,
+            "is_success": true,
+            "return": 72.23999301721494,
+            "final_pose": [
+              -26.159868240356445,
+              28.100021362304688,
+              -1.9167933464050293,
+              2.2026957334449238
+            ],
+            "final_bearing_deg": -7.705136212214682,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300107014,
+            "outcome": "success",
+            "steps": 195,
+            "final_distance_m": 4.7234826445794065,
+            "is_success": true,
+            "return": 78.88548712832878,
+            "final_pose": [
+              -11.767988204956055,
+              29.715492248535156,
+              -2.4919517040252686,
+              2.044779636545993
+            ],
+            "final_bearing_deg": -12.53519643317966,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300107015,
+            "outcome": "success",
+            "steps": 212,
+            "final_distance_m": 4.648002544875979,
+            "is_success": true,
+            "return": 87.06038872907314,
+            "final_pose": [
+              29.40032196044922,
+              31.424575805664062,
+              -1.471089482307434,
+              0.7468454892547147
+            ],
+            "final_bearing_deg": 5.244563793993016,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300107016,
+            "outcome": "out_of_bounds",
+            "steps": 163,
+            "final_distance_m": 18.074014013328938,
+            "is_success": false,
+            "return": 49.01759815712533,
+            "final_pose": [
+              -6.497888088226318,
+              -16.686939239501953,
+              -3.05238938331604,
+              -2.076038150296499
+            ],
+            "final_bearing_deg": 0.4622818514320287,
+            "oob_kind": "altitude_high",
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300107017,
+            "outcome": "success",
+            "steps": 184,
+            "final_distance_m": 4.901853174982346,
+            "is_success": true,
+            "return": 71.27178080458505,
+            "final_pose": [
+              27.719057083129883,
+              8.972530364990234,
+              -2.518059253692627,
+              0.0939582094147622
+            ],
+            "final_bearing_deg": -6.729631836777556,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300107018,
+            "outcome": "success",
+            "steps": 222,
+            "final_distance_m": 4.967925786945656,
+            "is_success": true,
+            "return": 82.06259762333833,
+            "final_pose": [
+              26.202951431274414,
+              30.689250946044922,
+              -1.9972273111343384,
+              0.9591274761356839
+            ],
+            "final_bearing_deg": 4.981340055860948,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300107019,
+            "outcome": "out_of_bounds",
+            "steps": 142,
+            "final_distance_m": 28.405024490177926,
+            "is_success": false,
+            "return": 42.41027351641738,
+            "final_pose": [
+              9.798089027404785,
+              7.445943355560303,
+              -3.139230489730835,
+              1.0691601082909121
+            ],
+            "final_bearing_deg": 2.289378169637193,
+            "oob_kind": "altitude_high",
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300107020,
+            "outcome": "success",
+            "steps": 163,
+            "final_distance_m": 4.719219553003274,
+            "is_success": true,
+            "return": 69.09399143774243,
+            "final_pose": [
+              -24.118637084960938,
+              28.918228149414062,
+              -1.862725019454956,
+              1.7948362027932538
+            ],
+            "final_bearing_deg": -0.8826912449615132,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300107021,
+            "outcome": "success",
+            "steps": 167,
+            "final_distance_m": 4.659226256869964,
+            "is_success": true,
+            "return": 71.99334307357803,
+            "final_pose": [
+              30.302799224853516,
+              -28.176794052124023,
+              -2.0699539184570312,
+              -0.00547332631417055
+            ],
+            "final_bearing_deg": -10.705308659622785,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300107022,
+            "outcome": "success",
+            "steps": 173,
+            "final_distance_m": 4.866553985579,
+            "is_success": true,
+            "return": 69.09025825812948,
+            "final_pose": [
+              -21.185680389404297,
+              27.549623489379883,
+              -1.9891961812973022,
+              1.9861986653475048
+            ],
+            "final_bearing_deg": -5.9595161843702975,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300107023,
+            "outcome": "success",
+            "steps": 176,
+            "final_distance_m": 4.501088150687262,
+            "is_success": true,
+            "return": 70.99337768634418,
+            "final_pose": [
+              27.646080017089844,
+              -29.810985565185547,
+              -2.4112608432769775,
+              -1.3815281055465591
+            ],
+            "final_bearing_deg": -14.003479343265878,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300107024,
+            "outcome": "collision",
+            "steps": 16,
+            "final_distance_m": 77.58926609981573,
+            "is_success": false,
+            "return": -7.4379072968174595,
+            "final_pose": [
+              26.547468185424805,
+              -25.66900062561035,
+              -2.6972806453704834,
+              2.956864571775261
+            ],
+            "final_bearing_deg": -28.150752154316468,
+            "oob_kind": null,
+            "collision_source": "sim",
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300107025,
+            "outcome": "success",
+            "steps": 173,
+            "final_distance_m": 4.775899800261948,
+            "is_success": true,
+            "return": 71.1127101748827,
+            "final_pose": [
+              30.665529251098633,
+              28.37175750732422,
+              -2.068777322769165,
+              1.5558035779954993
+            ],
+            "final_bearing_deg": -12.61651208742742,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300107026,
+            "outcome": "success",
+            "steps": 177,
+            "final_distance_m": 4.881744484890537,
+            "is_success": true,
+            "return": 70.30405443188168,
+            "final_pose": [
+              -16.424209594726562,
+              28.900915145874023,
+              -1.9535239934921265,
+              1.5756187523040754
+            ],
+            "final_bearing_deg": -11.107598741736892,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300107027,
+            "outcome": "out_of_bounds",
+            "steps": 130,
+            "final_distance_m": 23.830467589163117,
+            "is_success": false,
+            "return": 39.79338582895711,
+            "final_pose": [
+              -6.428651809692383,
+              11.817112922668457,
+              -3.0283217430114746,
+              1.9822995240347474
+            ],
+            "final_bearing_deg": -48.12147762679796,
+            "oob_kind": "altitude_high",
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300107028,
+            "outcome": "success",
+            "steps": 190,
+            "final_distance_m": 4.956609865112896,
+            "is_success": true,
+            "return": 77.55864395718116,
+            "final_pose": [
+              3.4546241760253906,
+              30.629968643188477,
+              -1.6782478094100952,
+              0.9718154745278157
+            ],
+            "final_bearing_deg": -1.3520162206607258,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300107029,
+            "outcome": "success",
+            "steps": 168,
+            "final_distance_m": 4.770956583956456,
+            "is_success": true,
+            "return": 69.55219001875868,
+            "final_pose": [
+              28.012176513671875,
+              -13.950840950012207,
+              -2.0075337886810303,
+              0.17204286402236263
+            ],
+            "final_bearing_deg": -8.396086607400813,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300107030,
+            "outcome": "collision",
+            "steps": 76,
+            "final_distance_m": 43.14522832963676,
+            "is_success": false,
+            "return": 12.47845523024458,
+            "final_pose": [
+              0.6762807965278625,
+              6.916771411895752,
+              -2.1125333309173584,
+              -0.8384668749369288
+            ],
+            "final_bearing_deg": -26.544391218968837,
+            "oob_kind": null,
+            "collision_source": "sim",
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300107031,
+            "outcome": "success",
+            "steps": 176,
+            "final_distance_m": 4.832520754257248,
+            "is_success": true,
+            "return": 69.40984099719135,
+            "final_pose": [
+              33.5512580871582,
+              -28.990041732788086,
+              -2.0564181804656982,
+              -1.1978837123037218
+            ],
+            "final_bearing_deg": -5.1890760405305905,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300107032,
+            "outcome": "success",
+            "steps": 188,
+            "final_distance_m": 4.77218008152932,
+            "is_success": true,
+            "return": 69.96051415067082,
+            "final_pose": [
+              28.98377227783203,
+              -3.566500425338745,
+              -2.4831225872039795,
+              0.31407023977468923
+            ],
+            "final_bearing_deg": -10.11890268980617,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300107033,
+            "outcome": "success",
+            "steps": 171,
+            "final_distance_m": 4.708536178508445,
+            "is_success": true,
+            "return": 72.45875001309517,
+            "final_pose": [
+              7.02857780456543,
+              -27.697288513183594,
+              -2.3391776084899902,
+              -1.7526218126587838
+            ],
+            "final_bearing_deg": -10.146773467350775,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300107034,
+            "outcome": "success",
+            "steps": 193,
+            "final_distance_m": 4.643047334442845,
+            "is_success": true,
+            "return": 78.70398767346396,
+            "final_pose": [
+              -11.659814834594727,
+              30.42104148864746,
+              -1.7979453802108765,
+              1.788785201846518
+            ],
+            "final_bearing_deg": 3.914279643509858,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300107035,
+            "outcome": "success",
+            "steps": 231,
+            "final_distance_m": 4.978057228659707,
+            "is_success": true,
+            "return": 92.61837251302774,
+            "final_pose": [
+              -31.33915901184082,
+              -28.848567962646484,
+              -1.8259432315826416,
+              -2.277273325098248
+            ],
+            "final_bearing_deg": 4.82726603247253,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300107036,
+            "outcome": "success",
+            "steps": 177,
+            "final_distance_m": 4.762695884196914,
+            "is_success": true,
+            "return": 70.03360620362639,
+            "final_pose": [
+              23.084901809692383,
+              29.362722396850586,
+              -2.3705954551696777,
+              1.8207888057183745
+            ],
+            "final_bearing_deg": -14.682366833869272,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300107037,
+            "outcome": "success",
+            "steps": 185,
+            "final_distance_m": 4.933567710817002,
+            "is_success": true,
+            "return": 73.43268923245114,
+            "final_pose": [
+              -21.373149871826172,
+              -29.93130874633789,
+              -2.39613676071167,
+              -1.9545602471598431
+            ],
+            "final_bearing_deg": -13.585262188987478,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300107038,
+            "outcome": "success",
+            "steps": 196,
+            "final_distance_m": 4.883200159375298,
+            "is_success": true,
+            "return": 82.27882258341451,
+            "final_pose": [
+              -29.011493682861328,
+              -25.452539443969727,
+              -1.6734288930892944,
+              -2.7188661380571792
+            ],
+            "final_bearing_deg": 14.042606969177443,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300107039,
+            "outcome": "success",
+            "steps": 177,
+            "final_distance_m": 4.550585950420936,
+            "is_success": true,
+            "return": 73.44051601653153,
+            "final_pose": [
+              29.636032104492188,
+              -1.4486839771270752,
+              -2.642899751663208,
+              -0.20742297507328766
+            ],
+            "final_bearing_deg": -12.331177704266654,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          }
+        ],
+        "backend_faults": {
+          "fault_counts": {
+            "CameraPoseError": 0,
+            "StepTimingError": 0,
+            "StaleStateError": 0,
+            "CommandTimeoutError": 0,
+            "Timeout": 0,
+            "ConnectionReset": 0,
+            "KinematicsJumpError": 0,
+            "SimRequestTimeoutError": 0,
+            "ObjectMoveRefusedError": 0,
+            "FrameTimeoutError": 0,
+            "FrameTimestampError": 0,
+            "ResetPoseError": 0,
+            "StartCollisionError": 0,
+            "SetPoseError": 0,
+            "EpisodeSetupError": 0,
+            "SimExitedError": 0,
+            "SimReadyTimeout": 0,
+            "SimConnectionLostError": 0
+          },
+          "recovered_counts": {
+            "CameraPoseError": 0,
+            "StepTimingError": 0,
+            "StaleStateError": 0,
+            "CommandTimeoutError": 0,
+            "Timeout": 0,
+            "ConnectionReset": 0,
+            "KinematicsJumpError": 0,
+            "SimRequestTimeoutError": 0,
+            "ObjectMoveRefusedError": 0,
+            "FrameTimeoutError": 0,
+            "FrameTimestampError": 0,
+            "ResetPoseError": 0,
+            "StartCollisionError": 0,
+            "SetPoseError": 0,
+            "EpisodeSetupError": 0,
+            "SimExitedError": 0,
+            "SimReadyTimeout": 0,
+            "SimConnectionLostError": 0
+          },
+          "relaunch_count": 0
+        }
+      }
+    }
+  },
+  "deterministic_gate_pass_by_checkpoint": {
+    "s01_best": false
+  },
+  "pass": false,
+  "notes": [
+    "Both checkpoints are gated and reported without selection; which checkpoint (if either) flies M3's data collection is the controller's decision, not this script's.",
+    "A 20-episode eval cannot distinguish 0.85 from 1.0 against a 0.95 threshold; this run uses >= 200 episodes specifically so it can.",
+    "Held out for both checkpoints: training-time evaluation (best_model.zip selection) draws its episodes from EVAL_CALLBACK_SEED_BASE (200,000,000+), disjoint from this gate's EVAL_SEED_BASE range, and training workers draw from ranges below both. (The 2026-09-17 run predates this: its EvalCallback walked seeds 100,000,000+0..~177, overlapping this gate's -- see docs/decisions/2026-09-25-code-review-findings.md.)"
+  ],
+  "cumulative_backend_faults": {
+    "instance": 0,
+    "fault_counts": {
+      "CameraPoseError": 0,
+      "StepTimingError": 0,
+      "StaleStateError": 0,
+      "CommandTimeoutError": 0,
+      "Timeout": 0,
+      "ConnectionReset": 0,
+      "KinematicsJumpError": 0,
+      "SimRequestTimeoutError": 0,
+      "ObjectMoveRefusedError": 0,
+      "FrameTimeoutError": 0,
+      "FrameTimestampError": 0,
+      "ResetPoseError": 0,
+      "StartCollisionError": 0,
+      "SetPoseError": 0,
+      "EpisodeSetupError": 0,
+      "SimExitedError": 0,
+      "SimReadyTimeout": 0,
+      "SimConnectionLostError": 0
+    },
+    "recovered_counts": {
+      "CameraPoseError": 0,
+      "StepTimingError": 0,
+      "StaleStateError": 0,
+      "CommandTimeoutError": 0,
+      "Timeout": 0,
+      "ConnectionReset": 0,
+      "KinematicsJumpError": 0,
+      "SimRequestTimeoutError": 0,
+      "ObjectMoveRefusedError": 0,
+      "FrameTimeoutError": 0,
+      "FrameTimestampError": 0,
+      "ResetPoseError": 0,
+      "StartCollisionError": 0,
+      "SetPoseError": 0,
+      "EpisodeSetupError": 0,
+      "SimExitedError": 0,
+      "SimReadyTimeout": 0,
+      "SimConnectionLostError": 0
+    },
+    "relaunch_count": 0
+  },
+  "engine_faults": {
+    "xid_delta": 0,
+    "boot_changed": false,
+    "device_lost": {
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst0/sim.log": 0
+    },
+    "logs_scanned": 1,
+    "kernel_journal_readable": true
+  },
+  "faults_ok": true,
+  "throughput_projection": null,
+  "throughput_projection_missing": "scene s07 has no throughput measurement of its own: pass --out to scripts/measure_instances.py --scene s07",
+  "status": "ok",
+  "error": null,
+  "run_started": "2026-10-08 16:41:59",
+  "run_finished": "2026-10-08 17:01:10"
+}

@@ -1,0 +1,934 @@
+{
+  "description": "Expert exit gate on scene s03 (spec Sec8/Sec9.5; Task 9 of plan 2, M2d for s01d).",
+  "scene": "s03",
+  "obs_config": {
+    "depth_frames": 1,
+    "depth_dtype": "float32"
+  },
+  "reward_version": "3-scene-reward-overrides",
+  "reward_config": {
+    "k_p": 1.0,
+    "k_h": 0.1,
+    "k_t": 0.01,
+    "r_success": 10.0,
+    "r_collision": 10.0,
+    "r_bounds": 5.0,
+    "success_radius_m": 5.0,
+    "success_yaw_deg": 15.0,
+    "align_radius_m": 10.0,
+    "step_limit": 300,
+    "altitude_band_m": [
+      1.0,
+      3.0
+    ]
+  },
+  "contact_rules": {
+    "footprint": {
+      "contact_m": 1.05,
+      "obstacles": 29,
+      "shape": "outline",
+      "fields": {
+        "boulder_01": "a0065e1c76b5b26213aa0eb8b1f2d942d50d19fc8158486f476a7107c08fdefe",
+        "namaqualand_boulder_02": "e7e86037660a8a4bf07fd46ddac10df95cbdf15c5e40530abffb0c61c2f09161",
+        "namaqualand_boulder_03": "14c2c2c503589b37e809038ce85ca6a4afc7070a53cec624ef7929739b47d1b4",
+        "namaqualand_boulder_04": "cb48d8036b66ca55f33531abd778a787a0aead424519548613d908326aed8479",
+        "namaqualand_boulder_06": "c96cad6fa63f2708b6e1348ddf7a87e530ef49e67883760263ec9529b7fc2a58"
+      },
+      "fields_manifest_sha256": "c40efeab38b4519976be685b9e30455f1cd7ebfe4c3c668dedba591d7d3bddc8",
+      "trained_shape": "circle"
+    }
+  },
+  "scene_config": {
+    "file": "scene_autofly_s03_fast.jsonc",
+    "sha256": "1775b4bcd8d106ad4c92e5c74f1ec5ef342fc9b8cf68c8e899f9bad116e256fb"
+  },
+  "eval_seed_base": 300103000,
+  "episodes_requested_per_condition": 30,
+  "conditions_requested": [
+    "stochastic"
+  ],
+  "priority_order": [
+    "s02_pick:stochastic"
+  ],
+  "checkpoints": {
+    "s02_pick": {
+      "path": "runs/expert/s02_r1/averaged/avg_350k_end.zip",
+      "sha256": "0971010abb0512c2660c4dd33ad7f75e8d19acbcbb400d38935ba12c08f3ca73",
+      "deterministic": {
+        "status": "not_run",
+        "error": null
+      },
+      "stochastic": {
+        "status": "ok",
+        "error": null,
+        "episodes_requested": 30,
+        "n_episodes": 30,
+        "success_rate": 0.6666666666666666,
+        "collision_rate": 0.3,
+        "timeout_rate": 0.0,
+        "out_of_bounds_rate": 0.03333333333333333,
+        "mean_steps": 170.73333333333332,
+        "mean_final_distance_m": 16.922195128381887,
+        "mean_return": 54.884532575741936,
+        "episodes_retried": 0,
+        "fault_counts": {
+          "CameraPoseError": 0,
+          "StepTimingError": 0,
+          "StaleStateError": 0,
+          "CommandTimeoutError": 0,
+          "Timeout": 0,
+          "ConnectionReset": 0,
+          "KinematicsJumpError": 0,
+          "SimRequestTimeoutError": 0,
+          "ObjectMoveRefusedError": 0,
+          "FrameTimeoutError": 0,
+          "FrameTimestampError": 0,
+          "ResetPoseError": 0,
+          "StartCollisionError": 0,
+          "SetPoseError": 0,
+          "EpisodeSetupError": 0,
+          "SimExitedError": 0,
+          "SimReadyTimeout": 0,
+          "SimConnectionLostError": 0
+        },
+        "collision_sources": {
+          "footprint": 9
+        },
+        "per_episode": [
+          {
+            "seed": 300103000,
+            "outcome": "success",
+            "steps": 235,
+            "final_distance_m": 4.792761899718468,
+            "is_success": true,
+            "return": 82.2631242784712,
+            "final_pose": [
+              32.07637405395508,
+              16.62288475036621,
+              -1.9166585206985474,
+              1.2645445200647338
+            ],
+            "final_bearing_deg": 4.37776663157608,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300103001,
+            "outcome": "success",
+            "steps": 226,
+            "final_distance_m": 4.70178536702415,
+            "is_success": true,
+            "return": 67.47132331900347,
+            "final_pose": [
+              27.64784812927246,
+              -0.35717037320137024,
+              -1.901671051979065,
+              -0.031154371392639435
+            ],
+            "final_bearing_deg": -0.0688059149441636,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300103002,
+            "outcome": "success",
+            "steps": 187,
+            "final_distance_m": 4.754966061999983,
+            "is_success": true,
+            "return": 73.92776095063029,
+            "final_pose": [
+              0.8281665444374084,
+              29.992891311645508,
+              -1.7039108276367188,
+              1.181178484262991
+            ],
+            "final_bearing_deg": -3.508245513618964,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300103003,
+            "outcome": "success",
+            "steps": 199,
+            "final_distance_m": 4.433430884414433,
+            "is_success": true,
+            "return": 73.85570240873938,
+            "final_pose": [
+              10.260257720947266,
+              31.27834701538086,
+              -1.955359935760498,
+              2.3572910059050978
+            ],
+            "final_bearing_deg": 10.69907550884743,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300103004,
+            "outcome": "success",
+            "steps": 222,
+            "final_distance_m": 4.906511542841856,
+            "is_success": true,
+            "return": 73.439018106899,
+            "final_pose": [
+              -28.55815315246582,
+              -14.019222259521484,
+              -1.9849822521209717,
+              -2.7710861886715192
+            ],
+            "final_bearing_deg": -0.6745913903564426,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300103005,
+            "outcome": "success",
+            "steps": 229,
+            "final_distance_m": 4.85483902165611,
+            "is_success": true,
+            "return": 82.96061042395829,
+            "final_pose": [
+              28.479351043701172,
+              29.30803680419922,
+              -2.224714756011963,
+              0.07176675303471469
+            ],
+            "final_bearing_deg": 8.65874916491625,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300103006,
+            "outcome": "success",
+            "steps": 181,
+            "final_distance_m": 4.924296142305013,
+            "is_success": true,
+            "return": 71.38497414269911,
+            "final_pose": [
+              -29.335371017456055,
+              -21.498451232910156,
+              -2.070129871368408,
+              2.693219759897607
+            ],
+            "final_bearing_deg": 14.009307953046061,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300103007,
+            "outcome": "collision",
+            "steps": 164,
+            "final_distance_m": 15.187294118520484,
+            "is_success": false,
+            "return": 38.97133743237009,
+            "final_pose": [
+              15.056654930114746,
+              -17.959171295166016,
+              -1.4062355756759644,
+              -2.128544792753187
+            ],
+            "final_bearing_deg": 40.87502320582432,
+            "oob_kind": null,
+            "collision_source": "footprint",
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "footprint_contact": {
+              "tag": "obs_0017",
+              "asset": "namaqualand_boulder_02",
+              "gap_m": 0.9218,
+              "rule": "footprint",
+              "bearing_deg": 69.55,
+              "drone_forward_m_s": 1.979,
+              "shape": "outline",
+              "circle_gap_m": -0.9929
+            },
+            "retries": 0
+          },
+          {
+            "seed": 300103008,
+            "outcome": "collision",
+            "steps": 84,
+            "final_distance_m": 53.88191794197987,
+            "is_success": false,
+            "return": 16.11386497013403,
+            "final_pose": [
+              10.970053672790527,
+              -8.053204536437988,
+              -1.962654948234558,
+              2.2952113205256675
+            ],
+            "final_bearing_deg": 11.67937288888633,
+            "oob_kind": null,
+            "collision_source": "footprint",
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "footprint_contact": {
+              "tag": "obs_0021",
+              "asset": "namaqualand_boulder_02",
+              "gap_m": 1.004,
+              "rule": "footprint",
+              "bearing_deg": 68.07,
+              "drone_forward_m_s": 1.881,
+              "shape": "outline",
+              "circle_gap_m": -0.1031
+            },
+            "retries": 0
+          },
+          {
+            "seed": 300103009,
+            "outcome": "success",
+            "steps": 170,
+            "final_distance_m": 4.675588541980445,
+            "is_success": true,
+            "return": 71.54053812847953,
+            "final_pose": [
+              29.401777267456055,
+              29.04160499572754,
+              -1.8092461824417114,
+              -0.13613374537599146
+            ],
+            "final_bearing_deg": 6.23177611146757,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300103010,
+            "outcome": "collision",
+            "steps": 86,
+            "final_distance_m": 56.18322405668582,
+            "is_success": false,
+            "return": -2.0066725080332013,
+            "final_pose": [
+              17.724782943725586,
+              -21.62527084350586,
+              -2.9525818824768066,
+              1.7674097431073403
+            ],
+            "final_bearing_deg": -14.123078472365874,
+            "oob_kind": null,
+            "collision_source": "footprint",
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "footprint_contact": {
+              "tag": "obs_0017",
+              "asset": "namaqualand_boulder_02",
+              "gap_m": 1.0144,
+              "rule": "footprint",
+              "bearing_deg": 14.52,
+              "drone_forward_m_s": 1.992,
+              "shape": "outline",
+              "circle_gap_m": -1.2798
+            },
+            "retries": 0
+          },
+          {
+            "seed": 300103011,
+            "outcome": "success",
+            "steps": 163,
+            "final_distance_m": 4.940208732128825,
+            "is_success": true,
+            "return": 69.01543810637892,
+            "final_pose": [
+              3.1124911308288574,
+              -29.26546859741211,
+              -2.2503581047058105,
+              -1.854138796302354
+            ],
+            "final_bearing_deg": 9.346941106250444,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300103012,
+            "outcome": "success",
+            "steps": 212,
+            "final_distance_m": 4.7786009171782435,
+            "is_success": true,
+            "return": 73.26202551870811,
+            "final_pose": [
+              -27.326017379760742,
+              -13.28700065612793,
+              -1.9542850255966187,
+              3.1001287393407098
+            ],
+            "final_bearing_deg": 12.540197556647117,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300103013,
+            "outcome": "success",
+            "steps": 190,
+            "final_distance_m": 4.908324168526115,
+            "is_success": true,
+            "return": 78.90621398802615,
+            "final_pose": [
+              -25.16335105895996,
+              28.904006958007812,
+              -1.7416245937347412,
+              1.7495932600980155
+            ],
+            "final_bearing_deg": -2.0574655365663945,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300103014,
+            "outcome": "success",
+            "steps": 187,
+            "final_distance_m": 4.791551093657281,
+            "is_success": true,
+            "return": 70.47262507792055,
+            "final_pose": [
+              -18.81630516052246,
+              29.000354766845703,
+              -1.7845463752746582,
+              0.8386394188033693
+            ],
+            "final_bearing_deg": 8.22363504022363,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300103015,
+            "outcome": "success",
+            "steps": 257,
+            "final_distance_m": 4.739809060378887,
+            "is_success": true,
+            "return": 71.57179691054932,
+            "final_pose": [
+              -31.6427059173584,
+              14.80664348602295,
+              -2.0972185134887695,
+              1.8282123845135625
+            ],
+            "final_bearing_deg": 12.996056302476331,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300103016,
+            "outcome": "collision",
+            "steps": 74,
+            "final_distance_m": 47.46354442845359,
+            "is_success": false,
+            "return": 7.6432938435327475,
+            "final_pose": [
+              10.937851905822754,
+              -8.183364868164062,
+              -2.640385866165161,
+              2.1460197454129206
+            ],
+            "final_bearing_deg": 35.03586456158684,
+            "oob_kind": null,
+            "collision_source": "footprint",
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "footprint_contact": {
+              "tag": "obs_0021",
+              "asset": "namaqualand_boulder_02",
+              "gap_m": 1.0069,
+              "rule": "footprint",
+              "bearing_deg": 72.61,
+              "drone_forward_m_s": 1.845,
+              "shape": "outline",
+              "circle_gap_m": -0.19
+            },
+            "retries": 0
+          },
+          {
+            "seed": 300103017,
+            "outcome": "collision",
+            "steps": 76,
+            "final_distance_m": 56.746327465401116,
+            "is_success": false,
+            "return": 0.3918466327038974,
+            "final_pose": [
+              18.969329833984375,
+              -21.342470169067383,
+              -1.8562315702438354,
+              1.0316082525546726
+            ],
+            "final_bearing_deg": 21.241006724039188,
+            "oob_kind": null,
+            "collision_source": "footprint",
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "footprint_contact": {
+              "tag": "obs_0017",
+              "asset": "namaqualand_boulder_02",
+              "gap_m": 1.0255,
+              "rule": "footprint",
+              "bearing_deg": 82.71,
+              "drone_forward_m_s": 0.685,
+              "shape": "outline",
+              "circle_gap_m": -0.632
+            },
+            "retries": 0
+          },
+          {
+            "seed": 300103018,
+            "outcome": "collision",
+            "steps": 139,
+            "final_distance_m": 19.44703749780396,
+            "is_success": false,
+            "return": 36.977069161995814,
+            "final_pose": [
+              17.94687271118164,
+              -16.657432556152344,
+              -1.8486672639846802,
+              -0.07984138091494697
+            ],
+            "final_bearing_deg": -38.134872073124946,
+            "oob_kind": null,
+            "collision_source": "footprint",
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "footprint_contact": {
+              "tag": "obs_0017",
+              "asset": "namaqualand_boulder_02",
+              "gap_m": 0.9357,
+              "rule": "footprint",
+              "bearing_deg": -97.59,
+              "drone_forward_m_s": 0.919,
+              "shape": "outline",
+              "circle_gap_m": -0.0649
+            },
+            "retries": 0
+          },
+          {
+            "seed": 300103019,
+            "outcome": "collision",
+            "steps": 162,
+            "final_distance_m": 9.758996942797445,
+            "is_success": false,
+            "return": 44.3932883733174,
+            "final_pose": [
+              22.92925262451172,
+              25.42577362060547,
+              -2.045287609100342,
+              0.7488190068829185
+            ],
+            "final_bearing_deg": -46.6845751162522,
+            "oob_kind": null,
+            "collision_source": "footprint",
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "footprint_contact": {
+              "tag": "obs_0020",
+              "asset": "namaqualand_boulder_02",
+              "gap_m": 0.9321,
+              "rule": "footprint",
+              "bearing_deg": -63.16,
+              "drone_forward_m_s": 1.185,
+              "shape": "outline",
+              "circle_gap_m": 0.9028
+            },
+            "retries": 0
+          },
+          {
+            "seed": 300103020,
+            "outcome": "success",
+            "steps": 189,
+            "final_distance_m": 4.806542242711818,
+            "is_success": true,
+            "return": 69.23987966293672,
+            "final_pose": [
+              29.98973274230957,
+              12.7188081741333,
+              -2.0608081817626953,
+              -0.7450807203934844
+            ],
+            "final_bearing_deg": 2.5057928385643087,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300103021,
+            "outcome": "success",
+            "steps": 206,
+            "final_distance_m": 4.834785150944528,
+            "is_success": true,
+            "return": 80.03076796524326,
+            "final_pose": [
+              -19.39461326599121,
+              -29.035341262817383,
+              -2.208801031112671,
+              -2.374149207373298
+            ],
+            "final_bearing_deg": 7.289313815994214,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300103022,
+            "outcome": "collision",
+            "steps": 109,
+            "final_distance_m": 37.578898733500914,
+            "is_success": false,
+            "return": 20.889367626599224,
+            "final_pose": [
+              21.762924194335938,
+              -0.2962593734264374,
+              -2.2056314945220947,
+              -2.2689126919595815
+            ],
+            "final_bearing_deg": 12.324974227171547,
+            "oob_kind": null,
+            "collision_source": "footprint",
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "footprint_contact": {
+              "tag": "obs_0019",
+              "asset": "namaqualand_boulder_02",
+              "gap_m": 0.9668,
+              "rule": "footprint",
+              "bearing_deg": 68.6,
+              "drone_forward_m_s": 1.98,
+              "shape": "outline",
+              "circle_gap_m": 0.4068
+            },
+            "retries": 0
+          },
+          {
+            "seed": 300103023,
+            "outcome": "success",
+            "steps": 198,
+            "final_distance_m": 4.753107708568371,
+            "is_success": true,
+            "return": 74.33578262253234,
+            "final_pose": [
+              9.456093788146973,
+              30.86414337158203,
+              -1.771612286567688,
+              2.3912166155163823
+            ],
+            "final_bearing_deg": -7.219860445857371,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300103024,
+            "outcome": "success",
+            "steps": 191,
+            "final_distance_m": 4.650456022990775,
+            "is_success": true,
+            "return": 68.98986926563208,
+            "final_pose": [
+              28.005569458007812,
+              1.1238129138946533,
+              -1.6518322229385376,
+              -0.21401024113305778
+            ],
+            "final_bearing_deg": 5.140917943607776,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300103025,
+            "outcome": "success",
+            "steps": 182,
+            "final_distance_m": 4.894155501093307,
+            "is_success": true,
+            "return": 70.33346613909727,
+            "final_pose": [
+              -3.377319812774658,
+              30.428674697875977,
+              -1.9339206218719482,
+              1.9327884328023415
+            ],
+            "final_bearing_deg": 10.235134680547148,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300103026,
+            "outcome": "success",
+            "steps": 160,
+            "final_distance_m": 4.854766509424994,
+            "is_success": true,
+            "return": 69.20635771782915,
+            "final_pose": [
+              28.655637741088867,
+              29.703025817871094,
+              -1.9666311740875244,
+              -0.22633286075222142
+            ],
+            "final_bearing_deg": 0.4368548259026248,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300103027,
+            "outcome": "success",
+            "steps": 221,
+            "final_distance_m": 4.919000809094739,
+            "is_success": true,
+            "return": 72.31269074919024,
+            "final_pose": [
+              28.175586700439453,
+              -27.598369598388672,
+              -2.109797954559326,
+              -1.5577068465960553
+            ],
+            "final_bearing_deg": 6.421014745454917,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300103028,
+            "outcome": "collision",
+            "steps": 134,
+            "final_distance_m": 59.19297223058699,
+            "is_success": false,
+            "return": 15.791544182944575,
+            "final_pose": [
+              10.890195846557617,
+              -7.964649200439453,
+              -2.4366726875305176,
+              2.334145266237553
+            ],
+            "final_bearing_deg": 1.8100611205401995,
+            "oob_kind": null,
+            "collision_source": "footprint",
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "footprint_contact": {
+              "tag": "obs_0021",
+              "asset": "namaqualand_boulder_02",
+              "gap_m": 0.9063,
+              "rule": "footprint",
+              "bearing_deg": 67.03,
+              "drone_forward_m_s": 1.811,
+              "shape": "outline",
+              "circle_gap_m": -0.1312
+            },
+            "retries": 0
+          },
+          {
+            "seed": 300103029,
+            "outcome": "out_of_bounds",
+            "steps": 89,
+            "final_distance_m": 56.31015305708803,
+            "is_success": false,
+            "return": 2.8510720737691413,
+            "final_pose": [
+              18.140439987182617,
+              -22.012046813964844,
+              -3.12111496925354,
+              -0.7999183717801626
+            ],
+            "final_bearing_deg": 121.30781249812243,
+            "oob_kind": "altitude_high",
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          }
+        ],
+        "backend_faults": {
+          "fault_counts": {
+            "CameraPoseError": 0,
+            "StepTimingError": 0,
+            "StaleStateError": 0,
+            "CommandTimeoutError": 0,
+            "Timeout": 0,
+            "ConnectionReset": 0,
+            "KinematicsJumpError": 0,
+            "SimRequestTimeoutError": 0,
+            "ObjectMoveRefusedError": 0,
+            "FrameTimeoutError": 0,
+            "FrameTimestampError": 0,
+            "ResetPoseError": 0,
+            "StartCollisionError": 0,
+            "SetPoseError": 0,
+            "EpisodeSetupError": 0,
+            "SimExitedError": 0,
+            "SimReadyTimeout": 0,
+            "SimConnectionLostError": 0
+          },
+          "recovered_counts": {
+            "CameraPoseError": 0,
+            "StepTimingError": 0,
+            "StaleStateError": 0,
+            "CommandTimeoutError": 0,
+            "Timeout": 0,
+            "ConnectionReset": 0,
+            "KinematicsJumpError": 0,
+            "SimRequestTimeoutError": 0,
+            "ObjectMoveRefusedError": 0,
+            "FrameTimeoutError": 0,
+            "FrameTimestampError": 0,
+            "ResetPoseError": 0,
+            "StartCollisionError": 0,
+            "SetPoseError": 0,
+            "EpisodeSetupError": 0,
+            "SimExitedError": 0,
+            "SimReadyTimeout": 0,
+            "SimConnectionLostError": 0
+          },
+          "relaunch_count": 0
+        }
+      }
+    }
+  },
+  "deterministic_gate_pass_by_checkpoint": {
+    "s02_pick": false
+  },
+  "pass": false,
+  "notes": [
+    "Both checkpoints are gated and reported without selection; which checkpoint (if either) flies M3's data collection is the controller's decision, not this script's.",
+    "A 20-episode eval cannot distinguish 0.85 from 1.0 against a 0.95 threshold; this run uses >= 200 episodes specifically so it can.",
+    "Held out for both checkpoints: training-time evaluation (best_model.zip selection) draws its episodes from EVAL_CALLBACK_SEED_BASE (200,000,000+), disjoint from this gate's EVAL_SEED_BASE range, and training workers draw from ranges below both. (The 2026-09-17 run predates this: its EvalCallback walked seeds 100,000,000+0..~177, overlapping this gate's -- see docs/decisions/2026-09-25-code-review-findings.md.)"
+  ],
+  "cumulative_backend_faults": {
+    "instance": 2,
+    "fault_counts": {
+      "CameraPoseError": 0,
+      "StepTimingError": 0,
+      "StaleStateError": 0,
+      "CommandTimeoutError": 0,
+      "Timeout": 0,
+      "ConnectionReset": 0,
+      "KinematicsJumpError": 0,
+      "SimRequestTimeoutError": 0,
+      "ObjectMoveRefusedError": 0,
+      "FrameTimeoutError": 0,
+      "FrameTimestampError": 0,
+      "ResetPoseError": 0,
+      "StartCollisionError": 0,
+      "SetPoseError": 0,
+      "EpisodeSetupError": 0,
+      "SimExitedError": 0,
+      "SimReadyTimeout": 0,
+      "SimConnectionLostError": 0
+    },
+    "recovered_counts": {
+      "CameraPoseError": 0,
+      "StepTimingError": 0,
+      "StaleStateError": 0,
+      "CommandTimeoutError": 0,
+      "Timeout": 0,
+      "ConnectionReset": 0,
+      "KinematicsJumpError": 0,
+      "SimRequestTimeoutError": 0,
+      "ObjectMoveRefusedError": 0,
+      "FrameTimeoutError": 0,
+      "FrameTimestampError": 0,
+      "ResetPoseError": 0,
+      "StartCollisionError": 0,
+      "SetPoseError": 0,
+      "EpisodeSetupError": 0,
+      "SimExitedError": 0,
+      "SimReadyTimeout": 0,
+      "SimConnectionLostError": 0
+    },
+    "relaunch_count": 0
+  },
+  "engine_faults": {
+    "xid_delta": 0,
+    "boot_changed": false,
+    "device_lost": {
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst2/sim.log": 0
+    },
+    "logs_scanned": 1,
+    "kernel_journal_readable": true
+  },
+  "faults_ok": true,
+  "throughput_projection": null,
+  "throughput_projection_missing": "scene s03 has no throughput measurement of its own: pass --out to scripts/measure_instances.py --scene s03",
+  "status": "ok",
+  "error": null,
+  "run_started": "2026-10-08 17:21:33",
+  "run_finished": "2026-10-08 17:35:20"
+}

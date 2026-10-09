@@ -1,0 +1,1015 @@
+{
+  "description": "Expert exit gate on scene s06 (spec Sec8/Sec9.5; Task 9 of plan 2, M2d for s01d).",
+  "scene": "s06",
+  "obs_config": {
+    "depth_frames": 1,
+    "depth_dtype": "float32"
+  },
+  "reward_version": "3-scene-reward-overrides",
+  "reward_config": {
+    "k_p": 1.0,
+    "k_h": 0.1,
+    "k_t": 0.01,
+    "r_success": 10.0,
+    "r_collision": 10.0,
+    "r_bounds": 5.0,
+    "success_radius_m": 5.0,
+    "success_yaw_deg": 15.0,
+    "align_radius_m": 10.0,
+    "step_limit": 300,
+    "altitude_band_m": [
+      1.0,
+      3.0
+    ]
+  },
+  "contact_rules": {
+    "footprint": {
+      "contact_m": 1.05,
+      "obstacles": 40,
+      "shape": "outline",
+      "fields": {
+        "island_tree_02": "a14f640a0176311482540d13028adeb20d22c80858eb144f103e844789a51b2e",
+        "searsia_burchellii_large": "9fdd5a597726e59e5c52db479f3c5ac8da0a851e68a32dcd8d546607ff46c87a",
+        "searsia_burchellii_medium": "f434796e358d7f6e17c18edc7b5155cdc46d9ba7eb988a6c454707252a8efcd8",
+        "searsia_burchellii_small": "f2a05139e6963fcff0a73d99fa53fdabb8cac3291a2d5d18838acd605afc1b2a",
+        "searsia_lucida_c": "168c5048b8ed5a860d4a321fdc9b8b691aca72eaf188c50810b3ae341c015f2a",
+        "tree_small_02": "bd4c9ea5290b7d660a86b2947a382fb30ef8e28932b21de8612802a47d636a26"
+      },
+      "fields_manifest_sha256": "c40efeab38b4519976be685b9e30455f1cd7ebfe4c3c668dedba591d7d3bddc8",
+      "trained_shape": "circle"
+    }
+  },
+  "scene_config": {
+    "file": "scene_autofly_s06_fast.jsonc",
+    "sha256": "237ca7b4ae58f38f9513a51aca510389490528fda11c3eeb561c8790c1b2603a"
+  },
+  "eval_seed_base": 300106000,
+  "episodes_requested_per_condition": 30,
+  "conditions_requested": [
+    "stochastic"
+  ],
+  "priority_order": [
+    "s02_pick:stochastic"
+  ],
+  "checkpoints": {
+    "s02_pick": {
+      "path": "runs/expert/s02_r1/averaged/avg_350k_end.zip",
+      "sha256": "0971010abb0512c2660c4dd33ad7f75e8d19acbcbb400d38935ba12c08f3ca73",
+      "deterministic": {
+        "status": "not_run",
+        "error": null
+      },
+      "stochastic": {
+        "status": "ok",
+        "error": null,
+        "episodes_requested": 30,
+        "n_episodes": 30,
+        "success_rate": 0.26666666666666666,
+        "collision_rate": 0.5666666666666667,
+        "timeout_rate": 0.0,
+        "out_of_bounds_rate": 0.16666666666666666,
+        "mean_steps": 136.3,
+        "mean_final_distance_m": 31.222893029672697,
+        "mean_return": 35.21850590983339,
+        "episodes_retried": 0,
+        "fault_counts": {
+          "CameraPoseError": 0,
+          "StepTimingError": 0,
+          "StaleStateError": 0,
+          "CommandTimeoutError": 0,
+          "Timeout": 0,
+          "ConnectionReset": 0,
+          "KinematicsJumpError": 0,
+          "SimRequestTimeoutError": 0,
+          "ObjectMoveRefusedError": 0,
+          "FrameTimeoutError": 0,
+          "FrameTimestampError": 0,
+          "ResetPoseError": 0,
+          "StartCollisionError": 0,
+          "SetPoseError": 0,
+          "EpisodeSetupError": 0,
+          "SimExitedError": 0,
+          "SimReadyTimeout": 0,
+          "SimConnectionLostError": 0
+        },
+        "collision_sources": {
+          "footprint": 17
+        },
+        "per_episode": [
+          {
+            "seed": 300106000,
+            "outcome": "success",
+            "steps": 209,
+            "final_distance_m": 4.707968907588954,
+            "is_success": true,
+            "return": 72.93783963569079,
+            "final_pose": [
+              -11.204612731933594,
+              -30.042734146118164,
+              -1.9298901557922363,
+              -2.179795693436655
+            ],
+            "final_bearing_deg": 13.402110410525594,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300106001,
+            "outcome": "collision",
+            "steps": 131,
+            "final_distance_m": 48.85894897248185,
+            "is_success": false,
+            "return": 6.0977736064947425,
+            "final_pose": [
+              -15.58621883392334,
+              2.781900644302368,
+              -2.7617640495300293,
+              0.8268202172639159
+            ],
+            "final_bearing_deg": -36.51313960535476,
+            "oob_kind": null,
+            "collision_source": "footprint",
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "footprint_contact": {
+              "tag": "obs_0012",
+              "asset": "searsia_burchellii_medium",
+              "gap_m": 1.0247,
+              "rule": "footprint",
+              "bearing_deg": -82.98,
+              "drone_forward_m_s": 1.924,
+              "shape": "outline",
+              "circle_gap_m": 0.6295
+            },
+            "retries": 0
+          },
+          {
+            "seed": 300106002,
+            "outcome": "collision",
+            "steps": 148,
+            "final_distance_m": 30.705056204399142,
+            "is_success": false,
+            "return": 35.32705891765689,
+            "final_pose": [
+              13.758419036865234,
+              -5.727221965789795,
+              -2.5352156162261963,
+              -0.4149520763162796
+            ],
+            "final_bearing_deg": -40.76650746325009,
+            "oob_kind": null,
+            "collision_source": "footprint",
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "footprint_contact": {
+              "tag": "obs_0031",
+              "asset": "searsia_lucida_c",
+              "gap_m": 0.8496,
+              "rule": "footprint",
+              "bearing_deg": -41.15,
+              "drone_forward_m_s": 1.832,
+              "shape": "outline",
+              "circle_gap_m": 0.4528
+            },
+            "retries": 0
+          },
+          {
+            "seed": 300106003,
+            "outcome": "collision",
+            "steps": 164,
+            "final_distance_m": 17.684737244672565,
+            "is_success": false,
+            "return": 38.31483076381281,
+            "final_pose": [
+              -15.285192489624023,
+              -14.137907981872559,
+              -2.1855225563049316,
+              -2.750479577141918
+            ],
+            "final_bearing_deg": -12.40301349767144,
+            "oob_kind": null,
+            "collision_source": "footprint",
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "footprint_contact": {
+              "tag": "obs_0034",
+              "asset": "searsia_lucida_c",
+              "gap_m": 1.0003,
+              "rule": "footprint",
+              "bearing_deg": 8.79,
+              "drone_forward_m_s": 1.975,
+              "shape": "outline",
+              "circle_gap_m": 0.9681
+            },
+            "retries": 0
+          },
+          {
+            "seed": 300106004,
+            "outcome": "collision",
+            "steps": 171,
+            "final_distance_m": 22.423748118168366,
+            "is_success": false,
+            "return": 34.45655114115354,
+            "final_pose": [
+              12.139276504516602,
+              11.626625061035156,
+              -2.2004952430725098,
+              0.6369330804615639
+            ],
+            "final_bearing_deg": 28.936518280849548,
+            "oob_kind": null,
+            "collision_source": "footprint",
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "footprint_contact": {
+              "tag": "obs_0006",
+              "asset": "searsia_burchellii_large",
+              "gap_m": 1.0451,
+              "rule": "footprint",
+              "bearing_deg": 89.47,
+              "drone_forward_m_s": 0.685,
+              "shape": "outline",
+              "circle_gap_m": 0.7183
+            },
+            "retries": 0
+          },
+          {
+            "seed": 300106005,
+            "outcome": "collision",
+            "steps": 118,
+            "final_distance_m": 33.88220544059044,
+            "is_success": false,
+            "return": 21.80079608969035,
+            "final_pose": [
+              -1.3870899677276611,
+              11.712433815002441,
+              -1.6849265098571777,
+              -0.5493218357432665
+            ],
+            "final_bearing_deg": 40.96007764552845,
+            "oob_kind": null,
+            "collision_source": "footprint",
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "footprint_contact": {
+              "tag": "obs_0029",
+              "asset": "searsia_lucida_c",
+              "gap_m": 1.0189,
+              "rule": "footprint",
+              "bearing_deg": 92.4,
+              "drone_forward_m_s": 1.995,
+              "shape": "outline",
+              "circle_gap_m": 0.6612
+            },
+            "retries": 0
+          },
+          {
+            "seed": 300106006,
+            "outcome": "out_of_bounds",
+            "steps": 177,
+            "final_distance_m": 47.33280530381828,
+            "is_success": false,
+            "return": 29.389819234616844,
+            "final_pose": [
+              2.5629165172576904,
+              -5.371195316314697,
+              -3.036949396133423,
+              2.0999741362436395
+            ],
+            "final_bearing_deg": 19.241988735022318,
+            "oob_kind": "altitude_high",
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300106007,
+            "outcome": "success",
+            "steps": 200,
+            "final_distance_m": 4.866996136768771,
+            "is_success": true,
+            "return": 72.94714371473472,
+            "final_pose": [
+              -6.888352394104004,
+              29.50189208984375,
+              -1.896392583847046,
+              0.8254133145868476
+            ],
+            "final_bearing_deg": 3.3853565259902365,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300106008,
+            "outcome": "collision",
+            "steps": 46,
+            "final_distance_m": 57.156111293685576,
+            "is_success": false,
+            "return": 1.9102669835494677,
+            "final_pose": [
+              -13.413409233093262,
+              18.4453182220459,
+              -1.8926901817321777,
+              -1.2364460725605129
+            ],
+            "final_bearing_deg": 2.7818723680036648,
+            "oob_kind": null,
+            "collision_source": "footprint",
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "footprint_contact": {
+              "tag": "obs_0025",
+              "asset": "searsia_burchellii_small",
+              "gap_m": 0.9937,
+              "rule": "footprint",
+              "bearing_deg": 63.38,
+              "drone_forward_m_s": 1.922,
+              "shape": "outline",
+              "circle_gap_m": 0.8625
+            },
+            "retries": 0
+          },
+          {
+            "seed": 300106009,
+            "outcome": "success",
+            "steps": 203,
+            "final_distance_m": 4.861546863190479,
+            "is_success": true,
+            "return": 75.40627354446285,
+            "final_pose": [
+              -28.83784294128418,
+              -31.918060302734375,
+              -2.1282193660736084,
+              -2.850829589852934
+            ],
+            "final_bearing_deg": 5.0966237762384345,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300106010,
+            "outcome": "out_of_bounds",
+            "steps": 9,
+            "final_distance_m": 68.08122329948218,
+            "is_success": false,
+            "return": -5.216945648134551,
+            "final_pose": [
+              -7.84545373916626,
+              -29.776954650878906,
+              -3.170435667037964,
+              -0.2467777297008889
+            ],
+            "final_bearing_deg": 125.60614911519937,
+            "oob_kind": "altitude_high",
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300106011,
+            "outcome": "collision",
+            "steps": 27,
+            "final_distance_m": 56.741442824564025,
+            "is_success": false,
+            "return": -3.4722106398093127,
+            "final_pose": [
+              -9.14400577545166,
+              23.68159294128418,
+              -2.123708963394165,
+              -0.3447304381762553
+            ],
+            "final_bearing_deg": -62.88927013300021,
+            "oob_kind": null,
+            "collision_source": "footprint",
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "footprint_contact": {
+              "tag": "obs_0026",
+              "asset": "searsia_burchellii_small",
+              "gap_m": 1.0379,
+              "rule": "footprint",
+              "bearing_deg": -76.0,
+              "drone_forward_m_s": 1.962,
+              "shape": "outline",
+              "circle_gap_m": 0.8464
+            },
+            "retries": 0
+          },
+          {
+            "seed": 300106012,
+            "outcome": "collision",
+            "steps": 102,
+            "final_distance_m": 38.19020255128723,
+            "is_success": false,
+            "return": 19.757997417578203,
+            "final_pose": [
+              -1.0883429050445557,
+              11.530254364013672,
+              -1.9277805089950562,
+              -0.5299396977022871
+            ],
+            "final_bearing_deg": 1.5580576118396463,
+            "oob_kind": null,
+            "collision_source": "footprint",
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "footprint_contact": {
+              "tag": "obs_0029",
+              "asset": "searsia_lucida_c",
+              "gap_m": 0.9435,
+              "rule": "footprint",
+              "bearing_deg": 96.95,
+              "drone_forward_m_s": 1.956,
+              "shape": "outline",
+              "circle_gap_m": 0.7516
+            },
+            "retries": 0
+          },
+          {
+            "seed": 300106013,
+            "outcome": "out_of_bounds",
+            "steps": 67,
+            "final_distance_m": 57.683390717910534,
+            "is_success": false,
+            "return": 9.181471942236831,
+            "final_pose": [
+              13.113475799560547,
+              17.446643829345703,
+              -3.051203727722168,
+              -2.8648043343142224
+            ],
+            "final_bearing_deg": 46.006568668118184,
+            "oob_kind": "altitude_high",
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300106014,
+            "outcome": "success",
+            "steps": 167,
+            "final_distance_m": 4.911302855559208,
+            "is_success": true,
+            "return": 68.16688785329194,
+            "final_pose": [
+              -30.645217895507812,
+              -29.484365463256836,
+              -1.9429794549942017,
+              -0.936715838206058
+            ],
+            "final_bearing_deg": -1.5621871202307438,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300106015,
+            "outcome": "collision",
+            "steps": 168,
+            "final_distance_m": 23.897606077425824,
+            "is_success": false,
+            "return": 33.449124931644334,
+            "final_pose": [
+              12.74118709564209,
+              12.205853462219238,
+              -1.9699907302856445,
+              1.2753864768985765
+            ],
+            "final_bearing_deg": -3.792275073623868,
+            "oob_kind": null,
+            "collision_source": "footprint",
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "footprint_contact": {
+              "tag": "obs_0006",
+              "asset": "searsia_burchellii_large",
+              "gap_m": 1.0157,
+              "rule": "footprint",
+              "bearing_deg": 65.54,
+              "drone_forward_m_s": 1.586,
+              "shape": "outline",
+              "circle_gap_m": 0.6966
+            },
+            "retries": 0
+          },
+          {
+            "seed": 300106016,
+            "outcome": "collision",
+            "steps": 157,
+            "final_distance_m": 29.436413623521986,
+            "is_success": false,
+            "return": 41.25751771276545,
+            "final_pose": [
+              1.1478534936904907,
+              13.906829833984375,
+              -1.9278892278671265,
+              1.9356832515210673
+            ],
+            "final_bearing_deg": 27.625488328606902,
+            "oob_kind": null,
+            "collision_source": "footprint",
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "footprint_contact": {
+              "tag": "obs_0029",
+              "asset": "searsia_lucida_c",
+              "gap_m": 0.953,
+              "rule": "footprint",
+              "bearing_deg": 81.7,
+              "drone_forward_m_s": 1.973,
+              "shape": "outline",
+              "circle_gap_m": 0.925
+            },
+            "retries": 0
+          },
+          {
+            "seed": 300106017,
+            "outcome": "collision",
+            "steps": 127,
+            "final_distance_m": 21.311348020836142,
+            "is_success": false,
+            "return": 32.46439825701584,
+            "final_pose": [
+              7.4450154304504395,
+              -13.52814769744873,
+              -2.2289419174194336,
+              -1.007954369549682
+            ],
+            "final_bearing_deg": -28.274784518075727,
+            "oob_kind": null,
+            "collision_source": "footprint",
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "footprint_contact": {
+              "tag": "obs_0022",
+              "asset": "searsia_burchellii_small",
+              "gap_m": 1.0285,
+              "rule": "footprint",
+              "bearing_deg": -73.94,
+              "drone_forward_m_s": 1.993,
+              "shape": "outline",
+              "circle_gap_m": 0.7303
+            },
+            "retries": 0
+          },
+          {
+            "seed": 300106018,
+            "outcome": "collision",
+            "steps": 86,
+            "final_distance_m": 61.62547974493434,
+            "is_success": false,
+            "return": 15.82571645110266,
+            "final_pose": [
+              15.705022811889648,
+              -6.622164726257324,
+              -1.5008023977279663,
+              1.934211511359476
+            ],
+            "final_bearing_deg": 34.333618009075806,
+            "oob_kind": null,
+            "collision_source": "footprint",
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "footprint_contact": {
+              "tag": "obs_0031",
+              "asset": "searsia_lucida_c",
+              "gap_m": 1.0301,
+              "rule": "footprint",
+              "bearing_deg": 79.36,
+              "drone_forward_m_s": 0.597,
+              "shape": "outline",
+              "circle_gap_m": 0.7275
+            },
+            "retries": 0
+          },
+          {
+            "seed": 300106019,
+            "outcome": "collision",
+            "steps": 81,
+            "final_distance_m": 53.575422049864386,
+            "is_success": false,
+            "return": 12.574502455704382,
+            "final_pose": [
+              8.395966529846191,
+              22.760194778442383,
+              -1.5572596788406372,
+              -2.5324310863130797
+            ],
+            "final_bearing_deg": 5.180744800595789,
+            "oob_kind": null,
+            "collision_source": "footprint",
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "footprint_contact": {
+              "tag": "obs_0021",
+              "asset": "searsia_burchellii_small",
+              "gap_m": 1.0388,
+              "rule": "footprint",
+              "bearing_deg": 41.58,
+              "drone_forward_m_s": 1.957,
+              "shape": "outline",
+              "circle_gap_m": 0.8732
+            },
+            "retries": 0
+          },
+          {
+            "seed": 300106020,
+            "outcome": "success",
+            "steps": 180,
+            "final_distance_m": 4.6858246073089616,
+            "is_success": true,
+            "return": 75.69210459669199,
+            "final_pose": [
+              5.169423580169678,
+              -27.89832305908203,
+              -2.1663708686828613,
+              -1.122981825729563
+            ],
+            "final_bearing_deg": 3.0353838156196637,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300106021,
+            "outcome": "collision",
+            "steps": 164,
+            "final_distance_m": 23.220402684938083,
+            "is_success": false,
+            "return": 38.545327061102164,
+            "final_pose": [
+              0.03582317754626274,
+              -14.67929744720459,
+              -1.9881004095077515,
+              -2.624992823265585
+            ],
+            "final_bearing_deg": 19.167664205037234,
+            "oob_kind": null,
+            "collision_source": "footprint",
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "footprint_contact": {
+              "tag": "obs_0024",
+              "asset": "searsia_burchellii_small",
+              "gap_m": 0.9075,
+              "rule": "footprint",
+              "bearing_deg": 84.35,
+              "drone_forward_m_s": 1.978,
+              "shape": "outline",
+              "circle_gap_m": 0.8964
+            },
+            "retries": 0
+          },
+          {
+            "seed": 300106022,
+            "outcome": "out_of_bounds",
+            "steps": 175,
+            "final_distance_m": 10.30111352224274,
+            "is_success": false,
+            "return": 50.30067413996093,
+            "final_pose": [
+              -35.016944885253906,
+              24.751197814941406,
+              -1.7016854286193848,
+              2.4224749579246003
+            ],
+            "final_bearing_deg": -59.39713773590201,
+            "oob_kind": "lateral",
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300106023,
+            "outcome": "success",
+            "steps": 191,
+            "final_distance_m": 4.844647048906225,
+            "is_success": true,
+            "return": 68.72421262655101,
+            "final_pose": [
+              -29.555322647094727,
+              -9.994343757629395,
+              -2.092103958129883,
+              -2.45694348778249
+            ],
+            "final_bearing_deg": 5.9450286004381105,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300106024,
+            "outcome": "success",
+            "steps": 272,
+            "final_distance_m": 4.847410317142043,
+            "is_success": true,
+            "return": 93.60835351746069,
+            "final_pose": [
+              -28.954904556274414,
+              -30.175474166870117,
+              -1.8638825416564941,
+              2.743143699407894
+            ],
+            "final_bearing_deg": 11.304106968591402,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300106025,
+            "outcome": "out_of_bounds",
+            "steps": 183,
+            "final_distance_m": 23.309904669373243,
+            "is_success": false,
+            "return": 33.60588992934215,
+            "final_pose": [
+              -11.310735702514648,
+              -1.9279203414916992,
+              -3.1597373485565186,
+              1.792160729559768
+            ],
+            "final_bearing_deg": 69.3374159617865,
+            "oob_kind": "altitude_high",
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          },
+          {
+            "seed": 300106026,
+            "outcome": "collision",
+            "steps": 50,
+            "final_distance_m": 58.032857829180536,
+            "is_success": false,
+            "return": 5.0791125035306095,
+            "final_pose": [
+              -18.456539154052734,
+              -14.830659866333008,
+              -1.8234124183654785,
+              1.5851891643046798
+            ],
+            "final_bearing_deg": -64.48014360926577,
+            "oob_kind": null,
+            "collision_source": "footprint",
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "footprint_contact": {
+              "tag": "obs_0034",
+              "asset": "searsia_lucida_c",
+              "gap_m": 0.9838,
+              "rule": "footprint",
+              "bearing_deg": -91.8,
+              "drone_forward_m_s": 1.806,
+              "shape": "outline",
+              "circle_gap_m": 0.7481
+            },
+            "retries": 0
+          },
+          {
+            "seed": 300106027,
+            "outcome": "collision",
+            "steps": 59,
+            "final_distance_m": 63.9536651381742,
+            "is_success": false,
+            "return": 2.825390371582168,
+            "final_pose": [
+              -18.584463119506836,
+              13.91382122039795,
+              -1.9482421875,
+              -0.47687909352242763
+            ],
+            "final_bearing_deg": -8.498594070403989,
+            "oob_kind": null,
+            "collision_source": "footprint",
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "footprint_contact": {
+              "tag": "obs_0039",
+              "asset": "searsia_lucida_c",
+              "gap_m": 0.9622,
+              "rule": "footprint",
+              "bearing_deg": -73.16,
+              "drone_forward_m_s": 1.887,
+              "shape": "outline",
+              "circle_gap_m": 0.9508
+            },
+            "retries": 0
+          },
+          {
+            "seed": 300106028,
+            "outcome": "collision",
+            "steps": 89,
+            "final_distance_m": 50.69566677700947,
+            "is_success": false,
+            "return": 6.116860068172594,
+            "final_pose": [
+              -15.425448417663574,
+              3.154755115509033,
+              -1.9472922086715698,
+              0.48174986063323383
+            ],
+            "final_bearing_deg": -15.190033684405496,
+            "oob_kind": null,
+            "collision_source": "footprint",
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "footprint_contact": {
+              "tag": "obs_0012",
+              "asset": "searsia_burchellii_medium",
+              "gap_m": 0.993,
+              "rule": "footprint",
+              "bearing_deg": -60.25,
+              "drone_forward_m_s": 0.023,
+              "shape": "outline",
+              "circle_gap_m": 0.7293
+            },
+            "retries": 0
+          },
+          {
+            "seed": 300106029,
+            "outcome": "success",
+            "steps": 168,
+            "final_distance_m": 4.8613420451551175,
+            "is_success": true,
+            "return": 69.48043811534848,
+            "final_pose": [
+              13.860872268676758,
+              29.22695541381836,
+              -2.0159902572631836,
+              1.758823771864521
+            ],
+            "final_bearing_deg": 10.911832760717385,
+            "oob_kind": null,
+            "collision_source": null,
+            "n_movers": 0,
+            "mover_in_view": null,
+            "mover_contact": null,
+            "retries": 0
+          }
+        ],
+        "backend_faults": {
+          "fault_counts": {
+            "CameraPoseError": 0,
+            "StepTimingError": 0,
+            "StaleStateError": 0,
+            "CommandTimeoutError": 0,
+            "Timeout": 0,
+            "ConnectionReset": 0,
+            "KinematicsJumpError": 0,
+            "SimRequestTimeoutError": 0,
+            "ObjectMoveRefusedError": 0,
+            "FrameTimeoutError": 0,
+            "FrameTimestampError": 0,
+            "ResetPoseError": 0,
+            "StartCollisionError": 0,
+            "SetPoseError": 0,
+            "EpisodeSetupError": 0,
+            "SimExitedError": 0,
+            "SimReadyTimeout": 0,
+            "SimConnectionLostError": 0
+          },
+          "recovered_counts": {
+            "CameraPoseError": 0,
+            "StepTimingError": 0,
+            "StaleStateError": 0,
+            "CommandTimeoutError": 0,
+            "Timeout": 0,
+            "ConnectionReset": 0,
+            "KinematicsJumpError": 0,
+            "SimRequestTimeoutError": 0,
+            "ObjectMoveRefusedError": 0,
+            "FrameTimeoutError": 0,
+            "FrameTimestampError": 0,
+            "ResetPoseError": 0,
+            "StartCollisionError": 0,
+            "SetPoseError": 0,
+            "EpisodeSetupError": 0,
+            "SimExitedError": 0,
+            "SimReadyTimeout": 0,
+            "SimConnectionLostError": 0
+          },
+          "relaunch_count": 0
+        }
+      }
+    }
+  },
+  "deterministic_gate_pass_by_checkpoint": {
+    "s02_pick": false
+  },
+  "pass": false,
+  "notes": [
+    "Both checkpoints are gated and reported without selection; which checkpoint (if either) flies M3's data collection is the controller's decision, not this script's.",
+    "A 20-episode eval cannot distinguish 0.85 from 1.0 against a 0.95 threshold; this run uses >= 200 episodes specifically so it can.",
+    "Held out for both checkpoints: training-time evaluation (best_model.zip selection) draws its episodes from EVAL_CALLBACK_SEED_BASE (200,000,000+), disjoint from this gate's EVAL_SEED_BASE range, and training workers draw from ranges below both. (The 2026-09-17 run predates this: its EvalCallback walked seeds 100,000,000+0..~177, overlapping this gate's -- see docs/decisions/2026-09-25-code-review-findings.md.)"
+  ],
+  "cumulative_backend_faults": {
+    "instance": 3,
+    "fault_counts": {
+      "CameraPoseError": 0,
+      "StepTimingError": 0,
+      "StaleStateError": 0,
+      "CommandTimeoutError": 0,
+      "Timeout": 0,
+      "ConnectionReset": 0,
+      "KinematicsJumpError": 0,
+      "SimRequestTimeoutError": 0,
+      "ObjectMoveRefusedError": 0,
+      "FrameTimeoutError": 0,
+      "FrameTimestampError": 0,
+      "ResetPoseError": 0,
+      "StartCollisionError": 0,
+      "SetPoseError": 0,
+      "EpisodeSetupError": 0,
+      "SimExitedError": 0,
+      "SimReadyTimeout": 0,
+      "SimConnectionLostError": 0
+    },
+    "recovered_counts": {
+      "CameraPoseError": 0,
+      "StepTimingError": 0,
+      "StaleStateError": 0,
+      "CommandTimeoutError": 0,
+      "Timeout": 0,
+      "ConnectionReset": 0,
+      "KinematicsJumpError": 0,
+      "SimRequestTimeoutError": 0,
+      "ObjectMoveRefusedError": 0,
+      "FrameTimeoutError": 0,
+      "FrameTimestampError": 0,
+      "ResetPoseError": 0,
+      "StartCollisionError": 0,
+      "SetPoseError": 0,
+      "EpisodeSetupError": 0,
+      "SimExitedError": 0,
+      "SimReadyTimeout": 0,
+      "SimConnectionLostError": 0
+    },
+    "relaunch_count": 0
+  },
+  "engine_faults": {
+    "xid_delta": 0,
+    "boot_changed": false,
+    "device_lost": {
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst3/sim.log": 0
+    },
+    "logs_scanned": 1,
+    "kernel_journal_readable": true
+  },
+  "faults_ok": true,
+  "throughput_projection": null,
+  "throughput_projection_missing": "scene s06 has no throughput measurement of its own: pass --out to scripts/measure_instances.py --scene s06",
+  "status": "ok",
+  "error": null,
+  "run_started": "2026-10-08 17:18:46",
+  "run_finished": "2026-10-08 17:29:48"
+}

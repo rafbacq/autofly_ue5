@@ -1,0 +1,73 @@
+{
+  "version": 1,
+  "kind": "autofly_ue5 collection campaign (scripts/collect_campaign.py)",
+  "created": "2026-10-08 20:46:45",
+  "targets": "assets/targets.json",
+  "targets_sha256": "0a8bfa72f11d2c590b6d3a42a222450875c5347d3e26030029648f49f36ae7b7",
+  "data_root": "data",
+  "records_dir": "runs/collect",
+  "episodes_per_batch": 50,
+  "max_attempts": 200,
+  "slots": [
+    7
+  ],
+  "scenes": {
+    "s07": {
+      "pilot": "runs/expert/s01d_r6/averaged/avg_250k_550k.zip",
+      "pilot_sha256": "55e666a555800de5a1fe97c89de58a667b333d45c2cb17a4ff6ce1c3944efbfd",
+      "scene_config": "scene_autofly_s07_fast.jsonc",
+      "split": "train",
+      "episodes_per_batch": 50,
+      "batches": 1,
+      "first_batch": 0,
+      "slots": [
+        7
+      ],
+      "footprint": null
+    }
+  },
+  "jobs": [
+    {
+      "scene": "s07",
+      "batch": 0,
+      "name": "s07_c0",
+      "job": "collect_s07_c0",
+      "slot": 7,
+      "seed_slice": 71,
+      "seed_base": 471000000,
+      "episodes": 50,
+      "max_attempts": 200,
+      "store": "data/s07_c0",
+      "record": "runs/collect/s07_c0.json",
+      "argv": [
+        "env",
+        "-u",
+        "PYTHONPATH",
+        ".venv/bin/python",
+        "scripts/collect_dataset.py",
+        "--scene",
+        "s07",
+        "--model",
+        "runs/expert/s01d_r6/averaged/avg_250k_550k.zip",
+        "--scene-config",
+        "scene_autofly_s07_fast.jsonc",
+        "--name",
+        "s07_c0",
+        "--episodes",
+        "50",
+        "--max-attempts",
+        "200",
+        "--seed-slice",
+        "71",
+        "--instance",
+        "7",
+        "--targets",
+        "assets/targets.json",
+        "--out",
+        "runs/collect/s07_c0.json",
+        "--no-export"
+      ],
+      "command": "env -u PYTHONPATH .venv/bin/python scripts/collect_dataset.py --scene s07 --model runs/expert/s01d_r6/averaged/avg_250k_550k.zip --scene-config scene_autofly_s07_fast.jsonc --name s07_c0 --episodes 50 --max-attempts 200 --seed-slice 71 --instance 7 --targets assets/targets.json --out runs/collect/s07_c0.json --no-export"
+    }
+  ]
+}

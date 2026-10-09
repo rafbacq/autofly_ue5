@@ -1,0 +1,5840 @@
+{
+  "scene": "s01",
+  "map_path": "/Game/AutoFly/Maps/S01",
+  "scene_config": "scene_autofly_s01_fast.jsonc",
+  "instance": 9,
+  "pool": {
+    "path": "assets/targets.json",
+    "sha256": "0a8bfa72f11d2c590b6d3a42a222450875c5347d3e26030029648f49f36ae7b7"
+  },
+  "registry_sha256": "0933ba34b73849958d837658b1c3bbaae35cb8a9dedce845c4fd8fb8229ca3ff",
+  "started": "2026-10-08 20:50:06",
+  "pass": true,
+  "error": null,
+  "view_pose": [
+    -33.0,
+    33.0,
+    -2.0,
+    -1.5707963267948966
+  ],
+  "spawn_table": {
+    "size": 192,
+    "missing": []
+  },
+  "settle_steps": 5,
+  "targets": [
+    {
+      "index": 0,
+      "name": "covered car",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_covered_car",
+      "short_name": "tgt_covered_car",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        0.913,
+        0.913,
+        0.913
+      ],
+      "distance_m": 8.999,
+      "position": [
+        -33.0,
+        23.6012,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          23.6012,
+          -0.6442
+        ],
+        "expected_size": [
+          1.6334,
+          3.9992,
+          1.2883
+        ],
+        "got_centre": [
+          -33.0,
+          23.6012,
+          -0.6442
+        ],
+        "got_size": [
+          1.6333,
+          3.9992,
+          1.2883
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 6.999,
+        "expected_far_m": 10.998,
+        "centre_depth_m": 7.52,
+        "region_min_m": 6.828,
+        "region_px": 870,
+        "target_px": 712,
+        "hit_share": 0.8184,
+        "changed_share": 1.0,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "00_tgt_covered_car_rgb.png",
+      "depth_png": "00_tgt_covered_car_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": true,
+      "first_step_depth": {
+        "expected_near_m": 6.999,
+        "expected_far_m": 10.998,
+        "centre_depth_m": 12.984,
+        "region_min_m": 6.938,
+        "region_px": 870,
+        "target_px": 180,
+        "hit_share": 0.2069,
+        "changed_share": 0.6897,
+        "ok": true
+      },
+      "projected_box_px": {
+        "rows": [
+          136,
+          164
+        ],
+        "cols": [
+          113,
+          142
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 1,
+      "name": "red sedan",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_sedan",
+      "short_name": "tgt_sedan",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        1.568,
+        1.568,
+        1.568
+      ],
+      "distance_m": 8.998,
+      "position": [
+        -33.0,
+        23.6024,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          23.6024,
+          -1.0192
+        ],
+        "expected_size": [
+          2.352,
+          3.9984,
+          2.0384
+        ],
+        "got_centre": [
+          -33.0,
+          23.6024,
+          -1.0192
+        ],
+        "got_size": [
+          2.352,
+          3.9984,
+          2.0384
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 6.998,
+        "expected_far_m": 10.997,
+        "centre_depth_m": 7.664,
+        "region_min_m": 6.973,
+        "region_px": 1672,
+        "target_px": 1008,
+        "hit_share": 0.6029,
+        "changed_share": 0.7608,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "01_tgt_sedan_rgb.png",
+      "depth_png": "01_tgt_sedan_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 6.998,
+        "expected_far_m": 10.997,
+        "centre_depth_m": 18.906,
+        "region_min_m": 6.992,
+        "region_px": 1672,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0556,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          127,
+          164
+        ],
+        "cols": [
+          106,
+          149
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 2,
+      "name": "green hatchback",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_hatchback_sports",
+      "short_name": "tgt_hatchback_sports",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        1.333,
+        1.333,
+        1.333
+      ],
+      "distance_m": 8.699,
+      "position": [
+        -33.0,
+        23.9014,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          23.9014,
+          -0.7331
+        ],
+        "expected_size": [
+          1.7329,
+          3.799,
+          1.4663
+        ],
+        "got_centre": [
+          -33.0,
+          23.9014,
+          -0.7331
+        ],
+        "got_size": [
+          1.7329,
+          3.799,
+          1.4663
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 6.799,
+        "expected_far_m": 10.598,
+        "centre_depth_m": 7.395,
+        "region_min_m": 6.797,
+        "region_px": 1088,
+        "target_px": 720,
+        "hit_share": 0.6618,
+        "changed_share": 0.7096,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "02_tgt_hatchback_sports_rgb.png",
+      "depth_png": "02_tgt_hatchback_sports_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 6.799,
+        "expected_far_m": 10.598,
+        "centre_depth_m": 13.812,
+        "region_min_m": 6.816,
+        "region_px": 1088,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          134,
+          165
+        ],
+        "cols": [
+          111,
+          144
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 3,
+      "name": "blue van",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_van",
+      "short_name": "tgt_van",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        1.454,
+        1.454,
+        1.454
+      ],
+      "distance_m": 8.998,
+      "position": [
+        -33.0,
+        23.6023,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          23.6023,
+          -0.9814
+        ],
+        "expected_size": [
+          2.181,
+          3.9985,
+          1.9629
+        ],
+        "got_centre": [
+          -33.0,
+          23.6022,
+          -0.9814
+        ],
+        "got_size": [
+          2.181,
+          3.9985,
+          1.9629
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 6.998,
+        "expected_far_m": 10.997,
+        "centre_depth_m": 7.613,
+        "region_min_m": 7.0,
+        "region_px": 1480,
+        "target_px": 940,
+        "hit_share": 0.6351,
+        "changed_share": 0.6824,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "03_tgt_van_rgb.png",
+      "depth_png": "03_tgt_van_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 6.998,
+        "expected_far_m": 10.997,
+        "centre_depth_m": 17.625,
+        "region_min_m": 7.004,
+        "region_px": 1480,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          128,
+          164
+        ],
+        "cols": [
+          108,
+          147
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 4,
+      "name": "yellow taxi",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_taxi",
+      "short_name": "tgt_taxi",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        1.454,
+        1.454,
+        1.454
+      ],
+      "distance_m": 8.998,
+      "position": [
+        -33.0,
+        23.6023,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          23.6023,
+          -1.0905
+        ],
+        "expected_size": [
+          2.181,
+          3.9985,
+          2.181
+        ],
+        "got_centre": [
+          -33.0,
+          23.6022,
+          -1.0905
+        ],
+        "got_size": [
+          2.181,
+          3.9985,
+          2.181
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 6.998,
+        "expected_far_m": 10.997,
+        "centre_depth_m": 8.055,
+        "region_min_m": 7.0,
+        "region_px": 1640,
+        "target_px": 902,
+        "hit_share": 0.55,
+        "changed_share": 0.5976,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "04_tgt_taxi_rgb.png",
+      "depth_png": "04_tgt_taxi_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 6.998,
+        "expected_far_m": 10.997,
+        "centre_depth_m": 20.453,
+        "region_min_m": 7.004,
+        "region_px": 1640,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          124,
+          164
+        ],
+        "cols": [
+          108,
+          147
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 5,
+      "name": "police car",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_police",
+      "short_name": "tgt_police",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        1.29,
+        1.29,
+        1.29
+      ],
+      "distance_m": 8.998,
+      "position": [
+        -33.0,
+        23.6015,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          23.6015,
+          -0.8385
+        ],
+        "expected_size": [
+          1.935,
+          3.999,
+          1.677
+        ],
+        "got_centre": [
+          -33.0,
+          23.6015,
+          -0.8385
+        ],
+        "got_size": [
+          1.935,
+          3.999,
+          1.677
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 6.999,
+        "expected_far_m": 10.998,
+        "centre_depth_m": 7.828,
+        "region_min_m": 7.0,
+        "region_px": 1224,
+        "target_px": 660,
+        "hit_share": 0.5392,
+        "changed_share": 0.6127,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "05_tgt_police_rgb.png",
+      "depth_png": "05_tgt_police_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 6.999,
+        "expected_far_m": 10.998,
+        "centre_depth_m": 15.5,
+        "region_min_m": 7.004,
+        "region_px": 1224,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          131,
+          164
+        ],
+        "cols": [
+          110,
+          145
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 6,
+      "name": "ambulance",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_ambulance",
+      "short_name": "tgt_ambulance",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        1.23,
+        1.23,
+        1.23
+      ],
+      "distance_m": 8.996,
+      "position": [
+        -33.0,
+        23.6038,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          23.6038,
+          -1.107
+        ],
+        "expected_size": [
+          1.845,
+          3.9975,
+          2.214
+        ],
+        "got_centre": [
+          -33.0,
+          23.6038,
+          -1.107
+        ],
+        "got_size": [
+          1.845,
+          3.9975,
+          2.214
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 6.997,
+        "expected_far_m": 10.995,
+        "centre_depth_m": 7.715,
+        "region_min_m": 7.0,
+        "region_px": 1394,
+        "target_px": 886,
+        "hit_share": 0.6356,
+        "changed_share": 0.6643,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "06_tgt_ambulance_rgb.png",
+      "depth_png": "06_tgt_ambulance_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 6.997,
+        "expected_far_m": 10.995,
+        "centre_depth_m": 20.453,
+        "region_min_m": 7.004,
+        "region_px": 1394,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          124,
+          164
+        ],
+        "cols": [
+          111,
+          144
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 7,
+      "name": "red fire truck",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_firetruck",
+      "short_name": "tgt_firetruck",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        1.176,
+        1.176,
+        1.176
+      ],
+      "distance_m": 8.998,
+      "position": [
+        -33.0,
+        23.6024,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          23.6024,
+          -0.9996
+        ],
+        "expected_size": [
+          1.764,
+          3.9984,
+          1.9992
+        ],
+        "got_centre": [
+          -33.0,
+          23.6024,
+          -0.9996
+        ],
+        "got_size": [
+          1.764,
+          3.9984,
+          1.9992
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 6.998,
+        "expected_far_m": 10.997,
+        "centre_depth_m": 7.344,
+        "region_min_m": 7.0,
+        "region_px": 1258,
+        "target_px": 888,
+        "hit_share": 0.7059,
+        "changed_share": 0.7313,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "07_tgt_firetruck_rgb.png",
+      "depth_png": "07_tgt_firetruck_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 6.998,
+        "expected_far_m": 10.997,
+        "centre_depth_m": 17.625,
+        "region_min_m": 7.004,
+        "region_px": 1258,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          128,
+          164
+        ],
+        "cols": [
+          111,
+          144
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 8,
+      "name": "green garbage truck",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_garbage_truck",
+      "short_name": "tgt_garbage_truck",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        1.159,
+        1.159,
+        1.159
+      ],
+      "distance_m": 8.998,
+      "position": [
+        -33.0,
+        23.6022,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          23.6022,
+          -0.9272
+        ],
+        "expected_size": [
+          1.8544,
+          3.9986,
+          1.8544
+        ],
+        "got_centre": [
+          -33.0,
+          23.6022,
+          -0.9272
+        ],
+        "got_size": [
+          1.8544,
+          3.9985,
+          1.8544
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 6.999,
+        "expected_far_m": 10.997,
+        "centre_depth_m": 7.359,
+        "region_min_m": 7.0,
+        "region_px": 1224,
+        "target_px": 826,
+        "hit_share": 0.6748,
+        "changed_share": 0.7108,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "08_tgt_garbage_truck_rgb.png",
+      "depth_png": "08_tgt_garbage_truck_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 6.999,
+        "expected_far_m": 10.997,
+        "centre_depth_m": 16.5,
+        "region_min_m": 7.004,
+        "region_px": 1224,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          129,
+          164
+        ],
+        "cols": [
+          111,
+          144
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 9,
+      "name": "yellow suv",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_suv_luxury",
+      "short_name": "tgt_suv_luxury",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        1.403,
+        1.403,
+        1.403
+      ],
+      "distance_m": 8.998,
+      "position": [
+        -33.0,
+        23.6022,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          23.6022,
+          -0.912
+        ],
+        "expected_size": [
+          2.1045,
+          3.9986,
+          1.8239
+        ],
+        "got_centre": [
+          -33.0,
+          23.6022,
+          -0.9119
+        ],
+        "got_size": [
+          2.1045,
+          3.9985,
+          1.8239
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 6.999,
+        "expected_far_m": 10.997,
+        "centre_depth_m": 7.344,
+        "region_min_m": 7.0,
+        "region_px": 1400,
+        "target_px": 846,
+        "hit_share": 0.6043,
+        "changed_share": 0.6614,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "09_tgt_suv_luxury_rgb.png",
+      "depth_png": "09_tgt_suv_luxury_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 6.999,
+        "expected_far_m": 10.997,
+        "centre_depth_m": 16.5,
+        "region_min_m": 7.004,
+        "region_px": 1400,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          130,
+          164
+        ],
+        "cols": [
+          108,
+          147
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 10,
+      "name": "white pickup truck",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_truck_flat",
+      "short_name": "tgt_truck_flat",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        1.457,
+        1.457,
+        1.457
+      ],
+      "distance_m": 8.999,
+      "position": [
+        -33.0,
+        23.6006,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          23.6006,
+          -0.947
+        ],
+        "expected_size": [
+          2.1855,
+          3.9996,
+          1.8941
+        ],
+        "got_centre": [
+          -33.0,
+          23.6006,
+          -0.947
+        ],
+        "got_size": [
+          2.1855,
+          3.9996,
+          1.8941
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 7.0,
+        "expected_far_m": 10.999,
+        "centre_depth_m": 7.547,
+        "region_min_m": 7.0,
+        "region_px": 1440,
+        "target_px": 916,
+        "hit_share": 0.6361,
+        "changed_share": 0.6847,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "10_tgt_truck_flat_rgb.png",
+      "depth_png": "10_tgt_truck_flat_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 7.0,
+        "expected_far_m": 10.999,
+        "centre_depth_m": 17.625,
+        "region_min_m": 7.004,
+        "region_px": 1440,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          129,
+          164
+        ],
+        "cols": [
+          108,
+          147
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 11,
+      "name": "crane",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_crane",
+      "short_name": "tgt_crane",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "distance_m": 8.52,
+      "position": [
+        -33.0,
+        24.0796,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          24.0796,
+          -1.7767
+        ],
+        "expected_size": [
+          1.926,
+          3.6803,
+          3.5533
+        ],
+        "got_centre": [
+          -33.0,
+          24.0795,
+          -1.7767
+        ],
+        "got_size": [
+          1.926,
+          3.6803,
+          3.5533
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 6.68,
+        "expected_far_m": 10.361,
+        "centre_depth_m": 7.09,
+        "region_min_m": 6.633,
+        "region_px": 2622,
+        "target_px": 900,
+        "hit_share": 0.3432,
+        "changed_share": 0.3822,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "11_tgt_crane_rgb.png",
+      "depth_png": "11_tgt_crane_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 6.68,
+        "expected_far_m": 10.361,
+        "centre_depth_m": 64.938,
+        "region_min_m": 6.637,
+        "region_px": 2622,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          98,
+          166
+        ],
+        "cols": [
+          109,
+          146
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 12,
+      "name": "green front loader",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_tractor_shovel",
+      "short_name": "tgt_tractor_shovel",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        1.416,
+        1.416,
+        1.416
+      ],
+      "distance_m": 8.246,
+      "position": [
+        -33.0,
+        24.3535,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          24.3535,
+          -1.0705
+        ],
+        "expected_size": [
+          2.3514,
+          3.4977,
+          2.141
+        ],
+        "got_centre": [
+          -33.0,
+          24.3535,
+          -1.0705
+        ],
+        "got_size": [
+          2.3514,
+          3.4976,
+          2.141
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0001,
+          0.0001,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 6.498,
+        "expected_far_m": 9.995,
+        "centre_depth_m": 7.773,
+        "region_min_m": 6.469,
+        "region_px": 2064,
+        "target_px": 1236,
+        "hit_share": 0.5988,
+        "changed_share": 0.6492,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "12_tgt_tractor_shovel_rgb.png",
+      "depth_png": "12_tgt_tractor_shovel_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 6.498,
+        "expected_far_m": 9.995,
+        "centre_depth_m": 17.625,
+        "region_min_m": 6.473,
+        "region_px": 2064,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          125,
+          167
+        ],
+        "cols": [
+          104,
+          151
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 13,
+      "name": "orange cylinder",
+      "status": "primitive",
+      "drawn": true,
+      "asset": "cylinder",
+      "short_name": "Cylinder",
+      "material_key": "orange",
+      "material": "/Game/Geometry/Materials/M_Orange",
+      "scale": [
+        1.0,
+        1.0,
+        2.0
+      ],
+      "distance_m": 6.0,
+      "position": [
+        -33.0,
+        26.6,
+        -1.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          26.6,
+          -1.0
+        ],
+        "expected_size": [
+          1.0,
+          1.0,
+          2.0
+        ],
+        "got_centre": [
+          -33.0,
+          26.6,
+          -1.0
+        ],
+        "got_size": [
+          1.0,
+          1.0,
+          2.0
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 5.5,
+        "expected_far_m": 6.5,
+        "centre_depth_m": 5.504,
+        "region_min_m": 5.492,
+        "region_px": 1128,
+        "target_px": 996,
+        "hit_share": 0.883,
+        "changed_share": 0.8901,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "13_cylinder_rgb.png",
+      "depth_png": "13_cylinder_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 5.5,
+        "expected_far_m": 6.5,
+        "centre_depth_m": 11.883,
+        "region_min_m": 5.5,
+        "region_px": 1128,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          128,
+          174
+        ],
+        "cols": [
+          116,
+          139
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 14,
+      "name": "blue cylinder",
+      "status": "primitive",
+      "drawn": true,
+      "asset": "cylinder",
+      "short_name": "Cylinder",
+      "material_key": "runtime_blue",
+      "material": "/Game/AutoFly/Materials/Runtime/M_Blue",
+      "scale": [
+        1.0,
+        1.0,
+        2.0
+      ],
+      "distance_m": 6.0,
+      "position": [
+        -33.0,
+        26.6,
+        -1.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          26.6,
+          -1.0
+        ],
+        "expected_size": [
+          1.0,
+          1.0,
+          2.0
+        ],
+        "got_centre": [
+          -33.0,
+          26.6,
+          -1.0
+        ],
+        "got_size": [
+          1.0,
+          1.0,
+          2.0
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 5.5,
+        "expected_far_m": 6.5,
+        "centre_depth_m": 5.504,
+        "region_min_m": 5.492,
+        "region_px": 1128,
+        "target_px": 996,
+        "hit_share": 0.883,
+        "changed_share": 0.8901,
+        "ok": true
+      },
+      "colour": {
+        "expected_rgba": [
+          0.1,
+          0.25,
+          0.85,
+          1.0
+        ],
+        "observed_mean_rgb": [
+          35.3,
+          67.3,
+          129.4
+        ],
+        "checked_order": [
+          "B>R",
+          "B>G"
+        ],
+        "ok": true
+      },
+      "rgb_png": "14_cylinder_rgb.png",
+      "depth_png": "14_cylinder_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 5.5,
+        "expected_far_m": 6.5,
+        "centre_depth_m": 11.883,
+        "region_min_m": 5.5,
+        "region_px": 1128,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          128,
+          174
+        ],
+        "cols": [
+          116,
+          139
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 15,
+      "name": "red cylinder",
+      "status": "primitive",
+      "drawn": true,
+      "asset": "cylinder",
+      "short_name": "Cylinder",
+      "material_key": "runtime_red",
+      "material": "/Game/AutoFly/Materials/Runtime/M_Red",
+      "scale": [
+        1.0,
+        1.0,
+        2.0
+      ],
+      "distance_m": 6.0,
+      "position": [
+        -33.0,
+        26.6,
+        -1.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          26.6,
+          -1.0
+        ],
+        "expected_size": [
+          1.0,
+          1.0,
+          2.0
+        ],
+        "got_centre": [
+          -33.0,
+          26.6,
+          -1.0
+        ],
+        "got_size": [
+          1.0,
+          1.0,
+          2.0
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 5.5,
+        "expected_far_m": 6.5,
+        "centre_depth_m": 5.504,
+        "region_min_m": 5.492,
+        "region_px": 1128,
+        "target_px": 996,
+        "hit_share": 0.883,
+        "changed_share": 0.8901,
+        "ok": true
+      },
+      "colour": {
+        "expected_rgba": [
+          0.8,
+          0.1,
+          0.1,
+          1.0
+        ],
+        "observed_mean_rgb": [
+          108.5,
+          45.7,
+          47.4
+        ],
+        "checked_order": [
+          "R>G",
+          "R>B"
+        ],
+        "ok": true
+      },
+      "rgb_png": "15_cylinder_rgb.png",
+      "depth_png": "15_cylinder_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 5.5,
+        "expected_far_m": 6.5,
+        "centre_depth_m": 11.883,
+        "region_min_m": 5.5,
+        "region_px": 1128,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          128,
+          174
+        ],
+        "cols": [
+          116,
+          139
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 16,
+      "name": "yellow cylinder",
+      "status": "primitive",
+      "drawn": true,
+      "asset": "cylinder",
+      "short_name": "Cylinder",
+      "material_key": "runtime_yellow",
+      "material": "/Game/AutoFly/Materials/Runtime/M_Yellow",
+      "scale": [
+        1.0,
+        1.0,
+        2.0
+      ],
+      "distance_m": 6.0,
+      "position": [
+        -33.0,
+        26.6,
+        -1.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          26.6,
+          -1.0
+        ],
+        "expected_size": [
+          1.0,
+          1.0,
+          2.0
+        ],
+        "got_centre": [
+          -33.0,
+          26.6,
+          -1.0
+        ],
+        "got_size": [
+          1.0,
+          1.0,
+          2.0
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 5.5,
+        "expected_far_m": 6.5,
+        "centre_depth_m": 5.504,
+        "region_min_m": 5.492,
+        "region_px": 1128,
+        "target_px": 996,
+        "hit_share": 0.883,
+        "changed_share": 0.8901,
+        "ok": true
+      },
+      "colour": {
+        "expected_rgba": [
+          0.9,
+          0.8,
+          0.1,
+          1.0
+        ],
+        "observed_mean_rgb": [
+          120.7,
+          122.9,
+          53.5
+        ],
+        "checked_order": [
+          "R>B",
+          "G>B"
+        ],
+        "ok": true
+      },
+      "rgb_png": "16_cylinder_rgb.png",
+      "depth_png": "16_cylinder_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 5.5,
+        "expected_far_m": 6.5,
+        "centre_depth_m": 11.883,
+        "region_min_m": 5.5,
+        "region_px": 1128,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          128,
+          174
+        ],
+        "cols": [
+          116,
+          139
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 17,
+      "name": "red cube",
+      "status": "primitive",
+      "drawn": true,
+      "asset": "cube",
+      "short_name": "Cube",
+      "material_key": "runtime_red",
+      "material": "/Game/AutoFly/Materials/Runtime/M_Red",
+      "scale": [
+        1.2,
+        1.2,
+        1.2
+      ],
+      "distance_m": 4.8,
+      "position": [
+        -33.0,
+        27.8,
+        -0.6
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          27.8,
+          -0.6
+        ],
+        "expected_size": [
+          1.2,
+          1.2,
+          1.2
+        ],
+        "got_centre": [
+          -33.0,
+          27.8,
+          -0.6
+        ],
+        "got_size": [
+          1.2,
+          1.2,
+          1.2
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 4.2,
+        "expected_far_m": 5.4,
+        "centre_depth_m": 4.199,
+        "region_min_m": 4.199,
+        "region_px": 1634,
+        "target_px": 1458,
+        "hit_share": 0.8923,
+        "changed_share": 0.8923,
+        "ok": true
+      },
+      "colour": {
+        "expected_rgba": [
+          0.8,
+          0.1,
+          0.1,
+          1.0
+        ],
+        "observed_mean_rgb": [
+          81.2,
+          32.8,
+          36.9
+        ],
+        "checked_order": [
+          "R>G",
+          "R>B"
+        ],
+        "ok": true
+      },
+      "rgb_png": "17_cube_rgb.png",
+      "depth_png": "17_cube_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 4.2,
+        "expected_far_m": 5.4,
+        "centre_depth_m": 6.816,
+        "region_min_m": 4.227,
+        "region_px": 1634,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          146,
+          188
+        ],
+        "cols": [
+          109,
+          146
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 18,
+      "name": "green cube",
+      "status": "primitive",
+      "drawn": true,
+      "asset": "cube",
+      "short_name": "Cube",
+      "material_key": "runtime_green",
+      "material": "/Game/AutoFly/Materials/Runtime/M_Green",
+      "scale": [
+        1.2,
+        1.2,
+        1.2
+      ],
+      "distance_m": 4.8,
+      "position": [
+        -33.0,
+        27.8,
+        -0.6
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          27.8,
+          -0.6
+        ],
+        "expected_size": [
+          1.2,
+          1.2,
+          1.2
+        ],
+        "got_centre": [
+          -33.0,
+          27.8,
+          -0.6
+        ],
+        "got_size": [
+          1.2,
+          1.2,
+          1.2
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 4.2,
+        "expected_far_m": 5.4,
+        "centre_depth_m": 4.199,
+        "region_min_m": 4.199,
+        "region_px": 1634,
+        "target_px": 1458,
+        "hit_share": 0.8923,
+        "changed_share": 0.8923,
+        "ok": true
+      },
+      "colour": {
+        "expected_rgba": [
+          0.1,
+          0.6,
+          0.2,
+          1.0
+        ],
+        "observed_mean_rgb": [
+          17.5,
+          83.4,
+          54.5
+        ],
+        "checked_order": [
+          "G>R",
+          "G>B"
+        ],
+        "ok": true
+      },
+      "rgb_png": "18_cube_rgb.png",
+      "depth_png": "18_cube_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 4.2,
+        "expected_far_m": 5.4,
+        "centre_depth_m": 6.816,
+        "region_min_m": 4.227,
+        "region_px": 1634,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          146,
+          188
+        ],
+        "cols": [
+          109,
+          146
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 19,
+      "name": "yellow cube",
+      "status": "primitive",
+      "drawn": true,
+      "asset": "cube",
+      "short_name": "Cube",
+      "material_key": "runtime_yellow",
+      "material": "/Game/AutoFly/Materials/Runtime/M_Yellow",
+      "scale": [
+        1.2,
+        1.2,
+        1.2
+      ],
+      "distance_m": 4.8,
+      "position": [
+        -33.0,
+        27.8,
+        -0.6
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          27.8,
+          -0.6
+        ],
+        "expected_size": [
+          1.2,
+          1.2,
+          1.2
+        ],
+        "got_centre": [
+          -33.0,
+          27.8,
+          -0.6
+        ],
+        "got_size": [
+          1.2,
+          1.2,
+          1.2
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 4.2,
+        "expected_far_m": 5.4,
+        "centre_depth_m": 4.199,
+        "region_min_m": 4.199,
+        "region_px": 1634,
+        "target_px": 1458,
+        "hit_share": 0.8923,
+        "changed_share": 0.8923,
+        "ok": true
+      },
+      "colour": {
+        "expected_rgba": [
+          0.9,
+          0.8,
+          0.1,
+          1.0
+        ],
+        "observed_mean_rgb": [
+          90.8,
+          97.2,
+          40.2
+        ],
+        "checked_order": [
+          "R>B",
+          "G>B"
+        ],
+        "ok": true
+      },
+      "rgb_png": "19_cube_rgb.png",
+      "depth_png": "19_cube_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 4.2,
+        "expected_far_m": 5.4,
+        "centre_depth_m": 6.816,
+        "region_min_m": 4.227,
+        "region_px": 1634,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          146,
+          188
+        ],
+        "cols": [
+          109,
+          146
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 20,
+      "name": "blue cone",
+      "status": "primitive",
+      "drawn": true,
+      "asset": "cone",
+      "short_name": "Cone",
+      "material_key": "runtime_blue",
+      "material": "/Game/AutoFly/Materials/Runtime/M_Blue",
+      "scale": [
+        1.0,
+        1.0,
+        1.5
+      ],
+      "distance_m": 5.25,
+      "position": [
+        -33.0,
+        27.35,
+        -0.75
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          27.35,
+          -0.75
+        ],
+        "expected_size": [
+          1.0,
+          1.0,
+          1.5
+        ],
+        "got_centre": [
+          -33.0,
+          27.35,
+          -0.75
+        ],
+        "got_size": [
+          1.0,
+          1.0,
+          1.5
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 4.75,
+        "expected_far_m": 5.75,
+        "centre_depth_m": 5.023,
+        "region_min_m": 4.754,
+        "region_px": 1204,
+        "target_px": 522,
+        "hit_share": 0.4336,
+        "changed_share": 0.4336,
+        "ok": true
+      },
+      "colour": {
+        "expected_rgba": [
+          0.1,
+          0.25,
+          0.85,
+          1.0
+        ],
+        "observed_mean_rgb": [
+          68.5,
+          103.7,
+          163.8
+        ],
+        "checked_order": [
+          "B>R",
+          "B>G"
+        ],
+        "ok": true
+      },
+      "rgb_png": "20_cone_rgb.png",
+      "depth_png": "20_cone_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 4.75,
+        "expected_far_m": 5.75,
+        "centre_depth_m": 8.383,
+        "region_min_m": 4.777,
+        "region_px": 1204,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          139,
+          181
+        ],
+        "cols": [
+          114,
+          141
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 21,
+      "name": "orange cone",
+      "status": "primitive",
+      "drawn": true,
+      "asset": "cone",
+      "short_name": "Cone",
+      "material_key": "orange",
+      "material": "/Game/Geometry/Materials/M_Orange",
+      "scale": [
+        1.0,
+        1.0,
+        1.5
+      ],
+      "distance_m": 5.25,
+      "position": [
+        -33.0,
+        27.35,
+        -0.75
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          27.35,
+          -0.75
+        ],
+        "expected_size": [
+          1.0,
+          1.0,
+          1.5
+        ],
+        "got_centre": [
+          -33.0,
+          27.35,
+          -0.75
+        ],
+        "got_size": [
+          1.0,
+          1.0,
+          1.5
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 4.75,
+        "expected_far_m": 5.75,
+        "centre_depth_m": 5.023,
+        "region_min_m": 4.754,
+        "region_px": 1204,
+        "target_px": 522,
+        "hit_share": 0.4336,
+        "changed_share": 0.4336,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "21_cone_rgb.png",
+      "depth_png": "21_cone_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 4.75,
+        "expected_far_m": 5.75,
+        "centre_depth_m": 8.383,
+        "region_min_m": 4.777,
+        "region_px": 1204,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          139,
+          181
+        ],
+        "cols": [
+          114,
+          141
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 22,
+      "name": "yellow sphere",
+      "status": "primitive",
+      "drawn": true,
+      "asset": "sphere",
+      "short_name": "Sphere",
+      "material_key": "runtime_yellow",
+      "material": "/Game/AutoFly/Materials/Runtime/M_Yellow",
+      "scale": [
+        1.2,
+        1.2,
+        1.2
+      ],
+      "distance_m": 4.8,
+      "position": [
+        -33.0,
+        27.8,
+        -0.6
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          27.8,
+          -0.6
+        ],
+        "expected_size": [
+          1.2,
+          1.2,
+          1.2
+        ],
+        "got_centre": [
+          -33.0,
+          27.8,
+          -0.6
+        ],
+        "got_size": [
+          1.2,
+          1.2,
+          1.2
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 4.2,
+        "expected_far_m": 5.4,
+        "centre_depth_m": 4.227,
+        "region_min_m": 4.199,
+        "region_px": 1634,
+        "target_px": 846,
+        "hit_share": 0.5177,
+        "changed_share": 0.5177,
+        "ok": true
+      },
+      "colour": {
+        "expected_rgba": [
+          0.9,
+          0.8,
+          0.1,
+          1.0
+        ],
+        "observed_mean_rgb": [
+          136.3,
+          136.7,
+          65.2
+        ],
+        "checked_order": [
+          "R>B",
+          "G>B"
+        ],
+        "ok": true
+      },
+      "rgb_png": "22_sphere_rgb.png",
+      "depth_png": "22_sphere_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 4.2,
+        "expected_far_m": 5.4,
+        "centre_depth_m": 6.816,
+        "region_min_m": 4.227,
+        "region_px": 1634,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          146,
+          188
+        ],
+        "cols": [
+          109,
+          146
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 23,
+      "name": "green sphere",
+      "status": "primitive",
+      "drawn": true,
+      "asset": "sphere",
+      "short_name": "Sphere",
+      "material_key": "runtime_green",
+      "material": "/Game/AutoFly/Materials/Runtime/M_Green",
+      "scale": [
+        1.2,
+        1.2,
+        1.2
+      ],
+      "distance_m": 4.8,
+      "position": [
+        -33.0,
+        27.8,
+        -0.6
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          27.8,
+          -0.6
+        ],
+        "expected_size": [
+          1.2,
+          1.2,
+          1.2
+        ],
+        "got_centre": [
+          -33.0,
+          27.8,
+          -0.6
+        ],
+        "got_size": [
+          1.2,
+          1.2,
+          1.2
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 4.2,
+        "expected_far_m": 5.4,
+        "centre_depth_m": 4.227,
+        "region_min_m": 4.199,
+        "region_px": 1634,
+        "target_px": 846,
+        "hit_share": 0.5177,
+        "changed_share": 0.5177,
+        "ok": true
+      },
+      "colour": {
+        "expected_rgba": [
+          0.1,
+          0.6,
+          0.2,
+          1.0
+        ],
+        "observed_mean_rgb": [
+          51.3,
+          122.1,
+          81.0
+        ],
+        "checked_order": [
+          "G>R",
+          "G>B"
+        ],
+        "ok": true
+      },
+      "rgb_png": "23_sphere_rgb.png",
+      "depth_png": "23_sphere_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 4.2,
+        "expected_far_m": 5.4,
+        "centre_depth_m": 6.816,
+        "region_min_m": 4.227,
+        "region_px": 1634,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          146,
+          188
+        ],
+        "cols": [
+          109,
+          146
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 24,
+      "name": "green cone",
+      "status": "primitive",
+      "drawn": true,
+      "asset": "cone",
+      "short_name": "Cone",
+      "material_key": "runtime_green",
+      "material": "/Game/AutoFly/Materials/Runtime/M_Green",
+      "scale": [
+        1.0,
+        1.0,
+        1.5
+      ],
+      "distance_m": 5.25,
+      "position": [
+        -33.0,
+        27.35,
+        -0.75
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          27.35,
+          -0.75
+        ],
+        "expected_size": [
+          1.0,
+          1.0,
+          1.5
+        ],
+        "got_centre": [
+          -33.0,
+          27.35,
+          -0.75
+        ],
+        "got_size": [
+          1.0,
+          1.0,
+          1.5
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 4.75,
+        "expected_far_m": 5.75,
+        "centre_depth_m": 5.023,
+        "region_min_m": 4.754,
+        "region_px": 1204,
+        "target_px": 522,
+        "hit_share": 0.4336,
+        "changed_share": 0.4336,
+        "ok": true
+      },
+      "colour": {
+        "expected_rgba": [
+          0.1,
+          0.6,
+          0.2,
+          1.0
+        ],
+        "observed_mean_rgb": [
+          68.9,
+          145.4,
+          99.1
+        ],
+        "checked_order": [
+          "G>R",
+          "G>B"
+        ],
+        "ok": true
+      },
+      "rgb_png": "24_cone_rgb.png",
+      "depth_png": "24_cone_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 4.75,
+        "expected_far_m": 5.75,
+        "centre_depth_m": 8.383,
+        "region_min_m": 4.777,
+        "region_px": 1204,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          139,
+          181
+        ],
+        "cols": [
+          114,
+          141
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 25,
+      "name": "beige sofa",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_sofa_01",
+      "short_name": "tgt_sofa_01",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "distance_m": 5.357,
+      "position": [
+        -33.0,
+        27.2428,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          27.2428,
+          -0.3983
+        ],
+        "expected_size": [
+          1.5715,
+          0.658,
+          0.7965
+        ],
+        "got_centre": [
+          -33.0,
+          27.2427,
+          -0.3983
+        ],
+        "got_size": [
+          1.5715,
+          0.658,
+          0.7965
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 5.028,
+        "expected_far_m": 5.686,
+        "centre_depth_m": 5.43,
+        "region_min_m": 5.031,
+        "region_px": 1008,
+        "target_px": 722,
+        "hit_share": 0.7163,
+        "changed_share": 0.7163,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "25_tgt_sofa_01_rgb.png",
+      "depth_png": "25_tgt_sofa_01_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 5.028,
+        "expected_far_m": 5.686,
+        "centre_depth_m": 6.637,
+        "region_min_m": 5.062,
+        "region_px": 1008,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          155,
+          178
+        ],
+        "cols": [
+          107,
+          148
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 26,
+      "name": "black leather sofa",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_sofa_02",
+      "short_name": "tgt_sofa_02",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "distance_m": 5.711,
+      "position": [
+        -33.0,
+        26.8892,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          26.8892,
+          -0.3547
+        ],
+        "expected_size": [
+          1.8072,
+          0.8178,
+          0.7095
+        ],
+        "got_centre": [
+          -33.0,
+          26.8892,
+          -0.3547
+        ],
+        "got_size": [
+          1.8072,
+          0.8178,
+          0.7095
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 5.302,
+        "expected_far_m": 6.12,
+        "centre_depth_m": 5.574,
+        "region_min_m": 5.27,
+        "region_px": 1012,
+        "target_px": 640,
+        "hit_share": 0.6324,
+        "changed_share": 0.6324,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "26_tgt_sofa_02_rgb.png",
+      "depth_png": "26_tgt_sofa_02_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 5.302,
+        "expected_far_m": 6.12,
+        "centre_depth_m": 7.004,
+        "region_min_m": 5.273,
+        "region_px": 1012,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          154,
+          176
+        ],
+        "cols": [
+          106,
+          149
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 27,
+      "name": "grey armchair",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_armchair_01",
+      "short_name": "tgt_armchair_01",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "distance_m": 4.598,
+      "position": [
+        -33.0,
+        28.0023,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          28.0023,
+          -0.5325
+        ],
+        "expected_size": [
+          0.8484,
+          0.7658,
+          1.0651
+        ],
+        "got_centre": [
+          -33.0,
+          28.0023,
+          -0.5325
+        ],
+        "got_size": [
+          0.8484,
+          0.7658,
+          1.0651
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 4.215,
+        "expected_far_m": 4.981,
+        "centre_depth_m": 4.84,
+        "region_min_m": 4.215,
+        "region_px": 962,
+        "target_px": 661,
+        "hit_share": 0.6871,
+        "changed_share": 0.6871,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "27_tgt_armchair_01_rgb.png",
+      "depth_png": "27_tgt_armchair_01_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 4.215,
+        "expected_far_m": 4.981,
+        "centre_depth_m": 6.312,
+        "region_min_m": 4.227,
+        "region_px": 962,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          152,
+          188
+        ],
+        "cols": [
+          115,
+          140
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 28,
+      "name": "green armchair",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_greenchair_01",
+      "short_name": "tgt_greenchair_01",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "distance_m": 4.588,
+      "position": [
+        -33.0,
+        28.0123,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          28.0123,
+          -0.5293
+        ],
+        "expected_size": [
+          0.6731,
+          0.6644,
+          1.0585
+        ],
+        "got_centre": [
+          -33.0,
+          28.0123,
+          -0.5293
+        ],
+        "got_size": [
+          0.6731,
+          0.6644,
+          1.0585
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 4.256,
+        "expected_far_m": 4.92,
+        "centre_depth_m": 4.789,
+        "region_min_m": 4.219,
+        "region_px": 814,
+        "target_px": 408,
+        "hit_share": 0.5012,
+        "changed_share": 0.5012,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "28_tgt_greenchair_01_rgb.png",
+      "depth_png": "28_tgt_greenchair_01_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 4.256,
+        "expected_far_m": 4.92,
+        "centre_depth_m": 6.156,
+        "region_min_m": 4.227,
+        "region_px": 814,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          152,
+          188
+        ],
+        "cols": [
+          117,
+          138
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 29,
+      "name": "white plastic chair",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_plastic_monobloc_chair_01",
+      "short_name": "tgt_plastic_monobloc_chair_01",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "distance_m": 4.32,
+      "position": [
+        -33.0,
+        28.2803,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          28.2803,
+          -0.4399
+        ],
+        "expected_size": [
+          0.6419,
+          0.6276,
+          0.8798
+        ],
+        "got_centre": [
+          -33.0,
+          28.2803,
+          -0.4399
+        ],
+        "got_size": [
+          0.6419,
+          0.6276,
+          0.8798
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 4.006,
+        "expected_far_m": 4.634,
+        "centre_depth_m": 4.273,
+        "region_min_m": 4.004,
+        "region_px": 748,
+        "target_px": 290,
+        "hit_share": 0.3877,
+        "changed_share": 0.3877,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "29_tgt_plastic_monobloc_chair_01_rgb.png",
+      "depth_png": "29_tgt_plastic_monobloc_chair_01_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 4.006,
+        "expected_far_m": 4.634,
+        "centre_depth_m": 5.5,
+        "region_min_m": 4.027,
+        "region_px": 748,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          158,
+          191
+        ],
+        "cols": [
+          117,
+          138
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 30,
+      "name": "blue school chair",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_schoolchair_01",
+      "short_name": "tgt_schoolchair_01",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "distance_m": 4.509,
+      "position": [
+        -33.0,
+        28.091,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          28.091,
+          -0.503
+        ],
+        "expected_size": [
+          0.5659,
+          0.6753,
+          1.006
+        ],
+        "got_centre": [
+          -33.0,
+          28.091,
+          -0.503
+        ],
+        "got_size": [
+          0.5659,
+          0.6753,
+          1.006
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 4.171,
+        "expected_far_m": 4.847,
+        "centre_depth_m": 4.496,
+        "region_min_m": 4.152,
+        "region_px": 648,
+        "target_px": 260,
+        "hit_share": 0.4012,
+        "changed_share": 0.4012,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "30_tgt_schoolchair_01_rgb.png",
+      "depth_png": "30_tgt_schoolchair_01_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 4.171,
+        "expected_far_m": 4.847,
+        "centre_depth_m": 6.012,
+        "region_min_m": 4.156,
+        "region_px": 648,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          154,
+          189
+        ],
+        "cols": [
+          119,
+          136
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 31,
+      "name": "red wooden bench",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_painted_wooden_bench",
+      "short_name": "tgt_painted_wooden_bench",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "distance_m": 4.747,
+      "position": [
+        -33.0,
+        27.8527,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          27.8527,
+          -0.4446
+        ],
+        "expected_size": [
+          1.1649,
+          0.4965,
+          0.8893
+        ],
+        "got_centre": [
+          -33.0,
+          27.8526,
+          -0.4446
+        ],
+        "got_size": [
+          1.1649,
+          0.4965,
+          0.8893
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 4.499,
+        "expected_far_m": 4.996,
+        "centre_depth_m": 5.875,
+        "region_min_m": 4.5,
+        "region_px": 986,
+        "target_px": 634,
+        "hit_share": 0.643,
+        "changed_share": 0.643,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "31_tgt_painted_wooden_bench_rgb.png",
+      "depth_png": "31_tgt_painted_wooden_bench_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 4.499,
+        "expected_far_m": 4.996,
+        "centre_depth_m": 6.156,
+        "region_min_m": 4.523,
+        "region_px": 986,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          156,
+          184
+        ],
+        "cols": [
+          111,
+          144
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 32,
+      "name": "round wooden table",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_round_wooden_table_01",
+      "short_name": "tgt_round_wooden_table_01",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "distance_m": 5.099,
+      "position": [
+        -33.0,
+        27.501,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          27.501,
+          -0.5025
+        ],
+        "expected_size": [
+          1.3993,
+          1.3993,
+          1.005
+        ],
+        "got_centre": [
+          -33.0,
+          27.501,
+          -0.5025
+        ],
+        "got_size": [
+          1.3993,
+          1.3993,
+          1.005
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 4.399,
+        "expected_far_m": 5.799,
+        "centre_depth_m": 5.035,
+        "region_min_m": 4.367,
+        "region_px": 1596,
+        "target_px": 407,
+        "hit_share": 0.255,
+        "changed_share": 0.255,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "32_tgt_round_wooden_table_01_rgb.png",
+      "depth_png": "32_tgt_round_wooden_table_01_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 4.399,
+        "expected_far_m": 5.799,
+        "centre_depth_m": 6.816,
+        "region_min_m": 4.371,
+        "region_px": 1596,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          149,
+          186
+        ],
+        "cols": [
+          107,
+          148
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 33,
+      "name": "white cabinet",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_painted_wooden_cabinet",
+      "short_name": "tgt_painted_wooden_cabinet",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "distance_m": 4.792,
+      "position": [
+        -33.0,
+        27.808,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          27.808,
+          -0.5909
+        ],
+        "expected_size": [
+          1.1947,
+          0.6166,
+          1.1819
+        ],
+        "got_centre": [
+          -33.0,
+          27.8079,
+          -0.5909
+        ],
+        "got_size": [
+          1.1947,
+          0.6166,
+          1.1819
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 4.484,
+        "expected_far_m": 5.1,
+        "centre_depth_m": 4.562,
+        "region_min_m": 4.441,
+        "region_px": 1368,
+        "target_px": 1104,
+        "hit_share": 0.807,
+        "changed_share": 0.807,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "33_tgt_painted_wooden_cabinet_rgb.png",
+      "depth_png": "33_tgt_painted_wooden_cabinet_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 4.484,
+        "expected_far_m": 5.1,
+        "centre_depth_m": 6.816,
+        "region_min_m": 4.445,
+        "region_px": 1368,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          148,
+          185
+        ],
+        "cols": [
+          110,
+          145
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 34,
+      "name": "grandfather clock",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_vintage_grandfather_clock_01",
+      "short_name": "tgt_vintage_grandfather_clock_01",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "distance_m": 6.286,
+      "position": [
+        -33.0,
+        26.3141,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          26.3141,
+          -1.0953
+        ],
+        "expected_size": [
+          0.6256,
+          0.4266,
+          2.1906
+        ],
+        "got_centre": [
+          -33.0,
+          26.3141,
+          -1.0953
+        ],
+        "got_size": [
+          0.6256,
+          0.4266,
+          2.1906
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 6.073,
+        "expected_far_m": 6.499,
+        "centre_depth_m": 6.18,
+        "region_min_m": 6.008,
+        "region_px": 672,
+        "target_px": 464,
+        "hit_share": 0.6905,
+        "changed_share": 0.7143,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "34_tgt_vintage_grandfather_clock_01_rgb.png",
+      "depth_png": "34_tgt_vintage_grandfather_clock_01_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 6.073,
+        "expected_far_m": 6.499,
+        "centre_depth_m": 13.812,
+        "region_min_m": 6.012,
+        "region_px": 672,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          123,
+          170
+        ],
+        "cols": [
+          121,
+          134
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 35,
+      "name": "wooden picnic table",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_wooden_picnic_table",
+      "short_name": "tgt_wooden_picnic_table",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "distance_m": 7.533,
+      "position": [
+        -33.0,
+        25.0665,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          25.0665,
+          -0.373
+        ],
+        "expected_size": [
+          2.241,
+          3.0223,
+          0.746
+        ],
+        "got_centre": [
+          -33.0,
+          25.0665,
+          -0.373
+        ],
+        "got_size": [
+          2.241,
+          3.0223,
+          0.746
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 6.022,
+        "expected_far_m": 9.045,
+        "centre_depth_m": 6.156,
+        "region_min_m": 6.008,
+        "region_px": 1248,
+        "target_px": 596,
+        "hit_share": 0.4776,
+        "changed_share": 0.4776,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "35_tgt_wooden_picnic_table_rgb.png",
+      "depth_png": "35_tgt_wooden_picnic_table_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 6.022,
+        "expected_far_m": 9.045,
+        "centre_depth_m": 9.297,
+        "region_min_m": 6.012,
+        "region_px": 1248,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          145,
+          170
+        ],
+        "cols": [
+          104,
+          151
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 36,
+      "name": "red barrel",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_barrel_01",
+      "short_name": "tgt_barrel_01",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "distance_m": 4.32,
+      "position": [
+        -33.0,
+        28.28,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          28.28,
+          -0.44
+        ],
+        "expected_size": [
+          0.563,
+          0.563,
+          0.88
+        ],
+        "got_centre": [
+          -33.0,
+          28.28,
+          -0.44
+        ],
+        "got_size": [
+          0.563,
+          0.563,
+          0.88
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 4.038,
+        "expected_far_m": 4.602,
+        "centre_depth_m": 4.047,
+        "region_min_m": 4.02,
+        "region_px": 594,
+        "target_px": 480,
+        "hit_share": 0.8081,
+        "changed_share": 0.8081,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "36_tgt_barrel_01_rgb.png",
+      "depth_png": "36_tgt_barrel_01_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 4.038,
+        "expected_far_m": 4.602,
+        "centre_depth_m": 5.5,
+        "region_min_m": 4.027,
+        "region_px": 594,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          159,
+          191
+        ],
+        "cols": [
+          119,
+          136
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 37,
+      "name": "blue barrel",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_barrel_02",
+      "short_name": "tgt_barrel_02",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "distance_m": 4.32,
+      "position": [
+        -33.0,
+        28.28,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          28.28,
+          -0.44
+        ],
+        "expected_size": [
+          0.4882,
+          0.4846,
+          0.88
+        ],
+        "got_centre": [
+          -33.0,
+          28.28,
+          -0.44
+        ],
+        "got_size": [
+          0.4882,
+          0.4846,
+          0.88
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 4.078,
+        "expected_far_m": 4.562,
+        "centre_depth_m": 4.082,
+        "region_min_m": 4.074,
+        "region_px": 512,
+        "target_px": 388,
+        "hit_share": 0.7578,
+        "changed_share": 0.7578,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "37_tgt_barrel_02_rgb.png",
+      "depth_png": "37_tgt_barrel_02_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 4.078,
+        "expected_far_m": 4.562,
+        "centre_depth_m": 5.5,
+        "region_min_m": 4.09,
+        "region_px": 512,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          159,
+          190
+        ],
+        "cols": [
+          120,
+          135
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 38,
+      "name": "wooden barrel",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_wine_barrel_01",
+      "short_name": "tgt_wine_barrel_01",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "distance_m": 4.307,
+      "position": [
+        -33.0,
+        28.2931,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          28.2931,
+          -0.4356
+        ],
+        "expected_size": [
+          0.7419,
+          0.756,
+          0.8713
+        ],
+        "got_centre": [
+          -33.0,
+          28.2931,
+          -0.4356
+        ],
+        "got_size": [
+          0.7419,
+          0.756,
+          0.8713
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 3.929,
+        "expected_far_m": 4.685,
+        "centre_depth_m": 3.953,
+        "region_min_m": 3.898,
+        "region_px": 936,
+        "target_px": 616,
+        "hit_share": 0.6581,
+        "changed_share": 0.6581,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "38_tgt_wine_barrel_01_rgb.png",
+      "depth_png": "38_tgt_wine_barrel_01_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 3.929,
+        "expected_far_m": 4.685,
+        "centre_depth_m": 5.5,
+        "region_min_m": 3.904,
+        "region_px": 936,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          158,
+          193
+        ],
+        "cols": [
+          115,
+          140
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 39,
+      "name": "green suitcase",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_vintage_suitcase_01",
+      "short_name": "tgt_vintage_suitcase_01",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "distance_m": 4.041,
+      "position": [
+        -33.0,
+        28.5593,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          28.5593,
+          -0.284
+        ],
+        "expected_size": [
+          0.6938,
+          0.2392,
+          0.5679
+        ],
+        "got_centre": [
+          -33.0,
+          28.5593,
+          -0.284
+        ],
+        "got_size": [
+          0.6938,
+          0.2392,
+          0.5679
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 3.921,
+        "expected_far_m": 4.16,
+        "centre_depth_m": 3.926,
+        "region_min_m": 3.898,
+        "region_px": 528,
+        "target_px": 406,
+        "hit_share": 0.7689,
+        "changed_share": 0.7689,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "39_tgt_vintage_suitcase_01_rgb.png",
+      "depth_png": "39_tgt_vintage_suitcase_01_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 3.921,
+        "expected_far_m": 4.16,
+        "centre_depth_m": 4.691,
+        "region_min_m": 3.904,
+        "region_px": 528,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          172,
+          193
+        ],
+        "cols": [
+          116,
+          139
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 40,
+      "name": "old television",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_television_01",
+      "short_name": "tgt_television_01",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "distance_m": 4.0,
+      "position": [
+        -33.0,
+        28.6,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          28.6,
+          -0.2284
+        ],
+        "expected_size": [
+          0.6,
+          0.4708,
+          0.4568
+        ],
+        "got_centre": [
+          -33.0,
+          28.6,
+          -0.2284
+        ],
+        "got_size": [
+          0.6,
+          0.4708,
+          0.4568
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 3.765,
+        "expected_far_m": 4.235,
+        "centre_depth_m": 3.791,
+        "region_min_m": 3.729,
+        "region_px": 506,
+        "target_px": 340,
+        "hit_share": 0.6719,
+        "changed_share": 0.6719,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "40_tgt_television_01_rgb.png",
+      "depth_png": "40_tgt_television_01_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 3.765,
+        "expected_far_m": 4.235,
+        "centre_depth_m": 4.523,
+        "region_min_m": 3.732,
+        "region_px": 506,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          174,
+          196
+        ],
+        "cols": [
+          117,
+          138
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 41,
+      "name": "red fire extinguisher",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_korean_fire_extinguisher_01",
+      "short_name": "tgt_korean_fire_extinguisher_01",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "distance_m": 4.0,
+      "position": [
+        -33.0,
+        28.6,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          28.6,
+          -0.3296
+        ],
+        "expected_size": [
+          0.28,
+          0.3674,
+          0.6593
+        ],
+        "got_centre": [
+          -33.0,
+          28.6,
+          -0.3296
+        ],
+        "got_size": [
+          0.28,
+          0.3674,
+          0.6593
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 3.816,
+        "expected_far_m": 4.184,
+        "centre_depth_m": 3.951,
+        "region_min_m": 3.783,
+        "region_px": 270,
+        "target_px": 162,
+        "hit_share": 0.6,
+        "changed_share": 0.6,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "41_tgt_korean_fire_extinguisher_01_rgb.png",
+      "depth_png": "41_tgt_korean_fire_extinguisher_01_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 3.816,
+        "expected_far_m": 4.184,
+        "centre_depth_m": 4.777,
+        "region_min_m": 3.787,
+        "region_px": 270,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          169,
+          195
+        ],
+        "cols": [
+          123,
+          132
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 42,
+      "name": "yellow generator",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_portable_generator",
+      "short_name": "tgt_portable_generator",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "distance_m": 4.227,
+      "position": [
+        -33.0,
+        28.3726,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          28.3726,
+          -0.2885
+        ],
+        "expected_size": [
+          0.8183,
+          0.564,
+          0.5769
+        ],
+        "got_centre": [
+          -33.0,
+          28.3725,
+          -0.2885
+        ],
+        "got_size": [
+          0.8183,
+          0.564,
+          0.5769
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 3.945,
+        "expected_far_m": 4.509,
+        "centre_depth_m": 3.984,
+        "region_min_m": 3.947,
+        "region_px": 700,
+        "target_px": 483,
+        "hit_share": 0.69,
+        "changed_share": 0.69,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "42_tgt_portable_generator_rgb.png",
+      "depth_png": "42_tgt_portable_generator_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 3.945,
+        "expected_far_m": 4.509,
+        "centre_depth_m": 4.965,
+        "region_min_m": 3.965,
+        "region_px": 700,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          168,
+          192
+        ],
+        "cols": [
+          114,
+          141
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 43,
+      "name": "red tool chest",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_metal_tool_chest",
+      "short_name": "tgt_metal_tool_chest",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "distance_m": 4.028,
+      "position": [
+        -33.0,
+        28.5719,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          28.5719,
+          -0.3259
+        ],
+        "expected_size": [
+          0.6854,
+          0.4072,
+          0.6518
+        ],
+        "got_centre": [
+          -33.0,
+          28.5719,
+          -0.3259
+        ],
+        "got_size": [
+          0.6854,
+          0.4072,
+          0.6518
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 3.825,
+        "expected_far_m": 4.232,
+        "centre_depth_m": 4.125,
+        "region_min_m": 3.842,
+        "region_px": 648,
+        "target_px": 526,
+        "hit_share": 0.8117,
+        "changed_share": 0.8117,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "43_tgt_metal_tool_chest_rgb.png",
+      "depth_png": "43_tgt_metal_tool_chest_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 3.825,
+        "expected_far_m": 4.232,
+        "centre_depth_m": 4.777,
+        "region_min_m": 3.844,
+        "region_px": 648,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          168,
+          194
+        ],
+        "cols": [
+          116,
+          139
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 44,
+      "name": "yellow wet floor sign",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_wetfloorsign_01",
+      "short_name": "tgt_wetfloorsign_01",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "distance_m": 4.0,
+      "position": [
+        -33.0,
+        28.6,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          28.6,
+          -0.3148
+        ],
+        "expected_size": [
+          0.3001,
+          0.3585,
+          0.6295
+        ],
+        "got_centre": [
+          -33.0,
+          28.6,
+          -0.3148
+        ],
+        "got_size": [
+          0.3001,
+          0.3585,
+          0.6295
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 3.821,
+        "expected_far_m": 4.179,
+        "centre_depth_m": 3.912,
+        "region_min_m": 3.783,
+        "region_px": 324,
+        "target_px": 200,
+        "hit_share": 0.6173,
+        "changed_share": 0.6173,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "44_tgt_wetfloorsign_01_rgb.png",
+      "depth_png": "44_tgt_wetfloorsign_01_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 3.821,
+        "expected_far_m": 4.179,
+        "centre_depth_m": 4.777,
+        "region_min_m": 3.787,
+        "region_px": 324,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          169,
+          195
+        ],
+        "cols": [
+          122,
+          133
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 45,
+      "name": "orange traffic cone",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_cone",
+      "short_name": "tgt_cone",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        1.512,
+        1.512,
+        1.512
+      ],
+      "distance_m": 4.35,
+      "position": [
+        -33.0,
+        28.2501,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          28.2501,
+          -0.45
+        ],
+        "expected_size": [
+          0.72,
+          0.72,
+          0.8999
+        ],
+        "got_centre": [
+          -33.0,
+          28.2501,
+          -0.45
+        ],
+        "got_size": [
+          0.72,
+          0.72,
+          0.9
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0001
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 3.99,
+        "expected_far_m": 4.71,
+        "centre_depth_m": 4.16,
+        "region_min_m": 3.959,
+        "region_px": 864,
+        "target_px": 462,
+        "hit_share": 0.5347,
+        "changed_share": 0.5347,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "45_tgt_cone_rgb.png",
+      "depth_png": "45_tgt_cone_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 3.99,
+        "expected_far_m": 4.71,
+        "centre_depth_m": 5.617,
+        "region_min_m": 3.965,
+        "region_px": 864,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          157,
+          192
+        ],
+        "cols": [
+          116,
+          139
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 46,
+      "name": "wooden ladder",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_wooden_ladder_02",
+      "short_name": "tgt_wooden_ladder_02",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "distance_m": 5.583,
+      "position": [
+        -33.0,
+        27.0167,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          27.0167,
+          -0.8611
+        ],
+        "expected_size": [
+          0.9895,
+          0.6181,
+          1.7222
+        ],
+        "got_centre": [
+          -33.0,
+          27.0167,
+          -0.8611
+        ],
+        "got_size": [
+          0.9895,
+          0.6181,
+          1.7222
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 5.274,
+        "expected_far_m": 5.892,
+        "centre_depth_m": 9.289,
+        "region_min_m": 5.27,
+        "region_px": 1118,
+        "target_px": 241,
+        "hit_share": 0.2156,
+        "changed_share": 0.2352,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "46_tgt_wooden_ladder_02_rgb.png",
+      "depth_png": "46_tgt_wooden_ladder_02_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 5.274,
+        "expected_far_m": 5.892,
+        "centre_depth_m": 9.648,
+        "region_min_m": 5.273,
+        "region_px": 1118,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          134,
+          176
+        ],
+        "cols": [
+          115,
+          140
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 47,
+      "name": "man in brown jacket",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_character_a",
+      "short_name": "tgt_character_a",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        0.648,
+        0.648,
+        0.648
+      ],
+      "distance_m": 5.624,
+      "position": [
+        -33.0,
+        26.9756,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          26.9756,
+          -0.8748
+        ],
+        "expected_size": [
+          1.0368,
+          0.5184,
+          1.7496
+        ],
+        "got_centre": [
+          -33.0,
+          26.9756,
+          -0.8748
+        ],
+        "got_size": [
+          1.0368,
+          0.5184,
+          1.7496
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 5.365,
+        "expected_far_m": 5.884,
+        "centre_depth_m": 5.43,
+        "region_min_m": 5.363,
+        "region_px": 1118,
+        "target_px": 696,
+        "hit_share": 0.6225,
+        "changed_share": 0.6351,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "47_tgt_character_a_rgb.png",
+      "depth_png": "47_tgt_character_a_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 5.365,
+        "expected_far_m": 5.884,
+        "centre_depth_m": 10.023,
+        "region_min_m": 5.383,
+        "region_px": 1118,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          133,
+          175
+        ],
+        "cols": [
+          115,
+          140
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 48,
+      "name": "man in red shirt",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_character_b",
+      "short_name": "tgt_character_b",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        0.648,
+        0.648,
+        0.648
+      ],
+      "distance_m": 5.624,
+      "position": [
+        -33.0,
+        26.9756,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          26.9756,
+          -0.8748
+        ],
+        "expected_size": [
+          1.0368,
+          0.5184,
+          1.7496
+        ],
+        "got_centre": [
+          -33.0,
+          26.9756,
+          -0.8748
+        ],
+        "got_size": [
+          1.0368,
+          0.5184,
+          1.7496
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 5.365,
+        "expected_far_m": 5.884,
+        "centre_depth_m": 5.43,
+        "region_min_m": 5.363,
+        "region_px": 1118,
+        "target_px": 696,
+        "hit_share": 0.6225,
+        "changed_share": 0.6351,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "48_tgt_character_b_rgb.png",
+      "depth_png": "48_tgt_character_b_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 5.365,
+        "expected_far_m": 5.884,
+        "centre_depth_m": 10.023,
+        "region_min_m": 5.383,
+        "region_px": 1118,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          133,
+          175
+        ],
+        "cols": [
+          115,
+          140
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 49,
+      "name": "bald man in green shirt",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_character_c",
+      "short_name": "tgt_character_c",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        0.648,
+        0.648,
+        0.648
+      ],
+      "distance_m": 5.624,
+      "position": [
+        -33.0,
+        26.9756,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          26.9756,
+          -0.8748
+        ],
+        "expected_size": [
+          1.0368,
+          0.5184,
+          1.7496
+        ],
+        "got_centre": [
+          -33.0,
+          26.9756,
+          -0.8748
+        ],
+        "got_size": [
+          1.0368,
+          0.5184,
+          1.7496
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 5.365,
+        "expected_far_m": 5.884,
+        "centre_depth_m": 5.43,
+        "region_min_m": 5.363,
+        "region_px": 1118,
+        "target_px": 696,
+        "hit_share": 0.6225,
+        "changed_share": 0.6351,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "49_tgt_character_c_rgb.png",
+      "depth_png": "49_tgt_character_c_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 5.365,
+        "expected_far_m": 5.884,
+        "centre_depth_m": 10.023,
+        "region_min_m": 5.383,
+        "region_px": 1118,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          133,
+          175
+        ],
+        "cols": [
+          115,
+          140
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 50,
+      "name": "person in purple shirt",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_character_e",
+      "short_name": "tgt_character_e",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        0.611,
+        0.611,
+        0.611
+      ],
+      "distance_m": 5.475,
+      "position": [
+        -33.0,
+        27.1255,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          27.1255,
+          -0.8248
+        ],
+        "expected_size": [
+          0.9776,
+          0.4888,
+          1.6497
+        ],
+        "got_centre": [
+          -33.0,
+          27.1254,
+          -0.8248
+        ],
+        "got_size": [
+          0.9776,
+          0.4888,
+          1.6497
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 5.23,
+        "expected_far_m": 5.719,
+        "centre_depth_m": 5.289,
+        "region_min_m": 5.227,
+        "region_px": 1008,
+        "target_px": 670,
+        "hit_share": 0.6647,
+        "changed_share": 0.6885,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "50_tgt_character_e_rgb.png",
+      "depth_png": "50_tgt_character_e_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 5.23,
+        "expected_far_m": 5.719,
+        "centre_depth_m": 9.297,
+        "region_min_m": 5.273,
+        "region_px": 1008,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          135,
+          176
+        ],
+        "cols": [
+          116,
+          139
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 51,
+      "name": "doctor in white coat",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_character_i",
+      "short_name": "tgt_character_i",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        0.648,
+        0.648,
+        0.648
+      ],
+      "distance_m": 5.624,
+      "position": [
+        -33.0,
+        26.9756,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          26.9756,
+          -0.8748
+        ],
+        "expected_size": [
+          1.0368,
+          0.5184,
+          1.7496
+        ],
+        "got_centre": [
+          -33.0,
+          26.9756,
+          -0.8748
+        ],
+        "got_size": [
+          1.0368,
+          0.5184,
+          1.7496
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 5.365,
+        "expected_far_m": 5.884,
+        "centre_depth_m": 5.43,
+        "region_min_m": 5.363,
+        "region_px": 1118,
+        "target_px": 696,
+        "hit_share": 0.6225,
+        "changed_share": 0.6351,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "51_tgt_character_i_rgb.png",
+      "depth_png": "51_tgt_character_i_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 5.365,
+        "expected_far_m": 5.884,
+        "centre_depth_m": 10.023,
+        "region_min_m": 5.383,
+        "region_px": 1118,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          133,
+          175
+        ],
+        "cols": [
+          115,
+          140
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 52,
+      "name": "police officer",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_character_j",
+      "short_name": "tgt_character_j",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        0.666,
+        0.666,
+        0.666
+      ],
+      "distance_m": 5.697,
+      "position": [
+        -33.0,
+        26.9027,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          26.9027,
+          -0.8991
+        ],
+        "expected_size": [
+          1.0656,
+          0.5328,
+          1.7982
+        ],
+        "got_centre": [
+          -33.0,
+          26.9027,
+          -0.8991
+        ],
+        "got_size": [
+          1.0656,
+          0.5328,
+          1.7982
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 5.431,
+        "expected_far_m": 5.964,
+        "centre_depth_m": 5.5,
+        "region_min_m": 5.379,
+        "region_px": 1144,
+        "target_px": 708,
+        "hit_share": 0.6189,
+        "changed_share": 0.6434,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "52_tgt_character_j_rgb.png",
+      "depth_png": "52_tgt_character_j_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 5.431,
+        "expected_far_m": 5.964,
+        "centre_depth_m": 10.438,
+        "region_min_m": 5.383,
+        "region_px": 1144,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          132,
+          175
+        ],
+        "cols": [
+          115,
+          140
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 53,
+      "name": "man in blue jacket",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_character_p",
+      "short_name": "tgt_character_p",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        0.648,
+        0.648,
+        0.648
+      ],
+      "distance_m": 5.624,
+      "position": [
+        -33.0,
+        26.9756,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          26.9756,
+          -0.8748
+        ],
+        "expected_size": [
+          1.0368,
+          0.5184,
+          1.7496
+        ],
+        "got_centre": [
+          -33.0,
+          26.9756,
+          -0.8748
+        ],
+        "got_size": [
+          1.0368,
+          0.5184,
+          1.7496
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 5.365,
+        "expected_far_m": 5.884,
+        "centre_depth_m": 5.43,
+        "region_min_m": 5.363,
+        "region_px": 1118,
+        "target_px": 696,
+        "hit_share": 0.6225,
+        "changed_share": 0.6351,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "53_tgt_character_p_rgb.png",
+      "depth_png": "53_tgt_character_p_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 5.365,
+        "expected_far_m": 5.884,
+        "centre_depth_m": 10.023,
+        "region_min_m": 5.383,
+        "region_px": 1118,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          133,
+          175
+        ],
+        "cols": [
+          115,
+          140
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 54,
+      "name": "man in black suit",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_character_q",
+      "short_name": "tgt_character_q",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        0.666,
+        0.666,
+        0.666
+      ],
+      "distance_m": 5.697,
+      "position": [
+        -33.0,
+        26.9027,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          26.9027,
+          -0.8991
+        ],
+        "expected_size": [
+          1.0656,
+          0.5328,
+          1.7982
+        ],
+        "got_centre": [
+          -33.0,
+          26.9027,
+          -0.8991
+        ],
+        "got_size": [
+          1.0656,
+          0.5328,
+          1.7982
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 5.431,
+        "expected_far_m": 5.964,
+        "centre_depth_m": 5.5,
+        "region_min_m": 5.379,
+        "region_px": 1144,
+        "target_px": 708,
+        "hit_share": 0.6189,
+        "changed_share": 0.6434,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "54_tgt_character_q_rgb.png",
+      "depth_png": "54_tgt_character_q_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 5.431,
+        "expected_far_m": 5.964,
+        "centre_depth_m": 10.438,
+        "region_min_m": 5.383,
+        "region_px": 1144,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          132,
+          175
+        ],
+        "cols": [
+          115,
+          140
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 55,
+      "name": "girl in yellow shirt",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_character_female_b",
+      "short_name": "tgt_character_female_b",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        1.797,
+        1.797,
+        1.797
+      ],
+      "distance_m": 5.068,
+      "position": [
+        -33.0,
+        27.532,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          27.532,
+          -0.6499
+        ],
+        "expected_size": [
+          1.3787,
+          0.752,
+          1.2999
+        ],
+        "got_centre": [
+          -33.0,
+          27.532,
+          -0.6499
+        ],
+        "got_size": [
+          1.3786,
+          0.7521,
+          1.2999
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0001,
+          0.0,
+          0.0001
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 4.692,
+        "expected_far_m": 5.444,
+        "centre_depth_m": 4.781,
+        "region_min_m": 4.688,
+        "region_px": 1482,
+        "target_px": 684,
+        "hit_share": 0.4615,
+        "changed_share": 0.4615,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "55_tgt_character_female_b_rgb.png",
+      "depth_png": "55_tgt_character_female_b_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 4.692,
+        "expected_far_m": 5.444,
+        "centre_depth_m": 7.406,
+        "region_min_m": 4.691,
+        "region_px": 1482,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          144,
+          182
+        ],
+        "cols": [
+          109,
+          146
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 56,
+      "name": "woman in grey suit",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_character_female_d",
+      "short_name": "tgt_character_female_d",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        2.127,
+        2.127,
+        2.127
+      ],
+      "distance_m": 5.474,
+      "position": [
+        -33.0,
+        27.1258,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          27.1258,
+          -0.8248
+        ],
+        "expected_size": [
+          1.6318,
+          1.0624,
+          1.6495
+        ],
+        "got_centre": [
+          -33.0,
+          27.1258,
+          -0.8248
+        ],
+        "got_size": [
+          1.6318,
+          1.0625,
+          1.6495
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0001,
+          0.0001,
+          0.0001
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 4.943,
+        "expected_far_m": 6.005,
+        "centre_depth_m": 5.047,
+        "region_min_m": 4.941,
+        "region_px": 1980,
+        "target_px": 834,
+        "hit_share": 0.4212,
+        "changed_share": 0.4434,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "56_tgt_character_female_d_rgb.png",
+      "depth_png": "56_tgt_character_female_d_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 4.943,
+        "expected_far_m": 6.005,
+        "centre_depth_m": 9.297,
+        "region_min_m": 4.965,
+        "region_px": 1980,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          135,
+          179
+        ],
+        "cols": [
+          106,
+          149
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 57,
+      "name": "bronze whale statue",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_bronze_whale_statue",
+      "short_name": "tgt_bronze_whale_statue",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "distance_m": 5.049,
+      "position": [
+        -33.0,
+        27.5511,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          27.5511,
+          -0.5365
+        ],
+        "expected_size": [
+          0.932,
+          1.3659,
+          1.0729
+        ],
+        "got_centre": [
+          -33.0,
+          27.5511,
+          -0.5365
+        ],
+        "got_size": [
+          0.932,
+          1.3659,
+          1.0729
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 4.366,
+        "expected_far_m": 5.732,
+        "centre_depth_m": 4.652,
+        "region_min_m": 4.367,
+        "region_px": 1092,
+        "target_px": 204,
+        "hit_share": 0.1868,
+        "changed_share": 0.1868,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "57_tgt_bronze_whale_statue_rgb.png",
+      "depth_png": "57_tgt_bronze_whale_statue_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 4.366,
+        "expected_far_m": 5.732,
+        "centre_depth_m": 6.816,
+        "region_min_m": 4.371,
+        "region_px": 1092,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          148,
+          186
+        ],
+        "cols": [
+          114,
+          141
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 58,
+      "name": "tiger",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_animal_tiger",
+      "short_name": "tgt_animal_tiger",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        0.85,
+        0.85,
+        0.85
+      ],
+      "distance_m": 5.422,
+      "position": [
+        -33.0,
+        27.1784,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          27.1784,
+          -0.7267
+        ],
+        "expected_size": [
+          1.1475,
+          1.6144,
+          1.4535
+        ],
+        "got_centre": [
+          -33.0,
+          27.1784,
+          -0.7267
+        ],
+        "got_size": [
+          1.1475,
+          1.6144,
+          1.4535
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 4.614,
+        "expected_far_m": 6.229,
+        "centre_depth_m": 4.758,
+        "region_min_m": 4.602,
+        "region_px": 1440,
+        "target_px": 850,
+        "hit_share": 0.5903,
+        "changed_share": 0.5903,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "58_tgt_animal_tiger_rgb.png",
+      "depth_png": "58_tgt_animal_tiger_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 4.614,
+        "expected_far_m": 6.229,
+        "centre_depth_m": 8.383,
+        "region_min_m": 4.605,
+        "region_px": 1440,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          139,
+          183
+        ],
+        "cols": [
+          112,
+          143
+        ]
+      },
+      "failed": [],
+      "pass": true
+    },
+    {
+      "index": 59,
+      "name": "elephant",
+      "status": "imported",
+      "drawn": true,
+      "asset": "tgt_animal_elephant",
+      "short_name": "tgt_animal_elephant",
+      "material_key": null,
+      "material": null,
+      "scale": [
+        1.8,
+        1.8,
+        1.8
+      ],
+      "distance_m": 8.07,
+      "position": [
+        -33.0,
+        24.5297,
+        0.0
+      ],
+      "listed": true,
+      "spawned": true,
+      "spawn_error": null,
+      "collided": false,
+      "bounds": {
+        "expected_centre": [
+          -33.0,
+          24.5297,
+          -1.2881
+        ],
+        "expected_size": [
+          3.3802,
+          3.0154,
+          2.5762
+        ],
+        "got_centre": [
+          -33.0,
+          24.5297,
+          -1.2881
+        ],
+        "got_size": [
+          3.3801,
+          3.0154,
+          2.5762
+        ],
+        "ok": true,
+        "size_error_m": [
+          0.0001,
+          0.0,
+          0.0001
+        ],
+        "centre_error_m": 0.0
+      },
+      "depth": {
+        "expected_near_m": 6.563,
+        "expected_far_m": 9.578,
+        "centre_depth_m": 6.973,
+        "region_min_m": 6.469,
+        "region_px": 3432,
+        "target_px": 1622,
+        "hit_share": 0.4726,
+        "changed_share": 0.4854,
+        "ok": true
+      },
+      "colour": null,
+      "rgb_png": "59_tgt_animal_elephant_rgb.png",
+      "depth_png": "59_tgt_animal_elephant_depth.png",
+      "settle_steps": 5,
+      "first_step_visible": false,
+      "first_step_depth": {
+        "expected_near_m": 6.563,
+        "expected_far_m": 9.578,
+        "centre_depth_m": 22.234,
+        "region_min_m": 6.473,
+        "region_px": 3432,
+        "target_px": 0,
+        "hit_share": 0.0,
+        "changed_share": 0.0,
+        "ok": false
+      },
+      "projected_box_px": {
+        "rows": [
+          116,
+          167
+        ],
+        "cols": [
+          95,
+          160
+        ]
+      },
+      "failed": [],
+      "pass": true
+    }
+  ],
+  "failed": [],
+  "first_step_invisible": [
+    "red sedan",
+    "green hatchback",
+    "blue van",
+    "yellow taxi",
+    "police car",
+    "ambulance",
+    "red fire truck",
+    "green garbage truck",
+    "yellow suv",
+    "white pickup truck",
+    "crane",
+    "green front loader",
+    "orange cylinder",
+    "blue cylinder",
+    "red cylinder",
+    "yellow cylinder",
+    "red cube",
+    "green cube",
+    "yellow cube",
+    "blue cone",
+    "orange cone",
+    "yellow sphere",
+    "green sphere",
+    "green cone",
+    "beige sofa",
+    "black leather sofa",
+    "grey armchair",
+    "green armchair",
+    "white plastic chair",
+    "blue school chair",
+    "red wooden bench",
+    "round wooden table",
+    "white cabinet",
+    "grandfather clock",
+    "wooden picnic table",
+    "red barrel",
+    "blue barrel",
+    "wooden barrel",
+    "green suitcase",
+    "old television",
+    "red fire extinguisher",
+    "yellow generator",
+    "red tool chest",
+    "yellow wet floor sign",
+    "orange traffic cone",
+    "wooden ladder",
+    "man in brown jacket",
+    "man in red shirt",
+    "bald man in green shirt",
+    "person in purple shirt",
+    "doctor in white coat",
+    "police officer",
+    "man in blue jacket",
+    "man in black suit",
+    "girl in yellow shirt",
+    "woman in grey suit",
+    "bronze whale statue",
+    "tiger",
+    "elephant"
+  ],
+  "finished": "2026-10-08 20:52:36"
+}

@@ -1,0 +1,179 @@
+{
+  "id": "s06",
+  "split": "train",
+  "seed": 1006,
+  "bounds": {
+    "x_min": -35.0,
+    "x_max": 35.0,
+    "y_min": -35.0,
+    "y_max": 35.0
+  },
+  "ground": "grass",
+  "obstacle_groups": [
+    {
+      "asset": "tree_small_02",
+      "count": 2,
+      "scale_range": {
+        "xy": [
+          0.9,
+          1.1
+        ],
+        "z": [
+          0.9,
+          1.1
+        ]
+      },
+      "palette": [
+        "mesh"
+      ],
+      "placement": {
+        "type": "poisson",
+        "margin_m": 8.0,
+        "min_distance_m": 18.0
+      }
+    },
+    {
+      "asset": "island_tree_02",
+      "count": 2,
+      "scale_range": {
+        "xy": [
+          0.9,
+          1.1
+        ],
+        "z": [
+          0.9,
+          1.1
+        ]
+      },
+      "palette": [
+        "mesh"
+      ],
+      "placement": {
+        "type": "poisson",
+        "margin_m": 8.0,
+        "min_distance_m": 18.0
+      }
+    },
+    {
+      "asset": "searsia_burchellii_large",
+      "count": 6,
+      "scale_range": {
+        "xy": [
+          0.9,
+          1.1
+        ],
+        "z": [
+          0.9,
+          1.1
+        ]
+      },
+      "palette": [
+        "mesh"
+      ],
+      "placement": {
+        "type": "clusters",
+        "margin_m": 8.0,
+        "cluster_count": 3,
+        "per_cluster": [
+          2,
+          2
+        ],
+        "radius_m": 7.0
+      }
+    },
+    {
+      "asset": "searsia_burchellii_medium",
+      "count": 9,
+      "scale_range": {
+        "xy": [
+          0.9,
+          1.1
+        ],
+        "z": [
+          0.9,
+          1.1
+        ]
+      },
+      "palette": [
+        "mesh"
+      ],
+      "placement": {
+        "type": "clusters",
+        "margin_m": 8.0,
+        "cluster_count": 3,
+        "per_cluster": [
+          3,
+          3
+        ],
+        "radius_m": 7.0
+      }
+    },
+    {
+      "asset": "searsia_burchellii_small",
+      "count": 9,
+      "scale_range": {
+        "xy": [
+          0.9,
+          1.1
+        ],
+        "z": [
+          0.9,
+          1.1
+        ]
+      },
+      "palette": [
+        "mesh"
+      ],
+      "placement": {
+        "type": "clusters",
+        "margin_m": 8.0,
+        "cluster_count": 3,
+        "per_cluster": [
+          3,
+          3
+        ],
+        "radius_m": 5.0
+      }
+    },
+    {
+      "asset": "searsia_lucida_c",
+      "count": 12,
+      "scale_range": {
+        "xy": [
+          0.9,
+          1.1
+        ],
+        "z": [
+          0.9,
+          1.1
+        ]
+      },
+      "palette": [
+        "mesh"
+      ],
+      "placement": {
+        "type": "clusters",
+        "margin_m": 8.0,
+        "cluster_count": 4,
+        "per_cluster": [
+          3,
+          3
+        ],
+        "radius_m": 5.0
+      }
+    }
+  ],
+  "start_band": [
+    2.0,
+    6.0
+  ],
+  "target_band": [
+    0.0,
+    3.0
+  ],
+  "altitude_band": [
+    1.0,
+    3.0
+  ],
+  "instruction_obstacle": "tree clusters"
+}

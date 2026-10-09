@@ -1,0 +1,339 @@
+{
+  "milestone": "M3",
+  "description": "M3 pilot: the SAC expert collects AutoFly-format episodes; the dataset validator (spec \u00a711) must pass. Pass = the requested episodes kept, validator pass, engine-fault audit clean.",
+  "scene": "s07",
+  "scene_config": {
+    "file": "scene_autofly_s07_fast.jsonc",
+    "sha256": "ff609452edf4de6a505405318df18a743579bdf59a43a2186c665d7b552fb51e"
+  },
+  "dataset": {
+    "name": "s07_c0",
+    "path": "/home/nvidiasims/research_uav/autofly_ue5/data/s07_c0"
+  },
+  "expert": {
+    "path": "runs/expert/s01d_r6/averaged/avg_250k_550k.zip",
+    "sha256": "55e666a555800de5a1fe97c89de58a667b333d45c2cb17a4ff6ce1c3944efbfd",
+    "deterministic": false,
+    "obs_config": {
+      "depth_frames": 3,
+      "depth_dtype": "float16",
+      "mover_slots": 4
+    }
+  },
+  "episodes_requested": 50,
+  "seed_base": 471000000,
+  "instance": 7,
+  "target_name": null,
+  "a0": "sector8",
+  "reward_version": "3-scene-reward-overrides",
+  "collector_git_head": "c77ca1396db66c737d9a2b4d42c1cf17168aa171",
+  "collector_tree_dirty": true,
+  "run_started": "2026-10-08 20:53:33",
+  "status": "ok",
+  "pass": true,
+  "error": null,
+  "collection": {
+    "status": "ok",
+    "kept": 50,
+    "rejected": 1,
+    "attempted": 51,
+    "fault_retries": 0,
+    "outcomes": {
+      "success": 50,
+      "collision": 1
+    },
+    "seeds_flown": [
+      471000000,
+      471000050
+    ],
+    "first_frame_visibility": {
+      "visible": 10,
+      "missing": 19,
+      "occluded": 21,
+      "out_of_view": 0,
+      "undetermined": 1
+    },
+    "wall_s": 2306.3,
+    "backend_faults": {
+      "before": {
+        "instance": 7,
+        "fault_counts": {
+          "CameraPoseError": 0,
+          "StepTimingError": 0,
+          "StaleStateError": 0,
+          "CommandTimeoutError": 0,
+          "Timeout": 0,
+          "ConnectionReset": 0,
+          "KinematicsJumpError": 0,
+          "SimRequestTimeoutError": 0,
+          "ObjectMoveRefusedError": 0,
+          "FrameTimeoutError": 0,
+          "FrameTimestampError": 0,
+          "ResetPoseError": 0,
+          "StartCollisionError": 0,
+          "SetPoseError": 0,
+          "EpisodeSetupError": 0,
+          "SimExitedError": 0,
+          "SimReadyTimeout": 0,
+          "SimConnectionLostError": 0
+        },
+        "recovered_counts": {
+          "CameraPoseError": 0,
+          "StepTimingError": 0,
+          "StaleStateError": 0,
+          "CommandTimeoutError": 0,
+          "Timeout": 0,
+          "ConnectionReset": 0,
+          "KinematicsJumpError": 0,
+          "SimRequestTimeoutError": 0,
+          "ObjectMoveRefusedError": 0,
+          "FrameTimeoutError": 0,
+          "FrameTimestampError": 0,
+          "ResetPoseError": 0,
+          "StartCollisionError": 0,
+          "SetPoseError": 0,
+          "EpisodeSetupError": 0,
+          "SimExitedError": 0,
+          "SimReadyTimeout": 0,
+          "SimConnectionLostError": 0
+        },
+        "relaunch_count": 0
+      },
+      "after": {
+        "instance": 7,
+        "fault_counts": {
+          "CameraPoseError": 0,
+          "StepTimingError": 0,
+          "StaleStateError": 0,
+          "CommandTimeoutError": 0,
+          "Timeout": 0,
+          "ConnectionReset": 0,
+          "KinematicsJumpError": 0,
+          "SimRequestTimeoutError": 0,
+          "ObjectMoveRefusedError": 0,
+          "FrameTimeoutError": 0,
+          "FrameTimestampError": 0,
+          "ResetPoseError": 0,
+          "StartCollisionError": 0,
+          "SetPoseError": 0,
+          "EpisodeSetupError": 0,
+          "SimExitedError": 0,
+          "SimReadyTimeout": 0,
+          "SimConnectionLostError": 0
+        },
+        "recovered_counts": {
+          "CameraPoseError": 0,
+          "StepTimingError": 0,
+          "StaleStateError": 0,
+          "CommandTimeoutError": 0,
+          "Timeout": 0,
+          "ConnectionReset": 0,
+          "KinematicsJumpError": 0,
+          "SimRequestTimeoutError": 0,
+          "ObjectMoveRefusedError": 0,
+          "FrameTimeoutError": 0,
+          "FrameTimestampError": 0,
+          "ResetPoseError": 0,
+          "StartCollisionError": 0,
+          "SetPoseError": 0,
+          "EpisodeSetupError": 0,
+          "SimExitedError": 0,
+          "SimReadyTimeout": 0,
+          "SimConnectionLostError": 0
+        },
+        "relaunch_count": 0
+      }
+    }
+  },
+  "validation": {
+    "pass": true,
+    "failures": [],
+    "warnings": [],
+    "counts": {
+      "episodes": 50,
+      "records": 9000,
+      "rejects": 1,
+      "by_scene": {
+        "s07": 50
+      },
+      "by_target": {
+        "red fire truck": 1,
+        "round wooden table": 2,
+        "ambulance": 4,
+        "white pickup truck": 2,
+        "grey armchair": 2,
+        "police car": 1,
+        "white plastic chair": 2,
+        "yellow wet floor sign": 1,
+        "police officer": 1,
+        "blue school chair": 4,
+        "doctor in white coat": 2,
+        "blue van": 2,
+        "yellow cylinder": 1,
+        "red barrel": 2,
+        "red sedan": 1,
+        "yellow suv": 1,
+        "red fire extinguisher": 1,
+        "wooden barrel": 2,
+        "man in red shirt": 1,
+        "green hatchback": 1,
+        "person in purple shirt": 1,
+        "green armchair": 1,
+        "green suitcase": 1,
+        "beige sofa": 1,
+        "man in brown jacket": 2,
+        "covered car": 1,
+        "orange cone": 2,
+        "red wooden bench": 1,
+        "man in blue jacket": 1,
+        "old television": 1,
+        "red cylinder": 1,
+        "yellow sphere": 1,
+        "green sphere": 1,
+        "black leather sofa": 1
+      }
+    },
+    "distributions": {
+      "speed_m_s": {
+        "median": 1.9634730815887451,
+        "p5": 1.720587307214737,
+        "p95": 2.1594923734664917,
+        "min": 0.0007079840870574117,
+        "max": 2.327859401702881
+      },
+      "altitude_m": {
+        "median": 1.8706096410751343,
+        "p5": 1.5501027524471283,
+        "p95": 2.2328415274620057,
+        "min": 1.2371805906295776,
+        "max": 2.692603588104248
+      },
+      "action_forward_m_s": {
+        "median": 1.9671827554702759,
+        "p5": 1.8144631087779999,
+        "p95": 1.994563674926758,
+        "min": 0.017750978469848633,
+        "max": 1.9995580911636353
+      },
+      "episode_steps": {
+        "median": 176.5,
+        "p5": 156.9,
+        "p95": 217.55,
+        "min": 154.0,
+        "max": 220.0
+      }
+    },
+    "release_for_comparison": {
+      "speed_m_s_median": [
+        1.87,
+        1.96
+      ],
+      "altitude_m_range": [
+        1.17,
+        2.57
+      ],
+      "episode_steps": [
+        96,
+        78
+      ],
+      "action_forward_m_s_typical": [
+        1.97,
+        1.99
+      ]
+    }
+  },
+  "rlds": {
+    "skipped": "merged export (plan 6 revision 1)"
+  },
+  "platform": {
+    "projectairsim_client": "1.0.2",
+    "platform_git_head": "4d878bff556fad2d07da763babb2faa10b03922b",
+    "engine_build_version": {
+      "MajorVersion": 5,
+      "MinorVersion": 7,
+      "PatchVersion": 4,
+      "Changelist": 51494982,
+      "CompatibleChangelist": 47537391,
+      "IsLicenseeVersion": 0,
+      "IsPromotedBuild": 1,
+      "BranchName": "++UE5+Release-5.7"
+    },
+    "package_binary_sha256": "fd845a8c58f095af8ba52849d07ea2768ad48712ba7800a4bcfe7760f0efaade",
+    "package_pak_sha256": "5305ac35b21fbc96401bf1ce9205eb5745a6bfc01b94426a5e06fdcb6fea6b77"
+  },
+  "target_pool": {
+    "path": "assets/targets.json",
+    "sha256": "0a8bfa72f11d2c590b6d3a42a222450875c5347d3e26030029648f49f36ae7b7",
+    "version": 1,
+    "split": "train",
+    "names": [
+      "covered car",
+      "red sedan",
+      "green hatchback",
+      "blue van",
+      "yellow taxi",
+      "police car",
+      "ambulance",
+      "red fire truck",
+      "green garbage truck",
+      "yellow suv",
+      "white pickup truck",
+      "orange cylinder",
+      "blue cylinder",
+      "red cylinder",
+      "yellow cylinder",
+      "blue cone",
+      "orange cone",
+      "yellow sphere",
+      "green sphere",
+      "beige sofa",
+      "black leather sofa",
+      "grey armchair",
+      "green armchair",
+      "white plastic chair",
+      "blue school chair",
+      "red wooden bench",
+      "round wooden table",
+      "red barrel",
+      "blue barrel",
+      "wooden barrel",
+      "green suitcase",
+      "old television",
+      "red fire extinguisher",
+      "yellow generator",
+      "yellow wet floor sign",
+      "man in brown jacket",
+      "man in red shirt",
+      "bald man in green shirt",
+      "person in purple shirt",
+      "doctor in white coat",
+      "police officer",
+      "man in blue jacket",
+      "man in black suit",
+      "girl in yellow shirt",
+      "bronze whale statue"
+    ],
+    "scene_id": "s07",
+    "excluded": {
+      "cube": "s07's obstacles are stacked boxes (engine cubes): a cube of any colour reads as one more box",
+      "tgt_painted_wooden_cabinet": "the white cabinet is a closed box 1.2 m wide and tall: among stacked boxes it reads as one",
+      "tgt_metal_tool_chest": "the red tool chest is a closed box 0.65 m tall: among stacked boxes it reads as one"
+    },
+    "exclusions": {
+      "path": "assets/target_exclusions.json",
+      "sha256": "751f052244b536568dfc32ea9ab23eeafe36e4ef89b1ed8477147cd61ea12cef"
+    }
+  },
+  "faults_ok": true,
+  "engine_faults": {
+    "xid_delta": 0,
+    "boot_changed": false,
+    "device_lost": {
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst7/sim.log": 0
+    },
+    "logs_scanned": 1,
+    "kernel_journal_readable": true
+  },
+  "run_finished": "2026-10-08 21:32:10",
+  "written_to": "runs/collect/s07_c0.json"
+}

@@ -1,0 +1,217 @@
+{
+  "description": "SAC training on scene s02 (spec \u00a78; Task 8 of plan 2, \u00a76.5 for a dynamic scene).",
+  "scene": "s02",
+  "map": "/Game/AutoFly/Maps/S02",
+  "identity": {
+    "scene_config": {
+      "file": "scene_autofly_s02_fast.jsonc",
+      "sha256": "2ba549af66881da610be7c47c58fa936ac7ca022ec4a52d9d7541ec98ca35ebc"
+    },
+    "scene": "s02",
+    "scene_sha256": "29a5235e2c2956844a9852ba230e742e35201a1d6fd4c5f3d6ad4f974ed70fd2",
+    "base_scene": "s02",
+    "base_layout_sha256": "27bc3daa10a34dc170b09a5ba247917f0567f99c116b83a0951ab9ddcd351c4d",
+    "obs_config": {
+      "depth_frames": 1,
+      "depth_dtype": "float32"
+    },
+    "dynamic": null,
+    "reward_config": {
+      "k_p": 1.0,
+      "k_h": 0.1,
+      "k_t": 0.01,
+      "r_success": 10.0,
+      "r_collision": 10.0,
+      "r_bounds": 5.0,
+      "success_radius_m": 5.0,
+      "success_yaw_deg": 15.0,
+      "align_radius_m": 10.0,
+      "step_limit": 300,
+      "altitude_band_m": [
+        1.0,
+        3.0
+      ]
+    },
+    "altitude_margin_penalty": {
+      "k": 0.2,
+      "margin_m": 1.0
+    },
+    "footprint_contact": {
+      "contact_m": 0.9,
+      "training_margin_m": 0.2
+    }
+  },
+  "contact_rules": {
+    "footprint": {
+      "contact_m": 0.9,
+      "obstacles": 27
+    }
+  },
+  "obs_config": {
+    "depth_frames": 1,
+    "depth_dtype": "float32"
+  },
+  "host": {
+    "replay_buffer_bytes": 14134000000,
+    "available_ram_bytes": 61531799552,
+    "ram_needed_bytes": 31313869184,
+    "free_disk_bytes": 437751848960,
+    "disk_needed_bytes": 53139418240,
+    "ok": true
+  },
+  "instances": 4,
+  "status": "ok",
+  "error": null,
+  "resume": false,
+  "resumed_from": null,
+  "warm_start": null,
+  "run_root": "runs/expert/s02_r1",
+  "scene_config": {
+    "file": "scene_autofly_s02_fast.jsonc",
+    "sha256": "2ba549af66881da610be7c47c58fa936ac7ca022ec4a52d9d7541ec98ca35ebc"
+  },
+  "session": 0,
+  "reward_version": "3-scene-reward-overrides",
+  "seed_bases": [
+    1000000,
+    2000000,
+    3000000,
+    4000000
+  ],
+  "eval_callback_seed_base": 200000000,
+  "config": {
+    "policy": "MultiInputPolicy",
+    "policy_kwargs": "autofly_ue5.expert.features.POLICY_KWARGS",
+    "buffer_size": 250000,
+    "learning_starts": 5000,
+    "actor_freeze_updates": 0,
+    "mover_clearance_penalty": null,
+    "mover_closing_penalty": null,
+    "altitude_margin_penalty": {
+      "k": 0.2,
+      "margin_m": 1.0
+    },
+    "mover_contact_margin_m": 0.0,
+    "static_contact_m": 0.0,
+    "footprint_contact_margin_m": 0.2,
+    "batch_size": 256,
+    "train_freq": "TrainFreq(frequency=1, unit=<TrainFrequencyUnit.STEP: 'step'>)",
+    "gradient_steps": -1,
+    "gamma": 0.99,
+    "tau": 0.005,
+    "learning_rate": 0.0003,
+    "device": "cuda",
+    "target_entropy_expected": -3.0,
+    "checkpoint_freq": 10000,
+    "keep_replay_buffers": 2,
+    "eval_freq": 1000000000,
+    "eval_episodes": 20,
+    "hours_budget": 12.0,
+    "total_timesteps_cap": 5000000,
+    "seed": 0
+  },
+  "num_timesteps": 640916,
+  "num_timesteps_at_start": 0,
+  "num_timesteps_this_session": 640916,
+  "wall_clock_s": 43215.86627175403,
+  "env_steps_per_s": 14.830571623156468,
+  "eval": {
+    "n_evaluations": 0,
+    "timesteps": [],
+    "final_mean_reward": null,
+    "best_mean_reward": null,
+    "final_success_rate": null,
+    "best_success_rate": null
+  },
+  "outcome_histogram": {
+    "out_of_bounds": 625,
+    "collision": 2530,
+    "timeout": 74,
+    "success": 1583
+  },
+  "collision_sources": {
+    "footprint_margin": 2482,
+    "sim": 29,
+    "footprint": 19
+  },
+  "dropped_fault_rows": 0,
+  "dropped_fault_transitions": 0,
+  "interrupted_evaluations": 0,
+  "stopped_on_request": false,
+  "backend_faults": {
+    "fault_counts": {
+      "CameraPoseError": 0,
+      "StepTimingError": 0,
+      "StaleStateError": 0,
+      "CommandTimeoutError": 0,
+      "Timeout": 0,
+      "ConnectionReset": 0,
+      "KinematicsJumpError": 0,
+      "SimRequestTimeoutError": 0,
+      "ObjectMoveRefusedError": 0,
+      "FrameTimeoutError": 0,
+      "FrameTimestampError": 0,
+      "ResetPoseError": 0,
+      "StartCollisionError": 0,
+      "SetPoseError": 0,
+      "EpisodeSetupError": 0,
+      "SimExitedError": 0,
+      "SimReadyTimeout": 0,
+      "SimConnectionLostError": 0
+    },
+    "recovered_counts": {
+      "CameraPoseError": 0,
+      "StepTimingError": 0,
+      "StaleStateError": 0,
+      "CommandTimeoutError": 0,
+      "Timeout": 0,
+      "ConnectionReset": 0,
+      "KinematicsJumpError": 0,
+      "SimRequestTimeoutError": 0,
+      "ObjectMoveRefusedError": 0,
+      "FrameTimeoutError": 0,
+      "FrameTimestampError": 0,
+      "ResetPoseError": 0,
+      "StartCollisionError": 0,
+      "SetPoseError": 0,
+      "EpisodeSetupError": 0,
+      "SimExitedError": 0,
+      "SimReadyTimeout": 0,
+      "SimConnectionLostError": 0
+    },
+    "relaunch_count": 0
+  },
+  "backend_faults_missing_slots": [],
+  "engine_faults": {
+    "xid_delta": 0,
+    "boot_changed": false,
+    "device_lost": {
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst0/sim.log": 0,
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst1/sim.log": 0,
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst2/sim.log": 0,
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst3/sim.log": 0,
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst4/sim-backup-2026.10.08-07.54.12.log": 0,
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst4/sim-backup-2026.10.08-08.51.51.log": 0,
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst4/sim-backup-2026.10.08-09.47.27.log": 0,
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst4/sim-backup-2026.10.08-10.42.51.log": 0,
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst4/sim-backup-2026.10.08-11.37.45.log": 0,
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst4/sim-backup-2026.10.08-12.33.38.log": 0,
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst4/sim-backup-2026.10.08-13.31.24.log": 0,
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst4/sim-backup-2026.10.08-14.27.12.log": 0,
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst4/sim-backup-2026.10.08-15.22.33.log": 0,
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst4/sim-backup-2026.10.08-16.18.38.log": 0,
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst4/sim-backup-2026.10.08-17.16.38.log": 0,
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst4/sim.log": 0
+    },
+    "logs_scanned": 16,
+    "kernel_journal_readable": true
+  },
+  "faults_ok": true,
+  "checkpoint": {
+    "path": "runs/expert/s02_r1/final.zip",
+    "sha256": "b9bffadbb95099df3139cdd9591ee8aa8835cf8ff46798a8f5e45ef409956904"
+  },
+  "run_started": "2026-10-08 02:49:13",
+  "run_finished": "2026-10-08 14:49:29",
+  "record_errors": {}
+}

@@ -1,0 +1,209 @@
+{
+  "dataset": "autofly_ue5_thin",
+  "data_dir": "runs/merge_thin/out",
+  "versions": {
+    "python": "3.10.21",
+    "tensorflow": "2.15.0",
+    "tensorflow_datasets": "4.9.3",
+    "numpy": "1.26.4",
+    "dlimp": {
+      "version": "0.0.1",
+      "url": "https://github.com/moojink/dlimp_openvla",
+      "commit": "040105d256bd28866cc6620621a3d5f7b6b91b46"
+    },
+    "tensorflow_distribution": "tensorflow-cpu",
+    "protobuf": "3.20.3",
+    "tensorflow_metadata": "1.15.0"
+  },
+  "openvla_source": "openvla/openvla@c8f03f48af692657d3060c19588038c7220e9af9",
+  "pipeline": {
+    "image_obs_keys": {
+      "primary": "image_0"
+    },
+    "state_obs_keys": [
+      "state"
+    ],
+    "language_key": "language_instruction",
+    "normalization": "bounds_q99",
+    "window_size": 1,
+    "future_action_window_size": 0,
+    "resize": [
+      224,
+      224
+    ]
+  },
+  "failures": [],
+  "statistics_schema_ok": true,
+  "builder": {
+    "splits": {
+      "train": 142,
+      "val": 8
+    },
+    "expected_splits": {
+      "train": 142,
+      "val": 8
+    },
+    "val_is_a_split": true,
+    "data_dir": "runs/merge_thin/out/autofly_ue5_thin/1.0.0"
+  },
+  "splits": {
+    "train": {
+      "frames": 300,
+      "episodes": 8,
+      "distinct_instructions": 8,
+      "image": {
+        "dtype": "uint8",
+        "shape": [
+          1,
+          224,
+          224,
+          3
+        ]
+      },
+      "action_normalised": {
+        "dtype": "float32",
+        "shape": [
+          1,
+          3
+        ],
+        "min": [
+          0.49869513511657715,
+          -1.0,
+          -1.0
+        ],
+        "max": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "proprio_normalised": {
+        "dtype": "float32",
+        "shape": [
+          1,
+          9
+        ],
+        "min": [
+          0.29805171489715576,
+          -1.0,
+          -0.9362462759017944,
+          -1.0,
+          -0.9875486493110657,
+          -1.0,
+          -0.2239428162574768,
+          -0.21519118547439575,
+          -0.9362462162971497
+        ],
+        "max": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          0.20403218269348145,
+          0.18464303016662598,
+          1.0
+        ]
+      },
+      "failures": [],
+      "failure_count": 0
+    },
+    "val": {
+      "frames": 300,
+      "episodes": 8,
+      "distinct_instructions": 8,
+      "image": {
+        "dtype": "uint8",
+        "shape": [
+          1,
+          224,
+          224,
+          3
+        ]
+      },
+      "action_normalised": {
+        "dtype": "float32",
+        "shape": [
+          1,
+          3
+        ],
+        "min": [
+          -1.0,
+          -1.0,
+          -1.0
+        ],
+        "max": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "proprio_normalised": {
+        "dtype": "float32",
+        "shape": [
+          1,
+          9
+        ],
+        "min": [
+          0.2963449954986572,
+          -1.0,
+          -1.0,
+          -1.0,
+          -0.9302833080291748,
+          -1.0,
+          -0.2270004153251648,
+          -0.1779126524925232,
+          -1.0
+        ],
+        "max": [
+          1.0,
+          0.5814125537872314,
+          0.8962961435317993,
+          0.9613364934921265,
+          0.9367090463638306,
+          1.0,
+          0.19636964797973633,
+          0.1846836805343628,
+          0.8962963819503784
+        ]
+      },
+      "failures": [],
+      "failure_count": 0
+    }
+  },
+  "statistics_recomputed": {
+    "split": "train",
+    "max_abs_diff": {
+      "action.q01": 0.0,
+      "action.q99": 0.0,
+      "action.min": 0.0,
+      "action.max": 0.0,
+      "action.mean": 2.685651802281086e-06,
+      "action.std": 1.2232995008076841e-06,
+      "proprio.q01": 0.0,
+      "proprio.q99": 0.0,
+      "proprio.min": 0.0,
+      "proprio.max": 0.0,
+      "proprio.mean": 8.306114149547739e-05,
+      "proprio.std": 0.00015254447867363297
+    },
+    "mean_std_drift": {
+      "action.mean": 9.491423839078337e-07,
+      "action.std": 7.723326603957848e-07,
+      "proprio.mean": 4.472374586574443e-06,
+      "proprio.std": 5.144563145190965e-06
+    },
+    "num_transitions": [
+      26835,
+      26835
+    ],
+    "num_trajectories": [
+      142,
+      142
+    ],
+    "pass": true
+  },
+  "seconds": 4.6,
+  "pass": true
+}

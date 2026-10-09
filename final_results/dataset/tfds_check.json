@@ -1,0 +1,29 @@
+{
+  "tfds_episodes": 1800,
+  "matched": 1800,
+  "mismatches": [],
+  "splits": {
+    "train": 1710,
+    "val": 90
+  },
+  "expected_splits": {
+    "train": 1710,
+    "val": 90
+  },
+  "metadata_fields": [
+    "episode_id",
+    "file_path",
+    "pilot",
+    "scene",
+    "seed",
+    "split_of_scene",
+    "store",
+    "target_category",
+    "target_name",
+    "target_seen",
+    "target_stand_in",
+    "target_status"
+  ],
+  "pass": true,
+  "tfds_version": "4.9.10"
+}

@@ -1,0 +1,3828 @@
+{
+  "tool": "scripts/dataset_figures.py",
+  "generated": "2026-10-08 22:08:38",
+  "inputs": {
+    "stores": [
+      {
+        "name": "s01_c0",
+        "path": "data/s01_c0",
+        "rejects_dir": "data/rejects/s01_c0",
+        "record": "/home/nvidiasims/research_uav/autofly_ue5/runs/collect/s01_c0.json"
+      },
+      {
+        "name": "s01d_c0",
+        "path": "data/s01d_c0",
+        "rejects_dir": "data/rejects/s01d_c0",
+        "record": "/home/nvidiasims/research_uav/autofly_ue5/runs/collect/s01d_c0.json"
+      },
+      {
+        "name": "s02_c0",
+        "path": "data/s02_c0",
+        "rejects_dir": "data/rejects/s02_c0",
+        "record": "/home/nvidiasims/research_uav/autofly_ue5/runs/collect/s02_c0.json"
+      },
+      {
+        "name": "s03_c0",
+        "path": "data/s03_c0",
+        "rejects_dir": "data/rejects/s03_c0",
+        "record": "/home/nvidiasims/research_uav/autofly_ue5/runs/collect/s03_c0.json"
+      },
+      {
+        "name": "s04_c0",
+        "path": "data/s04_c0",
+        "rejects_dir": "data/rejects/s04_c0",
+        "record": "/home/nvidiasims/research_uav/autofly_ue5/runs/collect/s04_c0.json"
+      },
+      {
+        "name": "s05_c0",
+        "path": "data/s05_c0",
+        "rejects_dir": "data/rejects/s05_c0",
+        "record": "/home/nvidiasims/research_uav/autofly_ue5/runs/collect/s05_c0.json"
+      },
+      {
+        "name": "s06_c0",
+        "path": "data/s06_c0",
+        "rejects_dir": "data/rejects/s06_c0",
+        "record": "/home/nvidiasims/research_uav/autofly_ue5/runs/collect/s06_c0.json"
+      },
+      {
+        "name": "s07_c0",
+        "path": "data/s07_c0",
+        "rejects_dir": "data/rejects/s07_c0",
+        "record": "/home/nvidiasims/research_uav/autofly_ue5/runs/collect/s07_c0.json"
+      },
+      {
+        "name": "s09_c0",
+        "path": "data/s09_c0",
+        "rejects_dir": "data/rejects/s09_c0",
+        "record": "/home/nvidiasims/research_uav/autofly_ue5/runs/collect/s09_c0.json"
+      }
+    ],
+    "levels": "/home/nvidiasims/research_uav/autofly_ue5/runs/levels",
+    "fields": "/home/nvidiasims/research_uav/autofly_ue5/assets/footprints",
+    "targets": {
+      "path": "/home/nvidiasims/research_uav/autofly_ue5/assets/targets.json",
+      "sha256": "0a8bfa72f11d2c590b6d3a42a222450875c5347d3e26030029648f49f36ae7b7"
+    }
+  },
+  "scenes": {
+    "s01": "s01 white pillars",
+    "s01d": "s01d moving pillars",
+    "s02": "s02 sparse trees",
+    "s03": "s03 scattered rocks",
+    "s04": "s04 stone field",
+    "s05": "s05 standing stones",
+    "s06": "s06 tree clusters",
+    "s07": "s07 stacked boxes",
+    "s09": "s09 coloured poles"
+  },
+  "composition": {
+    "stores": 9,
+    "episodes": 450,
+    "records": 84600,
+    "by_scene": {
+      "s01": 50,
+      "s01d": 50,
+      "s02": 50,
+      "s03": 50,
+      "s04": 50,
+      "s05": 50,
+      "s06": 50,
+      "s07": 50,
+      "s09": 50
+    },
+    "by_category": {
+      "vehicle": 85,
+      "geometry": 82,
+      "furniture": 92,
+      "equipment": 99,
+      "human": 83,
+      "other": 9
+    },
+    "by_target": {
+      "red tool chest": 18,
+      "round wooden table": 15,
+      "red wooden bench": 13,
+      "bald man in green shirt": 12,
+      "doctor in white coat": 12,
+      "green armchair": 12,
+      "orange cone": 12,
+      "yellow wet floor sign": 12,
+      "blue school chair": 11,
+      "green suitcase": 11,
+      "man in blue jacket": 11,
+      "man in brown jacket": 11,
+      "old television": 11,
+      "wooden barrel": 11,
+      "blue cone": 10,
+      "grey armchair": 10,
+      "person in purple shirt": 10,
+      "red barrel": 10,
+      "red fire extinguisher": 10,
+      "red sedan": 10,
+      "white pickup truck": 10,
+      "white plastic chair": 10,
+      "yellow generator": 10,
+      "yellow suv": 10,
+      "ambulance": 9,
+      "blue cylinder": 9,
+      "bronze whale statue": 9,
+      "green cube": 9,
+      "man in red shirt": 9,
+      "yellow taxi": 9,
+      "beige sofa": 8,
+      "black leather sofa": 8,
+      "covered car": 8,
+      "green sphere": 8,
+      "red cube": 8,
+      "red fire truck": 8,
+      "man in black suit": 7,
+      "police car": 7,
+      "police officer": 7,
+      "red cylinder": 7,
+      "yellow cube": 7,
+      "blue barrel": 6,
+      "blue van": 6,
+      "green hatchback": 6,
+      "orange cylinder": 6,
+      "white cabinet": 5,
+      "girl in yellow shirt": 4,
+      "yellow cylinder": 4,
+      "green garbage truck": 2,
+      "yellow sphere": 2
+    },
+    "target_category": {
+      "ambulance": "vehicle",
+      "bald man in green shirt": "human",
+      "beige sofa": "furniture",
+      "black leather sofa": "furniture",
+      "blue barrel": "equipment",
+      "blue cone": "geometry",
+      "blue cylinder": "geometry",
+      "blue school chair": "furniture",
+      "blue van": "vehicle",
+      "bronze whale statue": "other",
+      "covered car": "vehicle",
+      "doctor in white coat": "human",
+      "girl in yellow shirt": "human",
+      "green armchair": "furniture",
+      "green cube": "geometry",
+      "green garbage truck": "vehicle",
+      "green hatchback": "vehicle",
+      "green sphere": "geometry",
+      "green suitcase": "equipment",
+      "grey armchair": "furniture",
+      "man in black suit": "human",
+      "man in blue jacket": "human",
+      "man in brown jacket": "human",
+      "man in red shirt": "human",
+      "old television": "equipment",
+      "orange cone": "geometry",
+      "orange cylinder": "geometry",
+      "person in purple shirt": "human",
+      "police car": "vehicle",
+      "police officer": "human",
+      "red barrel": "equipment",
+      "red cube": "geometry",
+      "red cylinder": "geometry",
+      "red fire extinguisher": "equipment",
+      "red fire truck": "vehicle",
+      "red sedan": "vehicle",
+      "red tool chest": "equipment",
+      "red wooden bench": "furniture",
+      "round wooden table": "furniture",
+      "white cabinet": "furniture",
+      "white pickup truck": "vehicle",
+      "white plastic chair": "furniture",
+      "wooden barrel": "equipment",
+      "yellow cube": "geometry",
+      "yellow cylinder": "geometry",
+      "yellow generator": "equipment",
+      "yellow sphere": "geometry",
+      "yellow suv": "vehicle",
+      "yellow taxi": "vehicle",
+      "yellow wet floor sign": "equipment"
+    },
+    "by_scene_category": {
+      "s01": {
+        "equipment": 16,
+        "furniture": 4,
+        "geometry": 9,
+        "human": 8,
+        "other": 1,
+        "vehicle": 12
+      },
+      "s01d": {
+        "equipment": 9,
+        "furniture": 13,
+        "geometry": 8,
+        "human": 9,
+        "vehicle": 11
+      },
+      "s02": {
+        "equipment": 13,
+        "furniture": 8,
+        "geometry": 9,
+        "human": 9,
+        "other": 2,
+        "vehicle": 9
+      },
+      "s03": {
+        "equipment": 15,
+        "furniture": 8,
+        "geometry": 10,
+        "human": 9,
+        "vehicle": 8
+      },
+      "s04": {
+        "equipment": 12,
+        "furniture": 6,
+        "geometry": 11,
+        "human": 11,
+        "other": 2,
+        "vehicle": 8
+      },
+      "s05": {
+        "equipment": 10,
+        "furniture": 13,
+        "geometry": 12,
+        "human": 7,
+        "other": 2,
+        "vehicle": 6
+      },
+      "s06": {
+        "equipment": 9,
+        "furniture": 13,
+        "geometry": 10,
+        "human": 9,
+        "other": 1,
+        "vehicle": 8
+      },
+      "s07": {
+        "equipment": 8,
+        "furniture": 14,
+        "geometry": 6,
+        "human": 8,
+        "vehicle": 14
+      },
+      "s09": {
+        "equipment": 7,
+        "furniture": 13,
+        "geometry": 7,
+        "human": 13,
+        "other": 1,
+        "vehicle": 9
+      }
+    },
+    "seen": {
+      "seen": 450,
+      "unseen": 0,
+      "unknown": 0
+    },
+    "stand_in": {
+      "stand-in": 160,
+      "not a stand-in": 290,
+      "unmarked": 0
+    },
+    "name_status": {
+      "pool": 450
+    },
+    "filled_from_pool": {},
+    "pool_targets_never_kept": []
+  },
+  "kept_rates": {
+    "stores": [
+      {
+        "store": "s01_c0",
+        "scenes": [
+          "s01"
+        ],
+        "kept": 50,
+        "flown": 52,
+        "rejected": {
+          "collision": 1,
+          "out_of_bounds": 1
+        },
+        "kept_rate": 0.9615,
+        "wilson_95": [
+          0.8702,
+          0.9894
+        ],
+        "source": "rejects+record",
+        "collision_sources": {
+          "sim": 1
+        },
+        "fault_retries": 0,
+        "disagreements": [],
+        "record": "/home/nvidiasims/research_uav/autofly_ue5/runs/collect/s01_c0.json",
+        "rejects_dir": "data/rejects/s01_c0"
+      },
+      {
+        "store": "s01d_c0",
+        "scenes": [
+          "s01d"
+        ],
+        "kept": 50,
+        "flown": 55,
+        "rejected": {
+          "collision": 3,
+          "out_of_bounds": 2
+        },
+        "kept_rate": 0.9091,
+        "wilson_95": [
+          0.8042,
+          0.9605
+        ],
+        "source": "rejects+record",
+        "collision_sources": {
+          "mover": 2,
+          "sim": 1
+        },
+        "fault_retries": 0,
+        "disagreements": [],
+        "record": "/home/nvidiasims/research_uav/autofly_ue5/runs/collect/s01d_c0.json",
+        "rejects_dir": "data/rejects/s01d_c0"
+      },
+      {
+        "store": "s02_c0",
+        "scenes": [
+          "s02"
+        ],
+        "kept": 50,
+        "flown": 68,
+        "rejected": {
+          "collision": 6,
+          "out_of_bounds": 10,
+          "timeout": 2
+        },
+        "kept_rate": 0.7353,
+        "wilson_95": [
+          0.6199,
+          0.8255
+        ],
+        "source": "rejects+record",
+        "collision_sources": {
+          "footprint": 6
+        },
+        "fault_retries": 0,
+        "disagreements": [],
+        "record": "/home/nvidiasims/research_uav/autofly_ue5/runs/collect/s02_c0.json",
+        "rejects_dir": "data/rejects/s02_c0"
+      },
+      {
+        "store": "s03_c0",
+        "scenes": [
+          "s03"
+        ],
+        "kept": 50,
+        "flown": 83,
+        "rejected": {
+          "collision": 18,
+          "out_of_bounds": 12,
+          "timeout": 3
+        },
+        "kept_rate": 0.6024,
+        "wilson_95": [
+          0.4948,
+          0.7009
+        ],
+        "source": "rejects+record",
+        "collision_sources": {
+          "footprint": 18
+        },
+        "fault_retries": 0,
+        "disagreements": [],
+        "record": "/home/nvidiasims/research_uav/autofly_ue5/runs/collect/s03_c0.json",
+        "rejects_dir": "data/rejects/s03_c0"
+      },
+      {
+        "store": "s04_c0",
+        "scenes": [
+          "s04"
+        ],
+        "kept": 50,
+        "flown": 89,
+        "rejected": {
+          "collision": 31,
+          "out_of_bounds": 8
+        },
+        "kept_rate": 0.5618,
+        "wilson_95": [
+          0.4583,
+          0.6602
+        ],
+        "source": "rejects+record",
+        "collision_sources": {
+          "footprint": 31
+        },
+        "fault_retries": 0,
+        "disagreements": [],
+        "record": "/home/nvidiasims/research_uav/autofly_ue5/runs/collect/s04_c0.json",
+        "rejects_dir": "data/rejects/s04_c0"
+      },
+      {
+        "store": "s05_c0",
+        "scenes": [
+          "s05"
+        ],
+        "kept": 50,
+        "flown": 101,
+        "rejected": {
+          "collision": 24,
+          "out_of_bounds": 25,
+          "timeout": 2
+        },
+        "kept_rate": 0.495,
+        "wilson_95": [
+          0.3995,
+          0.5909
+        ],
+        "source": "rejects+record",
+        "collision_sources": {
+          "footprint": 24
+        },
+        "fault_retries": 0,
+        "disagreements": [],
+        "record": "/home/nvidiasims/research_uav/autofly_ue5/runs/collect/s05_c0.json",
+        "rejects_dir": "data/rejects/s05_c0"
+      },
+      {
+        "store": "s06_c0",
+        "scenes": [
+          "s06"
+        ],
+        "kept": 50,
+        "flown": 127,
+        "rejected": {
+          "collision": 62,
+          "out_of_bounds": 15
+        },
+        "kept_rate": 0.3937,
+        "wilson_95": [
+          0.313,
+          0.4806
+        ],
+        "source": "rejects+record",
+        "collision_sources": {
+          "footprint": 60,
+          "sim": 2
+        },
+        "fault_retries": 0,
+        "disagreements": [],
+        "record": "/home/nvidiasims/research_uav/autofly_ue5/runs/collect/s06_c0.json",
+        "rejects_dir": "data/rejects/s06_c0"
+      },
+      {
+        "store": "s07_c0",
+        "scenes": [
+          "s07"
+        ],
+        "kept": 50,
+        "flown": 51,
+        "rejected": {
+          "collision": 1
+        },
+        "kept_rate": 0.9804,
+        "wilson_95": [
+          0.897,
+          0.9965
+        ],
+        "source": "rejects+record",
+        "collision_sources": {
+          "sim": 1
+        },
+        "fault_retries": 0,
+        "disagreements": [],
+        "record": "/home/nvidiasims/research_uav/autofly_ue5/runs/collect/s07_c0.json",
+        "rejects_dir": "data/rejects/s07_c0"
+      },
+      {
+        "store": "s09_c0",
+        "scenes": [
+          "s09"
+        ],
+        "kept": 50,
+        "flown": 50,
+        "rejected": {},
+        "kept_rate": 1.0,
+        "wilson_95": [
+          0.9287,
+          1.0
+        ],
+        "source": "rejects+record",
+        "collision_sources": {},
+        "fault_retries": 0,
+        "disagreements": [],
+        "record": "/home/nvidiasims/research_uav/autofly_ue5/runs/collect/s09_c0.json",
+        "rejects_dir": "data/rejects/s09_c0"
+      }
+    ],
+    "scenes": [
+      {
+        "scene": "s01",
+        "stores": [
+          "s01_c0"
+        ],
+        "kept": 50,
+        "flown": 52,
+        "rejected": {
+          "collision": 1,
+          "out_of_bounds": 1
+        },
+        "kept_rate": 0.9615,
+        "wilson_95": [
+          0.8702,
+          0.9894
+        ]
+      },
+      {
+        "scene": "s01d",
+        "stores": [
+          "s01d_c0"
+        ],
+        "kept": 50,
+        "flown": 55,
+        "rejected": {
+          "collision": 3,
+          "out_of_bounds": 2
+        },
+        "kept_rate": 0.9091,
+        "wilson_95": [
+          0.8042,
+          0.9605
+        ]
+      },
+      {
+        "scene": "s02",
+        "stores": [
+          "s02_c0"
+        ],
+        "kept": 50,
+        "flown": 68,
+        "rejected": {
+          "collision": 6,
+          "out_of_bounds": 10,
+          "timeout": 2
+        },
+        "kept_rate": 0.7353,
+        "wilson_95": [
+          0.6199,
+          0.8255
+        ]
+      },
+      {
+        "scene": "s03",
+        "stores": [
+          "s03_c0"
+        ],
+        "kept": 50,
+        "flown": 83,
+        "rejected": {
+          "collision": 18,
+          "out_of_bounds": 12,
+          "timeout": 3
+        },
+        "kept_rate": 0.6024,
+        "wilson_95": [
+          0.4948,
+          0.7009
+        ]
+      },
+      {
+        "scene": "s04",
+        "stores": [
+          "s04_c0"
+        ],
+        "kept": 50,
+        "flown": 89,
+        "rejected": {
+          "collision": 31,
+          "out_of_bounds": 8
+        },
+        "kept_rate": 0.5618,
+        "wilson_95": [
+          0.4583,
+          0.6602
+        ]
+      },
+      {
+        "scene": "s05",
+        "stores": [
+          "s05_c0"
+        ],
+        "kept": 50,
+        "flown": 101,
+        "rejected": {
+          "collision": 24,
+          "out_of_bounds": 25,
+          "timeout": 2
+        },
+        "kept_rate": 0.495,
+        "wilson_95": [
+          0.3995,
+          0.5909
+        ]
+      },
+      {
+        "scene": "s06",
+        "stores": [
+          "s06_c0"
+        ],
+        "kept": 50,
+        "flown": 127,
+        "rejected": {
+          "collision": 62,
+          "out_of_bounds": 15
+        },
+        "kept_rate": 0.3937,
+        "wilson_95": [
+          0.313,
+          0.4806
+        ]
+      },
+      {
+        "scene": "s07",
+        "stores": [
+          "s07_c0"
+        ],
+        "kept": 50,
+        "flown": 51,
+        "rejected": {
+          "collision": 1
+        },
+        "kept_rate": 0.9804,
+        "wilson_95": [
+          0.897,
+          0.9965
+        ]
+      },
+      {
+        "scene": "s09",
+        "stores": [
+          "s09_c0"
+        ],
+        "kept": 50,
+        "flown": 50,
+        "rejected": {},
+        "kept_rate": 1.0,
+        "wilson_95": [
+          0.9287,
+          1.0
+        ]
+      }
+    ],
+    "bar_wilson_lower": 0.25,
+    "notes": []
+  },
+  "trajectories": {
+    "s01": {
+      "kept": 50,
+      "rejected_endings": 2,
+      "rejected_endings_by_reason": {
+        "collision": 1,
+        "out_of_bounds": 1
+      },
+      "obstacles": {
+        "circle": 80
+      },
+      "layout": "/home/nvidiasims/research_uav/autofly_ue5/runs/levels/s01.layout.json",
+      "layout_scene": "s01"
+    },
+    "s01d": {
+      "kept": 50,
+      "rejected_endings": 5,
+      "rejected_endings_by_reason": {
+        "collision": 3,
+        "out_of_bounds": 2
+      },
+      "obstacles": {
+        "circle": 80
+      },
+      "layout": "/home/nvidiasims/research_uav/autofly_ue5/runs/levels/s01.layout.json",
+      "layout_scene": "s01",
+      "moving_pillars": {
+        "moved_in_any_episode": 80,
+        "of": 80
+      }
+    },
+    "s02": {
+      "kept": 50,
+      "rejected_endings": 18,
+      "rejected_endings_by_reason": {
+        "collision": 6,
+        "out_of_bounds": 10,
+        "timeout": 2
+      },
+      "obstacles": {
+        "outline": 27
+      },
+      "layout": "/home/nvidiasims/research_uav/autofly_ue5/runs/levels/s02.layout.json",
+      "layout_scene": "s02"
+    },
+    "s03": {
+      "kept": 50,
+      "rejected_endings": 33,
+      "rejected_endings_by_reason": {
+        "collision": 18,
+        "out_of_bounds": 12,
+        "timeout": 3
+      },
+      "obstacles": {
+        "outline": 29
+      },
+      "layout": "/home/nvidiasims/research_uav/autofly_ue5/runs/levels/s03.layout.json",
+      "layout_scene": "s03"
+    },
+    "s04": {
+      "kept": 50,
+      "rejected_endings": 39,
+      "rejected_endings_by_reason": {
+        "collision": 31,
+        "out_of_bounds": 8
+      },
+      "obstacles": {
+        "outline": 33
+      },
+      "layout": "/home/nvidiasims/research_uav/autofly_ue5/runs/levels/s04.layout.json",
+      "layout_scene": "s04"
+    },
+    "s05": {
+      "kept": 50,
+      "rejected_endings": 51,
+      "rejected_endings_by_reason": {
+        "collision": 24,
+        "out_of_bounds": 25,
+        "timeout": 2
+      },
+      "obstacles": {
+        "outline": 24
+      },
+      "layout": "/home/nvidiasims/research_uav/autofly_ue5/runs/levels/s05.layout.json",
+      "layout_scene": "s05"
+    },
+    "s06": {
+      "kept": 50,
+      "rejected_endings": 77,
+      "rejected_endings_by_reason": {
+        "collision": 62,
+        "out_of_bounds": 15
+      },
+      "obstacles": {
+        "outline": 40
+      },
+      "layout": "/home/nvidiasims/research_uav/autofly_ue5/runs/levels/s06.layout.json",
+      "layout_scene": "s06"
+    },
+    "s07": {
+      "kept": 50,
+      "rejected_endings": 1,
+      "rejected_endings_by_reason": {
+        "collision": 1
+      },
+      "obstacles": {
+        "box": 18
+      },
+      "layout": "/home/nvidiasims/research_uav/autofly_ue5/runs/levels/s07.layout.json",
+      "layout_scene": "s07"
+    },
+    "s09": {
+      "kept": 50,
+      "rejected_endings": 0,
+      "rejected_endings_by_reason": {},
+      "obstacles": {
+        "circle": 70
+      },
+      "layout": "/home/nvidiasims/research_uav/autofly_ue5/runs/levels/s09.layout.json",
+      "layout_scene": "s09"
+    }
+  },
+  "actions_states": {
+    "dimensions": {
+      "action[0]": {
+        "title": "forward (m/s)",
+        "privileged": false,
+        "autofly_verified": true
+      },
+      "action[1]": {
+        "title": "yaw rate (rad/s)",
+        "privileged": false,
+        "autofly_verified": true
+      },
+      "action[2]": {
+        "title": "vertical, up (m/s)",
+        "privileged": false,
+        "autofly_verified": true
+      },
+      "state[0]": {
+        "title": "distance to target (m)",
+        "name": "distance_to_target_m",
+        "status": "spec_3_2",
+        "privileged": true,
+        "autofly_verified": true
+      },
+      "state[1]": {
+        "title": "bearing to target (rad)",
+        "name": "bearing_to_target_rad",
+        "status": "not_autofly_verified",
+        "privileged": true,
+        "autofly_verified": false
+      },
+      "state[2]": {
+        "title": "altitude minus 1.47 (m)",
+        "name": "altitude_minus_1_47_m",
+        "status": "adopted",
+        "privileged": false,
+        "autofly_verified": true
+      },
+      "state[3]": {
+        "title": "speed (m/s)",
+        "name": "speed_m_s",
+        "status": "spec_3_2",
+        "privileged": false,
+        "autofly_verified": true
+      },
+      "state[4]": {
+        "title": "vertical velocity (m/s)",
+        "name": "vertical_velocity_m_s",
+        "status": "not_autofly_verified",
+        "privileged": false,
+        "autofly_verified": false
+      },
+      "state[5]": {
+        "title": "yaw rate (rad/s)",
+        "name": "yaw_rate_rad_s",
+        "status": "not_autofly_verified",
+        "privileged": false,
+        "autofly_verified": false
+      },
+      "state[6]": {
+        "title": "x from start (m)",
+        "name": "x_from_start_m",
+        "status": "spec_3_2",
+        "privileged": false,
+        "autofly_verified": true
+      },
+      "state[7]": {
+        "title": "y from start (m)",
+        "name": "y_from_start_m",
+        "status": "spec_3_2",
+        "privileged": false,
+        "autofly_verified": true
+      },
+      "state[8]": {
+        "title": "altitude (m)",
+        "name": "altitude_m",
+        "status": "spec_3_2",
+        "privileged": false,
+        "autofly_verified": true
+      }
+    },
+    "records": {
+      "s01": 9871,
+      "s01d": 9627,
+      "s02": 9310,
+      "s03": 9687,
+      "s04": 9324,
+      "s05": 9416,
+      "s06": 9370,
+      "s07": 9000,
+      "s09": 8995
+    },
+    "scenes": {
+      "s01": {
+        "action[0]": {
+          "n": 9871,
+          "mean": 1.6877,
+          "std": 0.6259,
+          "min": 0.0002,
+          "p5": 0.0286,
+          "q1": 1.884,
+          "median": 1.9634,
+          "q3": 1.985,
+          "p95": 1.9953,
+          "max": 1.9994
+        },
+        "action[1]": {
+          "n": 9871,
+          "mean": -0.0122,
+          "std": 0.6818,
+          "min": -0.9995,
+          "p5": -0.9617,
+          "q1": -0.6966,
+          "median": -0.0172,
+          "q3": 0.6559,
+          "p95": 0.9622,
+          "max": 0.9986
+        },
+        "action[2]": {
+          "n": 9871,
+          "mean": -0.0054,
+          "std": 0.5785,
+          "min": -0.9999,
+          "p5": -0.8781,
+          "q1": -0.5158,
+          "median": -0.0206,
+          "q3": 0.4946,
+          "p95": 0.9029,
+          "max": 0.9998
+        },
+        "state[0]": {
+          "n": 9871,
+          "mean": 33.8127,
+          "std": 20.4517,
+          "min": 3.7369,
+          "p5": 6.0217,
+          "q1": 14.4506,
+          "median": 32.5588,
+          "q3": 51.3829,
+          "p95": 66.1796,
+          "max": 90.1414
+        },
+        "state[1]": {
+          "n": 9871,
+          "mean": -0.0465,
+          "std": 0.2094,
+          "min": -0.9615,
+          "p5": -0.4062,
+          "q1": -0.1737,
+          "median": -0.0385,
+          "q3": 0.0865,
+          "p95": 0.2837,
+          "max": 0.7019
+        },
+        "state[2]": {
+          "n": 9871,
+          "mean": 0.5309,
+          "std": 0.2541,
+          "min": -0.2581,
+          "p5": 0.1247,
+          "q1": 0.3533,
+          "median": 0.5275,
+          "q3": 0.701,
+          "p95": 0.9607,
+          "max": 1.4984
+        },
+        "state[3]": {
+          "n": 9871,
+          "mean": 1.7447,
+          "std": 0.508,
+          "min": 0.0013,
+          "p5": 0.4916,
+          "q1": 1.8456,
+          "median": 1.9526,
+          "q3": 2.0076,
+          "p95": 2.1291,
+          "max": 2.2766
+        },
+        "state[4]": {
+          "n": 9871,
+          "mean": 0.0101,
+          "std": 0.5252,
+          "min": -1.2261,
+          "p5": -0.838,
+          "q1": -0.3886,
+          "median": -0.0043,
+          "q3": 0.4017,
+          "p95": 0.8834,
+          "max": 1.3684
+        },
+        "state[5]": {
+          "n": 9871,
+          "mean": -0.003,
+          "std": 0.2663,
+          "min": -0.7962,
+          "p5": -0.4518,
+          "q1": -0.1799,
+          "median": -0.0037,
+          "q3": 0.1727,
+          "p95": 0.4587,
+          "max": 0.8149
+        },
+        "state[6]": {
+          "n": 9871,
+          "mean": -2.2414,
+          "std": 27.5923,
+          "min": -61.7201,
+          "p5": -54.5569,
+          "q1": -15.7851,
+          "median": -0.4425,
+          "q3": 10.3459,
+          "p95": 53.0704,
+          "max": 61.5875
+        },
+        "state[7]": {
+          "n": 9871,
+          "mean": 8.4379,
+          "std": 28.5016,
+          "min": -63.0224,
+          "p5": -44.8766,
+          "q1": -4.4586,
+          "median": 4.279,
+          "q3": 26.9899,
+          "p95": 57.9143,
+          "max": 63.195
+        },
+        "state[8]": {
+          "n": 9871,
+          "mean": 2.0009,
+          "std": 0.2541,
+          "min": 1.2119,
+          "p5": 1.5947,
+          "q1": 1.8233,
+          "median": 1.9975,
+          "q3": 2.171,
+          "p95": 2.4307,
+          "max": 2.9684
+        }
+      },
+      "s01d": {
+        "action[0]": {
+          "n": 9627,
+          "mean": 1.8549,
+          "std": 0.3921,
+          "min": 0.0012,
+          "p5": 1.3742,
+          "q1": 1.9162,
+          "median": 1.9632,
+          "q3": 1.9832,
+          "p95": 1.9943,
+          "max": 1.9993
+        },
+        "action[1]": {
+          "n": 9627,
+          "mean": 0.0072,
+          "std": 0.7474,
+          "min": -0.999,
+          "p5": -0.9735,
+          "q1": -0.7884,
+          "median": -0.0002,
+          "q3": 0.7967,
+          "p95": 0.9764,
+          "max": 0.9993
+        },
+        "action[2]": {
+          "n": 9627,
+          "mean": -0.0219,
+          "std": 0.5781,
+          "min": -0.9963,
+          "p5": -0.88,
+          "q1": -0.5386,
+          "median": -0.0473,
+          "q3": 0.4982,
+          "p95": 0.8911,
+          "max": 0.9996
+        },
+        "state[0]": {
+          "n": 9627,
+          "mean": 37.8126,
+          "std": 18.9269,
+          "min": 3.8444,
+          "p5": 8.5805,
+          "q1": 22.0473,
+          "median": 37.5667,
+          "q3": 53.5221,
+          "p95": 67.1229,
+          "max": 85.2781
+        },
+        "state[1]": {
+          "n": 9627,
+          "mean": -0.0458,
+          "std": 0.4363,
+          "min": -3.1344,
+          "p5": -0.7377,
+          "q1": -0.2501,
+          "median": -0.0131,
+          "q3": 0.1952,
+          "p95": 0.552,
+          "max": 3.015
+        },
+        "state[2]": {
+          "n": 9627,
+          "mean": 0.5345,
+          "std": 0.2324,
+          "min": -0.3511,
+          "p5": 0.1633,
+          "q1": 0.3801,
+          "median": 0.5295,
+          "q3": 0.6846,
+          "p95": 0.924,
+          "max": 1.441
+        },
+        "state[3]": {
+          "n": 9627,
+          "mean": 1.8551,
+          "std": 0.345,
+          "min": 0.0005,
+          "p5": 1.0253,
+          "q1": 1.8884,
+          "median": 1.94,
+          "q3": 2.0005,
+          "p95": 2.1193,
+          "max": 2.2834
+        },
+        "state[4]": {
+          "n": 9627,
+          "mean": 0.0009,
+          "std": 0.528,
+          "min": -1.2109,
+          "p5": -0.8344,
+          "q1": -0.4055,
+          "median": -0.0149,
+          "q3": 0.3917,
+          "p95": 0.8907,
+          "max": 1.4289
+        },
+        "state[5]": {
+          "n": 9627,
+          "mean": 0.0095,
+          "std": 0.3823,
+          "min": -0.9678,
+          "p5": -0.6056,
+          "q1": -0.2753,
+          "median": 0.0046,
+          "q3": 0.2954,
+          "p95": 0.6299,
+          "max": 0.9823
+        },
+        "state[6]": {
+          "n": 9627,
+          "mean": -0.4007,
+          "std": 25.155,
+          "min": -62.0371,
+          "p5": -47.1684,
+          "q1": -12.8426,
+          "median": -0.3433,
+          "q3": 10.06,
+          "p95": 47.0759,
+          "max": 64.2543
+        },
+        "state[7]": {
+          "n": 9627,
+          "mean": -3.4015,
+          "std": 27.7596,
+          "min": -63.4199,
+          "p5": -51.5166,
+          "q1": -19.794,
+          "median": -2.1656,
+          "q3": 8.1873,
+          "p95": 49.7301,
+          "max": 63.812
+        },
+        "state[8]": {
+          "n": 9627,
+          "mean": 2.0045,
+          "std": 0.2324,
+          "min": 1.1189,
+          "p5": 1.6333,
+          "q1": 1.8501,
+          "median": 1.9995,
+          "q3": 2.1546,
+          "p95": 2.394,
+          "max": 2.911
+        }
+      },
+      "s02": {
+        "action[0]": {
+          "n": 9310,
+          "mean": 1.9046,
+          "std": 0.2763,
+          "min": 0.0011,
+          "p5": 1.7181,
+          "q1": 1.9396,
+          "median": 1.9727,
+          "q3": 1.9871,
+          "p95": 1.9955,
+          "max": 1.9996
+        },
+        "action[1]": {
+          "n": 9310,
+          "mean": 0.0016,
+          "std": 0.6049,
+          "min": -0.9992,
+          "p5": -0.9403,
+          "q1": -0.5277,
+          "median": 0.0063,
+          "q3": 0.5224,
+          "p95": 0.938,
+          "max": 0.9992
+        },
+        "action[2]": {
+          "n": 9310,
+          "mean": -0.0125,
+          "std": 0.5138,
+          "min": -0.9999,
+          "p5": -0.8286,
+          "q1": -0.4323,
+          "median": -0.02,
+          "q3": 0.402,
+          "p95": 0.8213,
+          "max": 0.9977
+        },
+        "state[0]": {
+          "n": 9310,
+          "mean": 38.6503,
+          "std": 19.9925,
+          "min": 2.616,
+          "p5": 7.8239,
+          "q1": 21.8647,
+          "median": 38.1239,
+          "q3": 55.118,
+          "p95": 70.2073,
+          "max": 87.4339
+        },
+        "state[1]": {
+          "n": 9310,
+          "mean": 0.014,
+          "std": 0.305,
+          "min": -1.549,
+          "p5": -0.4952,
+          "q1": -0.1246,
+          "median": 0.0029,
+          "q3": 0.1861,
+          "p95": 0.4627,
+          "max": 1.3606
+        },
+        "state[2]": {
+          "n": 9310,
+          "mean": 0.5438,
+          "std": 0.2075,
+          "min": -0.3202,
+          "p5": 0.1933,
+          "q1": 0.4228,
+          "median": 0.5452,
+          "q3": 0.6654,
+          "p95": 0.8809,
+          "max": 1.5207
+        },
+        "state[3]": {
+          "n": 9310,
+          "mean": 1.9015,
+          "std": 0.2862,
+          "min": 0.0015,
+          "p5": 1.402,
+          "q1": 1.9282,
+          "median": 1.9622,
+          "q3": 2.0104,
+          "p95": 2.116,
+          "max": 2.263
+        },
+        "state[4]": {
+          "n": 9310,
+          "mean": -0.0022,
+          "std": 0.4793,
+          "min": -1.1787,
+          "p5": -0.7833,
+          "q1": -0.3639,
+          "median": -0.0098,
+          "q3": 0.352,
+          "p95": 0.7967,
+          "max": 1.3509
+        },
+        "state[5]": {
+          "n": 9310,
+          "mean": 0.0025,
+          "std": 0.252,
+          "min": -0.8812,
+          "p5": -0.4189,
+          "q1": -0.1514,
+          "median": 0.0,
+          "q3": 0.1553,
+          "p95": 0.4371,
+          "max": 0.8762
+        },
+        "state[6]": {
+          "n": 9310,
+          "mean": -0.9382,
+          "std": 27.3417,
+          "min": -62.9663,
+          "p5": -48.1753,
+          "q1": -18.3581,
+          "median": -1.0727,
+          "q3": 14.0313,
+          "p95": 49.4933,
+          "max": 64.3462
+        },
+        "state[7]": {
+          "n": 9310,
+          "mean": -2.5789,
+          "std": 27.5879,
+          "min": -63.5862,
+          "p5": -50.9984,
+          "q1": -20.099,
+          "median": -0.7797,
+          "q3": 11.5953,
+          "p95": 48.673,
+          "max": 64.1454
+        },
+        "state[8]": {
+          "n": 9310,
+          "mean": 2.0138,
+          "std": 0.2075,
+          "min": 1.1498,
+          "p5": 1.6633,
+          "q1": 1.8928,
+          "median": 2.0152,
+          "q3": 2.1354,
+          "p95": 2.3509,
+          "max": 2.9907
+        }
+      },
+      "s03": {
+        "action[0]": {
+          "n": 9687,
+          "mean": 1.8843,
+          "std": 0.3199,
+          "min": 0.002,
+          "p5": 1.586,
+          "q1": 1.9315,
+          "median": 1.97,
+          "q3": 1.9861,
+          "p95": 1.9952,
+          "max": 1.9997
+        },
+        "action[1]": {
+          "n": 9687,
+          "mean": 0.0023,
+          "std": 0.663,
+          "min": -0.9999,
+          "p5": -0.9679,
+          "q1": -0.6278,
+          "median": 0.0116,
+          "q3": 0.626,
+          "p95": 0.9675,
+          "max": 0.9991
+        },
+        "action[2]": {
+          "n": 9687,
+          "mean": -0.0152,
+          "std": 0.5177,
+          "min": -0.9983,
+          "p5": -0.8331,
+          "q1": -0.4418,
+          "median": -0.0297,
+          "q3": 0.4094,
+          "p95": 0.8202,
+          "max": 0.9991
+        },
+        "state[0]": {
+          "n": 9687,
+          "mean": 39.6375,
+          "std": 20.5403,
+          "min": 3.2485,
+          "p5": 8.3126,
+          "q1": 21.9947,
+          "median": 39.4027,
+          "q3": 56.3287,
+          "p95": 73.1826,
+          "max": 90.3372
+        },
+        "state[1]": {
+          "n": 9687,
+          "mean": 0.0172,
+          "std": 0.3499,
+          "min": -1.6429,
+          "p5": -0.5864,
+          "q1": -0.1739,
+          "median": 0.0004,
+          "q3": 0.2481,
+          "p95": 0.5737,
+          "max": 1.7821
+        },
+        "state[2]": {
+          "n": 9687,
+          "mean": 0.5153,
+          "std": 0.2252,
+          "min": -0.3287,
+          "p5": 0.1457,
+          "q1": 0.375,
+          "median": 0.5156,
+          "q3": 0.6481,
+          "p95": 0.8906,
+          "max": 1.4343
+        },
+        "state[3]": {
+          "n": 9687,
+          "mean": 1.8804,
+          "std": 0.2927,
+          "min": 0.0001,
+          "p5": 1.2842,
+          "q1": 1.9046,
+          "median": 1.9535,
+          "q3": 1.999,
+          "p95": 2.1022,
+          "max": 2.2483
+        },
+        "state[4]": {
+          "n": 9687,
+          "mean": 0.0002,
+          "std": 0.4797,
+          "min": -1.2468,
+          "p5": -0.7697,
+          "q1": -0.36,
+          "median": -0.0175,
+          "q3": 0.3575,
+          "p95": 0.802,
+          "max": 1.2981
+        },
+        "state[5]": {
+          "n": 9687,
+          "mean": 0.0026,
+          "std": 0.2996,
+          "min": -0.921,
+          "p5": -0.5091,
+          "q1": -0.185,
+          "median": 0.0,
+          "q3": 0.1925,
+          "p95": 0.5112,
+          "max": 0.9208
+        },
+        "state[6]": {
+          "n": 9687,
+          "mean": -2.8421,
+          "std": 28.9643,
+          "min": -64.0464,
+          "p5": -52.4801,
+          "q1": -23.1233,
+          "median": 0.0162,
+          "q3": 14.0416,
+          "p95": 48.9807,
+          "max": 66.8938
+        },
+        "state[7]": {
+          "n": 9687,
+          "mean": 0.9625,
+          "std": 26.4757,
+          "min": -62.6345,
+          "p5": -46.0243,
+          "q1": -13.8613,
+          "median": 0.1526,
+          "q3": 15.6532,
+          "p95": 48.4664,
+          "max": 62.652
+        },
+        "state[8]": {
+          "n": 9687,
+          "mean": 1.9853,
+          "std": 0.2252,
+          "min": 1.1413,
+          "p5": 1.6157,
+          "q1": 1.845,
+          "median": 1.9856,
+          "q3": 2.1181,
+          "p95": 2.3606,
+          "max": 2.9043
+        }
+      },
+      "s04": {
+        "action[0]": {
+          "n": 9324,
+          "mean": 1.8769,
+          "std": 0.3441,
+          "min": 0.0,
+          "p5": 1.4131,
+          "q1": 1.9345,
+          "median": 1.972,
+          "q3": 1.9871,
+          "p95": 1.9956,
+          "max": 1.9994
+        },
+        "action[1]": {
+          "n": 9324,
+          "mean": 0.0092,
+          "std": 0.6009,
+          "min": -1.0,
+          "p5": -0.9337,
+          "q1": -0.5074,
+          "median": 0.0106,
+          "q3": 0.531,
+          "p95": 0.9355,
+          "max": 1.0
+        },
+        "action[2]": {
+          "n": 9324,
+          "mean": -0.0166,
+          "std": 0.4749,
+          "min": -0.9999,
+          "p5": -0.7741,
+          "q1": -0.3904,
+          "median": -0.0339,
+          "q3": 0.3642,
+          "p95": 0.7671,
+          "max": 0.9997
+        },
+        "state[0]": {
+          "n": 9324,
+          "mean": 37.4168,
+          "std": 19.9986,
+          "min": 2.1838,
+          "p5": 6.7627,
+          "q1": 20.0516,
+          "median": 37.1841,
+          "q3": 54.4787,
+          "p95": 68.4424,
+          "max": 87.531
+        },
+        "state[1]": {
+          "n": 9324,
+          "mean": 0.0395,
+          "std": 0.3466,
+          "min": -3.0681,
+          "p5": -0.3998,
+          "q1": -0.1286,
+          "median": -0.0113,
+          "q3": 0.1674,
+          "p95": 0.6287,
+          "max": 3.1011
+        },
+        "state[2]": {
+          "n": 9324,
+          "mean": 0.4914,
+          "std": 0.2009,
+          "min": -0.3338,
+          "p5": 0.1682,
+          "q1": 0.3689,
+          "median": 0.4931,
+          "q3": 0.6118,
+          "p95": 0.816,
+          "max": 1.4299
+        },
+        "state[3]": {
+          "n": 9324,
+          "mean": 1.867,
+          "std": 0.3266,
+          "min": 0.0025,
+          "p5": 1.1202,
+          "q1": 1.9145,
+          "median": 1.9588,
+          "q3": 1.9955,
+          "p95": 2.0863,
+          "max": 2.2537
+        },
+        "state[4]": {
+          "n": 9324,
+          "mean": -0.0042,
+          "std": 0.4443,
+          "min": -1.1257,
+          "p5": -0.7172,
+          "q1": -0.3396,
+          "median": -0.0214,
+          "q3": 0.3315,
+          "p95": 0.7334,
+          "max": 1.2243
+        },
+        "state[5]": {
+          "n": 9324,
+          "mean": 0.0092,
+          "std": 0.264,
+          "min": -0.8857,
+          "p5": -0.4261,
+          "q1": -0.1522,
+          "median": 0.0,
+          "q3": 0.1642,
+          "p95": 0.4547,
+          "max": 0.9518
+        },
+        "state[6]": {
+          "n": 9324,
+          "mean": 2.7945,
+          "std": 27.6248,
+          "min": -63.9197,
+          "p5": -49.942,
+          "q1": -10.8024,
+          "median": 2.8776,
+          "q3": 20.1088,
+          "p95": 50.6776,
+          "max": 65.1399
+        },
+        "state[7]": {
+          "n": 9324,
+          "mean": 2.2899,
+          "std": 26.5642,
+          "min": -63.4689,
+          "p5": -49.053,
+          "q1": -10.6197,
+          "median": 0.0053,
+          "q3": 20.2396,
+          "p95": 47.9146,
+          "max": 61.4249
+        },
+        "state[8]": {
+          "n": 9324,
+          "mean": 1.9614,
+          "std": 0.2009,
+          "min": 1.1362,
+          "p5": 1.6382,
+          "q1": 1.8389,
+          "median": 1.9631,
+          "q3": 2.0818,
+          "p95": 2.286,
+          "max": 2.8999
+        }
+      },
+      "s05": {
+        "action[0]": {
+          "n": 9416,
+          "mean": 1.8865,
+          "std": 0.3211,
+          "min": 0.0,
+          "p5": 1.5858,
+          "q1": 1.934,
+          "median": 1.9712,
+          "q3": 1.9865,
+          "p95": 1.9954,
+          "max": 1.9997
+        },
+        "action[1]": {
+          "n": 9416,
+          "mean": -0.0004,
+          "std": 0.6421,
+          "min": -1.0,
+          "p5": -0.9568,
+          "q1": -0.5908,
+          "median": 0.0018,
+          "q3": 0.5837,
+          "p95": 0.9575,
+          "max": 0.9998
+        },
+        "action[2]": {
+          "n": 9416,
+          "mean": -0.0135,
+          "std": 0.5212,
+          "min": -0.9993,
+          "p5": -0.8308,
+          "q1": -0.4445,
+          "median": -0.0166,
+          "q3": 0.4152,
+          "p95": 0.8283,
+          "max": 0.9996
+        },
+        "state[0]": {
+          "n": 9416,
+          "mean": 38.7647,
+          "std": 19.8856,
+          "min": 3.4191,
+          "p5": 8.2657,
+          "q1": 21.5096,
+          "median": 38.5004,
+          "q3": 55.3244,
+          "p95": 69.9481,
+          "max": 85.2599
+        },
+        "state[1]": {
+          "n": 9416,
+          "mean": 0.0106,
+          "std": 0.3595,
+          "min": -2.6657,
+          "p5": -0.5208,
+          "q1": -0.1627,
+          "median": -0.0142,
+          "q3": 0.1895,
+          "p95": 0.6155,
+          "max": 1.8262
+        },
+        "state[2]": {
+          "n": 9416,
+          "mean": 0.5165,
+          "std": 0.227,
+          "min": -0.3048,
+          "p5": 0.149,
+          "q1": 0.3795,
+          "median": 0.515,
+          "q3": 0.6451,
+          "p95": 0.8997,
+          "max": 1.5083
+        },
+        "state[3]": {
+          "n": 9416,
+          "mean": 1.8816,
+          "std": 0.3033,
+          "min": 0.0002,
+          "p5": 1.2536,
+          "q1": 1.9124,
+          "median": 1.9571,
+          "q3": 2.0018,
+          "p95": 2.1067,
+          "max": 2.3244
+        },
+        "state[4]": {
+          "n": 9416,
+          "mean": 0.0004,
+          "std": 0.4786,
+          "min": -1.1533,
+          "p5": -0.7753,
+          "q1": -0.3614,
+          "median": -0.0041,
+          "q3": 0.3566,
+          "p95": 0.7964,
+          "max": 1.3593
+        },
+        "state[5]": {
+          "n": 9416,
+          "mean": -0.0003,
+          "std": 0.284,
+          "min": -0.9013,
+          "p5": -0.474,
+          "q1": -0.1778,
+          "median": -0.0,
+          "q3": 0.1733,
+          "p95": 0.4827,
+          "max": 0.9197
+        },
+        "state[6]": {
+          "n": 9416,
+          "mean": 4.6811,
+          "std": 25.244,
+          "min": -61.6834,
+          "p5": -41.1259,
+          "q1": -9.5603,
+          "median": 3.6798,
+          "q3": 20.7554,
+          "p95": 49.4044,
+          "max": 63.1653
+        },
+        "state[7]": {
+          "n": 9416,
+          "mean": 0.3862,
+          "std": 28.3942,
+          "min": -66.2611,
+          "p5": -51.3583,
+          "q1": -15.2705,
+          "median": -0.0149,
+          "q3": 16.4789,
+          "p95": 52.8839,
+          "max": 63.2123
+        },
+        "state[8]": {
+          "n": 9416,
+          "mean": 1.9865,
+          "std": 0.227,
+          "min": 1.1652,
+          "p5": 1.619,
+          "q1": 1.8495,
+          "median": 1.985,
+          "q3": 2.1151,
+          "p95": 2.3697,
+          "max": 2.9783
+        }
+      },
+      "s06": {
+        "action[0]": {
+          "n": 9370,
+          "mean": 1.9057,
+          "std": 0.2796,
+          "min": 0.0003,
+          "p5": 1.7299,
+          "q1": 1.9399,
+          "median": 1.9727,
+          "q3": 1.987,
+          "p95": 1.9953,
+          "max": 1.9996
+        },
+        "action[1]": {
+          "n": 9370,
+          "mean": 0.0013,
+          "std": 0.6097,
+          "min": -0.9993,
+          "p5": -0.9379,
+          "q1": -0.5407,
+          "median": -0.0015,
+          "q3": 0.5337,
+          "p95": 0.9443,
+          "max": 0.999
+        },
+        "action[2]": {
+          "n": 9370,
+          "mean": -0.0119,
+          "std": 0.4981,
+          "min": -0.9988,
+          "p5": -0.8081,
+          "q1": -0.4154,
+          "median": -0.0166,
+          "q3": 0.3858,
+          "p95": 0.8001,
+          "max": 0.9984
+        },
+        "state[0]": {
+          "n": 9370,
+          "mean": 39.2661,
+          "std": 20.087,
+          "min": 3.7359,
+          "p5": 8.1651,
+          "q1": 22.2856,
+          "median": 39.1491,
+          "q3": 55.7353,
+          "p95": 70.5593,
+          "max": 92.306
+        },
+        "state[1]": {
+          "n": 9370,
+          "mean": 0.0136,
+          "std": 0.3259,
+          "min": -1.4708,
+          "p5": -0.4999,
+          "q1": -0.1415,
+          "median": 0.0013,
+          "q3": 0.1889,
+          "p95": 0.5414,
+          "max": 1.674
+        },
+        "state[2]": {
+          "n": 9370,
+          "mean": 0.5301,
+          "std": 0.2007,
+          "min": -0.368,
+          "p5": 0.2092,
+          "q1": 0.4157,
+          "median": 0.5311,
+          "q3": 0.6449,
+          "p95": 0.8525,
+          "max": 1.4561
+        },
+        "state[3]": {
+          "n": 9370,
+          "mean": 1.9009,
+          "std": 0.2912,
+          "min": 0.0009,
+          "p5": 1.3707,
+          "q1": 1.9283,
+          "median": 1.9618,
+          "q3": 2.0059,
+          "p95": 2.1043,
+          "max": 2.2821
+        },
+        "state[4]": {
+          "n": 9370,
+          "mean": -0.001,
+          "std": 0.462,
+          "min": -1.1431,
+          "p5": -0.7476,
+          "q1": -0.3456,
+          "median": -0.0118,
+          "q3": 0.3405,
+          "p95": 0.7785,
+          "max": 1.4121
+        },
+        "state[5]": {
+          "n": 9370,
+          "mean": 0.0009,
+          "std": 0.2568,
+          "min": -0.8703,
+          "p5": -0.4298,
+          "q1": -0.1476,
+          "median": 0.0,
+          "q3": 0.1553,
+          "p95": 0.4289,
+          "max": 0.9344
+        },
+        "state[6]": {
+          "n": 9370,
+          "mean": 5.7821,
+          "std": 26.0335,
+          "min": -62.5427,
+          "p5": -43.8917,
+          "q1": -6.4012,
+          "median": 4.5943,
+          "q3": 21.9805,
+          "p95": 50.9957,
+          "max": 62.8732
+        },
+        "state[7]": {
+          "n": 9370,
+          "mean": 0.1335,
+          "std": 27.7595,
+          "min": -64.1994,
+          "p5": -49.9488,
+          "q1": -18.0608,
+          "median": 0.1092,
+          "q3": 16.0788,
+          "p95": 50.5288,
+          "max": 65.998
+        },
+        "state[8]": {
+          "n": 9370,
+          "mean": 2.0001,
+          "std": 0.2007,
+          "min": 1.102,
+          "p5": 1.6792,
+          "q1": 1.8857,
+          "median": 2.0011,
+          "q3": 2.1149,
+          "p95": 2.3225,
+          "max": 2.9261
+        }
+      },
+      "s07": {
+        "action[0]": {
+          "n": 9000,
+          "mean": 1.9412,
+          "std": 0.1015,
+          "min": 0.0178,
+          "p5": 1.8145,
+          "q1": 1.9317,
+          "median": 1.9672,
+          "q3": 1.9846,
+          "p95": 1.9946,
+          "max": 1.9996
+        },
+        "action[1]": {
+          "n": 9000,
+          "mean": -0.0054,
+          "std": 0.6601,
+          "min": -0.9991,
+          "p5": -0.9397,
+          "q1": -0.6527,
+          "median": -0.0158,
+          "q3": 0.6498,
+          "p95": 0.9406,
+          "max": 0.9964
+        },
+        "action[2]": {
+          "n": 9000,
+          "mean": -0.0102,
+          "std": 0.5954,
+          "min": -0.9936,
+          "p5": -0.8845,
+          "q1": -0.5537,
+          "median": -0.0242,
+          "q3": 0.5356,
+          "p95": 0.9098,
+          "max": 0.9969
+        },
+        "state[0]": {
+          "n": 9000,
+          "mean": 39.3755,
+          "std": 20.1438,
+          "min": 4.7841,
+          "p5": 8.3958,
+          "q1": 22.0935,
+          "median": 39.1366,
+          "q3": 56.191,
+          "p95": 71.133,
+          "max": 87.206
+        },
+        "state[1]": {
+          "n": 9000,
+          "mean": -0.0471,
+          "std": 0.1756,
+          "min": -1.0187,
+          "p5": -0.3472,
+          "q1": -0.1468,
+          "median": -0.0363,
+          "q3": 0.0656,
+          "p95": 0.2112,
+          "max": 0.6578
+        },
+        "state[2]": {
+          "n": 9000,
+          "mean": 0.4081,
+          "std": 0.2088,
+          "min": -0.2328,
+          "p5": 0.0801,
+          "q1": 0.2633,
+          "median": 0.4006,
+          "q3": 0.5422,
+          "p95": 0.7628,
+          "max": 1.2226
+        },
+        "state[3]": {
+          "n": 9000,
+          "mean": 1.9451,
+          "std": 0.2498,
+          "min": 0.0007,
+          "p5": 1.7206,
+          "q1": 1.9275,
+          "median": 1.9635,
+          "q3": 2.0396,
+          "p95": 2.1595,
+          "max": 2.3279
+        },
+        "state[4]": {
+          "n": 9000,
+          "mean": -0.0001,
+          "std": 0.5558,
+          "min": -1.1856,
+          "p5": -0.8785,
+          "q1": -0.443,
+          "median": -0.0128,
+          "q3": 0.4214,
+          "p95": 0.9458,
+          "max": 1.3104
+        },
+        "state[5]": {
+          "n": 9000,
+          "mean": -0.002,
+          "std": 0.2911,
+          "min": -0.8504,
+          "p5": -0.4785,
+          "q1": -0.218,
+          "median": 0.0,
+          "q3": 0.2151,
+          "p95": 0.4664,
+          "max": 0.8176
+        },
+        "state[6]": {
+          "n": 9000,
+          "mean": 6.6369,
+          "std": 26.4771,
+          "min": -61.5078,
+          "p5": -40.4967,
+          "q1": -8.1569,
+          "median": 3.6788,
+          "q3": 25.2747,
+          "p95": 52.1239,
+          "max": 62.8686
+        },
+        "state[7]": {
+          "n": 9000,
+          "mean": -4.3516,
+          "std": 26.568,
+          "min": -62.8047,
+          "p5": -51.3738,
+          "q1": -22.3307,
+          "median": -1.2783,
+          "q3": 12.3647,
+          "p95": 41.0929,
+          "max": 62.0345
+        },
+        "state[8]": {
+          "n": 9000,
+          "mean": 1.8781,
+          "std": 0.2088,
+          "min": 1.2372,
+          "p5": 1.5501,
+          "q1": 1.7333,
+          "median": 1.8706,
+          "q3": 2.0122,
+          "p95": 2.2328,
+          "max": 2.6926
+        }
+      },
+      "s09": {
+        "action[0]": {
+          "n": 8995,
+          "mean": 1.9408,
+          "std": 0.085,
+          "min": 0.0199,
+          "p5": 1.8123,
+          "q1": 1.9285,
+          "median": 1.9655,
+          "q3": 1.9837,
+          "p95": 1.9943,
+          "max": 1.9994
+        },
+        "action[1]": {
+          "n": 8995,
+          "mean": 0.0051,
+          "std": 0.6934,
+          "min": -0.9989,
+          "p5": -0.9503,
+          "q1": -0.698,
+          "median": 0.0124,
+          "q3": 0.7124,
+          "p95": 0.9546,
+          "max": 0.9985
+        },
+        "action[2]": {
+          "n": 8995,
+          "mean": -0.0161,
+          "std": 0.5625,
+          "min": -0.987,
+          "p5": -0.863,
+          "q1": -0.5156,
+          "median": -0.0314,
+          "q3": 0.4687,
+          "p95": 0.868,
+          "max": 0.999
+        },
+        "state[0]": {
+          "n": 8995,
+          "mean": 38.5082,
+          "std": 19.6318,
+          "min": 5.0171,
+          "p5": 8.4142,
+          "q1": 21.5805,
+          "median": 38.2061,
+          "q3": 54.9303,
+          "p95": 69.4435,
+          "max": 88.6662
+        },
+        "state[1]": {
+          "n": 8995,
+          "mean": 0.0514,
+          "std": 0.2619,
+          "min": -0.8902,
+          "p5": -0.3885,
+          "q1": -0.1095,
+          "median": 0.0413,
+          "q3": 0.2151,
+          "p95": 0.5058,
+          "max": 0.993
+        },
+        "state[2]": {
+          "n": 8995,
+          "mean": 0.4786,
+          "std": 0.1988,
+          "min": -0.171,
+          "p5": 0.1546,
+          "q1": 0.3439,
+          "median": 0.4763,
+          "q3": 0.6081,
+          "p95": 0.8139,
+          "max": 1.2254
+        },
+        "state[3]": {
+          "n": 8995,
+          "mean": 1.9293,
+          "std": 0.2466,
+          "min": 0.0005,
+          "p5": 1.7282,
+          "q1": 1.9195,
+          "median": 1.9539,
+          "q3": 2.0125,
+          "p95": 2.1277,
+          "max": 2.2993
+        },
+        "state[4]": {
+          "n": 8995,
+          "mean": -0.0027,
+          "std": 0.5109,
+          "min": -1.1947,
+          "p5": -0.8292,
+          "q1": -0.3957,
+          "median": -0.0074,
+          "q3": 0.3817,
+          "p95": 0.8489,
+          "max": 1.2901
+        },
+        "state[5]": {
+          "n": 8995,
+          "mean": 0.0062,
+          "std": 0.3149,
+          "min": -0.8315,
+          "p5": -0.5038,
+          "q1": -0.2317,
+          "median": 0.0043,
+          "q3": 0.2455,
+          "p95": 0.5193,
+          "max": 0.8681
+        },
+        "state[6]": {
+          "n": 8995,
+          "mean": -0.3082,
+          "std": 25.6163,
+          "min": -62.3236,
+          "p5": -49.7068,
+          "q1": -12.2763,
+          "median": 0.1496,
+          "q3": 14.6823,
+          "p95": 43.0126,
+          "max": 62.4784
+        },
+        "state[7]": {
+          "n": 8995,
+          "mean": 0.1541,
+          "std": 27.8371,
+          "min": -63.0804,
+          "p5": -50.9837,
+          "q1": -15.3673,
+          "median": 0.0613,
+          "q3": 16.9016,
+          "p95": 49.3076,
+          "max": 62.2173
+        },
+        "state[8]": {
+          "n": 8995,
+          "mean": 1.9486,
+          "std": 0.1988,
+          "min": 1.299,
+          "p5": 1.6246,
+          "q1": 1.8139,
+          "median": 1.9463,
+          "q3": 2.0781,
+          "p95": 2.2839,
+          "max": 2.6954
+        }
+      }
+    }
+  },
+  "lengths_per": {
+    "scenes": {
+      "s01": {
+        "episodes": 50,
+        "records": {
+          "n": 50,
+          "mean": 197.42,
+          "std": 28.7653,
+          "min": 157.0,
+          "p5": 164.9,
+          "q1": 175.0,
+          "median": 184.5,
+          "q3": 227.5,
+          "p95": 242.65,
+          "max": 275.0
+        },
+        "flown_m": {
+          "n": 50,
+          "mean": 68.0645,
+          "std": 5.3194,
+          "min": 60.524,
+          "p5": 62.0892,
+          "q1": 63.8635,
+          "median": 67.338,
+          "q3": 70.072,
+          "p95": 77.4241,
+          "max": 88.104
+        },
+        "straight_m": {
+          "n": 50,
+          "mean": 63.3277,
+          "std": 4.942,
+          "min": 57.718,
+          "p5": 58.8434,
+          "q1": 60.503,
+          "median": 62.266,
+          "q3": 64.3465,
+          "p95": 71.985,
+          "max": 85.141
+        },
+        "per_straight": {
+          "mean": 0.9309,
+          "median": 0.9341,
+          "min": 0.8501,
+          "max": 0.9664,
+          "n": 50
+        },
+        "per_physical": {
+          "mean": 0.9814,
+          "median": 0.9876,
+          "min": 0.9156,
+          "max": 1.0,
+          "n": 50
+        },
+        "per_clearance": {
+          "mean": 0.9839,
+          "median": 0.9926,
+          "min": 0.9188,
+          "max": 1.0,
+          "n": 50
+        },
+        "per_interval": [
+          0.9309,
+          0.9814
+        ],
+        "episodes_without_l_opt": 0,
+        "note": null
+      },
+      "s01d": {
+        "episodes": 50,
+        "records": {
+          "n": 50,
+          "mean": 192.54,
+          "std": 27.3936,
+          "min": 162.0,
+          "p5": 165.9,
+          "q1": 173.75,
+          "median": 184.0,
+          "q3": 204.0,
+          "p95": 241.5,
+          "max": 300.0
+        },
+        "flown_m": {
+          "n": 50,
+          "mean": 70.8303,
+          "std": 7.6542,
+          "min": 61.574,
+          "p5": 63.1349,
+          "q1": 64.9537,
+          "median": 68.3065,
+          "q3": 72.753,
+          "p95": 88.9586,
+          "max": 92.405
+        },
+        "straight_m": {
+          "n": 50,
+          "mean": 63.7364,
+          "std": 4.9497,
+          "min": 57.565,
+          "p5": 59.0302,
+          "q1": 60.596,
+          "median": 62.09,
+          "q3": 64.6365,
+          "p95": 73.7115,
+          "max": 80.278
+        },
+        "per_straight": {
+          "mean": 0.9033,
+          "median": 0.9139,
+          "min": 0.7666,
+          "max": 0.9606,
+          "n": 50
+        },
+        "per_physical": null,
+        "per_clearance": null,
+        "per_interval": [
+          0.9033,
+          null
+        ],
+        "episodes_without_l_opt": null,
+        "note": "movers: the layout's grid is not where they flew, so the straight-line bound only"
+      },
+      "s02": {
+        "episodes": 50,
+        "records": {
+          "n": 50,
+          "mean": 186.2,
+          "std": 21.9991,
+          "min": 159.0,
+          "p5": 161.45,
+          "q1": 169.5,
+          "median": 181.5,
+          "q3": 198.75,
+          "p95": 228.55,
+          "max": 253.0
+        },
+        "flown_m": {
+          "n": 50,
+          "mean": 70.2921,
+          "std": 7.617,
+          "min": 61.424,
+          "p5": 61.6103,
+          "q1": 64.9218,
+          "median": 68.4805,
+          "q3": 73.3215,
+          "p95": 85.0847,
+          "max": 94.71
+        },
+        "straight_m": {
+          "n": 50,
+          "mean": 65.5254,
+          "std": 6.6886,
+          "min": 57.5,
+          "p5": 58.5284,
+          "q1": 60.4233,
+          "median": 63.3575,
+          "q3": 68.7387,
+          "p95": 80.0776,
+          "max": 82.434
+        },
+        "per_straight": {
+          "mean": 0.9334,
+          "median": 0.939,
+          "min": 0.8266,
+          "max": 0.9768,
+          "n": 50
+        },
+        "per_physical": {
+          "mean": 0.9824,
+          "median": 0.9995,
+          "min": 0.8919,
+          "max": 1.0,
+          "n": 50
+        },
+        "per_clearance": {
+          "mean": 0.9921,
+          "median": 1.0,
+          "min": 0.9029,
+          "max": 1.0,
+          "n": 50
+        },
+        "per_interval": [
+          0.9334,
+          0.9824
+        ],
+        "episodes_without_l_opt": 0,
+        "note": null
+      },
+      "s03": {
+        "episodes": 50,
+        "records": {
+          "n": 50,
+          "mean": 193.74,
+          "std": 26.8386,
+          "min": 153.0,
+          "p5": 162.0,
+          "q1": 170.25,
+          "median": 191.5,
+          "q3": 211.75,
+          "p95": 238.55,
+          "max": 262.0
+        },
+        "flown_m": {
+          "n": 50,
+          "mean": 72.3089,
+          "std": 9.733,
+          "min": 58.936,
+          "p5": 61.3708,
+          "q1": 64.2263,
+          "median": 69.433,
+          "q3": 79.7438,
+          "p95": 90.1796,
+          "max": 97.322
+        },
+        "straight_m": {
+          "n": 50,
+          "mean": 66.2315,
+          "std": 8.0664,
+          "min": 57.372,
+          "p5": 58.4519,
+          "q1": 59.7142,
+          "median": 63.111,
+          "q3": 71.9697,
+          "p95": 81.3376,
+          "max": 85.337
+        },
+        "per_straight": {
+          "mean": 0.918,
+          "median": 0.9199,
+          "min": 0.8363,
+          "max": 0.9735,
+          "n": 50
+        },
+        "per_physical": {
+          "mean": 0.9785,
+          "median": 0.9892,
+          "min": 0.9001,
+          "max": 1.0,
+          "n": 50
+        },
+        "per_clearance": {
+          "mean": 0.9929,
+          "median": 1.0,
+          "min": 0.9183,
+          "max": 1.0,
+          "n": 50
+        },
+        "per_interval": [
+          0.918,
+          0.9785
+        ],
+        "episodes_without_l_opt": 0,
+        "note": null
+      },
+      "s04": {
+        "episodes": 50,
+        "records": {
+          "n": 50,
+          "mean": 186.48,
+          "std": 22.7088,
+          "min": 160.0,
+          "p5": 162.0,
+          "q1": 167.0,
+          "median": 182.5,
+          "q3": 196.75,
+          "p95": 223.2,
+          "max": 269.0
+        },
+        "flown_m": {
+          "n": 50,
+          "mean": 69.1104,
+          "std": 6.596,
+          "min": 60.4,
+          "p5": 61.6319,
+          "q1": 63.408,
+          "median": 68.252,
+          "q3": 73.1292,
+          "p95": 82.5949,
+          "max": 86.567
+        },
+        "straight_m": {
+          "n": 50,
+          "mean": 64.321,
+          "std": 5.4254,
+          "min": 56.816,
+          "p5": 57.4483,
+          "q1": 60.356,
+          "median": 62.524,
+          "q3": 67.9483,
+          "p95": 73.068,
+          "max": 82.531
+        },
+        "per_straight": {
+          "mean": 0.9325,
+          "median": 0.9487,
+          "min": 0.7948,
+          "max": 0.9791,
+          "n": 50
+        },
+        "per_physical": {
+          "mean": 0.9835,
+          "median": 1.0,
+          "min": 0.8502,
+          "max": 1.0,
+          "n": 50
+        },
+        "per_clearance": {
+          "mean": 0.9914,
+          "median": 1.0,
+          "min": 0.8617,
+          "max": 1.0,
+          "n": 50
+        },
+        "per_interval": [
+          0.9325,
+          0.9835
+        ],
+        "episodes_without_l_opt": 0,
+        "note": null
+      },
+      "s05": {
+        "episodes": 50,
+        "records": {
+          "n": 50,
+          "mean": 188.32,
+          "std": 28.334,
+          "min": 156.0,
+          "p5": 158.45,
+          "q1": 167.0,
+          "median": 179.5,
+          "q3": 201.0,
+          "p95": 242.15,
+          "max": 272.0
+        },
+        "flown_m": {
+          "n": 50,
+          "mean": 70.3231,
+          "std": 8.545,
+          "min": 59.888,
+          "p5": 60.7154,
+          "q1": 63.767,
+          "median": 66.959,
+          "q3": 75.3817,
+          "p95": 86.3895,
+          "max": 91.387
+        },
+        "straight_m": {
+          "n": 50,
+          "mean": 64.5984,
+          "std": 6.0167,
+          "min": 57.364,
+          "p5": 58.401,
+          "q1": 60.398,
+          "median": 62.271,
+          "q3": 67.2875,
+          "p95": 77.9059,
+          "max": 80.26
+        },
+        "per_straight": {
+          "mean": 0.9224,
+          "median": 0.9352,
+          "min": 0.7659,
+          "max": 0.974,
+          "n": 50
+        },
+        "per_physical": {
+          "mean": 0.9745,
+          "median": 0.9909,
+          "min": 0.8389,
+          "max": 1.0,
+          "n": 50
+        },
+        "per_clearance": {
+          "mean": 0.9874,
+          "median": 1.0,
+          "min": 0.8778,
+          "max": 1.0,
+          "n": 50
+        },
+        "per_interval": [
+          0.9224,
+          0.9745
+        ],
+        "episodes_without_l_opt": 0,
+        "note": null
+      },
+      "s06": {
+        "episodes": 50,
+        "records": {
+          "n": 50,
+          "mean": 187.4,
+          "std": 22.7315,
+          "min": 154.0,
+          "p5": 157.45,
+          "q1": 168.25,
+          "median": 186.0,
+          "q3": 198.75,
+          "p95": 231.8,
+          "max": 250.0
+        },
+        "flown_m": {
+          "n": 50,
+          "mean": 70.7056,
+          "std": 7.8792,
+          "min": 59.256,
+          "p5": 60.1744,
+          "q1": 64.751,
+          "median": 70.7115,
+          "q3": 74.1532,
+          "p95": 84.8586,
+          "max": 95.82
+        },
+        "straight_m": {
+          "n": 50,
+          "mean": 65.5636,
+          "std": 6.8172,
+          "min": 57.514,
+          "p5": 58.0502,
+          "q1": 60.7858,
+          "median": 63.615,
+          "q3": 67.966,
+          "p95": 79.6132,
+          "max": 87.306
+        },
+        "per_straight": {
+          "mean": 0.9291,
+          "median": 0.942,
+          "min": 0.761,
+          "max": 0.9841,
+          "n": 50
+        },
+        "per_physical": {
+          "mean": 0.9839,
+          "median": 1.0,
+          "min": 0.8301,
+          "max": 1.0,
+          "n": 50
+        },
+        "per_clearance": {
+          "mean": 0.9943,
+          "median": 1.0,
+          "min": 0.8421,
+          "max": 1.0,
+          "n": 50
+        },
+        "per_interval": [
+          0.9291,
+          0.9839
+        ],
+        "episodes_without_l_opt": 0,
+        "note": null
+      },
+      "s07": {
+        "episodes": 50,
+        "records": {
+          "n": 50,
+          "mean": 180.0,
+          "std": 17.2058,
+          "min": 154.0,
+          "p5": 156.9,
+          "q1": 167.0,
+          "median": 176.5,
+          "q3": 189.75,
+          "p95": 217.55,
+          "max": 220.0
+        },
+        "flown_m": {
+          "n": 50,
+          "mean": 69.51,
+          "std": 6.6632,
+          "min": 59.842,
+          "p5": 60.7736,
+          "q1": 64.3373,
+          "median": 68.283,
+          "q3": 73.608,
+          "p95": 83.4846,
+          "max": 85.334
+        },
+        "straight_m": {
+          "n": 50,
+          "mean": 66.2145,
+          "std": 6.353,
+          "min": 56.955,
+          "p5": 57.9261,
+          "q1": 61.2695,
+          "median": 64.9195,
+          "q3": 69.7382,
+          "p95": 79.0305,
+          "max": 82.206
+        },
+        "per_straight": {
+          "mean": 0.9526,
+          "median": 0.9535,
+          "min": 0.9298,
+          "max": 0.9689,
+          "n": 50
+        },
+        "per_physical": {
+          "mean": 0.9931,
+          "median": 1.0,
+          "min": 0.9556,
+          "max": 1.0,
+          "n": 50
+        },
+        "per_clearance": {
+          "mean": 0.9956,
+          "median": 1.0,
+          "min": 0.9621,
+          "max": 1.0,
+          "n": 50
+        },
+        "per_interval": [
+          0.9526,
+          0.9931
+        ],
+        "episodes_without_l_opt": 0,
+        "note": null
+      },
+      "s09": {
+        "episodes": 50,
+        "records": {
+          "n": 50,
+          "mean": 179.9,
+          "std": 16.8193,
+          "min": 154.0,
+          "p5": 156.45,
+          "q1": 167.0,
+          "median": 178.0,
+          "q3": 190.0,
+          "p95": 209.2,
+          "max": 229.0
+        },
+        "flown_m": {
+          "n": 50,
+          "mean": 68.8939,
+          "std": 6.5588,
+          "min": 58.731,
+          "p5": 59.9659,
+          "q1": 63.5622,
+          "median": 68.205,
+          "q3": 72.7912,
+          "p95": 80.0734,
+          "max": 88.658
+        },
+        "straight_m": {
+          "n": 50,
+          "mean": 64.7393,
+          "std": 5.9794,
+          "min": 56.342,
+          "p5": 57.0119,
+          "q1": 60.651,
+          "median": 63.197,
+          "q3": 67.554,
+          "p95": 75.6641,
+          "max": 83.666
+        },
+        "per_straight": {
+          "mean": 0.9402,
+          "median": 0.9436,
+          "min": 0.8705,
+          "max": 0.9703,
+          "n": 50
+        },
+        "per_physical": {
+          "mean": 0.9887,
+          "median": 0.9947,
+          "min": 0.9341,
+          "max": 1.0,
+          "n": 50
+        },
+        "per_clearance": {
+          "mean": 0.9909,
+          "median": 0.999,
+          "min": 0.9341,
+          "max": 1.0,
+          "n": 50
+        },
+        "per_interval": [
+          0.9402,
+          0.9887
+        ],
+        "episodes_without_l_opt": 0,
+        "note": null
+      }
+    },
+    "paper_per": [
+      0.73,
+      0.78
+    ],
+    "bounds": "lower: the straight line to the success disc; upper: the 8-connected grid's shortest path at the rotor half-span's inflation (scripts/dataset_stats.py per_physical)"
+  },
+  "first_frames": {
+    "s01": {
+      "episodes": [
+        "s01_401000030",
+        "s01_401000007",
+        "s01_401000020",
+        "s01_401000006",
+        "s01_401000023",
+        "s01_401000032",
+        "s01_401000011",
+        "s01_401000040",
+        "s01_401000028",
+        "s01_401000047",
+        "s01_401000004",
+        "s01_401000044",
+        "s01_401000016",
+        "s01_401000048",
+        "s01_401000003",
+        "s01_401000034",
+        "s01_401000022",
+        "s01_401000001",
+        "s01_401000019",
+        "s01_401000005",
+        "s01_401000008",
+        "s01_401000002",
+        "s01_401000014",
+        "s01_401000000"
+      ],
+      "targets": [
+        "ambulance",
+        "bald man in green shirt",
+        "beige sofa",
+        "black leather sofa",
+        "blue cone",
+        "blue school chair",
+        "blue van",
+        "bronze whale statue",
+        "covered car",
+        "doctor in white coat",
+        "girl in yellow shirt",
+        "green cube",
+        "green garbage truck",
+        "green hatchback",
+        "green sphere",
+        "green suitcase",
+        "man in blue jacket",
+        "man in brown jacket",
+        "man in red shirt",
+        "old television",
+        "orange cone",
+        "red cube",
+        "red fire extinguisher",
+        "red fire truck"
+      ],
+      "kept": 50,
+      "first_frame_visibility": {
+        "occluded": 39,
+        "visible": 5,
+        "undetermined": 1,
+        "missing": 5
+      }
+    },
+    "s01d": {
+      "episodes": [
+        "s01d_411000006",
+        "s01d_411000007",
+        "s01d_411000012",
+        "s01d_411000009",
+        "s01d_411000035",
+        "s01d_411000033",
+        "s01d_411000011",
+        "s01d_411000030",
+        "s01d_411000014",
+        "s01d_411000019",
+        "s01d_411000038",
+        "s01d_411000015",
+        "s01d_411000026",
+        "s01d_411000052",
+        "s01d_411000032",
+        "s01d_411000016",
+        "s01d_411000042",
+        "s01d_411000005",
+        "s01d_411000037",
+        "s01d_411000004",
+        "s01d_411000046",
+        "s01d_411000000",
+        "s01d_411000008",
+        "s01d_411000054"
+      ],
+      "targets": [
+        "bald man in green shirt",
+        "beige sofa",
+        "blue school chair",
+        "covered car",
+        "doctor in white coat",
+        "girl in yellow shirt",
+        "green armchair",
+        "green cube",
+        "green sphere",
+        "green suitcase",
+        "grey armchair",
+        "man in black suit",
+        "man in blue jacket",
+        "man in brown jacket",
+        "old television",
+        "orange cone",
+        "person in purple shirt",
+        "police car",
+        "red cube",
+        "red fire extinguisher",
+        "red fire truck",
+        "red tool chest",
+        "red wooden bench",
+        "white cabinet"
+      ],
+      "kept": 50,
+      "first_frame_visibility": {
+        "occluded": 41,
+        "visible": 2,
+        "undetermined": 1,
+        "missing": 6
+      }
+    },
+    "s02": {
+      "episodes": [
+        "s02_421000019",
+        "s02_421000052",
+        "s02_421000021",
+        "s02_421000044",
+        "s02_421000004",
+        "s02_421000063",
+        "s02_421000064",
+        "s02_421000023",
+        "s02_421000027",
+        "s02_421000008",
+        "s02_421000002",
+        "s02_421000018",
+        "s02_421000015",
+        "s02_421000038",
+        "s02_421000006",
+        "s02_421000005",
+        "s02_421000000",
+        "s02_421000056",
+        "s02_421000029",
+        "s02_421000016",
+        "s02_421000012",
+        "s02_421000042",
+        "s02_421000035",
+        "s02_421000014"
+      ],
+      "targets": [
+        "black leather sofa",
+        "blue barrel",
+        "blue cone",
+        "blue school chair",
+        "bronze whale statue",
+        "girl in yellow shirt",
+        "green armchair",
+        "green hatchback",
+        "green sphere",
+        "grey armchair",
+        "man in black suit",
+        "man in blue jacket",
+        "man in red shirt",
+        "old television",
+        "orange cone",
+        "orange cylinder",
+        "person in purple shirt",
+        "red barrel",
+        "red fire extinguisher",
+        "red sedan",
+        "red tool chest",
+        "red wooden bench",
+        "round wooden table",
+        "white pickup truck"
+      ],
+      "kept": 50,
+      "first_frame_visibility": {
+        "visible": 11,
+        "occluded": 17,
+        "undetermined": 2,
+        "missing": 20
+      }
+    },
+    "s03": {
+      "episodes": [
+        "s03_431000017",
+        "s03_431000026",
+        "s03_431000005",
+        "s03_431000011",
+        "s03_431000001",
+        "s03_431000000",
+        "s03_431000036",
+        "s03_431000010",
+        "s03_431000070",
+        "s03_431000031",
+        "s03_431000041",
+        "s03_431000009",
+        "s03_431000004",
+        "s03_431000046",
+        "s03_431000006",
+        "s03_431000035",
+        "s03_431000029",
+        "s03_431000003",
+        "s03_431000024",
+        "s03_431000076",
+        "s03_431000062",
+        "s03_431000002",
+        "s03_431000022",
+        "s03_431000073"
+      ],
+      "targets": [
+        "ambulance",
+        "bald man in green shirt",
+        "blue barrel",
+        "blue cone",
+        "blue cylinder",
+        "blue school chair",
+        "doctor in white coat",
+        "green armchair",
+        "green cube",
+        "green suitcase",
+        "grey armchair",
+        "man in black suit",
+        "man in brown jacket",
+        "old television",
+        "person in purple shirt",
+        "red barrel",
+        "red cube",
+        "red cylinder",
+        "red fire extinguisher",
+        "red fire truck",
+        "red sedan",
+        "red tool chest",
+        "red wooden bench",
+        "white cabinet"
+      ],
+      "kept": 50,
+      "first_frame_visibility": {
+        "occluded": 45,
+        "visible": 3,
+        "missing": 2
+      }
+    },
+    "s04": {
+      "episodes": [
+        "s04_441000056",
+        "s04_441000020",
+        "s04_441000014",
+        "s04_441000084",
+        "s04_441000037",
+        "s04_441000007",
+        "s04_441000011",
+        "s04_441000079",
+        "s04_441000035",
+        "s04_441000058",
+        "s04_441000083",
+        "s04_441000022",
+        "s04_441000088",
+        "s04_441000003",
+        "s04_441000060",
+        "s04_441000019",
+        "s04_441000036",
+        "s04_441000034",
+        "s04_441000004",
+        "s04_441000050",
+        "s04_441000017",
+        "s04_441000042",
+        "s04_441000027",
+        "s04_441000059"
+      ],
+      "targets": [
+        "bald man in green shirt",
+        "beige sofa",
+        "black leather sofa",
+        "blue barrel",
+        "blue cone",
+        "blue cylinder",
+        "blue school chair",
+        "blue van",
+        "bronze whale statue",
+        "covered car",
+        "doctor in white coat",
+        "green armchair",
+        "green hatchback",
+        "green suitcase",
+        "man in black suit",
+        "man in blue jacket",
+        "man in brown jacket",
+        "man in red shirt",
+        "old television",
+        "orange cone",
+        "orange cylinder",
+        "person in purple shirt",
+        "police car",
+        "police officer"
+      ],
+      "kept": 50,
+      "first_frame_visibility": {
+        "occluded": 26,
+        "visible": 6,
+        "missing": 16,
+        "undetermined": 2
+      }
+    },
+    "s05": {
+      "episodes": [
+        "s05_451000010",
+        "s05_451000021",
+        "s05_451000072",
+        "s05_451000077",
+        "s05_451000007",
+        "s05_451000100",
+        "s05_451000006",
+        "s05_451000001",
+        "s05_451000044",
+        "s05_451000053",
+        "s05_451000029",
+        "s05_451000030",
+        "s05_451000088",
+        "s05_451000065",
+        "s05_451000025",
+        "s05_451000046",
+        "s05_451000058",
+        "s05_451000052",
+        "s05_451000017",
+        "s05_451000018",
+        "s05_451000000",
+        "s05_451000003",
+        "s05_451000071",
+        "s05_451000028"
+      ],
+      "targets": [
+        "bald man in green shirt",
+        "black leather sofa",
+        "blue barrel",
+        "blue cone",
+        "blue cylinder",
+        "blue school chair",
+        "blue van",
+        "bronze whale statue",
+        "covered car",
+        "green armchair",
+        "green cube",
+        "green suitcase",
+        "grey armchair",
+        "man in black suit",
+        "man in blue jacket",
+        "man in red shirt",
+        "orange cone",
+        "orange cylinder",
+        "person in purple shirt",
+        "red barrel",
+        "red cylinder",
+        "red fire truck",
+        "red tool chest",
+        "round wooden table"
+      ],
+      "kept": 50,
+      "first_frame_visibility": {
+        "visible": 8,
+        "missing": 9,
+        "occluded": 33
+      }
+    },
+    "s06": {
+      "episodes": [
+        "s06_461000072",
+        "s06_461000047",
+        "s06_461000104",
+        "s06_461000015",
+        "s06_461000094",
+        "s06_461000010",
+        "s06_461000031",
+        "s06_461000051",
+        "s06_461000074",
+        "s06_461000019",
+        "s06_461000054",
+        "s06_461000012",
+        "s06_461000126",
+        "s06_461000043",
+        "s06_461000039",
+        "s06_461000064",
+        "s06_461000009",
+        "s06_461000093",
+        "s06_461000005",
+        "s06_461000091",
+        "s06_461000032",
+        "s06_461000007",
+        "s06_461000001",
+        "s06_461000071"
+      ],
+      "targets": [
+        "ambulance",
+        "bald man in green shirt",
+        "beige sofa",
+        "black leather sofa",
+        "blue barrel",
+        "bronze whale statue",
+        "doctor in white coat",
+        "girl in yellow shirt",
+        "green armchair",
+        "green cube",
+        "green hatchback",
+        "green suitcase",
+        "grey armchair",
+        "man in blue jacket",
+        "man in red shirt",
+        "orange cylinder",
+        "police car",
+        "police officer",
+        "red cube",
+        "red sedan",
+        "red tool chest",
+        "red wooden bench",
+        "round wooden table",
+        "white pickup truck"
+      ],
+      "kept": 50,
+      "first_frame_visibility": {
+        "occluded": 31,
+        "visible": 9,
+        "missing": 9,
+        "undetermined": 1
+      }
+    },
+    "s07": {
+      "episodes": [
+        "s07_471000002",
+        "s07_471000031",
+        "s07_471000049",
+        "s07_471000011",
+        "s07_471000014",
+        "s07_471000034",
+        "s07_471000013",
+        "s07_471000027",
+        "s07_471000025",
+        "s07_471000046",
+        "s07_471000028",
+        "s07_471000006",
+        "s07_471000040",
+        "s07_471000032",
+        "s07_471000022",
+        "s07_471000042",
+        "s07_471000035",
+        "s07_471000026",
+        "s07_471000007",
+        "s07_471000010",
+        "s07_471000017",
+        "s07_471000043",
+        "s07_471000020",
+        "s07_471000000"
+      ],
+      "targets": [
+        "ambulance",
+        "beige sofa",
+        "black leather sofa",
+        "blue school chair",
+        "blue van",
+        "covered car",
+        "doctor in white coat",
+        "green armchair",
+        "green hatchback",
+        "green sphere",
+        "green suitcase",
+        "grey armchair",
+        "man in blue jacket",
+        "man in brown jacket",
+        "man in red shirt",
+        "old television",
+        "orange cone",
+        "person in purple shirt",
+        "police car",
+        "police officer",
+        "red barrel",
+        "red cylinder",
+        "red fire extinguisher",
+        "red fire truck"
+      ],
+      "kept": 50,
+      "first_frame_visibility": {
+        "occluded": 20,
+        "visible": 10,
+        "missing": 19,
+        "undetermined": 1
+      }
+    },
+    "s09": {
+      "episodes": [
+        "s09_481000013",
+        "s09_481000024",
+        "s09_481000000",
+        "s09_481000008",
+        "s09_481000027",
+        "s09_481000035",
+        "s09_481000012",
+        "s09_481000038",
+        "s09_481000009",
+        "s09_481000045",
+        "s09_481000046",
+        "s09_481000049",
+        "s09_481000003",
+        "s09_481000014",
+        "s09_481000023",
+        "s09_481000040",
+        "s09_481000002",
+        "s09_481000031",
+        "s09_481000039",
+        "s09_481000019",
+        "s09_481000033",
+        "s09_481000022",
+        "s09_481000001",
+        "s09_481000028"
+      ],
+      "targets": [
+        "bald man in green shirt",
+        "beige sofa",
+        "black leather sofa",
+        "blue cone",
+        "blue school chair",
+        "blue van",
+        "bronze whale statue",
+        "doctor in white coat",
+        "green armchair",
+        "green cube",
+        "green garbage truck",
+        "green hatchback",
+        "green sphere",
+        "green suitcase",
+        "grey armchair",
+        "man in black suit",
+        "man in blue jacket",
+        "man in brown jacket",
+        "man in red shirt",
+        "old television",
+        "orange cone",
+        "person in purple shirt",
+        "police officer",
+        "red cube"
+      ],
+      "kept": 50,
+      "first_frame_visibility": {
+        "occluded": 35,
+        "visible": 13,
+        "missing": 2
+      }
+    }
+  },
+  "targets_closeup": {
+    "count": 50,
+    "targets": {
+      "ambulance": {
+        "episode": "s07_471000050",
+        "store": "s07_c0",
+        "scene": "s07",
+        "category": "vehicle",
+        "stand_in": true,
+        "bearing_rad": 0.0044,
+        "distance_m": 5.0744
+      },
+      "blue van": {
+        "episode": "s07_471000014",
+        "store": "s07_c0",
+        "scene": "s07",
+        "category": "vehicle",
+        "stand_in": true,
+        "bearing_rad": 0.0138,
+        "distance_m": 5.0087
+      },
+      "covered car": {
+        "episode": "s01d_411000027",
+        "store": "s01d_c0",
+        "scene": "s01d",
+        "category": "vehicle",
+        "stand_in": false,
+        "bearing_rad": -0.0337,
+        "distance_m": 5.0505
+      },
+      "green garbage truck": {
+        "episode": "s09_481000046",
+        "store": "s09_c0",
+        "scene": "s09",
+        "category": "vehicle",
+        "stand_in": true,
+        "bearing_rad": -0.0149,
+        "distance_m": 5.0329
+      },
+      "green hatchback": {
+        "episode": "s09_481000049",
+        "store": "s09_c0",
+        "scene": "s09",
+        "category": "vehicle",
+        "stand_in": true,
+        "bearing_rad": 0.0078,
+        "distance_m": 5.3144
+      },
+      "police car": {
+        "episode": "s01d_411000028",
+        "store": "s01d_c0",
+        "scene": "s01d",
+        "category": "vehicle",
+        "stand_in": true,
+        "bearing_rad": -0.0128,
+        "distance_m": 5.008
+      },
+      "red fire truck": {
+        "episode": "s09_481000004",
+        "store": "s09_c0",
+        "scene": "s09",
+        "category": "vehicle",
+        "stand_in": true,
+        "bearing_rad": 0.0102,
+        "distance_m": 5.0339
+      },
+      "red sedan": {
+        "episode": "s07_471000018",
+        "store": "s07_c0",
+        "scene": "s07",
+        "category": "vehicle",
+        "stand_in": true,
+        "bearing_rad": -0.004,
+        "distance_m": 5.0871
+      },
+      "white pickup truck": {
+        "episode": "s03_431000077",
+        "store": "s03_c0",
+        "scene": "s03",
+        "category": "vehicle",
+        "stand_in": true,
+        "bearing_rad": 0.0973,
+        "distance_m": 5.2726
+      },
+      "yellow suv": {
+        "episode": "s07_471000019",
+        "store": "s07_c0",
+        "scene": "s07",
+        "category": "vehicle",
+        "stand_in": true,
+        "bearing_rad": 0.0385,
+        "distance_m": 5.0454
+      },
+      "yellow taxi": {
+        "episode": "s01d_411000053",
+        "store": "s01d_c0",
+        "scene": "s01d",
+        "category": "vehicle",
+        "stand_in": true,
+        "bearing_rad": 0.0256,
+        "distance_m": 5.0259
+      },
+      "blue cone": {
+        "episode": "s09_481000008",
+        "store": "s09_c0",
+        "scene": "s09",
+        "category": "geometry",
+        "stand_in": false,
+        "bearing_rad": -0.0129,
+        "distance_m": 5.2606
+      },
+      "blue cylinder": {
+        "episode": "s04_441000081",
+        "store": "s04_c0",
+        "scene": "s04",
+        "category": "geometry",
+        "stand_in": false,
+        "bearing_rad": -0.0087,
+        "distance_m": 5.0032
+      },
+      "green cube": {
+        "episode": "s05_451000029",
+        "store": "s05_c0",
+        "scene": "s05",
+        "category": "geometry",
+        "stand_in": false,
+        "bearing_rad": 0.0058,
+        "distance_m": 5.1989
+      },
+      "green sphere": {
+        "episode": "s01d_411000020",
+        "store": "s01d_c0",
+        "scene": "s01d",
+        "category": "geometry",
+        "stand_in": false,
+        "bearing_rad": -0.0168,
+        "distance_m": 5.3253
+      },
+      "orange cone": {
+        "episode": "s07_471000035",
+        "store": "s07_c0",
+        "scene": "s07",
+        "category": "geometry",
+        "stand_in": false,
+        "bearing_rad": 0.0169,
+        "distance_m": 5.3072
+      },
+      "orange cylinder": {
+        "episode": "s05_451000052",
+        "store": "s05_c0",
+        "scene": "s05",
+        "category": "geometry",
+        "stand_in": false,
+        "bearing_rad": -0.0039,
+        "distance_m": 5.0344
+      },
+      "red cube": {
+        "episode": "s06_461000005",
+        "store": "s06_c0",
+        "scene": "s06",
+        "category": "geometry",
+        "stand_in": false,
+        "bearing_rad": -0.0396,
+        "distance_m": 5.2174
+      },
+      "red cylinder": {
+        "episode": "s05_451000000",
+        "store": "s05_c0",
+        "scene": "s05",
+        "category": "geometry",
+        "stand_in": false,
+        "bearing_rad": 0.0186,
+        "distance_m": 5.0084
+      },
+      "yellow cube": {
+        "episode": "s09_481000030",
+        "store": "s09_c0",
+        "scene": "s09",
+        "category": "geometry",
+        "stand_in": false,
+        "bearing_rad": 0.0482,
+        "distance_m": 5.1347
+      },
+      "yellow cylinder": {
+        "episode": "s07_471000015",
+        "store": "s07_c0",
+        "scene": "s07",
+        "category": "geometry",
+        "stand_in": false,
+        "bearing_rad": -0.0109,
+        "distance_m": 5.2619
+      },
+      "yellow sphere": {
+        "episode": "s07_471000044",
+        "store": "s07_c0",
+        "scene": "s07",
+        "category": "geometry",
+        "stand_in": false,
+        "bearing_rad": 0.0381,
+        "distance_m": 5.0444
+      },
+      "beige sofa": {
+        "episode": "s01d_411000034",
+        "store": "s01d_c0",
+        "scene": "s01d",
+        "category": "furniture",
+        "stand_in": false,
+        "bearing_rad": -0.0062,
+        "distance_m": 5.2719
+      },
+      "black leather sofa": {
+        "episode": "s09_481000000",
+        "store": "s09_c0",
+        "scene": "s09",
+        "category": "furniture",
+        "stand_in": false,
+        "bearing_rad": 0.0139,
+        "distance_m": 5.2576
+      },
+      "blue school chair": {
+        "episode": "s01_401000032",
+        "store": "s01_c0",
+        "scene": "s01",
+        "category": "furniture",
+        "stand_in": false,
+        "bearing_rad": -0.0122,
+        "distance_m": 5.0088
+      },
+      "green armchair": {
+        "episode": "s01d_411000011",
+        "store": "s01d_c0",
+        "scene": "s01d",
+        "category": "furniture",
+        "stand_in": false,
+        "bearing_rad": -0.0096,
+        "distance_m": 5.2874
+      },
+      "grey armchair": {
+        "episode": "s07_471000033",
+        "store": "s07_c0",
+        "scene": "s07",
+        "category": "furniture",
+        "stand_in": false,
+        "bearing_rad": 0.0295,
+        "distance_m": 5.0526
+      },
+      "red wooden bench": {
+        "episode": "s06_461000007",
+        "store": "s06_c0",
+        "scene": "s06",
+        "category": "furniture",
+        "stand_in": false,
+        "bearing_rad": 0.0196,
+        "distance_m": 5.2482
+      },
+      "round wooden table": {
+        "episode": "s09_481000010",
+        "store": "s09_c0",
+        "scene": "s09",
+        "category": "furniture",
+        "stand_in": false,
+        "bearing_rad": 0.001,
+        "distance_m": 5.3495
+      },
+      "white cabinet": {
+        "episode": "s09_481000020",
+        "store": "s09_c0",
+        "scene": "s09",
+        "category": "furniture",
+        "stand_in": false,
+        "bearing_rad": -0.0302,
+        "distance_m": 5.2685
+      },
+      "white plastic chair": {
+        "episode": "s05_451000081",
+        "store": "s05_c0",
+        "scene": "s05",
+        "category": "furniture",
+        "stand_in": false,
+        "bearing_rad": -0.0211,
+        "distance_m": 5.1201
+      },
+      "blue barrel": {
+        "episode": "s05_451000072",
+        "store": "s05_c0",
+        "scene": "s05",
+        "category": "equipment",
+        "stand_in": false,
+        "bearing_rad": -0.0273,
+        "distance_m": 5.0845
+      },
+      "green suitcase": {
+        "episode": "s05_451000030",
+        "store": "s05_c0",
+        "scene": "s05",
+        "category": "equipment",
+        "stand_in": false,
+        "bearing_rad": 0.0137,
+        "distance_m": 5.2779
+      },
+      "old television": {
+        "episode": "s01_401000012",
+        "store": "s01_c0",
+        "scene": "s01",
+        "category": "equipment",
+        "stand_in": false,
+        "bearing_rad": 0.0074,
+        "distance_m": 5.0032
+      },
+      "red barrel": {
+        "episode": "s02_421000056",
+        "store": "s02_c0",
+        "scene": "s02",
+        "category": "equipment",
+        "stand_in": false,
+        "bearing_rad": 0.0387,
+        "distance_m": 5.3223
+      },
+      "red fire extinguisher": {
+        "episode": "s01_401000021",
+        "store": "s01_c0",
+        "scene": "s01",
+        "category": "equipment",
+        "stand_in": false,
+        "bearing_rad": -0.0068,
+        "distance_m": 5.072
+      },
+      "red tool chest": {
+        "episode": "s01_401000027",
+        "store": "s01_c0",
+        "scene": "s01",
+        "category": "equipment",
+        "stand_in": false,
+        "bearing_rad": -0.0113,
+        "distance_m": 5.0028
+      },
+      "wooden barrel": {
+        "episode": "s06_461000080",
+        "store": "s06_c0",
+        "scene": "s06",
+        "category": "equipment",
+        "stand_in": false,
+        "bearing_rad": -0.0083,
+        "distance_m": 5.3313
+      },
+      "yellow generator": {
+        "episode": "s03_431000034",
+        "store": "s03_c0",
+        "scene": "s03",
+        "category": "equipment",
+        "stand_in": false,
+        "bearing_rad": -0.0385,
+        "distance_m": 5.1829
+      },
+      "yellow wet floor sign": {
+        "episode": "s01d_411000024",
+        "store": "s01d_c0",
+        "scene": "s01d",
+        "category": "equipment",
+        "stand_in": false,
+        "bearing_rad": -0.002,
+        "distance_m": 5.3349
+      },
+      "bald man in green shirt": {
+        "episode": "s04_441000056",
+        "store": "s04_c0",
+        "scene": "s04",
+        "category": "human",
+        "stand_in": true,
+        "bearing_rad": 0.0001,
+        "distance_m": 5.1574
+      },
+      "doctor in white coat": {
+        "episode": "s03_431000066",
+        "store": "s03_c0",
+        "scene": "s03",
+        "category": "human",
+        "stand_in": true,
+        "bearing_rad": -0.0011,
+        "distance_m": 5.3684
+      },
+      "girl in yellow shirt": {
+        "episode": "s06_461000051",
+        "store": "s06_c0",
+        "scene": "s06",
+        "category": "human",
+        "stand_in": true,
+        "bearing_rad": -0.0247,
+        "distance_m": 5.2156
+      },
+      "man in black suit": {
+        "episode": "s03_431000009",
+        "store": "s03_c0",
+        "scene": "s03",
+        "category": "human",
+        "stand_in": true,
+        "bearing_rad": 0.0278,
+        "distance_m": 5.2987
+      },
+      "man in blue jacket": {
+        "episode": "s04_441000019",
+        "store": "s04_c0",
+        "scene": "s04",
+        "category": "human",
+        "stand_in": true,
+        "bearing_rad": 0.0292,
+        "distance_m": 5.0817
+      },
+      "man in brown jacket": {
+        "episode": "s04_441000049",
+        "store": "s04_c0",
+        "scene": "s04",
+        "category": "human",
+        "stand_in": true,
+        "bearing_rad": -0.0088,
+        "distance_m": 5.3633
+      },
+      "man in red shirt": {
+        "episode": "s05_451000046",
+        "store": "s05_c0",
+        "scene": "s05",
+        "category": "human",
+        "stand_in": true,
+        "bearing_rad": -0.0271,
+        "distance_m": 5.1262
+      },
+      "person in purple shirt": {
+        "episode": "s02_421000000",
+        "store": "s02_c0",
+        "scene": "s02",
+        "category": "human",
+        "stand_in": true,
+        "bearing_rad": -0.0104,
+        "distance_m": 5.0893
+      },
+      "police officer": {
+        "episode": "s09_481000025",
+        "store": "s09_c0",
+        "scene": "s09",
+        "category": "human",
+        "stand_in": true,
+        "bearing_rad": -0.0069,
+        "distance_m": 5.1195
+      },
+      "bronze whale statue": {
+        "episode": "s09_481000012",
+        "store": "s09_c0",
+        "scene": "s09",
+        "category": "other",
+        "stand_in": false,
+        "bearing_rad": 0.0098,
+        "distance_m": 5.2269
+      }
+    }
+  },
+  "notes": [],
+  "files": [
+    "composition.png",
+    "kept_rates.png",
+    "trajectories_s01.png",
+    "trajectories_s01d.png",
+    "trajectories_s02.png",
+    "trajectories_s03.png",
+    "trajectories_s04.png",
+    "trajectories_s05.png",
+    "trajectories_s06.png",
+    "trajectories_s07.png",
+    "trajectories_s09.png",
+    "actions_states.png",
+    "lengths_per.png",
+    "first_frames_s01.png",
+    "first_frames_s01d.png",
+    "first_frames_s02.png",
+    "first_frames_s03.png",
+    "first_frames_s04.png",
+    "first_frames_s05.png",
+    "first_frames_s06.png",
+    "first_frames_s07.png",
+    "first_frames_s09.png",
+    "targets_closeup.png"
+  ]
+}

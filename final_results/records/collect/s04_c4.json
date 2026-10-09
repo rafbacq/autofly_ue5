@@ -1,0 +1,799 @@
+{
+  "milestone": "M3",
+  "description": "M3 pilot: the SAC expert collects AutoFly-format episodes; the dataset validator (spec \u00a711) must pass. Pass = the requested episodes kept, validator pass, engine-fault audit clean.",
+  "scene": "s04",
+  "scene_config": {
+    "file": "scene_autofly_s04_fast.jsonc",
+    "sha256": "b0a834fa548ba99d5170df142b8d8a9ba89f74e17305f5d33baa6511c71f0ba9"
+  },
+  "dataset": {
+    "name": "s04_c4",
+    "path": "/home/nvidiasims/research_uav/autofly_ue5/data/s04_c4"
+  },
+  "expert": {
+    "path": "runs/expert/s02_r1/averaged/avg_350k_end.zip",
+    "sha256": "0971010abb0512c2660c4dd33ad7f75e8d19acbcbb400d38935ba12c08f3ca73",
+    "deterministic": false,
+    "obs_config": {
+      "depth_frames": 1,
+      "depth_dtype": "float32"
+    }
+  },
+  "episodes_requested": 50,
+  "seed_base": 445000000,
+  "instance": 3,
+  "target_name": null,
+  "a0": "sector8",
+  "reward_version": "3-scene-reward-overrides",
+  "collector_git_head": "0388392a0c78f86a5c61b90a4d62327e1ed79917",
+  "collector_tree_dirty": false,
+  "run_started": "2026-10-08 23:22:04",
+  "status": "ok",
+  "pass": true,
+  "error": null,
+  "collection": {
+    "status": "ok",
+    "kept": 50,
+    "rejected": 42,
+    "attempted": 92,
+    "fault_retries": 0,
+    "outcomes": {
+      "success": 50,
+      "collision": 37,
+      "out_of_bounds": 5
+    },
+    "seeds_flown": [
+      445000000,
+      445000091
+    ],
+    "first_frame_visibility": {
+      "visible": 30,
+      "missing": 4,
+      "occluded": 58,
+      "occluded_unmodeled": 0,
+      "out_of_view": 0,
+      "undetermined": 0
+    },
+    "session_warmups": [
+      {
+        "view": [
+          33.0,
+          33.0,
+          -2.0,
+          3.141592653589793
+        ],
+        "pairs": 48,
+        "warmed": 48,
+        "steps": 95,
+        "resets": 48,
+        "wall_s": 71.97,
+        "attempts": 1,
+        "per_pair": [
+          {
+            "asset": "tgt_covered_car",
+            "material": null,
+            "name": "covered car",
+            "distance_m": 9.0,
+            "steps": 1,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "tgt_sedan",
+            "material": null,
+            "name": "red sedan",
+            "distance_m": 9.0,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "tgt_hatchback_sports",
+            "material": null,
+            "name": "green hatchback",
+            "distance_m": 8.7,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "tgt_van",
+            "material": null,
+            "name": "blue van",
+            "distance_m": 9.0,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "tgt_taxi",
+            "material": null,
+            "name": "yellow taxi",
+            "distance_m": 9.0,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "tgt_police",
+            "material": null,
+            "name": "police car",
+            "distance_m": 9.0,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "tgt_ambulance",
+            "material": null,
+            "name": "ambulance",
+            "distance_m": 9.0,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "tgt_firetruck",
+            "material": null,
+            "name": "red fire truck",
+            "distance_m": 9.0,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "tgt_garbage_truck",
+            "material": null,
+            "name": "green garbage truck",
+            "distance_m": 9.0,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "tgt_suv_luxury",
+            "material": null,
+            "name": "yellow suv",
+            "distance_m": 9.0,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "tgt_truck_flat",
+            "material": null,
+            "name": "white pickup truck",
+            "distance_m": 9.0,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "cylinder",
+            "material": "orange",
+            "name": "orange cylinder",
+            "distance_m": 6.0,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "cylinder",
+            "material": "runtime_blue",
+            "name": "blue cylinder",
+            "distance_m": 6.0,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "cylinder",
+            "material": "runtime_red",
+            "name": "red cylinder",
+            "distance_m": 6.0,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "cylinder",
+            "material": "runtime_yellow",
+            "name": "yellow cylinder",
+            "distance_m": 6.0,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "cube",
+            "material": "runtime_red",
+            "name": "red cube",
+            "distance_m": 6.0,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "cube",
+            "material": "runtime_green",
+            "name": "green cube",
+            "distance_m": 6.0,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "cube",
+            "material": "runtime_yellow",
+            "name": "yellow cube",
+            "distance_m": 6.0,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "cone",
+            "material": "runtime_blue",
+            "name": "blue cone",
+            "distance_m": 6.0,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "cone",
+            "material": "orange",
+            "name": "orange cone",
+            "distance_m": 6.0,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "tgt_sofa_01",
+            "material": null,
+            "name": "beige sofa",
+            "distance_m": 6.0,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "tgt_sofa_02",
+            "material": null,
+            "name": "black leather sofa",
+            "distance_m": 6.0,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "tgt_armchair_01",
+            "material": null,
+            "name": "grey armchair",
+            "distance_m": 6.0,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "tgt_greenchair_01",
+            "material": null,
+            "name": "green armchair",
+            "distance_m": 6.0,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "tgt_plastic_monobloc_chair_01",
+            "material": null,
+            "name": "white plastic chair",
+            "distance_m": 6.0,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "tgt_schoolchair_01",
+            "material": null,
+            "name": "blue school chair",
+            "distance_m": 6.0,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "tgt_painted_wooden_bench",
+            "material": null,
+            "name": "red wooden bench",
+            "distance_m": 6.0,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "tgt_round_wooden_table_01",
+            "material": null,
+            "name": "round wooden table",
+            "distance_m": 6.0,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "tgt_painted_wooden_cabinet",
+            "material": null,
+            "name": "white cabinet",
+            "distance_m": 6.0,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "tgt_barrel_01",
+            "material": null,
+            "name": "red barrel",
+            "distance_m": 6.0,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "tgt_barrel_02",
+            "material": null,
+            "name": "blue barrel",
+            "distance_m": 6.0,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "tgt_wine_barrel_01",
+            "material": null,
+            "name": "wooden barrel",
+            "distance_m": 6.0,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "tgt_vintage_suitcase_01",
+            "material": null,
+            "name": "green suitcase",
+            "distance_m": 6.0,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "tgt_television_01",
+            "material": null,
+            "name": "old television",
+            "distance_m": 6.0,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "tgt_korean_fire_extinguisher_01",
+            "material": null,
+            "name": "red fire extinguisher",
+            "distance_m": 6.0,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "tgt_portable_generator",
+            "material": null,
+            "name": "yellow generator",
+            "distance_m": 6.0,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "tgt_metal_tool_chest",
+            "material": null,
+            "name": "red tool chest",
+            "distance_m": 6.0,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "tgt_wetfloorsign_01",
+            "material": null,
+            "name": "yellow wet floor sign",
+            "distance_m": 6.0,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "tgt_character_a",
+            "material": null,
+            "name": "man in brown jacket",
+            "distance_m": 6.0,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "tgt_character_b",
+            "material": null,
+            "name": "man in red shirt",
+            "distance_m": 6.0,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "tgt_character_c",
+            "material": null,
+            "name": "bald man in green shirt",
+            "distance_m": 6.0,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "tgt_character_e",
+            "material": null,
+            "name": "person in purple shirt",
+            "distance_m": 6.0,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "tgt_character_i",
+            "material": null,
+            "name": "doctor in white coat",
+            "distance_m": 6.0,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "tgt_character_j",
+            "material": null,
+            "name": "police officer",
+            "distance_m": 6.0,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "tgt_character_p",
+            "material": null,
+            "name": "man in blue jacket",
+            "distance_m": 6.0,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "tgt_character_q",
+            "material": null,
+            "name": "man in black suit",
+            "distance_m": 6.0,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "tgt_character_female_b",
+            "material": null,
+            "name": "girl in yellow shirt",
+            "distance_m": 6.0,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          },
+          {
+            "asset": "tgt_bronze_whale_statue",
+            "material": null,
+            "name": "bronze whale statue",
+            "distance_m": 6.0,
+            "steps": 2,
+            "error": null,
+            "attempt": 1
+          }
+        ],
+        "failed": [],
+        "error": null
+      }
+    ],
+    "wall_s": 3855.4,
+    "backend_faults": {
+      "before": {
+        "instance": 3,
+        "fault_counts": {
+          "CameraPoseError": 0,
+          "StepTimingError": 0,
+          "StaleStateError": 0,
+          "CommandTimeoutError": 0,
+          "Timeout": 0,
+          "ConnectionReset": 0,
+          "KinematicsJumpError": 0,
+          "SimRequestTimeoutError": 0,
+          "ObjectMoveRefusedError": 0,
+          "FrameTimeoutError": 0,
+          "FrameTimestampError": 0,
+          "ResetPoseError": 0,
+          "StartCollisionError": 0,
+          "SetPoseError": 0,
+          "EpisodeSetupError": 0,
+          "SimExitedError": 0,
+          "SimReadyTimeout": 0,
+          "SimConnectionLostError": 0
+        },
+        "recovered_counts": {
+          "CameraPoseError": 0,
+          "StepTimingError": 0,
+          "StaleStateError": 0,
+          "CommandTimeoutError": 0,
+          "Timeout": 0,
+          "ConnectionReset": 0,
+          "KinematicsJumpError": 0,
+          "SimRequestTimeoutError": 0,
+          "ObjectMoveRefusedError": 0,
+          "FrameTimeoutError": 0,
+          "FrameTimestampError": 0,
+          "ResetPoseError": 0,
+          "StartCollisionError": 0,
+          "SetPoseError": 0,
+          "EpisodeSetupError": 0,
+          "SimExitedError": 0,
+          "SimReadyTimeout": 0,
+          "SimConnectionLostError": 0
+        },
+        "relaunch_count": 0
+      },
+      "after": {
+        "instance": 3,
+        "fault_counts": {
+          "CameraPoseError": 0,
+          "StepTimingError": 0,
+          "StaleStateError": 0,
+          "CommandTimeoutError": 0,
+          "Timeout": 0,
+          "ConnectionReset": 0,
+          "KinematicsJumpError": 0,
+          "SimRequestTimeoutError": 0,
+          "ObjectMoveRefusedError": 0,
+          "FrameTimeoutError": 0,
+          "FrameTimestampError": 0,
+          "ResetPoseError": 0,
+          "StartCollisionError": 0,
+          "SetPoseError": 0,
+          "EpisodeSetupError": 0,
+          "SimExitedError": 0,
+          "SimReadyTimeout": 0,
+          "SimConnectionLostError": 0
+        },
+        "recovered_counts": {
+          "CameraPoseError": 0,
+          "StepTimingError": 0,
+          "StaleStateError": 0,
+          "CommandTimeoutError": 0,
+          "Timeout": 0,
+          "ConnectionReset": 0,
+          "KinematicsJumpError": 0,
+          "SimRequestTimeoutError": 0,
+          "ObjectMoveRefusedError": 0,
+          "FrameTimeoutError": 0,
+          "FrameTimestampError": 0,
+          "ResetPoseError": 0,
+          "StartCollisionError": 0,
+          "SetPoseError": 0,
+          "EpisodeSetupError": 0,
+          "SimExitedError": 0,
+          "SimReadyTimeout": 0,
+          "SimConnectionLostError": 0
+        },
+        "relaunch_count": 0
+      }
+    }
+  },
+  "validation": {
+    "pass": true,
+    "failures": [],
+    "warnings": [],
+    "counts": {
+      "episodes": 50,
+      "records": 9127,
+      "rejects": 42,
+      "by_scene": {
+        "s04": 50
+      },
+      "by_target": {
+        "yellow wet floor sign": 3,
+        "green hatchback": 2,
+        "blue barrel": 2,
+        "red fire extinguisher": 3,
+        "yellow generator": 5,
+        "white cabinet": 2,
+        "blue cone": 1,
+        "grey armchair": 4,
+        "bald man in green shirt": 3,
+        "doctor in white coat": 2,
+        "black leather sofa": 1,
+        "red cube": 2,
+        "green armchair": 2,
+        "man in red shirt": 5,
+        "green suitcase": 2,
+        "green cube": 1,
+        "police officer": 1,
+        "blue cylinder": 1,
+        "man in brown jacket": 1,
+        "red barrel": 1,
+        "yellow cube": 1,
+        "round wooden table": 1,
+        "man in black suit": 1,
+        "covered car": 2,
+        "red wooden bench": 1
+      }
+    },
+    "distributions": {
+      "speed_m_s": {
+        "median": 1.9587141275405884,
+        "p5": 1.3501874327659606,
+        "p95": 2.0840872049331667,
+        "min": 1.93269552255515e-05,
+        "max": 2.2243645191192627
+      },
+      "altitude_m": {
+        "median": 1.9597223997116089,
+        "p5": 1.62936772108078,
+        "p95": 2.257247567176819,
+        "min": 1.0440881252288818,
+        "max": 2.958841323852539
+      },
+      "action_forward_m_s": {
+        "median": 1.971989631652832,
+        "p5": 1.7133357882499696,
+        "p95": 1.9952324867248534,
+        "min": 0.00017839670181274414,
+        "max": 1.9996614456176758
+      },
+      "episode_steps": {
+        "median": 176.5,
+        "p5": 162.0,
+        "p95": 219.1,
+        "min": 160.0,
+        "max": 265.0
+      }
+    },
+    "release_for_comparison": {
+      "speed_m_s_median": [
+        1.87,
+        1.96
+      ],
+      "altitude_m_range": [
+        1.17,
+        2.57
+      ],
+      "episode_steps": [
+        96,
+        78
+      ],
+      "action_forward_m_s_typical": [
+        1.97,
+        1.99
+      ]
+    }
+  },
+  "rlds": {
+    "skipped": "merged export (plan 6 revision 1)"
+  },
+  "platform": {
+    "projectairsim_client": "1.0.2",
+    "platform_git_head": "4d878bff556fad2d07da763babb2faa10b03922b",
+    "engine_build_version": {
+      "MajorVersion": 5,
+      "MinorVersion": 7,
+      "PatchVersion": 4,
+      "Changelist": 51494982,
+      "CompatibleChangelist": 47537391,
+      "IsLicenseeVersion": 0,
+      "IsPromotedBuild": 1,
+      "BranchName": "++UE5+Release-5.7"
+    },
+    "package_binary_sha256": "fd845a8c58f095af8ba52849d07ea2768ad48712ba7800a4bcfe7760f0efaade",
+    "package_pak_sha256": "5305ac35b21fbc96401bf1ce9205eb5745a6bfc01b94426a5e06fdcb6fea6b77"
+  },
+  "contact_rules": {
+    "footprint": {
+      "contact_m": 1.05,
+      "obstacles": 33,
+      "shape": "outline",
+      "fields": {
+        "boulder_01": "a0065e1c76b5b26213aa0eb8b1f2d942d50d19fc8158486f476a7107c08fdefe",
+        "namaqualand_boulder_02": "e7e86037660a8a4bf07fd46ddac10df95cbdf15c5e40530abffb0c61c2f09161",
+        "namaqualand_boulder_05": "04befa9f8012c679efe3877430dbce8bbec8a3640e606e1737447534c3403fbd",
+        "namaqualand_boulder_06": "c96cad6fa63f2708b6e1348ddf7a87e530ef49e67883760263ec9529b7fc2a58"
+      },
+      "fields_manifest_sha256": "c40efeab38b4519976be685b9e30455f1cd7ebfe4c3c668dedba591d7d3bddc8",
+      "trained_shape": "circle"
+    }
+  },
+  "target_pool": {
+    "path": "assets/targets.json",
+    "sha256": "0a8bfa72f11d2c590b6d3a42a222450875c5347d3e26030029648f49f36ae7b7",
+    "version": 1,
+    "split": "train",
+    "names": [
+      "covered car",
+      "red sedan",
+      "green hatchback",
+      "blue van",
+      "yellow taxi",
+      "police car",
+      "ambulance",
+      "red fire truck",
+      "green garbage truck",
+      "yellow suv",
+      "white pickup truck",
+      "orange cylinder",
+      "blue cylinder",
+      "red cylinder",
+      "yellow cylinder",
+      "red cube",
+      "green cube",
+      "yellow cube",
+      "blue cone",
+      "orange cone",
+      "beige sofa",
+      "black leather sofa",
+      "grey armchair",
+      "green armchair",
+      "white plastic chair",
+      "blue school chair",
+      "red wooden bench",
+      "round wooden table",
+      "white cabinet",
+      "red barrel",
+      "blue barrel",
+      "wooden barrel",
+      "green suitcase",
+      "old television",
+      "red fire extinguisher",
+      "yellow generator",
+      "red tool chest",
+      "yellow wet floor sign",
+      "man in brown jacket",
+      "man in red shirt",
+      "bald man in green shirt",
+      "person in purple shirt",
+      "doctor in white coat",
+      "police officer",
+      "man in blue jacket",
+      "man in black suit",
+      "girl in yellow shirt",
+      "bronze whale statue"
+    ],
+    "scene_id": "s04",
+    "excluded": {
+      "sphere": "s04 paints its stones red, blue, yellow, green and white, the spheres' palette: a sphere reads as one more painted stone"
+    },
+    "exclusions": {
+      "path": "assets/target_exclusions.json",
+      "sha256": "751f052244b536568dfc32ea9ab23eeafe36e4ef89b1ed8477147cd61ea12cef"
+    }
+  },
+  "faults_ok": true,
+  "engine_faults": {
+    "xid_delta": 0,
+    "boot_changed": false,
+    "device_lost": {
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst3/sim.log": 0
+    },
+    "logs_scanned": 1,
+    "kernel_journal_readable": true
+  },
+  "run_finished": "2026-10-09 00:26:30",
+  "written_to": "runs/collect/s04_c4.json"
+}

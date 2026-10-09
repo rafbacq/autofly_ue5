@@ -1,0 +1,1169 @@
+{
+  "format": "autofly_ue5_rebalance/1",
+  "dataset": "s01_pilot",
+  "method": "AutoFly App. A.2.4 (spec 10.3): a record is target seeking from the first record whose detection confidence for the target exceeds the threshold, obstacle avoidance before it; P0 is each phase's share of all records; P_target = alpha * P0 + (1 - alpha) / K; weights = P_target / P0; resample_sizes = round(weight * sub-trajectories)",
+  "phases": [
+    "obstacle_avoidance",
+    "target_seeking"
+  ],
+  "threshold": 0.7,
+  "alpha": 0.0,
+  "detector": {
+    "model": "IDEA-Research/grounding-dino-tiny",
+    "revision": "a2bb814dd30d776dcf7e30523b00659f4f141c71",
+    "transformers": "5.19.0",
+    "image_size": {
+      "longest_edge": 1333,
+      "shortest_edge": 800
+    }
+  },
+  "coverage": {
+    "episodes": 100,
+    "of": 100,
+    "partial": false
+  },
+  "counts": {
+    "records": [
+      11572,
+      6166
+    ],
+    "sub_trajectories": [
+      100,
+      100
+    ],
+    "records_above_threshold": 4993,
+    "episodes_never_detected": 0,
+    "episodes_detected_at_first_record": 0
+  },
+  "p0": [
+    0.6523847107903935,
+    0.3476152892096065
+  ],
+  "kl_nats": 0.04718928274113901,
+  "p_target": [
+    0.5,
+    0.5
+  ],
+  "weights": [
+    0.7664189422744556,
+    1.4383717158611742
+  ],
+  "degenerate": false,
+  "resample_sizes": [
+    77,
+    144
+  ],
+  "detection_persistence": 0.8097632176451508,
+  "episodes": [
+    {
+      "id": "s01_400000000",
+      "records": 167,
+      "first_detection": 46,
+      "phase_records": [
+        46,
+        121
+      ],
+      "first_detection_distance_m": 50.036563873291016,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000001",
+      "records": 200,
+      "first_detection": 147,
+      "phase_records": [
+        147,
+        53
+      ],
+      "first_detection_distance_m": 24.494760513305664,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000002",
+      "records": 168,
+      "first_detection": 131,
+      "phase_records": [
+        131,
+        37
+      ],
+      "first_detection_distance_m": 18.31831169128418,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000003",
+      "records": 192,
+      "first_detection": 103,
+      "phase_records": [
+        103,
+        89
+      ],
+      "first_detection_distance_m": 37.4958381652832,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000004",
+      "records": 171,
+      "first_detection": 118,
+      "phase_records": [
+        118,
+        53
+      ],
+      "first_detection_distance_m": 24.732770919799805,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000005",
+      "records": 163,
+      "first_detection": 145,
+      "phase_records": [
+        145,
+        18
+      ],
+      "first_detection_distance_m": 11.44279956817627,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000006",
+      "records": 172,
+      "first_detection": 110,
+      "phase_records": [
+        110,
+        62
+      ],
+      "first_detection_distance_m": 28.56015396118164,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000007",
+      "records": 234,
+      "first_detection": 184,
+      "phase_records": [
+        184,
+        50
+      ],
+      "first_detection_distance_m": 23.75616455078125,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000008",
+      "records": 176,
+      "first_detection": 143,
+      "phase_records": [
+        143,
+        33
+      ],
+      "first_detection_distance_m": 17.156221389770508,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000009",
+      "records": 158,
+      "first_detection": 31,
+      "phase_records": [
+        31,
+        127
+      ],
+      "first_detection_distance_m": 53.79751968383789,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000010",
+      "records": 194,
+      "first_detection": 159,
+      "phase_records": [
+        159,
+        35
+      ],
+      "first_detection_distance_m": 17.193866729736328,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000011",
+      "records": 171,
+      "first_detection": 104,
+      "phase_records": [
+        104,
+        67
+      ],
+      "first_detection_distance_m": 29.88915252685547,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000012",
+      "records": 171,
+      "first_detection": 85,
+      "phase_records": [
+        85,
+        86
+      ],
+      "first_detection_distance_m": 37.422706604003906,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000013",
+      "records": 164,
+      "first_detection": 74,
+      "phase_records": [
+        74,
+        90
+      ],
+      "first_detection_distance_m": 39.27914810180664,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000014",
+      "records": 167,
+      "first_detection": 140,
+      "phase_records": [
+        140,
+        27
+      ],
+      "first_detection_distance_m": 14.508461952209473,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000015",
+      "records": 165,
+      "first_detection": 111,
+      "phase_records": [
+        111,
+        54
+      ],
+      "first_detection_distance_m": 24.94849967956543,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000016",
+      "records": 164,
+      "first_detection": 38,
+      "phase_records": [
+        38,
+        126
+      ],
+      "first_detection_distance_m": 52.965736389160156,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000017",
+      "records": 161,
+      "first_detection": 81,
+      "phase_records": [
+        81,
+        80
+      ],
+      "first_detection_distance_m": 35.25053024291992,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000018",
+      "records": 167,
+      "first_detection": 145,
+      "phase_records": [
+        145,
+        22
+      ],
+      "first_detection_distance_m": 13.053943634033203,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000019",
+      "records": 174,
+      "first_detection": 98,
+      "phase_records": [
+        98,
+        76
+      ],
+      "first_detection_distance_m": 32.56827163696289,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000020",
+      "records": 173,
+      "first_detection": 142,
+      "phase_records": [
+        142,
+        31
+      ],
+      "first_detection_distance_m": 16.376245498657227,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000021",
+      "records": 184,
+      "first_detection": 120,
+      "phase_records": [
+        120,
+        64
+      ],
+      "first_detection_distance_m": 29.630895614624023,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000022",
+      "records": 213,
+      "first_detection": 161,
+      "phase_records": [
+        161,
+        52
+      ],
+      "first_detection_distance_m": 24.258365631103516,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000023",
+      "records": 254,
+      "first_detection": 102,
+      "phase_records": [
+        102,
+        152
+      ],
+      "first_detection_distance_m": 26.88873291015625,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000024",
+      "records": 161,
+      "first_detection": 141,
+      "phase_records": [
+        141,
+        20
+      ],
+      "first_detection_distance_m": 12.43496322631836,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000025",
+      "records": 169,
+      "first_detection": 148,
+      "phase_records": [
+        148,
+        21
+      ],
+      "first_detection_distance_m": 12.706605911254883,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000026",
+      "records": 188,
+      "first_detection": 80,
+      "phase_records": [
+        80,
+        108
+      ],
+      "first_detection_distance_m": 44.358211517333984,
+      "first_detection_on_target": false
+    },
+    {
+      "id": "s01_400000027",
+      "records": 173,
+      "first_detection": 106,
+      "phase_records": [
+        106,
+        67
+      ],
+      "first_detection_distance_m": 28.792856216430664,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000028",
+      "records": 182,
+      "first_detection": 144,
+      "phase_records": [
+        144,
+        38
+      ],
+      "first_detection_distance_m": 19.096759796142578,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000029",
+      "records": 230,
+      "first_detection": 177,
+      "phase_records": [
+        177,
+        53
+      ],
+      "first_detection_distance_m": 20.140684127807617,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000030",
+      "records": 176,
+      "first_detection": 128,
+      "phase_records": [
+        128,
+        48
+      ],
+      "first_detection_distance_m": 22.818323135375977,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000031",
+      "records": 169,
+      "first_detection": 106,
+      "phase_records": [
+        106,
+        63
+      ],
+      "first_detection_distance_m": 28.915287017822266,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000032",
+      "records": 185,
+      "first_detection": 117,
+      "phase_records": [
+        117,
+        68
+      ],
+      "first_detection_distance_m": 29.25398826599121,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000033",
+      "records": 167,
+      "first_detection": 116,
+      "phase_records": [
+        116,
+        51
+      ],
+      "first_detection_distance_m": 23.067628860473633,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000034",
+      "records": 163,
+      "first_detection": 83,
+      "phase_records": [
+        83,
+        80
+      ],
+      "first_detection_distance_m": 35.230140686035156,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000035",
+      "records": 174,
+      "first_detection": 124,
+      "phase_records": [
+        124,
+        50
+      ],
+      "first_detection_distance_m": 22.54656410217285,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000036",
+      "records": 156,
+      "first_detection": 58,
+      "phase_records": [
+        58,
+        98
+      ],
+      "first_detection_distance_m": 42.155216217041016,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000037",
+      "records": 177,
+      "first_detection": 127,
+      "phase_records": [
+        127,
+        50
+      ],
+      "first_detection_distance_m": 23.758403778076172,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000038",
+      "records": 167,
+      "first_detection": 89,
+      "phase_records": [
+        89,
+        78
+      ],
+      "first_detection_distance_m": 35.05386734008789,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000039",
+      "records": 181,
+      "first_detection": 135,
+      "phase_records": [
+        135,
+        46
+      ],
+      "first_detection_distance_m": 22.32795524597168,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000040",
+      "records": 199,
+      "first_detection": 158,
+      "phase_records": [
+        158,
+        41
+      ],
+      "first_detection_distance_m": 20.042259216308594,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000041",
+      "records": 175,
+      "first_detection": 103,
+      "phase_records": [
+        103,
+        72
+      ],
+      "first_detection_distance_m": 31.360177993774414,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000042",
+      "records": 173,
+      "first_detection": 106,
+      "phase_records": [
+        106,
+        67
+      ],
+      "first_detection_distance_m": 30.529239654541016,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000043",
+      "records": 169,
+      "first_detection": 99,
+      "phase_records": [
+        99,
+        70
+      ],
+      "first_detection_distance_m": 31.56536865234375,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000044",
+      "records": 234,
+      "first_detection": 195,
+      "phase_records": [
+        195,
+        39
+      ],
+      "first_detection_distance_m": 18.761404037475586,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000045",
+      "records": 177,
+      "first_detection": 113,
+      "phase_records": [
+        113,
+        64
+      ],
+      "first_detection_distance_m": 28.750085830688477,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000046",
+      "records": 213,
+      "first_detection": 180,
+      "phase_records": [
+        180,
+        33
+      ],
+      "first_detection_distance_m": 17.329792022705078,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000047",
+      "records": 170,
+      "first_detection": 84,
+      "phase_records": [
+        84,
+        86
+      ],
+      "first_detection_distance_m": 37.83394241333008,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000048",
+      "records": 153,
+      "first_detection": 23,
+      "phase_records": [
+        23,
+        130
+      ],
+      "first_detection_distance_m": 55.14164733886719,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000049",
+      "records": 187,
+      "first_detection": 108,
+      "phase_records": [
+        108,
+        79
+      ],
+      "first_detection_distance_m": 34.91510772705078,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000050",
+      "records": 190,
+      "first_detection": 129,
+      "phase_records": [
+        129,
+        61
+      ],
+      "first_detection_distance_m": 28.121540069580078,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000051",
+      "records": 192,
+      "first_detection": 108,
+      "phase_records": [
+        108,
+        84
+      ],
+      "first_detection_distance_m": 36.545013427734375,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000052",
+      "records": 159,
+      "first_detection": 80,
+      "phase_records": [
+        80,
+        79
+      ],
+      "first_detection_distance_m": 34.73076629638672,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000053",
+      "records": 176,
+      "first_detection": 123,
+      "phase_records": [
+        123,
+        53
+      ],
+      "first_detection_distance_m": 23.650089263916016,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000054",
+      "records": 189,
+      "first_detection": 108,
+      "phase_records": [
+        108,
+        81
+      ],
+      "first_detection_distance_m": 35.91512680053711,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000055",
+      "records": 184,
+      "first_detection": 116,
+      "phase_records": [
+        116,
+        68
+      ],
+      "first_detection_distance_m": 30.61831283569336,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000056",
+      "records": 162,
+      "first_detection": 104,
+      "phase_records": [
+        104,
+        58
+      ],
+      "first_detection_distance_m": 26.545650482177734,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000057",
+      "records": 169,
+      "first_detection": 127,
+      "phase_records": [
+        127,
+        42
+      ],
+      "first_detection_distance_m": 20.5417423248291,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000058",
+      "records": 200,
+      "first_detection": 174,
+      "phase_records": [
+        174,
+        26
+      ],
+      "first_detection_distance_m": 14.685615539550781,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000059",
+      "records": 197,
+      "first_detection": 129,
+      "phase_records": [
+        129,
+        68
+      ],
+      "first_detection_distance_m": 29.12482452392578,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000060",
+      "records": 168,
+      "first_detection": 142,
+      "phase_records": [
+        142,
+        26
+      ],
+      "first_detection_distance_m": 14.460822105407715,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000061",
+      "records": 213,
+      "first_detection": 153,
+      "phase_records": [
+        153,
+        60
+      ],
+      "first_detection_distance_m": 27.746522903442383,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000062",
+      "records": 203,
+      "first_detection": 142,
+      "phase_records": [
+        142,
+        61
+      ],
+      "first_detection_distance_m": 27.635250091552734,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000063",
+      "records": 163,
+      "first_detection": 73,
+      "phase_records": [
+        73,
+        90
+      ],
+      "first_detection_distance_m": 39.29453659057617,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000064",
+      "records": 166,
+      "first_detection": 135,
+      "phase_records": [
+        135,
+        31
+      ],
+      "first_detection_distance_m": 16.231042861938477,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000065",
+      "records": 162,
+      "first_detection": 89,
+      "phase_records": [
+        89,
+        73
+      ],
+      "first_detection_distance_m": 32.54710006713867,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000066",
+      "records": 168,
+      "first_detection": 111,
+      "phase_records": [
+        111,
+        57
+      ],
+      "first_detection_distance_m": 26.161792755126953,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000067",
+      "records": 171,
+      "first_detection": 107,
+      "phase_records": [
+        107,
+        64
+      ],
+      "first_detection_distance_m": 28.339557647705078,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000068",
+      "records": 183,
+      "first_detection": 128,
+      "phase_records": [
+        128,
+        55
+      ],
+      "first_detection_distance_m": 24.984346389770508,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000069",
+      "records": 176,
+      "first_detection": 93,
+      "phase_records": [
+        93,
+        83
+      ],
+      "first_detection_distance_m": 36.5009880065918,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000070",
+      "records": 162,
+      "first_detection": 109,
+      "phase_records": [
+        109,
+        53
+      ],
+      "first_detection_distance_m": 25.2254581451416,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000071",
+      "records": 161,
+      "first_detection": 113,
+      "phase_records": [
+        113,
+        48
+      ],
+      "first_detection_distance_m": 22.841690063476562,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000072",
+      "records": 172,
+      "first_detection": 141,
+      "phase_records": [
+        141,
+        31
+      ],
+      "first_detection_distance_m": 16.23157501220703,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000073",
+      "records": 171,
+      "first_detection": 92,
+      "phase_records": [
+        92,
+        79
+      ],
+      "first_detection_distance_m": 32.885101318359375,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000074",
+      "records": 186,
+      "first_detection": 109,
+      "phase_records": [
+        109,
+        77
+      ],
+      "first_detection_distance_m": 33.77738952636719,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000075",
+      "records": 176,
+      "first_detection": 132,
+      "phase_records": [
+        132,
+        44
+      ],
+      "first_detection_distance_m": 21.17571258544922,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000076",
+      "records": 155,
+      "first_detection": 134,
+      "phase_records": [
+        134,
+        21
+      ],
+      "first_detection_distance_m": 12.567588806152344,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000077",
+      "records": 186,
+      "first_detection": 127,
+      "phase_records": [
+        127,
+        59
+      ],
+      "first_detection_distance_m": 26.554630279541016,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000078",
+      "records": 168,
+      "first_detection": 124,
+      "phase_records": [
+        124,
+        44
+      ],
+      "first_detection_distance_m": 20.58436393737793,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000079",
+      "records": 163,
+      "first_detection": 111,
+      "phase_records": [
+        111,
+        52
+      ],
+      "first_detection_distance_m": 23.434066772460938,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000080",
+      "records": 160,
+      "first_detection": 78,
+      "phase_records": [
+        78,
+        82
+      ],
+      "first_detection_distance_m": 36.13749313354492,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000081",
+      "records": 167,
+      "first_detection": 117,
+      "phase_records": [
+        117,
+        50
+      ],
+      "first_detection_distance_m": 23.663557052612305,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000082",
+      "records": 164,
+      "first_detection": 102,
+      "phase_records": [
+        102,
+        62
+      ],
+      "first_detection_distance_m": 28.439634323120117,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000083",
+      "records": 180,
+      "first_detection": 114,
+      "phase_records": [
+        114,
+        66
+      ],
+      "first_detection_distance_m": 29.89845848083496,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000084",
+      "records": 175,
+      "first_detection": 147,
+      "phase_records": [
+        147,
+        28
+      ],
+      "first_detection_distance_m": 15.246209144592285,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000086",
+      "records": 165,
+      "first_detection": 142,
+      "phase_records": [
+        142,
+        23
+      ],
+      "first_detection_distance_m": 13.000444412231445,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000087",
+      "records": 160,
+      "first_detection": 130,
+      "phase_records": [
+        130,
+        30
+      ],
+      "first_detection_distance_m": 16.280115127563477,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000088",
+      "records": 179,
+      "first_detection": 114,
+      "phase_records": [
+        114,
+        65
+      ],
+      "first_detection_distance_m": 29.54951286315918,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000089",
+      "records": 167,
+      "first_detection": 73,
+      "phase_records": [
+        73,
+        94
+      ],
+      "first_detection_distance_m": 40.641029357910156,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000090",
+      "records": 170,
+      "first_detection": 89,
+      "phase_records": [
+        89,
+        81
+      ],
+      "first_detection_distance_m": 33.27316665649414,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000091",
+      "records": 172,
+      "first_detection": 94,
+      "phase_records": [
+        94,
+        78
+      ],
+      "first_detection_distance_m": 34.30375289916992,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000092",
+      "records": 174,
+      "first_detection": 96,
+      "phase_records": [
+        96,
+        78
+      ],
+      "first_detection_distance_m": 34.14756393432617,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000093",
+      "records": 163,
+      "first_detection": 94,
+      "phase_records": [
+        94,
+        69
+      ],
+      "first_detection_distance_m": 31.03136444091797,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000094",
+      "records": 157,
+      "first_detection": 90,
+      "phase_records": [
+        90,
+        67
+      ],
+      "first_detection_distance_m": 29.939180374145508,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000095",
+      "records": 168,
+      "first_detection": 140,
+      "phase_records": [
+        140,
+        28
+      ],
+      "first_detection_distance_m": 15.032011032104492,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000096",
+      "records": 154,
+      "first_detection": 120,
+      "phase_records": [
+        120,
+        34
+      ],
+      "first_detection_distance_m": 17.41164779663086,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000097",
+      "records": 211,
+      "first_detection": 133,
+      "phase_records": [
+        133,
+        78
+      ],
+      "first_detection_distance_m": 33.80527877807617,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000098",
+      "records": 177,
+      "first_detection": 104,
+      "phase_records": [
+        104,
+        73
+      ],
+      "first_detection_distance_m": 32.33460235595703,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000099",
+      "records": 200,
+      "first_detection": 131,
+      "phase_records": [
+        131,
+        69
+      ],
+      "first_detection_distance_m": 30.923709869384766,
+      "first_detection_on_target": true
+    },
+    {
+      "id": "s01_400000100",
+      "records": 193,
+      "first_detection": 135,
+      "phase_records": [
+        135,
+        58
+      ],
+      "first_detection_distance_m": 26.269115447998047,
+      "first_detection_on_target": true
+    }
+  ],
+  "first_detection": {
+    "distance_m_median": 27.93403148651123,
+    "on_target": 99,
+    "off_target": 1,
+    "off_target_out_of_view": 0
+  },
+  "detections": {
+    "path": "/home/nvidiasims/research_uav/autofly_ue5/data/s01_pilot/detections.json",
+    "sha256": "25aa265f1baadfed1cc7c643b4c9db61cb6129849030637e1b32f65dc0bcba21"
+  }
+}

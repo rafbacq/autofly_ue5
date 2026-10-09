@@ -1,0 +1,177 @@
+{
+  "scene": "s04",
+  "map_path": "/Game/AutoFly/Maps/S04",
+  "scene_config": "scene_autofly_s04_fast.jsonc",
+  "layout_sha256": "2acc4c016ef0e89d23ba171b41dc2df107f3277b120c150592b71cb8ac672462",
+  "started": "2026-10-08 15:02:22",
+  "poses": [
+    {
+      "index": 0,
+      "name": "edge_x_min",
+      "target_tag": null,
+      "pose": [
+        -31.0,
+        0.0,
+        -2.0,
+        0.0
+      ],
+      "rgb_mean": 118.34,
+      "rgb_mean_rgb": [
+        111.52,
+        121.62,
+        121.89
+      ],
+      "rgb_std": 42.87,
+      "saturated_share": 0.0,
+      "depth_min_m": 1.987,
+      "depth_median_m": 3.488,
+      "no_hit_share": 0.5068,
+      "centre_depth_min_m": 17.25
+    },
+    {
+      "index": 1,
+      "name": "edge_x_max",
+      "target_tag": null,
+      "pose": [
+        31.0,
+        0.0,
+        -2.0,
+        3.141592653589793
+      ],
+      "rgb_mean": 143.52,
+      "rgb_mean_rgb": [
+        138.96,
+        144.94,
+        146.67
+      ],
+      "rgb_std": 44.63,
+      "saturated_share": 0.0,
+      "depth_min_m": 1.996,
+      "depth_median_m": 3.943,
+      "no_hit_share": 0.5068,
+      "centre_depth_min_m": 36.938
+    },
+    {
+      "index": 2,
+      "name": "edge_y_min",
+      "target_tag": null,
+      "pose": [
+        0.0,
+        -31.0,
+        -2.0,
+        1.5707963267948966
+      ],
+      "rgb_mean": 125.2,
+      "rgb_mean_rgb": [
+        119.94,
+        127.44,
+        128.22
+      ],
+      "rgb_std": 36.22,
+      "saturated_share": 0.0,
+      "depth_min_m": 2.0,
+      "depth_median_m": 3.953,
+      "no_hit_share": 0.5069,
+      "centre_depth_min_m": 12.844
+    },
+    {
+      "index": 3,
+      "name": "edge_y_max",
+      "target_tag": null,
+      "pose": [
+        0.0,
+        31.0,
+        -2.0,
+        -1.5707963267948966
+      ],
+      "rgb_mean": 116.79,
+      "rgb_mean_rgb": [
+        109.46,
+        118.1,
+        122.81
+      ],
+      "rgb_std": 42.33,
+      "saturated_share": 0.0,
+      "depth_min_m": 2.002,
+      "depth_median_m": 3.84,
+      "no_hit_share": 0.507,
+      "centre_depth_min_m": 17.516
+    },
+    {
+      "index": 4,
+      "name": "closeup_obs_0000",
+      "target_tag": "obs_0000",
+      "pose": [
+        -12.2788,
+        25.7098,
+        -2.0,
+        0.0
+      ],
+      "rgb_mean": 117.36,
+      "rgb_mean_rgb": [
+        111.67,
+        117.8,
+        122.6
+      ],
+      "rgb_std": 39.93,
+      "saturated_share": 0.0,
+      "depth_min_m": 2.002,
+      "depth_median_m": 3.902,
+      "no_hit_share": 0.5081,
+      "centre_depth_min_m": 73.0,
+      "expected_surface_m": 5.6,
+      "surface_error_m": 67.4
+    },
+    {
+      "index": 5,
+      "name": "closeup_obs_0016",
+      "target_tag": "obs_0016",
+      "pose": [
+        17.7304,
+        4.199499999999999,
+        -2.0,
+        3.141592653589793
+      ],
+      "rgb_mean": 142.97,
+      "rgb_mean_rgb": [
+        138.47,
+        144.74,
+        145.7
+      ],
+      "rgb_std": 44.9,
+      "saturated_share": 0.0,
+      "depth_min_m": 2.004,
+      "depth_median_m": 3.961,
+      "no_hit_share": 0.5072,
+      "centre_depth_min_m": 73.0,
+      "expected_surface_m": 5.6,
+      "surface_error_m": 67.4
+    },
+    {
+      "index": 6,
+      "name": "closeup_obs_0032",
+      "target_tag": "obs_0032",
+      "pose": [
+        -27.891599999999997,
+        10.0486,
+        -2.0,
+        0.0
+      ],
+      "rgb_mean": 116.89,
+      "rgb_mean_rgb": [
+        108.73,
+        119.07,
+        122.87
+      ],
+      "rgb_std": 40.13,
+      "saturated_share": 0.0,
+      "depth_min_m": 2.004,
+      "depth_median_m": 3.965,
+      "no_hit_share": 0.5073,
+      "centre_depth_min_m": 32.531,
+      "expected_surface_m": 5.6,
+      "surface_error_m": 26.931
+    }
+  ],
+  "finished": "2026-10-08 15:02:27"
+}

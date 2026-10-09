@@ -1,0 +1,742 @@
+{
+  "scene": "s05r",
+  "map": "/Game/AutoFly/Maps/S05R",
+  "layout": "/home/nvidiasims/research_uav/autofly_ue5/runs/levels/s05r.layout.json",
+  "scene_sha256": "1db976d773b28aad5d779d42baa64dd1e87d0b373266c623bf21fe0c78208992",
+  "layout_sha256": "e30dff5bf9fcc0898a5977d208f8bff8fb371ef00aa643f3aeb133b67edb78bd",
+  "obstacle_kinds": {
+    "mesh": 24
+  },
+  "checks": {
+    "map_matches_layout": {
+      "obstacles": [
+        {
+          "found": true,
+          "center_error_m": 1.71972445020975e-06,
+          "size_error_m": 0.00010646744384779083,
+          "tag": "obs_0000",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.8750624626501603e-06,
+          "size_error_m": 0.00010669700927756764,
+          "tag": "obs_0001",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 2.1653981746478993e-06,
+          "size_error_m": 0.00013448242797853283,
+          "tag": "obs_0002",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 3.2556675813538125e-06,
+          "size_error_m": 0.00012981646118159773,
+          "tag": "obs_0003",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 2.3536770093918454e-06,
+          "size_error_m": 0.00010903073120172024,
+          "tag": "obs_0004",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 2.288725015312829e-06,
+          "size_error_m": 0.00013028916626023346,
+          "tag": "obs_0005",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 5.638260628873435e-07,
+          "size_error_m": 2.1588077392387106e-05,
+          "tag": "obs_0006",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 2.985331542608506e-07,
+          "size_error_m": 1.8915906982996944e-05,
+          "tag": "obs_0007",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.751705789823693e-06,
+          "size_error_m": 2.229182495128157e-05,
+          "tag": "obs_0008",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 2.178819051976252e-06,
+          "size_error_m": 2.126017944359404e-05,
+          "tag": "obs_0009",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.4449816974264598e-06,
+          "size_error_m": 1.8378391723583576e-05,
+          "tag": "obs_0010",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 9.298429811837865e-07,
+          "size_error_m": 1.9573255615412677e-05,
+          "tag": "obs_0011",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 2.0267756808969135e-06,
+          "size_error_m": 8.82890578051132e-05,
+          "tag": "obs_0012",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.610925815854094e-06,
+          "size_error_m": 8.017769269041963e-05,
+          "tag": "obs_0013",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 3.246233840351133e-07,
+          "size_error_m": 9.805058093981245e-05,
+          "tag": "obs_0014",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 7.265524645008696e-07,
+          "size_error_m": 9.719634842397795e-05,
+          "tag": "obs_0015",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 2.190813875515558e-06,
+          "size_error_m": 9.932434216430863e-05,
+          "tag": "obs_0016",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 7.082137916804671e-07,
+          "size_error_m": 0.00010067667021740334,
+          "tag": "obs_0017",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.8462526548577591e-06,
+          "size_error_m": 0.00012198788957817897,
+          "tag": "obs_0018",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 2.006999553395962e-06,
+          "size_error_m": 9.329372565503036e-05,
+          "tag": "obs_0019",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.5140495885899704e-06,
+          "size_error_m": 9.285733520503214e-05,
+          "tag": "obs_0020",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 2.6603845706323623e-06,
+          "size_error_m": 8.919075439450808e-05,
+          "tag": "obs_0021",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 2.924966530305786e-06,
+          "size_error_m": 9.617400305028667e-05,
+          "tag": "obs_0022",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.7725510992172567e-06,
+          "size_error_m": 8.830608398424644e-05,
+          "tag": "obs_0023",
+          "kind": "mesh"
+        }
+      ],
+      "checked": 24,
+      "found": 24,
+      "boxed": 24,
+      "max_center_error_m": 3.2556675813538125e-06,
+      "max_size_error_m": 0.00013448242797853283,
+      "ground_top_z_ned": 0.0,
+      "tolerance_m": 0.05,
+      "pass": true
+    },
+    "rgb_changes_with_pose": {
+      "diff_pillar_vs_empty": 38.293172200520836,
+      "diff_pillar_repeat": 1.6788736979166667,
+      "brightness_pillar_view": 100.30232747395833,
+      "brightness_empty_view": 135.7044474283854,
+      "pass": true
+    },
+    "depth_matches_geometry": {
+      "probes": [
+        {
+          "tag": "obs_0000",
+          "kind": "mesh",
+          "solid": false,
+          "distance_m": 3.0,
+          "altitude_m": 2.0,
+          "window": [
+            [
+              120,
+              136
+            ],
+            [
+              120,
+              136
+            ]
+          ],
+          "pixels": {
+            "solid": 256,
+            "interior": 196,
+            "card": 0,
+            "empty": 0
+          },
+          "measured_m": 3.2890625,
+          "expected_m": 3.292497396469116,
+          "error_m": 0.003434896469116211,
+          "tolerance_m": 0.15,
+          "inlier_share": 1.0,
+          "min_inlier_share": 0.8,
+          "card_no_nearer_share": null,
+          "beyond_share_off_target": null,
+          "window_spread_predicted_m": 0.03378891944885254,
+          "window_spread_measured_m": 0.03125,
+          "pose": [
+            -6.712771415710449,
+            -26.907072067260742,
+            -1.9967390298843384,
+            0.7853982366644546
+          ],
+          "hfov_consistent": null,
+          "pass": true
+        },
+        {
+          "tag": "obs_0000",
+          "kind": "mesh",
+          "solid": false,
+          "distance_m": 6.0,
+          "altitude_m": 2.0,
+          "window": [
+            [
+              120,
+              136
+            ],
+            [
+              120,
+              136
+            ]
+          ],
+          "pixels": {
+            "solid": 256,
+            "interior": 196,
+            "card": 0,
+            "empty": 0
+          },
+          "measured_m": 6.3046875,
+          "expected_m": 6.30255389213562,
+          "error_m": 0.002133607864379883,
+          "tolerance_m": 0.15,
+          "inlier_share": 1.0,
+          "min_inlier_share": 0.8,
+          "card_no_nearer_share": null,
+          "beyond_share_off_target": null,
+          "window_spread_predicted_m": 0.19610977172851562,
+          "window_spread_measured_m": 0.19140625,
+          "pose": [
+            -8.834092140197754,
+            -29.028390884399414,
+            -1.9980113506317139,
+            0.7853982366644539
+          ],
+          "hfov_consistent": null,
+          "pass": true
+        },
+        {
+          "tag": "obs_0000",
+          "kind": "mesh",
+          "solid": false,
+          "distance_m": 12.0,
+          "altitude_m": 2.0,
+          "window": [
+            [
+              120,
+              136
+            ],
+            [
+              120,
+              136
+            ]
+          ],
+          "pixels": {
+            "solid": 256,
+            "interior": 196,
+            "card": 0,
+            "empty": 0
+          },
+          "measured_m": 12.55859375,
+          "expected_m": 12.56443166732788,
+          "error_m": 0.005837917327880859,
+          "tolerance_m": 0.24,
+          "inlier_share": 1.0,
+          "min_inlier_share": 0.8,
+          "card_no_nearer_share": null,
+          "beyond_share_off_target": null,
+          "window_spread_predicted_m": 1.1020078659057617,
+          "window_spread_measured_m": 1.1015625,
+          "pose": [
+            12.023200035095215,
+            -22.874300003051758,
+            -1.9986673593521118,
+            -3.141592652882651
+          ],
+          "hfov_consistent": null,
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    "velocity_tracking": {
+      "axes": {
+        "forward": {
+          "mean_abs_error": 0.18751794099810137,
+          "mean_commanded": 2.0,
+          "mean_measured": 1.8124820590018984,
+          "relative_error": 0.09375897049905069,
+          "samples": 10
+        },
+        "vertical_up": {
+          "mean_abs_error": 0.005054605007171631,
+          "mean_commanded": 0.5,
+          "mean_measured": 0.5050546050071716,
+          "relative_error": 0.010109210014343261,
+          "samples": 5
+        },
+        "vertical_down": {
+          "mean_abs_error": 0.030578017234802246,
+          "mean_commanded": -0.5,
+          "mean_measured": -0.5305780172348022,
+          "relative_error": 0.06115603446960449,
+          "samples": 5
+        },
+        "yaw_rate": {
+          "mean_abs_error": 0.024644219338290974,
+          "mean_commanded": 0.5,
+          "mean_measured": 0.475355780661709,
+          "relative_error": 0.04928843867658195,
+          "samples": 10
+        },
+        "yaw_rate_body_angular_z": {
+          "mean_abs_error": 0.02059043347835541,
+          "mean_commanded": 0.5,
+          "mean_measured": 0.47940956652164457,
+          "relative_error": 0.04118086695671082,
+          "samples": 10
+        }
+      },
+      "threshold_relative_error": 0.2,
+      "pass": true
+    },
+    "one_step_per_record": {
+      "records": 20,
+      "records_per_s": 13.027693567605514,
+      "rows": [
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            18200000000,
+            18200000000,
+            18200000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            18400000000,
+            18400000000,
+            18400000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            18600000000,
+            18600000000,
+            18600000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            18800000000,
+            18800000000,
+            18800000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            19000000000,
+            19000000000,
+            19000000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            19200000000,
+            19200000000,
+            19200000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            19400000000,
+            19400000000,
+            19400000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            19600000000,
+            19600000000,
+            19600000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            19800000000,
+            19800000000,
+            19800000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            20000000000,
+            20000000000,
+            20000000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            20200000000,
+            20200000000,
+            20200000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            20400000000,
+            20400000000,
+            20400000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            20600000000,
+            20600000000,
+            20600000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            20800000000,
+            20800000000,
+            20800000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            21000000000,
+            21000000000,
+            21000000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            21200000000,
+            21200000000,
+            21200000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            21400000000,
+            21400000000,
+            21400000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            21600000000,
+            21600000000,
+            21600000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            21800000000,
+            21800000000,
+            21800000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            22000000000,
+            22000000000,
+            22000000000
+          ],
+          "frame_times_match": true
+        }
+      ],
+      "pass": true,
+      "note": "This check cannot actually fail: frame_times_match is guaranteed by FrameCollector.wait() (FrameTimestampError otherwise, sync.py), dt_ns==200_000_000/steps==1 by Observation.sim_time_ns and StepTimingError (airsim_backend.py), and kinematics agreement by StaleStateError. An Observation cannot exist unless all three already held, so a pass here is not independent evidence of them -- it reduces to 'the backend ran 20 steps without raising'. Kept as a gate check anyway because that is still worth recording: it demonstrates the invariants held in a live run, on the packaged binary, not just in the unit tests that pin the raises."
+    },
+    "spawn_destroy_packaged": {
+      "spawned_name": "AF_M1_Cube",
+      "material": "/Game/Geometry/Materials/M_Orange",
+      "center_depth_with_cube_m": 2.099609375,
+      "expected_m": 2.1,
+      "center_rgb_with_cube": [
+        63.76953125,
+        32.78125,
+        20.23046875
+      ],
+      "orange_dominant": true,
+      "center_depth_after_destroy_m": null,
+      "pass": true
+    },
+    "crash_raises_collision": {
+      "steps_to_collision": 20,
+      "object_name": "StaticMeshActor_1",
+      "target": "obs_0000",
+      "kind": "mesh",
+      "impact_point": [
+        -4.143370151519775,
+        -24.24567985534668,
+        -2.1706769466400146
+      ],
+      "normal": [
+        -0.7061764001846313,
+        -0.7061739563941956,
+        -0.05131440609693527
+      ],
+      "impact_from_footprint_m": -0.2976739074223729,
+      "footprint_radius_m": 2.3032,
+      "travel_to_impact_m": 6.698729047176119,
+      "expected_travel_m": 6.675774478912354,
+      "collided_flag": true,
+      "camera_pose_error_at_collision_m": 0.02113192975621044,
+      "pass": true,
+      "reset_after_crash": {
+        "error": "ResetPoseError: reset could not free the Unreal actor in 8 attempts ([('normal', 0.4), ('retrace', 1.5), ('normal', 0.4), ('retrace', 4.0), ('normal', 0.4), ('retrace', 8.0), ('normal', 0.4), ('retrace', 8.0), ('normal', 0.4), ('retrace', 8.0), ('normal', 0.4), ('retrace', 8.0), ('normal', 0.4), ('retrace', 8.0), ('normal', 0.4), ('retrace', 8.0)]); last: reset hop to Pose(x=-10.109516321087217, y=-30.3038064739813, z=-2.196695566177368, yaw=0.7853963162705542) settled at Pose(x=-4.4526519775390625, y=-24.646963119506836, z=-2.1966867446899414, yaw=0.7853963332580934): 8.000 m off (the actor was stopped on the way)",
+        "pass": false,
+        "required": false
+      }
+    }
+  },
+  "probes": [
+    {
+      "tag": "obs_0000",
+      "kind": "mesh",
+      "distance_m": 3.0,
+      "expected_depth_m": 3.292497396469116,
+      "window_spread_m": 0.03378891944885254,
+      "pose": [
+        -6.712771394463118,
+        -26.90707139446312,
+        -2.0,
+        0.7853981633974483
+      ]
+    },
+    {
+      "tag": "obs_0000",
+      "kind": "mesh",
+      "distance_m": 6.0,
+      "expected_depth_m": 6.30255389213562,
+      "window_spread_m": 0.19610977172851562,
+      "pose": [
+        -8.834091738022762,
+        -29.028391738022762,
+        -2.0,
+        0.7853981633974483
+      ]
+    },
+    {
+      "tag": "obs_0000",
+      "kind": "mesh",
+      "distance_m": 12.0,
+      "expected_depth_m": 12.56443166732788,
+      "window_spread_m": 1.1020078659057617,
+      "pose": [
+        12.023200000000001,
+        -22.874299999999998,
+        -2.0,
+        -3.141592653589793
+      ]
+    }
+  ],
+  "poses": {
+    "open": [
+      -31.0,
+      -25.0,
+      -2.0,
+      1.5707963267948966
+    ],
+    "field_view": [
+      -31.0,
+      0.0,
+      -2.0,
+      0.0
+    ],
+    "empty_view": [
+      -31.0,
+      0.0,
+      -2.0,
+      3.141592653589793
+    ],
+    "spawn": [
+      -31.0,
+      -10.0,
+      -2.0,
+      0.0
+    ],
+    "spawn_view": [
+      -31.0,
+      -13.0,
+      -2.0,
+      1.5707963267948966
+    ]
+  },
+  "frames_dir": "runs/m4/s05r/frames",
+  "scene_config": {
+    "file": "scene_autofly_s05r_fast.jsonc",
+    "sha256": "3bc3f01b3e05bd7fc7ff116dba399218170d6e65cc87616aad60b8d69632a500"
+  },
+  "check_map": {},
+  "package_manifest": {
+    "description": "Fingerprints the packaged Development Linux binary and content archive (pak) actually produced by scripts/package_sim.sh, plus the git tree that produced them. built_from_git_head is the repo's HEAD at package time, which routinely precedes the commit that later records this file -- packaging happens before committing, not after. working_tree_dirty says whether uncommitted changes were present in that tree (e.g. an in-progress fix not yet committed). Do not compare built_from_git_head to the current HEAD to judge freshness; that comparison is circular. Gate on binary.sha256 instead.",
+    "binary": {
+      "path": "ue_project/Packaged/Development/Linux/Blocks/Binaries/Linux/Blocks",
+      "sha256": "fd845a8c58f095af8ba52849d07ea2768ad48712ba7800a4bcfe7760f0efaade"
+    },
+    "paks": {
+      "ue_project/Packaged/Development/Linux/Blocks/Content/Paks/Blocks-Linux.pak": "5305ac35b21fbc96401bf1ce9205eb5745a6bfc01b94426a5e06fdcb6fea6b77"
+    },
+    "built_from_git_head": "18a803dfd2e6f727cd9b0595e6d8d3118b2fc33a",
+    "working_tree_dirty": true,
+    "level_spec_sha256": "188f9e4118945b7966fa3a03281e0c1663b0e2193c228430bdc06287a40f955a",
+    "level_verify": {
+      "map_path": "/Game/AutoFly/Maps/S01",
+      "pass": true,
+      "obstacles": 80,
+      "worst_location_error_cm": 0.0,
+      "game_mode": "/Script/ProjectAirSim.ProjectAirSimGameMode"
+    },
+    "engine_build_version": {
+      "MajorVersion": 5,
+      "MinorVersion": 7,
+      "PatchVersion": 4,
+      "Changelist": 51494982,
+      "CompatibleChangelist": 47537391,
+      "IsLicenseeVersion": 0,
+      "IsPromotedBuild": 1,
+      "BranchName": "++UE5+Release-5.7"
+    }
+  },
+  "package_matches_manifest": true,
+  "launch_s": 2.5519288779469207,
+  "vram_used_mib": 2297,
+  "faults": {
+    "xid_since": "2026-10-08 16:37:59",
+    "xid_before": 0,
+    "xid_after": 0,
+    "boot_id": "026d5453-feb4-429b-abf0-fb4146123ce7",
+    "device_lost": {
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst5/sim.log": 0
+    },
+    "kernel_journal_readable": true
+  },
+  "faults_ok": true,
+  "pass": true
+}

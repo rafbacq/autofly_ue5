@@ -1,0 +1,488 @@
+{
+  "scene": "s02",
+  "map": "/Game/AutoFly/Maps/S02",
+  "layout": "/home/nvidiasims/research_uav/autofly_ue5/runs/levels/s02.layout.json",
+  "scene_sha256": "29a5235e2c2956844a9852ba230e742e35201a1d6fd4c5f3d6ad4f974ed70fd2",
+  "layout_sha256": "d17f29f39ca36fb3ea07d3079359ddd0909311690ad09f9406dd28666d16d0ab",
+  "obstacle_kinds": {
+    "mesh": 27
+  },
+  "checks": {
+    "map_matches_layout": {
+      "obstacles": [
+        {
+          "found": true,
+          "center_error_m": 3.8859277948876383e-07,
+          "size_error_m": 4.133363808467294e-05,
+          "tag": "obs_0000",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 6.414216954660236e-07,
+          "size_error_m": 4.1264122314643714e-05,
+          "tag": "obs_0001",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 3.832786939524773e-07,
+          "size_error_m": 3.973156231129593e-05,
+          "tag": "obs_0002",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 5.668879344405014e-07,
+          "size_error_m": 3.317333720964655e-05,
+          "tag": "obs_0003",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.0568456053600658e-06,
+          "size_error_m": 3.8415083007503625e-05,
+          "tag": "obs_0004",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.9171984152270327e-07,
+          "size_error_m": 4.0277075805672524e-05,
+          "tag": "obs_0005",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 4.1490054715514575e-07,
+          "size_error_m": 3.7021205444354166e-05,
+          "tag": "obs_0006",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 4.2817702810038964e-07,
+          "size_error_m": 4.361900939953145e-05,
+          "tag": "obs_0007",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.3414423900988428e-06,
+          "size_error_m": 3.6943702392377986e-05,
+          "tag": "obs_0008",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 6.268047652284251e-07,
+          "size_error_m": 4.020041625985016e-05,
+          "tag": "obs_0009",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.0205968891245266e-06,
+          "size_error_m": 4.1963709716874575e-05,
+          "tag": "obs_0010",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.1516715173463347e-06,
+          "size_error_m": 3.991224365229584e-05,
+          "tag": "obs_0011",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 2.2735115600075826e-06,
+          "size_error_m": 4.4369522704812425e-05,
+          "tag": "obs_0012",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 6.314179782425708e-07,
+          "size_error_m": 4.017765123043304e-05,
+          "tag": "obs_0013",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 8.407427053980787e-07,
+          "size_error_m": 2.712363459789202e-05,
+          "tag": "obs_0014",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.6901478295466188e-06,
+          "size_error_m": 4.504661410997812e-05,
+          "tag": "obs_0015",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 5.493761597795623e-07,
+          "size_error_m": 4.2754542214140656e-05,
+          "tag": "obs_0016",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.1496083047620353e-06,
+          "size_error_m": 3.432455103480336e-05,
+          "tag": "obs_0017",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 9.911379645011816e-07,
+          "size_error_m": 3.3528369311142114e-05,
+          "tag": "obs_0018",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.0457495431458386e-06,
+          "size_error_m": 2.902586264630358e-05,
+          "tag": "obs_0019",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.8368044893411315e-06,
+          "size_error_m": 3.610560671818419e-05,
+          "tag": "obs_0020",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 7.298692593095025e-07,
+          "size_error_m": 3.3624352028471804e-05,
+          "tag": "obs_0021",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 6.068652708568471e-07,
+          "size_error_m": 3.437158987407152e-05,
+          "tag": "obs_0022",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 4.4999903662232313e-07,
+          "size_error_m": 3.1578578605806484e-05,
+          "tag": "obs_0023",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 7.577088302043684e-07,
+          "size_error_m": 3.517924266471795e-05,
+          "tag": "obs_0024",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.2153076274135137e-06,
+          "size_error_m": 3.3855232407509206e-05,
+          "tag": "obs_0025",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "center_error_m": 9.01897437202536e-07,
+          "size_error_m": 3.6037438626568274e-05,
+          "tag": "obs_0026",
+          "kind": "mesh"
+        }
+      ],
+      "checked": 27,
+      "found": 27,
+      "max_center_error_m": 2.2735115600075826e-06,
+      "max_size_error_m": 4.504661410997812e-05,
+      "ground_top_z_ned": 0.0,
+      "tolerance_m": 0.05,
+      "pass": true
+    },
+    "rgb_changes_with_pose": {
+      "diff_pillar_vs_empty": 41.47084045410156,
+      "diff_pillar_repeat": 4.5708058675130205,
+      "brightness_pillar_view": 99.12282816569011,
+      "brightness_empty_view": 136.37842814127603,
+      "pass": true
+    },
+    "depth_matches_geometry": {
+      "probes": [
+        {
+          "tag": "obs_0000",
+          "kind": "mesh",
+          "solid": false,
+          "distance_m": 3.0,
+          "altitude_m": 1.2,
+          "window": [
+            [
+              120,
+              136
+            ],
+            [
+              120,
+              136
+            ]
+          ],
+          "pixels": {
+            "solid": 128,
+            "interior": 43,
+            "card": 14,
+            "empty": 114
+          },
+          "measured_m": 5.44140625,
+          "expected_m": 5.44334602355957,
+          "error_m": 0.0019397735595703125,
+          "tolerance_m": 0.15,
+          "inlier_share": 1.0,
+          "min_inlier_share": 0.8,
+          "card_no_nearer_share": 1.0,
+          "beyond_share_off_target": 0.9912280701754386,
+          "window_spread_predicted_m": 0.770451545715332,
+          "window_spread_measured_m": 0.7578125,
+          "pose": [
+            1.1311999559402466,
+            -10.786600112915039,
+            -1.1967531442642212,
+            1.5707964611537621
+          ],
+          "hfov_consistent": null,
+          "pass": true
+        },
+        {
+          "tag": "obs_0002",
+          "kind": "mesh",
+          "solid": false,
+          "distance_m": 6.0,
+          "altitude_m": 1.2,
+          "window": [
+            [
+              120,
+              136
+            ],
+            [
+              120,
+              136
+            ]
+          ],
+          "pixels": {
+            "solid": 121,
+            "interior": 23,
+            "card": 8,
+            "empty": 127
+          },
+          "measured_m": 8.9296875,
+          "expected_m": 8.928962707519531,
+          "error_m": 0.00072479248046875,
+          "tolerance_m": 0.15,
+          "inlier_share": 1.0,
+          "min_inlier_share": 0.8,
+          "card_no_nearer_share": 1.0,
+          "beyond_share_off_target": 1.0,
+          "window_spread_predicted_m": 0.6531457901000977,
+          "window_spread_measured_m": 0.6484375,
+          "pose": [
+            6.540599822998047,
+            1.309000015258789,
+            -1.1980218887329102,
+            1.5707964611537626
+          ],
+          "hfov_consistent": null,
+          "pass": true
+        },
+        {
+          "tag": "obs_0002",
+          "kind": "mesh",
+          "solid": false,
+          "distance_m": 10.0,
+          "altitude_m": 1.2,
+          "window": [
+            [
+              120,
+              136
+            ],
+            [
+              120,
+              136
+            ]
+          ],
+          "pixels": {
+            "solid": 93,
+            "interior": 13,
+            "card": 41,
+            "empty": 122
+          },
+          "measured_m": 12.7734375,
+          "expected_m": 12.774409294128418,
+          "error_m": 0.0009717941284179688,
+          "tolerance_m": 0.2,
+          "inlier_share": 1.0,
+          "min_inlier_share": 0.8,
+          "card_no_nearer_share": 0.926829268292683,
+          "beyond_share_off_target": 1.0,
+          "window_spread_predicted_m": 0.4848155975341797,
+          "window_spread_measured_m": 0.4921875,
+          "pose": [
+            6.540599822998047,
+            -2.690999984741211,
+            -1.1986762285232544,
+            1.5707964611537626
+          ],
+          "hfov_consistent": null,
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    "crash_raises_collision": {
+      "steps_to_collision": 25,
+      "object_name": "StaticMeshActor_3",
+      "target": "obs_0002",
+      "kind": "mesh",
+      "impact_from_footprint_m": -1.8651110715646455,
+      "footprint_radius_m": 3.484,
+      "travel_to_impact_m": 8.319818511962891,
+      "expected_travel_m": 8.289875411987305,
+      "collided_flag": true,
+      "camera_pose_error_at_collision_m": 0.0033133503876264974,
+      "pass": false,
+      "reset_after_crash": {
+        "error": "CameraPoseError: reset could not free the Unreal actor: a climb from the start and after retracing (1.5, 4.0, 8.0) m along the heading were all stopped; last: camera at step 12200000000 ns is 8.000 m from kinematics + mount offset (tolerance 0.1 m); the Unreal actor was probably stopped by a sweep",
+        "pass": false
+      }
+    }
+  },
+  "probes": [
+    {
+      "tag": "obs_0000",
+      "kind": "mesh",
+      "distance_m": 3.0,
+      "expected_depth_m": 5.44334602355957,
+      "window_spread_m": 0.770451545715332,
+      "pose": [
+        1.1311999999999995,
+        -10.7866,
+        -1.2,
+        1.5707963267948966
+      ]
+    },
+    {
+      "tag": "obs_0002",
+      "kind": "mesh",
+      "distance_m": 6.0,
+      "expected_depth_m": 8.928962707519531,
+      "window_spread_m": 0.6531457901000977,
+      "pose": [
+        6.5405999999999995,
+        1.3089999999999993,
+        -1.2,
+        1.5707963267948966
+      ]
+    },
+    {
+      "tag": "obs_0002",
+      "kind": "mesh",
+      "distance_m": 10.0,
+      "expected_depth_m": 12.774409294128418,
+      "window_spread_m": 0.4848155975341797,
+      "pose": [
+        6.5405999999999995,
+        -2.6910000000000007,
+        -1.2,
+        1.5707963267948966
+      ]
+    }
+  ],
+  "poses": {
+    "open": [
+      -31.0,
+      -25.0,
+      -2.0,
+      1.5707963267948966
+    ],
+    "field_view": [
+      -31.0,
+      0.0,
+      -2.0,
+      0.0
+    ],
+    "empty_view": [
+      -31.0,
+      0.0,
+      -2.0,
+      3.141592653589793
+    ],
+    "spawn": [
+      -31.0,
+      -10.0,
+      -2.0,
+      0.0
+    ],
+    "spawn_view": [
+      -31.0,
+      -13.0,
+      -2.0,
+      1.5707963267948966
+    ]
+  },
+  "frames_dir": "/home/nvidiasims/research_uav/autofly_ue5/runs/m4/s02/frames",
+  "scene_config": {
+    "file": "scene_autofly_s02_fast.jsonc",
+    "sha256": "2ba549af66881da610be7c47c58fa936ac7ca022ec4a52d9d7541ec98ca35ebc"
+  },
+  "check_map": {},
+  "package_manifest": {
+    "description": "Fingerprints the packaged Development Linux binary and content archive (pak) actually produced by scripts/package_sim.sh, plus the git tree that produced them. built_from_git_head is the repo's HEAD at package time, which routinely precedes the commit that later records this file -- packaging happens before committing, not after. working_tree_dirty says whether uncommitted changes were present in that tree (e.g. an in-progress fix not yet committed). Do not compare built_from_git_head to the current HEAD to judge freshness; that comparison is circular. Gate on binary.sha256 instead.",
+    "binary": {
+      "path": "ue_project/Packaged/Development/Linux/Blocks/Binaries/Linux/Blocks",
+      "sha256": "fd845a8c58f095af8ba52849d07ea2768ad48712ba7800a4bcfe7760f0efaade"
+    },
+    "paks": {
+      "ue_project/Packaged/Development/Linux/Blocks/Content/Paks/Blocks-Linux.pak": "ee904c8a2d06fbc25ed137468340f0689f98a9aeca6630a3aa7c594bd9fa3ec1"
+    },
+    "built_from_git_head": "72d0eb9ff4165c4895494f46e77160d01bf33f2a",
+    "working_tree_dirty": true,
+    "level_spec_sha256": "188f9e4118945b7966fa3a03281e0c1663b0e2193c228430bdc06287a40f955a",
+    "level_verify": {
+      "map_path": "/Game/AutoFly/Maps/S01",
+      "pass": true,
+      "obstacles": 80,
+      "worst_location_error_cm": 0.0,
+      "game_mode": "/Script/ProjectAirSim.ProjectAirSimGameMode"
+    },
+    "engine_build_version": {
+      "MajorVersion": 5,
+      "MinorVersion": 7,
+      "PatchVersion": 4,
+      "Changelist": 51494982,
+      "CompatibleChangelist": 47537391,
+      "IsLicenseeVersion": 0,
+      "IsPromotedBuild": 1,
+      "BranchName": "++UE5+Release-5.7"
+    }
+  },
+  "package_matches_manifest": true,
+  "launch_s": 2.541116181004327,
+  "error": "CameraPoseError: reset could not free the Unreal actor: a climb from the start and after retracing (1.5, 4.0, 8.0) m along the heading were all stopped; last: camera at step 13000000000 ns is 8.000 m from kinematics + mount offset (tolerance 0.1 m); the Unreal actor was probably stopped by a sweep",
+  "faults": {
+    "xid_since": "2026-10-07 20:01:48",
+    "xid_before": 0,
+    "xid_after": 0,
+    "boot_id": "026d5453-feb4-429b-abf0-fb4146123ce7",
+    "device_lost": {
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst5/sim.log": 0
+    },
+    "kernel_journal_readable": true
+  },
+  "faults_ok": true,
+  "pass": false
+}

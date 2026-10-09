@@ -1,0 +1,1354 @@
+{
+  "what": "scripted flights straight at the nearest tree on the FakeSimulator; footprint contact rule endings",
+  "scene": {
+    "id": "s02",
+    "path": "/home/nvidiasims/research_uav/autofly_ue5/scenes/s02_sparse_trees.json",
+    "sha256": "29a5235e2c2956844a9852ba230e742e35201a1d6fd4c5f3d6ad4f974ed70fd2"
+  },
+  "layout": {
+    "path": "/home/nvidiasims/research_uav/autofly_ue5/runs/levels/s02.layout.json",
+    "sha256": "27bc3daa10a34dc170b09a5ba247917f0567f99c116b83a0951ab9ddcd351c4d",
+    "trees": 27
+  },
+  "rule": {
+    "contact_m": 0.9,
+    "training_margin_m": 0.2,
+    "drone_half_span_m": 0.48,
+    "fake_wood_radius_m_per_scale": 0.3
+  },
+  "seeds": {
+    "base": 300000000,
+    "n": 40
+  },
+  "figure": "results/2026-10-07-project-status/figures/s02_footprint_rule.png",
+  "summary": {
+    "runs": {
+      "task_rule": {
+        "margin_m": 0.0,
+        "termination_m": 0.9,
+        "n": 40,
+        "endings": {
+          "footprint": 40
+        },
+        "gap_m": {
+          "min": 0.5137,
+          "median": 0.656,
+          "max": 0.8959
+        },
+        "endings_with_rotor_tip_inside_circle": 0,
+        "checks": {
+          "no_sim_endings": true,
+          "footprint_gaps_le_contact_m": true,
+          "footprint_margin_gaps_in_band": true
+        }
+      },
+      "training_margin": {
+        "margin_m": 0.2,
+        "termination_m": 1.1,
+        "n": 40,
+        "endings": {
+          "footprint": 17,
+          "footprint_margin": 23
+        },
+        "gap_m": {
+          "min": 0.7347,
+          "median": 0.9304,
+          "max": 1.073
+        },
+        "endings_with_rotor_tip_inside_circle": 0,
+        "checks": {
+          "no_sim_endings": true,
+          "footprint_gaps_le_contact_m": true,
+          "footprint_margin_gaps_in_band": true
+        }
+      }
+    },
+    "all_checks_passed": true
+  },
+  "episodes": {
+    "task_rule": [
+      {
+        "seed": 300000000,
+        "aimed_at": "obs_0017",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.7367,
+        "ended_at_tag": "obs_0017",
+        "ended_at_asset": "searsia_lucida_b",
+        "steps": 37,
+        "end_pose": [
+          -19.272,
+          17.6376,
+          -2.0252,
+          -0.5462
+        ]
+      },
+      {
+        "seed": 300000001,
+        "aimed_at": "obs_0017",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.6152,
+        "ended_at_tag": "obs_0017",
+        "ended_at_asset": "searsia_lucida_b",
+        "steps": 47,
+        "end_pose": [
+          -18.9023,
+          17.8995,
+          -2.2282,
+          -0.8253
+        ]
+      },
+      {
+        "seed": 300000002,
+        "aimed_at": "obs_0015",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.5235,
+        "ended_at_tag": "obs_0015",
+        "ended_at_asset": "searsia_lucida_a",
+        "steps": 33,
+        "end_pose": [
+          -21.181,
+          -26.1401,
+          -2.597,
+          0.0972
+        ]
+      },
+      {
+        "seed": 300000003,
+        "aimed_at": "obs_0011",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.7451,
+        "ended_at_tag": "obs_0011",
+        "ended_at_asset": "tree_small_02",
+        "steps": 43,
+        "end_pose": [
+          21.8345,
+          3.3875,
+          -2.1429,
+          2.4742
+        ]
+      },
+      {
+        "seed": 300000004,
+        "aimed_at": "obs_0012",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.588,
+        "ended_at_tag": "obs_0012",
+        "ended_at_asset": "tree_small_02",
+        "steps": 29,
+        "end_pose": [
+          -5.6016,
+          26.3767,
+          -2.5867,
+          -2.7342
+        ]
+      },
+      {
+        "seed": 300000005,
+        "aimed_at": "obs_0006",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.7753,
+        "ended_at_tag": "obs_0006",
+        "ended_at_asset": "island_tree_03",
+        "steps": 34,
+        "end_pose": [
+          19.2799,
+          26.1272,
+          -1.5796,
+          -2.7011
+        ]
+      },
+      {
+        "seed": 300000006,
+        "aimed_at": "obs_0006",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.6016,
+        "ended_at_tag": "obs_0006",
+        "ended_at_asset": "island_tree_03",
+        "steps": 31,
+        "end_pose": [
+          18.6911,
+          26.7048,
+          -2.5349,
+          -2.4119
+        ]
+      },
+      {
+        "seed": 300000007,
+        "aimed_at": "obs_0011",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.8501,
+        "ended_at_tag": "obs_0011",
+        "ended_at_asset": "tree_small_02",
+        "steps": 33,
+        "end_pose": [
+          22.6351,
+          4.9305,
+          -1.8629,
+          2.9689
+        ]
+      },
+      {
+        "seed": 300000008,
+        "aimed_at": "obs_0011",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.5837,
+        "ended_at_tag": "obs_0011",
+        "ended_at_asset": "tree_small_02",
+        "steps": 42,
+        "end_pose": [
+          22.0278,
+          3.9763,
+          -2.3586,
+          2.6499
+        ]
+      },
+      {
+        "seed": 300000009,
+        "aimed_at": "obs_0015",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.5957,
+        "ended_at_tag": "obs_0015",
+        "ended_at_asset": "searsia_lucida_a",
+        "steps": 15,
+        "end_pose": [
+          -18.3218,
+          -27.4019,
+          -2.4756,
+          2.2337
+        ]
+      },
+      {
+        "seed": 300000010,
+        "aimed_at": "obs_0003",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.8165,
+        "ended_at_tag": "obs_0003",
+        "ended_at_asset": "island_tree_02",
+        "steps": 19,
+        "end_pose": [
+          -3.8961,
+          -28.7532,
+          -1.6533,
+          1.475
+        ]
+      },
+      {
+        "seed": 300000011,
+        "aimed_at": "obs_0025",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.8517,
+        "ended_at_tag": "obs_0025",
+        "ended_at_asset": "quiver_tree_01",
+        "steps": 14,
+        "end_pose": [
+          26.8261,
+          -26.9729,
+          -1.4702,
+          2.4175
+        ]
+      },
+      {
+        "seed": 300000012,
+        "aimed_at": "obs_0012",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.7347,
+        "ended_at_tag": "obs_0012",
+        "ended_at_asset": "tree_small_02",
+        "steps": 34,
+        "end_pose": [
+          -12.7085,
+          26.0103,
+          -2.1667,
+          -0.2902
+        ]
+      },
+      {
+        "seed": 300000013,
+        "aimed_at": "obs_0006",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.7857,
+        "ended_at_tag": "obs_0006",
+        "ended_at_asset": "island_tree_03",
+        "steps": 24,
+        "end_pose": [
+          18.1521,
+          27.3849,
+          -2.0394,
+          -2.1018
+        ]
+      },
+      {
+        "seed": 300000014,
+        "aimed_at": "obs_0012",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.8959,
+        "ended_at_tag": "obs_0012",
+        "ended_at_asset": "tree_small_02",
+        "steps": 20,
+        "end_pose": [
+          -6.6893,
+          28.1886,
+          -2.2502,
+          -2.1698
+        ]
+      },
+      {
+        "seed": 300000015,
+        "aimed_at": "obs_0015",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.7914,
+        "ended_at_tag": "obs_0015",
+        "ended_at_asset": "searsia_lucida_a",
+        "steps": 22,
+        "end_pose": [
+          -21.3669,
+          -26.5666,
+          -1.6592,
+          0.3004
+        ]
+      },
+      {
+        "seed": 300000016,
+        "aimed_at": "obs_0006",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.6057,
+        "ended_at_tag": "obs_0006",
+        "ended_at_asset": "island_tree_03",
+        "steps": 35,
+        "end_pose": [
+          19.2384,
+          24.0129,
+          -2.4869,
+          2.8105
+        ]
+      },
+      {
+        "seed": 300000017,
+        "aimed_at": "obs_0017",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.6222,
+        "ended_at_tag": "obs_0017",
+        "ended_at_asset": "searsia_lucida_b",
+        "steps": 33,
+        "end_pose": [
+          -19.3384,
+          17.2001,
+          -1.3677,
+          -0.2736
+        ]
+      },
+      {
+        "seed": 300000018,
+        "aimed_at": "obs_0010",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.6432,
+        "ended_at_tag": "obs_0010",
+        "ended_at_asset": "tree_small_02",
+        "steps": 41,
+        "end_pose": [
+          19.099,
+          -11.8751,
+          -2.3431,
+          3.1201
+        ]
+      },
+      {
+        "seed": 300000019,
+        "aimed_at": "obs_0011",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.5437,
+        "ended_at_tag": "obs_0011",
+        "ended_at_asset": "tree_small_02",
+        "steps": 32,
+        "end_pose": [
+          21.9161,
+          7.236,
+          -1.5166,
+          -2.6028
+        ]
+      },
+      {
+        "seed": 300000020,
+        "aimed_at": "obs_0008",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.7701,
+        "ended_at_tag": "obs_0008",
+        "ended_at_asset": "tree_small_02",
+        "steps": 6,
+        "end_pose": [
+          -28.2,
+          -0.7332,
+          -2.1157,
+          0.1907
+        ]
+      },
+      {
+        "seed": 300000021,
+        "aimed_at": "obs_0015",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.5431,
+        "ended_at_tag": "obs_0015",
+        "ended_at_asset": "searsia_lucida_a",
+        "steps": 19,
+        "end_pose": [
+          -19.0183,
+          -27.6843,
+          -1.3697,
+          1.8177
+        ]
+      },
+      {
+        "seed": 300000022,
+        "aimed_at": "obs_0011",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.878,
+        "ended_at_tag": "obs_0011",
+        "ended_at_asset": "tree_small_02",
+        "steps": 19,
+        "end_pose": [
+          22.6769,
+          5.0139,
+          -1.4485,
+          2.9936
+        ]
+      },
+      {
+        "seed": 300000023,
+        "aimed_at": "obs_0011",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.6105,
+        "ended_at_tag": "obs_0011",
+        "ended_at_asset": "tree_small_02",
+        "steps": 33,
+        "end_pose": [
+          22.4164,
+          6.0149,
+          -2.236,
+          -3.0021
+        ]
+      },
+      {
+        "seed": 300000024,
+        "aimed_at": "obs_0012",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.8432,
+        "ended_at_tag": "obs_0012",
+        "ended_at_asset": "tree_small_02",
+        "steps": 13,
+        "end_pose": [
+          -9.8438,
+          28.7852,
+          -2.4613,
+          -1.3852
+        ]
+      },
+      {
+        "seed": 300000025,
+        "aimed_at": "obs_0011",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.5137,
+        "ended_at_tag": "obs_0011",
+        "ended_at_asset": "tree_small_02",
+        "steps": 33,
+        "end_pose": [
+          22.3521,
+          5.5653,
+          -2.5171,
+          -3.1363
+        ]
+      },
+      {
+        "seed": 300000026,
+        "aimed_at": "obs_0012",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.8016,
+        "ended_at_tag": "obs_0012",
+        "ended_at_asset": "tree_small_02",
+        "steps": 36,
+        "end_pose": [
+          -5.665,
+          26.961,
+          -2.5043,
+          -2.5907
+        ]
+      },
+      {
+        "seed": 300000027,
+        "aimed_at": "obs_0006",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.6086,
+        "ended_at_tag": "obs_0006",
+        "ended_at_asset": "island_tree_03",
+        "steps": 39,
+        "end_pose": [
+          14.2826,
+          26.2025,
+          -2.3419,
+          -0.5009
+        ]
+      },
+      {
+        "seed": 300000028,
+        "aimed_at": "obs_0006",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.5222,
+        "ended_at_tag": "obs_0006",
+        "ended_at_asset": "island_tree_03",
+        "steps": 26,
+        "end_pose": [
+          18.0818,
+          27.1188,
+          -1.3022,
+          -2.1368
+        ]
+      },
+      {
+        "seed": 300000029,
+        "aimed_at": "obs_0008",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.8157,
+        "ended_at_tag": "obs_0008",
+        "ended_at_asset": "tree_small_02",
+        "steps": 17,
+        "end_pose": [
+          -28.1671,
+          0.9888,
+          -2.2756,
+          -0.2662
+        ]
+      },
+      {
+        "seed": 300000030,
+        "aimed_at": "obs_0006",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.6152,
+        "ended_at_tag": "obs_0006",
+        "ended_at_asset": "island_tree_03",
+        "steps": 30,
+        "end_pose": [
+          14.2094,
+          26.0742,
+          -2.5138,
+          -0.4467
+        ]
+      },
+      {
+        "seed": 300000031,
+        "aimed_at": "obs_0025",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.6634,
+        "ended_at_tag": "obs_0025",
+        "ended_at_asset": "quiver_tree_01",
+        "steps": 33,
+        "end_pose": [
+          26.6796,
+          -26.8543,
+          -2.0522,
+          2.4134
+        ]
+      },
+      {
+        "seed": 300000032,
+        "aimed_at": "obs_0012",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.5375,
+        "ended_at_tag": "obs_0012",
+        "ended_at_asset": "tree_small_02",
+        "steps": 10,
+        "end_pose": [
+          -10.738,
+          28.135,
+          -1.4125,
+          -1.0934
+        ]
+      },
+      {
+        "seed": 300000033,
+        "aimed_at": "obs_0006",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.8081,
+        "ended_at_tag": "obs_0006",
+        "ended_at_asset": "island_tree_03",
+        "steps": 21,
+        "end_pose": [
+          16.3946,
+          27.803,
+          -1.6337,
+          -1.4752
+        ]
+      },
+      {
+        "seed": 300000034,
+        "aimed_at": "obs_0017",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.64,
+        "ended_at_tag": "obs_0017",
+        "ended_at_asset": "searsia_lucida_b",
+        "steps": 42,
+        "end_pose": [
+          -19.2388,
+          17.4998,
+          -1.4187,
+          -0.4806
+        ]
+      },
+      {
+        "seed": 300000035,
+        "aimed_at": "obs_0006",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.6651,
+        "ended_at_tag": "obs_0006",
+        "ended_at_asset": "island_tree_03",
+        "steps": 31,
+        "end_pose": [
+          19.339,
+          25.6572,
+          -1.8909,
+          -2.864
+        ]
+      },
+      {
+        "seed": 300000036,
+        "aimed_at": "obs_0008",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.8311,
+        "ended_at_tag": "obs_0008",
+        "ended_at_asset": "tree_small_02",
+        "steps": 11,
+        "end_pose": [
+          -27.366,
+          -2.6438,
+          -2.2097,
+          0.6998
+        ]
+      },
+      {
+        "seed": 300000037,
+        "aimed_at": "obs_0015",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.673,
+        "ended_at_tag": "obs_0015",
+        "ended_at_asset": "searsia_lucida_a",
+        "steps": 27,
+        "end_pose": [
+          -21.304,
+          -26.3315,
+          -2.3338,
+          0.1916
+        ]
+      },
+      {
+        "seed": 300000038,
+        "aimed_at": "obs_0006",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.6486,
+        "ended_at_tag": "obs_0006",
+        "ended_at_asset": "island_tree_03",
+        "steps": 29,
+        "end_pose": [
+          14.4909,
+          26.5921,
+          -1.9998,
+          -0.6617
+        ]
+      },
+      {
+        "seed": 300000039,
+        "aimed_at": "obs_0011",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.5905,
+        "ended_at_tag": "obs_0011",
+        "ended_at_asset": "tree_small_02",
+        "steps": 31,
+        "end_pose": [
+          22.1212,
+          4.1486,
+          -1.5704,
+          2.7087
+        ]
+      }
+    ],
+    "training_margin": [
+      {
+        "seed": 300000000,
+        "aimed_at": "obs_0017",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.7367,
+        "ended_at_tag": "obs_0017",
+        "ended_at_asset": "searsia_lucida_b",
+        "steps": 37,
+        "end_pose": [
+          -19.272,
+          17.6376,
+          -2.0252,
+          -0.5462
+        ]
+      },
+      {
+        "seed": 300000001,
+        "aimed_at": "obs_0017",
+        "outcome": "collision",
+        "collision_source": "footprint_margin",
+        "gap_m": 1.0152,
+        "ended_at_tag": "obs_0017",
+        "ended_at_asset": "searsia_lucida_b",
+        "steps": 46,
+        "end_pose": [
+          -19.1736,
+          18.1934,
+          -2.2282,
+          -0.8253
+        ]
+      },
+      {
+        "seed": 300000002,
+        "aimed_at": "obs_0015",
+        "outcome": "collision",
+        "collision_source": "footprint_margin",
+        "gap_m": 0.9235,
+        "ended_at_tag": "obs_0015",
+        "ended_at_asset": "searsia_lucida_a",
+        "steps": 32,
+        "end_pose": [
+          -21.5791,
+          -26.1789,
+          -2.597,
+          0.0972
+        ]
+      },
+      {
+        "seed": 300000003,
+        "aimed_at": "obs_0011",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.7451,
+        "ended_at_tag": "obs_0011",
+        "ended_at_asset": "tree_small_02",
+        "steps": 43,
+        "end_pose": [
+          21.8345,
+          3.3875,
+          -2.1429,
+          2.4742
+        ]
+      },
+      {
+        "seed": 300000004,
+        "aimed_at": "obs_0012",
+        "outcome": "collision",
+        "collision_source": "footprint_margin",
+        "gap_m": 0.988,
+        "ended_at_tag": "obs_0012",
+        "ended_at_asset": "tree_small_02",
+        "steps": 28,
+        "end_pose": [
+          -5.2343,
+          26.5352,
+          -2.5867,
+          -2.7342
+        ]
+      },
+      {
+        "seed": 300000005,
+        "aimed_at": "obs_0006",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.7753,
+        "ended_at_tag": "obs_0006",
+        "ended_at_asset": "island_tree_03",
+        "steps": 34,
+        "end_pose": [
+          19.2799,
+          26.1272,
+          -1.5796,
+          -2.7011
+        ]
+      },
+      {
+        "seed": 300000006,
+        "aimed_at": "obs_0006",
+        "outcome": "collision",
+        "collision_source": "footprint_margin",
+        "gap_m": 1.0016,
+        "ended_at_tag": "obs_0006",
+        "ended_at_asset": "island_tree_03",
+        "steps": 30,
+        "end_pose": [
+          18.9893,
+          26.9715,
+          -2.5349,
+          -2.4119
+        ]
+      },
+      {
+        "seed": 300000007,
+        "aimed_at": "obs_0011",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.8501,
+        "ended_at_tag": "obs_0011",
+        "ended_at_asset": "tree_small_02",
+        "steps": 33,
+        "end_pose": [
+          22.6351,
+          4.9305,
+          -1.8629,
+          2.9689
+        ]
+      },
+      {
+        "seed": 300000008,
+        "aimed_at": "obs_0011",
+        "outcome": "collision",
+        "collision_source": "footprint_margin",
+        "gap_m": 0.9837,
+        "ended_at_tag": "obs_0011",
+        "ended_at_asset": "tree_small_02",
+        "steps": 41,
+        "end_pose": [
+          22.3804,
+          3.7875,
+          -2.3586,
+          2.6499
+        ]
+      },
+      {
+        "seed": 300000009,
+        "aimed_at": "obs_0015",
+        "outcome": "collision",
+        "collision_source": "footprint_margin",
+        "gap_m": 0.9957,
+        "ended_at_tag": "obs_0015",
+        "ended_at_asset": "searsia_lucida_a",
+        "steps": 14,
+        "end_pose": [
+          -18.0759,
+          -27.7174,
+          -2.4756,
+          2.2328
+        ]
+      },
+      {
+        "seed": 300000010,
+        "aimed_at": "obs_0003",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.8165,
+        "ended_at_tag": "obs_0003",
+        "ended_at_asset": "island_tree_02",
+        "steps": 19,
+        "end_pose": [
+          -3.8961,
+          -28.7532,
+          -1.6533,
+          1.475
+        ]
+      },
+      {
+        "seed": 300000011,
+        "aimed_at": "obs_0025",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.8517,
+        "ended_at_tag": "obs_0025",
+        "ended_at_asset": "quiver_tree_01",
+        "steps": 14,
+        "end_pose": [
+          26.8261,
+          -26.9729,
+          -1.4702,
+          2.4175
+        ]
+      },
+      {
+        "seed": 300000012,
+        "aimed_at": "obs_0012",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.7347,
+        "ended_at_tag": "obs_0012",
+        "ended_at_asset": "tree_small_02",
+        "steps": 34,
+        "end_pose": [
+          -12.7085,
+          26.0103,
+          -2.1667,
+          -0.2902
+        ]
+      },
+      {
+        "seed": 300000013,
+        "aimed_at": "obs_0006",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.7857,
+        "ended_at_tag": "obs_0006",
+        "ended_at_asset": "island_tree_03",
+        "steps": 24,
+        "end_pose": [
+          18.1521,
+          27.3849,
+          -2.0394,
+          -2.1018
+        ]
+      },
+      {
+        "seed": 300000014,
+        "aimed_at": "obs_0012",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.8959,
+        "ended_at_tag": "obs_0012",
+        "ended_at_asset": "tree_small_02",
+        "steps": 20,
+        "end_pose": [
+          -6.6893,
+          28.1886,
+          -2.2502,
+          -2.1698
+        ]
+      },
+      {
+        "seed": 300000015,
+        "aimed_at": "obs_0015",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.7914,
+        "ended_at_tag": "obs_0015",
+        "ended_at_asset": "searsia_lucida_a",
+        "steps": 22,
+        "end_pose": [
+          -21.3669,
+          -26.5666,
+          -1.6592,
+          0.3004
+        ]
+      },
+      {
+        "seed": 300000016,
+        "aimed_at": "obs_0006",
+        "outcome": "collision",
+        "collision_source": "footprint_margin",
+        "gap_m": 1.0057,
+        "ended_at_tag": "obs_0006",
+        "ended_at_asset": "island_tree_03",
+        "steps": 34,
+        "end_pose": [
+          19.6166,
+          23.8829,
+          -2.4869,
+          2.8105
+        ]
+      },
+      {
+        "seed": 300000017,
+        "aimed_at": "obs_0017",
+        "outcome": "collision",
+        "collision_source": "footprint_margin",
+        "gap_m": 1.0222,
+        "ended_at_tag": "obs_0017",
+        "ended_at_asset": "searsia_lucida_b",
+        "steps": 32,
+        "end_pose": [
+          -19.7235,
+          17.3082,
+          -1.3677,
+          -0.2736
+        ]
+      },
+      {
+        "seed": 300000018,
+        "aimed_at": "obs_0010",
+        "outcome": "collision",
+        "collision_source": "footprint_margin",
+        "gap_m": 1.0432,
+        "ended_at_tag": "obs_0010",
+        "ended_at_asset": "tree_small_02",
+        "steps": 40,
+        "end_pose": [
+          19.4989,
+          -11.8837,
+          -2.3431,
+          3.1201
+        ]
+      },
+      {
+        "seed": 300000019,
+        "aimed_at": "obs_0011",
+        "outcome": "collision",
+        "collision_source": "footprint_margin",
+        "gap_m": 0.9437,
+        "ended_at_tag": "obs_0011",
+        "ended_at_asset": "tree_small_02",
+        "steps": 31,
+        "end_pose": [
+          22.2594,
+          7.4413,
+          -1.5166,
+          -2.6028
+        ]
+      },
+      {
+        "seed": 300000020,
+        "aimed_at": "obs_0008",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.7701,
+        "ended_at_tag": "obs_0008",
+        "ended_at_asset": "tree_small_02",
+        "steps": 6,
+        "end_pose": [
+          -28.2,
+          -0.7332,
+          -2.1157,
+          0.1907
+        ]
+      },
+      {
+        "seed": 300000021,
+        "aimed_at": "obs_0015",
+        "outcome": "collision",
+        "collision_source": "footprint_margin",
+        "gap_m": 0.9431,
+        "ended_at_tag": "obs_0015",
+        "ended_at_asset": "searsia_lucida_a",
+        "steps": 18,
+        "end_pose": [
+          -18.9198,
+          -28.072,
+          -1.3697,
+          1.8195
+        ]
+      },
+      {
+        "seed": 300000022,
+        "aimed_at": "obs_0011",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.878,
+        "ended_at_tag": "obs_0011",
+        "ended_at_asset": "tree_small_02",
+        "steps": 19,
+        "end_pose": [
+          22.6769,
+          5.0139,
+          -1.4485,
+          2.9936
+        ]
+      },
+      {
+        "seed": 300000023,
+        "aimed_at": "obs_0011",
+        "outcome": "collision",
+        "collision_source": "footprint_margin",
+        "gap_m": 1.0105,
+        "ended_at_tag": "obs_0011",
+        "ended_at_asset": "tree_small_02",
+        "steps": 32,
+        "end_pose": [
+          22.8125,
+          6.0705,
+          -2.236,
+          -3.0021
+        ]
+      },
+      {
+        "seed": 300000024,
+        "aimed_at": "obs_0012",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.8432,
+        "ended_at_tag": "obs_0012",
+        "ended_at_asset": "tree_small_02",
+        "steps": 13,
+        "end_pose": [
+          -9.8438,
+          28.7852,
+          -2.4613,
+          -1.3852
+        ]
+      },
+      {
+        "seed": 300000025,
+        "aimed_at": "obs_0011",
+        "outcome": "collision",
+        "collision_source": "footprint_margin",
+        "gap_m": 0.9137,
+        "ended_at_tag": "obs_0011",
+        "ended_at_asset": "tree_small_02",
+        "steps": 32,
+        "end_pose": [
+          22.7521,
+          5.5674,
+          -2.5171,
+          -3.1363
+        ]
+      },
+      {
+        "seed": 300000026,
+        "aimed_at": "obs_0012",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.8016,
+        "ended_at_tag": "obs_0012",
+        "ended_at_asset": "tree_small_02",
+        "steps": 36,
+        "end_pose": [
+          -5.665,
+          26.961,
+          -2.5043,
+          -2.5907
+        ]
+      },
+      {
+        "seed": 300000027,
+        "aimed_at": "obs_0006",
+        "outcome": "collision",
+        "collision_source": "footprint_margin",
+        "gap_m": 1.0086,
+        "ended_at_tag": "obs_0006",
+        "ended_at_asset": "island_tree_03",
+        "steps": 38,
+        "end_pose": [
+          13.9318,
+          26.3946,
+          -2.3419,
+          -0.5009
+        ]
+      },
+      {
+        "seed": 300000028,
+        "aimed_at": "obs_0006",
+        "outcome": "collision",
+        "collision_source": "footprint_margin",
+        "gap_m": 0.9222,
+        "ended_at_tag": "obs_0006",
+        "ended_at_asset": "island_tree_03",
+        "steps": 25,
+        "end_pose": [
+          18.2962,
+          27.4565,
+          -1.3022,
+          -2.1366
+        ]
+      },
+      {
+        "seed": 300000029,
+        "aimed_at": "obs_0008",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.8157,
+        "ended_at_tag": "obs_0008",
+        "ended_at_asset": "tree_small_02",
+        "steps": 17,
+        "end_pose": [
+          -28.1671,
+          0.9888,
+          -2.2756,
+          -0.2662
+        ]
+      },
+      {
+        "seed": 300000030,
+        "aimed_at": "obs_0006",
+        "outcome": "collision",
+        "collision_source": "footprint_margin",
+        "gap_m": 1.0152,
+        "ended_at_tag": "obs_0006",
+        "ended_at_asset": "island_tree_03",
+        "steps": 29,
+        "end_pose": [
+          13.8487,
+          26.247,
+          -2.5138,
+          -0.4468
+        ]
+      },
+      {
+        "seed": 300000031,
+        "aimed_at": "obs_0025",
+        "outcome": "collision",
+        "collision_source": "footprint_margin",
+        "gap_m": 1.0634,
+        "ended_at_tag": "obs_0025",
+        "ended_at_asset": "quiver_tree_01",
+        "steps": 32,
+        "end_pose": [
+          26.9782,
+          -27.1205,
+          -2.0522,
+          2.4135
+        ]
+      },
+      {
+        "seed": 300000032,
+        "aimed_at": "obs_0012",
+        "outcome": "collision",
+        "collision_source": "footprint_margin",
+        "gap_m": 0.9374,
+        "ended_at_tag": "obs_0012",
+        "ended_at_asset": "tree_small_02",
+        "steps": 9,
+        "end_pose": [
+          -10.919,
+          28.4917,
+          -1.4125,
+          -1.1012
+        ]
+      },
+      {
+        "seed": 300000033,
+        "aimed_at": "obs_0006",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.8081,
+        "ended_at_tag": "obs_0006",
+        "ended_at_asset": "island_tree_03",
+        "steps": 21,
+        "end_pose": [
+          16.3946,
+          27.803,
+          -1.6337,
+          -1.4752
+        ]
+      },
+      {
+        "seed": 300000034,
+        "aimed_at": "obs_0017",
+        "outcome": "collision",
+        "collision_source": "footprint_margin",
+        "gap_m": 1.04,
+        "ended_at_tag": "obs_0017",
+        "ended_at_asset": "searsia_lucida_b",
+        "steps": 41,
+        "end_pose": [
+          -19.5935,
+          17.6847,
+          -1.4187,
+          -0.4806
+        ]
+      },
+      {
+        "seed": 300000035,
+        "aimed_at": "obs_0006",
+        "outcome": "collision",
+        "collision_source": "footprint_margin",
+        "gap_m": 1.0651,
+        "ended_at_tag": "obs_0006",
+        "ended_at_asset": "island_tree_03",
+        "steps": 30,
+        "end_pose": [
+          19.7237,
+          25.7668,
+          -1.8909,
+          -2.864
+        ]
+      },
+      {
+        "seed": 300000036,
+        "aimed_at": "obs_0008",
+        "outcome": "collision",
+        "collision_source": "footprint",
+        "gap_m": 0.8311,
+        "ended_at_tag": "obs_0008",
+        "ended_at_asset": "tree_small_02",
+        "steps": 11,
+        "end_pose": [
+          -27.366,
+          -2.6438,
+          -2.2097,
+          0.6998
+        ]
+      },
+      {
+        "seed": 300000037,
+        "aimed_at": "obs_0015",
+        "outcome": "collision",
+        "collision_source": "footprint_margin",
+        "gap_m": 1.073,
+        "ended_at_tag": "obs_0015",
+        "ended_at_asset": "searsia_lucida_a",
+        "steps": 26,
+        "end_pose": [
+          -21.6967,
+          -26.4077,
+          -2.3338,
+          0.1916
+        ]
+      },
+      {
+        "seed": 300000038,
+        "aimed_at": "obs_0006",
+        "outcome": "collision",
+        "collision_source": "footprint_margin",
+        "gap_m": 1.0486,
+        "ended_at_tag": "obs_0006",
+        "ended_at_asset": "island_tree_03",
+        "steps": 28,
+        "end_pose": [
+          14.1753,
+          26.8379,
+          -1.9998,
+          -0.6617
+        ]
+      },
+      {
+        "seed": 300000039,
+        "aimed_at": "obs_0011",
+        "outcome": "collision",
+        "collision_source": "footprint_margin",
+        "gap_m": 0.9905,
+        "ended_at_tag": "obs_0011",
+        "ended_at_asset": "tree_small_02",
+        "steps": 30,
+        "end_pose": [
+          22.4843,
+          3.9808,
+          -1.5704,
+          2.7087
+        ]
+      }
+    ]
+  }
+}

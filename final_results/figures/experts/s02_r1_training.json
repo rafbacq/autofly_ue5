@@ -1,0 +1,148 @@
+{
+ "run_root": "runs/expert/s02_r1",
+ "figure": "results/2026-10-07-project-status/figures/s02_r1_training.png",
+ "training": {
+  "episodes": 4812,
+  "steps": 640686,
+  "window": 300,
+  "outcomes": {
+   "collision": 2530,
+   "out_of_bounds": 625,
+   "success": 1583,
+   "timeout": 74
+  },
+  "collision_sources": {
+   "footprint": 19,
+   "footprint_margin": 2482,
+   "sim": 29
+  },
+  "final_rolling_rates": {
+   "success": 0.48333333333333345,
+   "collision": 0.41666666666666674,
+   "out_of_bounds": 0.09333333333333332
+  }
+ },
+ "eval_watch": [
+  {
+   "step": 50000,
+   "episodes": 20,
+   "success_rate": 0.0,
+   "successes": 0,
+   "footprint": 11,
+   "other_collisions": 0,
+   "out_of_bounds": 8,
+   "timeout": 1
+  },
+  {
+   "step": 100000,
+   "episodes": 20,
+   "success_rate": 0.35,
+   "successes": 7,
+   "footprint": 8,
+   "other_collisions": 0,
+   "out_of_bounds": 4,
+   "timeout": 1
+  },
+  {
+   "step": 150000,
+   "episodes": 20,
+   "success_rate": 0.5,
+   "successes": 10,
+   "footprint": 6,
+   "other_collisions": 0,
+   "out_of_bounds": 4,
+   "timeout": 0
+  },
+  {
+   "step": 200000,
+   "episodes": 20,
+   "success_rate": 0.55,
+   "successes": 11,
+   "footprint": 8,
+   "other_collisions": 0,
+   "out_of_bounds": 1,
+   "timeout": 0
+  },
+  {
+   "step": 250000,
+   "episodes": 20,
+   "success_rate": 0.7,
+   "successes": 14,
+   "footprint": 3,
+   "other_collisions": 0,
+   "out_of_bounds": 3,
+   "timeout": 0
+  },
+  {
+   "step": 300000,
+   "episodes": 20,
+   "success_rate": 0.45,
+   "successes": 9,
+   "footprint": 8,
+   "other_collisions": 1,
+   "out_of_bounds": 2,
+   "timeout": 0
+  },
+  {
+   "step": 350000,
+   "episodes": 20,
+   "success_rate": 0.6,
+   "successes": 12,
+   "footprint": 7,
+   "other_collisions": 0,
+   "out_of_bounds": 1,
+   "timeout": 0
+  },
+  {
+   "step": 400000,
+   "episodes": 20,
+   "success_rate": 0.6,
+   "successes": 12,
+   "footprint": 5,
+   "other_collisions": 0,
+   "out_of_bounds": 3,
+   "timeout": 0
+  },
+  {
+   "step": 450000,
+   "episodes": 20,
+   "success_rate": 0.35,
+   "successes": 7,
+   "footprint": 8,
+   "other_collisions": 0,
+   "out_of_bounds": 5,
+   "timeout": 0
+  },
+  {
+   "step": 500000,
+   "episodes": 20,
+   "success_rate": 0.45,
+   "successes": 9,
+   "footprint": 10,
+   "other_collisions": 0,
+   "out_of_bounds": 1,
+   "timeout": 0
+  },
+  {
+   "step": 550000,
+   "episodes": 20,
+   "success_rate": 0.45,
+   "successes": 9,
+   "footprint": 8,
+   "other_collisions": 0,
+   "out_of_bounds": 3,
+   "timeout": 0
+  },
+  {
+   "step": 600000,
+   "episodes": 20,
+   "success_rate": 0.6,
+   "successes": 12,
+   "footprint": 3,
+   "other_collisions": 0,
+   "out_of_bounds": 5,
+   "timeout": 0
+  }
+ ],
+ "train_record": "640,916 steps in 12.0 h (14.8 steps/s, 4 simulators), 4,812 episodes, 0 backend faults, 0 relaunches"
+}

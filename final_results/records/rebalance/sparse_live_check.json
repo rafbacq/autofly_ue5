@@ -1,0 +1,86 @@
+{
+  "format": "autofly_ue5_sparse_check/1",
+  "search": {
+    "strategy": "coarse_alert_windows",
+    "stride": 8,
+    "threshold": 0.7,
+    "alert": 0.5,
+    "rule": "coarse probes: records 0, S, 2S, ... and the episode's last record, scored in order. The records strictly between two consecutive probes form a window, scored in order before the probe that closes it is judged, whenever either of its two probes scored above the alert level. The first detection is the first record found above the threshold in that order; a window whose two probes both scored at or below the alert level is taken to hold no record above the threshold (the search's one bet). An alert level equal to the threshold is the plain coarse scan with a fine scan of the window before its first hit; stride 1 scores every record up to the first detection, which is exact."
+  },
+  "detector": {
+    "model": "IDEA-Research/grounding-dino-tiny",
+    "revision": "a2bb814dd30d776dcf7e30523b00659f4f141c71",
+    "transformers": "5.19.0",
+    "image_size": {
+      "longest_edge": 1333,
+      "shortest_edge": 800
+    }
+  },
+  "runs": [
+    {
+      "device": "cpu",
+      "threads": 8,
+      "torch": "2.14.1+cpu",
+      "batch": 4,
+      "started": "2026-10-08 18:27:48",
+      "episodes_total": 100,
+      "episodes_scored": 3,
+      "frames_scored": 210,
+      "seconds": 567.8,
+      "finished": "2026-10-08 18:37:16"
+    }
+  ],
+  "episodes": 3,
+  "frames_compared": 210,
+  "score_abs_diff_max": 0.0004110000000000502,
+  "score_abs_diff_mean": 2.3742857142858156e-05,
+  "box_abs_diff_max": 1.3000000000040757e-05,
+  "first_detection_equal_dense": 3,
+  "first_detection_equal_predicted": 3,
+  "per_episode": [
+    {
+      "id": "s01_400000000",
+      "records": 167,
+      "visited": 29,
+      "predicted_visited": 27,
+      "needed_frames_visited": true,
+      "score_abs_diff_max": 0.00014999999999998348,
+      "box_abs_diff_max": 2.0000000000575113e-06,
+      "first_detection": 46,
+      "dense": 46,
+      "predicted": 46,
+      "seconds": 79.8
+    },
+    {
+      "id": "s01_400000001",
+      "records": 200,
+      "visited": 87,
+      "predicted_visited": 86,
+      "needed_frames_visited": true,
+      "score_abs_diff_max": 0.0004110000000000502,
+      "box_abs_diff_max": 1.3000000000040757e-05,
+      "first_detection": 147,
+      "dense": 147,
+      "predicted": 147,
+      "seconds": 244.8
+    },
+    {
+      "id": "s01_400000002",
+      "records": 168,
+      "visited": 94,
+      "predicted_visited": 91,
+      "needed_frames_visited": true,
+      "score_abs_diff_max": 0.0002529999999999477,
+      "box_abs_diff_max": 4.000000000004e-06,
+      "first_detection": 131,
+      "dense": 131,
+      "predicted": 131,
+      "seconds": 243.2
+    }
+  ],
+  "source": {
+    "dense": "/home/nvidiasims/research_uav/autofly_ue5/data/s01_pilot/detections.json",
+    "dense_sha256": "25aa265f1baadfed1cc7c643b4c9db61cb6129849030637e1b32f65dc0bcba21",
+    "sparse": "runs/rebalance/live_check/detections.jsonl"
+  }
+}

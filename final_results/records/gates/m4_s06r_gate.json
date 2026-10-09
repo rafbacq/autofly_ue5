@@ -1,0 +1,1145 @@
+{
+  "scene": "s06r",
+  "map": "/Game/AutoFly/Maps/S06R",
+  "layout": "/home/nvidiasims/research_uav/autofly_ue5/runs/levels/s06r.layout.json",
+  "scene_sha256": "1e00e89315a1502159c1ec81c31685ca17abed9a5c529db83f8d399fb633c581",
+  "layout_sha256": "666cb5ce8436e1a069a392181d8db128cda2efee1f91008d9a52be1ae3282149",
+  "obstacle_kinds": {
+    "mesh": 40
+  },
+  "checks": {
+    "map_matches_layout": {
+      "obstacles": [
+        {
+          "found": true,
+          "center_error_m": 7.471513575930334e-07,
+          "size_error_m": 4.59691057126399e-05,
+          "tag": "obs_0000",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "box_unavailable": true,
+          "reason": "no collision: the simulator reports no bounds for a non-colliding actor",
+          "tag": "obs_0000_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 7.797782799992095e-07,
+          "size_error_m": 4.17085291397612e-05,
+          "tag": "obs_0001",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "box_unavailable": true,
+          "reason": "no collision: the simulator reports no bounds for a non-colliding actor",
+          "tag": "obs_0001_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 8.62606249615552e-07,
+          "size_error_m": 5.1360384659915326e-05,
+          "tag": "obs_0002",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "box_unavailable": true,
+          "reason": "no collision: the simulator reports no bounds for a non-colliding actor",
+          "tag": "obs_0002_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 4.0936079975908615e-07,
+          "size_error_m": 5.6258428559274876e-05,
+          "tag": "obs_0003",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "box_unavailable": true,
+          "reason": "no collision: the simulator reports no bounds for a non-colliding actor",
+          "tag": "obs_0003_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 3.762002003326143e-07,
+          "size_error_m": 4.303813781803001e-05,
+          "tag": "obs_0004",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "box_unavailable": true,
+          "reason": "no collision: the simulator reports no bounds for a non-colliding actor",
+          "tag": "obs_0004_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 4.131849204970203e-07,
+          "size_error_m": 3.88774230954958e-05,
+          "tag": "obs_0005",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "box_unavailable": true,
+          "reason": "no collision: the simulator reports no bounds for a non-colliding actor",
+          "tag": "obs_0005_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 7.70727806894892e-07,
+          "size_error_m": 3.6783142089991117e-05,
+          "tag": "obs_0006",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "box_unavailable": true,
+          "reason": "no collision: the simulator reports no bounds for a non-colliding actor",
+          "tag": "obs_0006_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 7.348344179710742e-07,
+          "size_error_m": 3.783028259318755e-05,
+          "tag": "obs_0007",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "box_unavailable": true,
+          "reason": "no collision: the simulator reports no bounds for a non-colliding actor",
+          "tag": "obs_0007_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 3.447886997247636e-07,
+          "size_error_m": 4.9468922698636675e-05,
+          "tag": "obs_0008",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "box_unavailable": true,
+          "reason": "no collision: the simulator reports no bounds for a non-colliding actor",
+          "tag": "obs_0008_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.157153185676479e-06,
+          "size_error_m": 4.360597534169841e-05,
+          "tag": "obs_0009",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "box_unavailable": true,
+          "reason": "no collision: the simulator reports no bounds for a non-colliding actor",
+          "tag": "obs_0009_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.6274915730027295e-06,
+          "size_error_m": 3.370498112964526e-05,
+          "tag": "obs_0010",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "box_unavailable": true,
+          "reason": "no collision: the simulator reports no bounds for a non-colliding actor",
+          "tag": "obs_0010_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 4.420924157619327e-07,
+          "size_error_m": 2.9966669747416574e-05,
+          "tag": "obs_0011",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "box_unavailable": true,
+          "reason": "no collision: the simulator reports no bounds for a non-colliding actor",
+          "tag": "obs_0011_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.5578340238013766e-06,
+          "size_error_m": 3.005817772905317e-05,
+          "tag": "obs_0012",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "box_unavailable": true,
+          "reason": "no collision: the simulator reports no bounds for a non-colliding actor",
+          "tag": "obs_0012_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 5.658807905551617e-07,
+          "size_error_m": 3.207482910561055e-05,
+          "tag": "obs_0013",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "box_unavailable": true,
+          "reason": "no collision: the simulator reports no bounds for a non-colliding actor",
+          "tag": "obs_0013_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.102649329630912e-06,
+          "size_error_m": 3.7355928287130524e-05,
+          "tag": "obs_0014",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "box_unavailable": true,
+          "reason": "no collision: the simulator reports no bounds for a non-colliding actor",
+          "tag": "obs_0014_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 9.893491321110843e-07,
+          "size_error_m": 3.3605314074591774e-05,
+          "tag": "obs_0015",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "box_unavailable": true,
+          "reason": "no collision: the simulator reports no bounds for a non-colliding actor",
+          "tag": "obs_0015_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 4.884572430546264e-07,
+          "size_error_m": 2.8248447800471865e-05,
+          "tag": "obs_0016",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "box_unavailable": true,
+          "reason": "no collision: the simulator reports no bounds for a non-colliding actor",
+          "tag": "obs_0016_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 5.35570065800263e-07,
+          "size_error_m": 3.3643597636690004e-05,
+          "tag": "obs_0017",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "box_unavailable": true,
+          "reason": "no collision: the simulator reports no bounds for a non-colliding actor",
+          "tag": "obs_0017_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 5.087212411709277e-07,
+          "size_error_m": 3.5476755757102296e-05,
+          "tag": "obs_0018",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "box_unavailable": true,
+          "reason": "no collision: the simulator reports no bounds for a non-colliding actor",
+          "tag": "obs_0018_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 8.223010843757065e-07,
+          "size_error_m": 5.236369015415576e-05,
+          "tag": "obs_0019",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "box_unavailable": true,
+          "reason": "no collision: the simulator reports no bounds for a non-colliding actor",
+          "tag": "obs_0019_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 4.020448540361992e-07,
+          "size_error_m": 5.509910248990835e-05,
+          "tag": "obs_0020",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "box_unavailable": true,
+          "reason": "no collision: the simulator reports no bounds for a non-colliding actor",
+          "tag": "obs_0020_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.0391217694340392e-06,
+          "size_error_m": 5.066035141698677e-05,
+          "tag": "obs_0021",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "box_unavailable": true,
+          "reason": "no collision: the simulator reports no bounds for a non-colliding actor",
+          "tag": "obs_0021_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 8.046789093465117e-07,
+          "size_error_m": 5.545148909380515e-05,
+          "tag": "obs_0022",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "box_unavailable": true,
+          "reason": "no collision: the simulator reports no bounds for a non-colliding actor",
+          "tag": "obs_0022_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 6.252294131067559e-07,
+          "size_error_m": 5.0999395547979276e-05,
+          "tag": "obs_0023",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "box_unavailable": true,
+          "reason": "no collision: the simulator reports no bounds for a non-colliding actor",
+          "tag": "obs_0023_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 7.762419411939264e-07,
+          "size_error_m": 5.2483835449201877e-05,
+          "tag": "obs_0024",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "box_unavailable": true,
+          "reason": "no collision: the simulator reports no bounds for a non-colliding actor",
+          "tag": "obs_0024_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.7011041801705762e-06,
+          "size_error_m": 5.6032880102474536e-05,
+          "tag": "obs_0025",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "box_unavailable": true,
+          "reason": "no collision: the simulator reports no bounds for a non-colliding actor",
+          "tag": "obs_0025_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.57348389963382e-06,
+          "size_error_m": 5.736834353742282e-05,
+          "tag": "obs_0026",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "box_unavailable": true,
+          "reason": "no collision: the simulator reports no bounds for a non-colliding actor",
+          "tag": "obs_0026_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 2.0216372093194267e-06,
+          "size_error_m": 5.276774384999072e-05,
+          "tag": "obs_0027",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "box_unavailable": true,
+          "reason": "no collision: the simulator reports no bounds for a non-colliding actor",
+          "tag": "obs_0027_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 7.208863344214262e-08,
+          "size_error_m": 3.844789093010448e-05,
+          "tag": "obs_0028",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "box_unavailable": true,
+          "reason": "no collision: the simulator reports no bounds for a non-colliding actor",
+          "tag": "obs_0028_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 3.1448930682250137e-07,
+          "size_error_m": 4.052769287121727e-05,
+          "tag": "obs_0029",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "box_unavailable": true,
+          "reason": "no collision: the simulator reports no bounds for a non-colliding actor",
+          "tag": "obs_0029_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.0162979254792177e-06,
+          "size_error_m": 4.33630377196792e-05,
+          "tag": "obs_0030",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "box_unavailable": true,
+          "reason": "no collision: the simulator reports no bounds for a non-colliding actor",
+          "tag": "obs_0030_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 5.410093275313654e-07,
+          "size_error_m": 4.298746948250276e-05,
+          "tag": "obs_0031",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "box_unavailable": true,
+          "reason": "no collision: the simulator reports no bounds for a non-colliding actor",
+          "tag": "obs_0031_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 8.356694046313694e-07,
+          "size_error_m": 4.0001309814519104e-05,
+          "tag": "obs_0032",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "box_unavailable": true,
+          "reason": "no collision: the simulator reports no bounds for a non-colliding actor",
+          "tag": "obs_0032_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 3.138040452933346e-07,
+          "size_error_m": 4.374301239029599e-05,
+          "tag": "obs_0033",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "box_unavailable": true,
+          "reason": "no collision: the simulator reports no bounds for a non-colliding actor",
+          "tag": "obs_0033_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 2.7399151064336986e-07,
+          "size_error_m": 3.944523590093674e-05,
+          "tag": "obs_0034",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "box_unavailable": true,
+          "reason": "no collision: the simulator reports no bounds for a non-colliding actor",
+          "tag": "obs_0034_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 7.494827819778145e-07,
+          "size_error_m": 3.8430396423372315e-05,
+          "tag": "obs_0035",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "box_unavailable": true,
+          "reason": "no collision: the simulator reports no bounds for a non-colliding actor",
+          "tag": "obs_0035_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.3207075356774104e-06,
+          "size_error_m": 3.7582397460989014e-05,
+          "tag": "obs_0036",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "box_unavailable": true,
+          "reason": "no collision: the simulator reports no bounds for a non-colliding actor",
+          "tag": "obs_0036_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.1316122170849812e-06,
+          "size_error_m": 4.422367889422851e-05,
+          "tag": "obs_0037",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "box_unavailable": true,
+          "reason": "no collision: the simulator reports no bounds for a non-colliding actor",
+          "tag": "obs_0037_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.5340419236337483e-06,
+          "size_error_m": 4.2897951050058225e-05,
+          "tag": "obs_0038",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "box_unavailable": true,
+          "reason": "no collision: the simulator reports no bounds for a non-colliding actor",
+          "tag": "obs_0038_cards",
+          "kind": "cards"
+        },
+        {
+          "found": true,
+          "center_error_m": 1.5532768653311766e-06,
+          "size_error_m": 4.127059356706653e-05,
+          "tag": "obs_0039",
+          "kind": "mesh"
+        },
+        {
+          "found": true,
+          "box_unavailable": true,
+          "reason": "no collision: the simulator reports no bounds for a non-colliding actor",
+          "tag": "obs_0039_cards",
+          "kind": "cards"
+        }
+      ],
+      "checked": 80,
+      "found": 80,
+      "boxed": 40,
+      "max_center_error_m": 2.0216372093194267e-06,
+      "max_size_error_m": 5.736834353742282e-05,
+      "ground_top_z_ned": 0.0,
+      "tolerance_m": 0.05,
+      "pass": true
+    },
+    "rgb_changes_with_pose": {
+      "diff_pillar_vs_empty": 39.15282694498698,
+      "diff_pillar_repeat": 3.0021158854166665,
+      "brightness_pillar_view": 100.4496561686198,
+      "brightness_empty_view": 135.32181294759116,
+      "pass": true
+    },
+    "depth_matches_geometry": {
+      "probes": [
+        {
+          "tag": "obs_0000",
+          "kind": "mesh",
+          "solid": false,
+          "distance_m": 3.0,
+          "altitude_m": 1.2,
+          "window": [
+            [
+              120,
+              136
+            ],
+            [
+              120,
+              136
+            ]
+          ],
+          "pixels": {
+            "solid": 59,
+            "interior": 13,
+            "card": 1,
+            "empty": 196
+          },
+          "measured_m": 5.69140625,
+          "expected_m": 5.699366569519043,
+          "error_m": 0.007960319519042969,
+          "tolerance_m": 0.15,
+          "inlier_share": 1.0,
+          "min_inlier_share": 0.8,
+          "card_no_nearer_share": 1.0,
+          "beyond_share_off_target": 0.9897959183673469,
+          "window_spread_predicted_m": 0.1854257583618164,
+          "window_spread_measured_m": 0.18359375,
+          "pose": [
+            7.46024751663208,
+            -27.652347564697266,
+            -1.1967531442642212,
+            2.3561945242304616
+          ],
+          "hfov_consistent": null,
+          "pass": true
+        },
+        {
+          "tag": "obs_0003",
+          "kind": "mesh",
+          "solid": false,
+          "distance_m": 4.0,
+          "altitude_m": 1.2,
+          "window": [
+            [
+              120,
+              136
+            ],
+            [
+              120,
+              136
+            ]
+          ],
+          "pixels": {
+            "solid": 127,
+            "interior": 33,
+            "card": 13,
+            "empty": 116
+          },
+          "measured_m": 6.6640625,
+          "expected_m": 6.6752448081970215,
+          "error_m": 0.011182308197021484,
+          "tolerance_m": 0.15,
+          "inlier_share": 0.9696969696969697,
+          "min_inlier_share": 0.8,
+          "card_no_nearer_share": 1.0,
+          "beyond_share_off_target": 1.0,
+          "window_spread_predicted_m": 0.6899313926696777,
+          "window_spread_measured_m": 0.6875,
+          "pose": [
+            -15.392739295959473,
+            -1.7128607034683228,
+            -1.1980218887329102,
+            -0.7853982366644519
+          ],
+          "hfov_consistent": null,
+          "pass": true
+        },
+        {
+          "tag": "obs_0003",
+          "kind": "mesh",
+          "solid": false,
+          "distance_m": 8.0,
+          "altitude_m": 1.2,
+          "window": [
+            [
+              120,
+              136
+            ],
+            [
+              120,
+              136
+            ]
+          ],
+          "pixels": {
+            "solid": 101,
+            "interior": 13,
+            "card": 37,
+            "empty": 118
+          },
+          "measured_m": 10.734375,
+          "expected_m": 10.712515830993652,
+          "error_m": 0.021859169006347656,
+          "tolerance_m": 0.16,
+          "inlier_share": 0.9230769230769231,
+          "min_inlier_share": 0.8,
+          "card_no_nearer_share": 0.9459459459459459,
+          "beyond_share_off_target": 1.0,
+          "window_spread_predicted_m": 0.6260175704956055,
+          "window_spread_measured_m": 0.6328125,
+          "pose": [
+            -18.221166610717773,
+            1.1155664920806885,
+            -1.1986762285232544,
+            -0.7853982366644654
+          ],
+          "hfov_consistent": null,
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    "velocity_tracking": {
+      "axes": {
+        "forward": {
+          "mean_abs_error": 0.18751777410502243,
+          "mean_commanded": 2.0,
+          "mean_measured": 1.8124822258949778,
+          "relative_error": 0.09375888705251122,
+          "samples": 10
+        },
+        "vertical_up": {
+          "mean_abs_error": 0.0050545215606689455,
+          "mean_commanded": 0.5,
+          "mean_measured": 0.505054521560669,
+          "relative_error": 0.010109043121337891,
+          "samples": 5
+        },
+        "vertical_down": {
+          "mean_abs_error": 0.030578017234802246,
+          "mean_commanded": -0.5,
+          "mean_measured": -0.5305780172348022,
+          "relative_error": 0.06115603446960449,
+          "samples": 5
+        },
+        "yaw_rate": {
+          "mean_abs_error": 0.02464420562249936,
+          "mean_commanded": 0.5,
+          "mean_measured": 0.47535579437750064,
+          "relative_error": 0.04928841124499872,
+          "samples": 10
+        },
+        "yaw_rate_body_angular_z": {
+          "mean_abs_error": 0.020590409636497498,
+          "mean_commanded": 0.5,
+          "mean_measured": 0.4794095903635025,
+          "relative_error": 0.041180819272994995,
+          "samples": 10
+        }
+      },
+      "threshold_relative_error": 0.2,
+      "pass": true
+    },
+    "one_step_per_record": {
+      "records": 20,
+      "records_per_s": 4.105615920988385,
+      "rows": [
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            18200000000,
+            18200000000,
+            18200000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            18400000000,
+            18400000000,
+            18400000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            18600000000,
+            18600000000,
+            18600000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            18800000000,
+            18800000000,
+            18800000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            19000000000,
+            19000000000,
+            19000000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            19200000000,
+            19200000000,
+            19200000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            19400000000,
+            19400000000,
+            19400000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            19600000000,
+            19600000000,
+            19600000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            19800000000,
+            19800000000,
+            19800000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            20000000000,
+            20000000000,
+            20000000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            20200000000,
+            20200000000,
+            20200000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            20400000000,
+            20400000000,
+            20400000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            20600000000,
+            20600000000,
+            20600000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            20800000000,
+            20800000000,
+            20800000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            21000000000,
+            21000000000,
+            21000000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            21200000000,
+            21200000000,
+            21200000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            21400000000,
+            21400000000,
+            21400000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            21600000000,
+            21600000000,
+            21600000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            21800000000,
+            21800000000,
+            21800000000
+          ],
+          "frame_times_match": true
+        },
+        {
+          "steps": 1,
+          "dt_ns": 200000000,
+          "times_ns": [
+            22000000000,
+            22000000000,
+            22000000000
+          ],
+          "frame_times_match": true
+        }
+      ],
+      "pass": true,
+      "note": "This check cannot actually fail: frame_times_match is guaranteed by FrameCollector.wait() (FrameTimestampError otherwise, sync.py), dt_ns==200_000_000/steps==1 by Observation.sim_time_ns and StepTimingError (airsim_backend.py), and kinematics agreement by StaleStateError. An Observation cannot exist unless all three already held, so a pass here is not independent evidence of them -- it reduces to 'the backend ran 20 steps without raising'. Kept as a gate check anyway because that is still worth recording: it demonstrates the invariants held in a live run, on the packaged binary, not just in the unit tests that pin the raises."
+    },
+    "spawn_destroy_packaged": {
+      "spawned_name": "AF_M1_Cube",
+      "material": "/Game/Geometry/Materials/M_Orange",
+      "center_depth_with_cube_m": 2.099609375,
+      "expected_m": 2.1,
+      "center_rgb_with_cube": [
+        100.1171875,
+        56.94921875,
+        36.78125
+      ],
+      "orange_dominant": true,
+      "center_depth_after_destroy_m": null,
+      "pass": true
+    },
+    "crash_raises_collision": {
+      "steps_to_collision": 18,
+      "object_name": "StaticMeshActor_7",
+      "target": "obs_0003",
+      "kind": "mesh",
+      "impact_point": [
+        -11.497917175292969,
+        -6.108312129974365,
+        -1.4943058490753174
+      ],
+      "normal": [
+        -0.508745551109314,
+        0.508743941783905,
+        0.6945196986198425
+      ],
+      "impact_from_footprint_m": -1.4306623060624415,
+      "footprint_radius_m": 3.4389,
+      "travel_to_impact_m": 5.862108714935891,
+      "expected_travel_m": 6.678850555419922,
+      "collided_flag": true,
+      "camera_pose_error_at_collision_m": 0.011714024736408066,
+      "pass": true,
+      "reset_after_crash": {
+        "camera_pose_error_m": 1.5259666558516981e-06,
+        "depth": {
+          "mask_agreement": 0.9999237060546875,
+          "pixels_compared": 31886,
+          "median_relative_diff": 0.0
+        },
+        "rgb_mean_abs_diff": 1.564178466796875,
+        "pass": true,
+        "required": false,
+        "escape": [
+          "retrace",
+          1.5
+        ],
+        "attempts": 1
+      }
+    }
+  },
+  "probes": [
+    {
+      "tag": "obs_0000",
+      "kind": "mesh",
+      "distance_m": 3.0,
+      "expected_depth_m": 5.699366569519043,
+      "window_spread_m": 0.1854257583618164,
+      "pose": [
+        7.460247656483866,
+        -27.652347656483865,
+        -1.2,
+        2.356194490192345
+      ]
+    },
+    {
+      "tag": "obs_0003",
+      "kind": "mesh",
+      "distance_m": 4.0,
+      "expected_depth_m": 6.6752448081970215,
+      "window_spread_m": 0.6899313926696777,
+      "pose": [
+        -15.392739347043223,
+        -1.712860652956767,
+        -1.2,
+        -0.7853981633974492
+      ]
+    },
+    {
+      "tag": "obs_0003",
+      "kind": "mesh",
+      "distance_m": 8.0,
+      "expected_depth_m": 10.712515830993652,
+      "window_spread_m": 0.6260175704956055,
+      "pose": [
+        -18.22116647178941,
+        1.1155664717894256,
+        -1.2,
+        -0.7853981633974492
+      ]
+    }
+  ],
+  "poses": {
+    "open": [
+      -31.0,
+      -25.0,
+      -2.0,
+      1.5707963267948966
+    ],
+    "field_view": [
+      -31.0,
+      0.0,
+      -2.0,
+      0.0
+    ],
+    "empty_view": [
+      -31.0,
+      0.0,
+      -2.0,
+      3.141592653589793
+    ],
+    "spawn": [
+      -31.0,
+      -10.0,
+      -2.0,
+      0.0
+    ],
+    "spawn_view": [
+      -31.0,
+      -13.0,
+      -2.0,
+      1.5707963267948966
+    ]
+  },
+  "frames_dir": "/home/nvidiasims/research_uav/autofly_ue5/runs/m4/s06r/frames",
+  "scene_config": {
+    "file": "scene_autofly_s06r_fast.jsonc",
+    "sha256": "6fff7593091133b4ba25959083a05a7caffa8b6eecb9a225057aab62e037b5af"
+  },
+  "check_map": {},
+  "package_manifest": {
+    "description": "Fingerprints the packaged Development Linux binary and content archive (pak) actually produced by scripts/package_sim.sh, plus the git tree that produced them. built_from_git_head is the repo's HEAD at package time, which routinely precedes the commit that later records this file -- packaging happens before committing, not after. working_tree_dirty says whether uncommitted changes were present in that tree (e.g. an in-progress fix not yet committed). Do not compare built_from_git_head to the current HEAD to judge freshness; that comparison is circular. Gate on binary.sha256 instead.",
+    "binary": {
+      "path": "ue_project/Packaged/Development/Linux/Blocks/Binaries/Linux/Blocks",
+      "sha256": "fd845a8c58f095af8ba52849d07ea2768ad48712ba7800a4bcfe7760f0efaade"
+    },
+    "paks": {
+      "ue_project/Packaged/Development/Linux/Blocks/Content/Paks/Blocks-Linux.pak": "5305ac35b21fbc96401bf1ce9205eb5745a6bfc01b94426a5e06fdcb6fea6b77"
+    },
+    "built_from_git_head": "18a803dfd2e6f727cd9b0595e6d8d3118b2fc33a",
+    "working_tree_dirty": true,
+    "level_spec_sha256": "188f9e4118945b7966fa3a03281e0c1663b0e2193c228430bdc06287a40f955a",
+    "level_verify": {
+      "map_path": "/Game/AutoFly/Maps/S01",
+      "pass": true,
+      "obstacles": 80,
+      "worst_location_error_cm": 0.0,
+      "game_mode": "/Script/ProjectAirSim.ProjectAirSimGameMode"
+    },
+    "engine_build_version": {
+      "MajorVersion": 5,
+      "MinorVersion": 7,
+      "PatchVersion": 4,
+      "Changelist": 51494982,
+      "CompatibleChangelist": 47537391,
+      "IsLicenseeVersion": 0,
+      "IsPromotedBuild": 1,
+      "BranchName": "++UE5+Release-5.7"
+    }
+  },
+  "package_matches_manifest": true,
+  "launch_s": 2.6965413140133023,
+  "vram_used_mib": 14896,
+  "faults": {
+    "xid_since": "2026-10-08 21:31:29",
+    "xid_before": 0,
+    "xid_after": 0,
+    "boot_id": "026d5453-feb4-429b-abf0-fb4146123ce7",
+    "device_lost": {
+      "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst0/sim.log": 0
+    },
+    "kernel_journal_readable": true
+  },
+  "faults_ok": true,
+  "pass": true
+}

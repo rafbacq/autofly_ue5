@@ -1,0 +1,7260 @@
+{
+ "format": "autofly_ue5_split/1",
+ "rule": "val takes round(val_fraction x episodes), at least one, given out one at a time to the scene x target stratum furthest below its share (val_fraction x its episodes; ties by sha256 of seed and stratum), never a stratum's last train episode; within a stratum its new episodes go in sha256(seed, key) order. Episodes already in the file keep their split.",
+ "val_fraction": 0.05,
+ "seed": 0,
+ "stratify_by": [
+  "scene",
+  "target_name"
+ ],
+ "created": "2026-10-09 03:06:34",
+ "updates": [
+  {
+   "time": "2026-10-09 03:06:34",
+   "stores": [
+    "s01_c1",
+    "s01_c2",
+    "s01_c3",
+    "s01_c4",
+    "s01d_c1",
+    "s01d_c2",
+    "s01d_c3",
+    "s01d_c4",
+    "s02_c1",
+    "s02_c2",
+    "s02_c3",
+    "s02_c4",
+    "s03_c1",
+    "s03_c2",
+    "s03_c3",
+    "s03_c4",
+    "s04_c1",
+    "s04_c2",
+    "s04_c3",
+    "s04_c4",
+    "s05_c1",
+    "s05_c2",
+    "s05_c3",
+    "s05_c4",
+    "s06_c1",
+    "s06_c2",
+    "s06_c3",
+    "s06_c4",
+    "s07_c1",
+    "s07_c2",
+    "s07_c3",
+    "s07_c4",
+    "s09_c1",
+    "s09_c2",
+    "s09_c3",
+    "s09_c4"
+   ],
+   "added": {
+    "val": 90,
+    "train": 1710
+   }
+  }
+ ],
+ "episodes": {
+  "s01_c1/s01_402000000": {
+   "split": "train",
+   "stratum": "s01|yellow cube"
+  },
+  "s01_c1/s01_402000001": {
+   "split": "train",
+   "stratum": "s01|green sphere"
+  },
+  "s01_c1/s01_402000002": {
+   "split": "train",
+   "stratum": "s01|green suitcase"
+  },
+  "s01_c1/s01_402000003": {
+   "split": "train",
+   "stratum": "s01|man in red shirt"
+  },
+  "s01_c1/s01_402000004": {
+   "split": "train",
+   "stratum": "s01|grey armchair"
+  },
+  "s01_c1/s01_402000005": {
+   "split": "val",
+   "stratum": "s01|police car"
+  },
+  "s01_c1/s01_402000006": {
+   "split": "train",
+   "stratum": "s01|green garbage truck"
+  },
+  "s01_c1/s01_402000007": {
+   "split": "train",
+   "stratum": "s01|green hatchback"
+  },
+  "s01_c1/s01_402000008": {
+   "split": "train",
+   "stratum": "s01|man in red shirt"
+  },
+  "s01_c1/s01_402000009": {
+   "split": "train",
+   "stratum": "s01|yellow sphere"
+  },
+  "s01_c1/s01_402000010": {
+   "split": "train",
+   "stratum": "s01|yellow generator"
+  },
+  "s01_c1/s01_402000011": {
+   "split": "train",
+   "stratum": "s01|white plastic chair"
+  },
+  "s01_c1/s01_402000012": {
+   "split": "train",
+   "stratum": "s01|green sphere"
+  },
+  "s01_c1/s01_402000013": {
+   "split": "train",
+   "stratum": "s01|old television"
+  },
+  "s01_c1/s01_402000014": {
+   "split": "train",
+   "stratum": "s01|yellow sphere"
+  },
+  "s01_c1/s01_402000015": {
+   "split": "train",
+   "stratum": "s01|yellow sphere"
+  },
+  "s01_c1/s01_402000016": {
+   "split": "train",
+   "stratum": "s01|covered car"
+  },
+  "s01_c1/s01_402000017": {
+   "split": "train",
+   "stratum": "s01|red cube"
+  },
+  "s01_c1/s01_402000019": {
+   "split": "train",
+   "stratum": "s01|orange cone"
+  },
+  "s01_c1/s01_402000020": {
+   "split": "train",
+   "stratum": "s01|orange cone"
+  },
+  "s01_c1/s01_402000021": {
+   "split": "train",
+   "stratum": "s01|ambulance"
+  },
+  "s01_c1/s01_402000022": {
+   "split": "train",
+   "stratum": "s01|old television"
+  },
+  "s01_c1/s01_402000023": {
+   "split": "train",
+   "stratum": "s01|yellow generator"
+  },
+  "s01_c1/s01_402000024": {
+   "split": "train",
+   "stratum": "s01|white cabinet"
+  },
+  "s01_c1/s01_402000025": {
+   "split": "train",
+   "stratum": "s01|ambulance"
+  },
+  "s01_c1/s01_402000026": {
+   "split": "train",
+   "stratum": "s01|green cube"
+  },
+  "s01_c1/s01_402000027": {
+   "split": "train",
+   "stratum": "s01|orange cone"
+  },
+  "s01_c1/s01_402000028": {
+   "split": "train",
+   "stratum": "s01|police car"
+  },
+  "s01_c1/s01_402000029": {
+   "split": "train",
+   "stratum": "s01|red sedan"
+  },
+  "s01_c1/s01_402000031": {
+   "split": "train",
+   "stratum": "s01|red wooden bench"
+  },
+  "s01_c1/s01_402000032": {
+   "split": "train",
+   "stratum": "s01|white plastic chair"
+  },
+  "s01_c1/s01_402000033": {
+   "split": "train",
+   "stratum": "s01|blue school chair"
+  },
+  "s01_c1/s01_402000034": {
+   "split": "train",
+   "stratum": "s01|man in blue jacket"
+  },
+  "s01_c1/s01_402000035": {
+   "split": "train",
+   "stratum": "s01|blue school chair"
+  },
+  "s01_c1/s01_402000036": {
+   "split": "train",
+   "stratum": "s01|yellow taxi"
+  },
+  "s01_c1/s01_402000037": {
+   "split": "train",
+   "stratum": "s01|yellow taxi"
+  },
+  "s01_c1/s01_402000038": {
+   "split": "train",
+   "stratum": "s01|green garbage truck"
+  },
+  "s01_c1/s01_402000039": {
+   "split": "train",
+   "stratum": "s01|red fire truck"
+  },
+  "s01_c1/s01_402000040": {
+   "split": "train",
+   "stratum": "s01|green sphere"
+  },
+  "s01_c1/s01_402000042": {
+   "split": "train",
+   "stratum": "s01|person in purple shirt"
+  },
+  "s01_c1/s01_402000044": {
+   "split": "train",
+   "stratum": "s01|girl in yellow shirt"
+  },
+  "s01_c1/s01_402000045": {
+   "split": "train",
+   "stratum": "s01|police officer"
+  },
+  "s01_c1/s01_402000047": {
+   "split": "train",
+   "stratum": "s01|red fire extinguisher"
+  },
+  "s01_c1/s01_402000048": {
+   "split": "train",
+   "stratum": "s01|yellow sphere"
+  },
+  "s01_c1/s01_402000049": {
+   "split": "train",
+   "stratum": "s01|old television"
+  },
+  "s01_c1/s01_402000050": {
+   "split": "train",
+   "stratum": "s01|green sphere"
+  },
+  "s01_c1/s01_402000052": {
+   "split": "train",
+   "stratum": "s01|blue school chair"
+  },
+  "s01_c1/s01_402000054": {
+   "split": "train",
+   "stratum": "s01|red fire truck"
+  },
+  "s01_c1/s01_402000055": {
+   "split": "train",
+   "stratum": "s01|red fire extinguisher"
+  },
+  "s01_c1/s01_402000056": {
+   "split": "train",
+   "stratum": "s01|doctor in white coat"
+  },
+  "s01_c2/s01_403000000": {
+   "split": "train",
+   "stratum": "s01|bronze whale statue"
+  },
+  "s01_c2/s01_403000001": {
+   "split": "train",
+   "stratum": "s01|man in black suit"
+  },
+  "s01_c2/s01_403000002": {
+   "split": "train",
+   "stratum": "s01|red tool chest"
+  },
+  "s01_c2/s01_403000003": {
+   "split": "train",
+   "stratum": "s01|man in brown jacket"
+  },
+  "s01_c2/s01_403000004": {
+   "split": "train",
+   "stratum": "s01|blue cone"
+  },
+  "s01_c2/s01_403000005": {
+   "split": "train",
+   "stratum": "s01|red tool chest"
+  },
+  "s01_c2/s01_403000006": {
+   "split": "train",
+   "stratum": "s01|girl in yellow shirt"
+  },
+  "s01_c2/s01_403000007": {
+   "split": "train",
+   "stratum": "s01|yellow taxi"
+  },
+  "s01_c2/s01_403000008": {
+   "split": "train",
+   "stratum": "s01|man in blue jacket"
+  },
+  "s01_c2/s01_403000009": {
+   "split": "train",
+   "stratum": "s01|white cabinet"
+  },
+  "s01_c2/s01_403000010": {
+   "split": "train",
+   "stratum": "s01|blue van"
+  },
+  "s01_c2/s01_403000011": {
+   "split": "train",
+   "stratum": "s01|police car"
+  },
+  "s01_c2/s01_403000012": {
+   "split": "train",
+   "stratum": "s01|yellow sphere"
+  },
+  "s01_c2/s01_403000013": {
+   "split": "train",
+   "stratum": "s01|yellow wet floor sign"
+  },
+  "s01_c2/s01_403000014": {
+   "split": "train",
+   "stratum": "s01|man in black suit"
+  },
+  "s01_c2/s01_403000015": {
+   "split": "train",
+   "stratum": "s01|green sphere"
+  },
+  "s01_c2/s01_403000017": {
+   "split": "train",
+   "stratum": "s01|red tool chest"
+  },
+  "s01_c2/s01_403000018": {
+   "split": "train",
+   "stratum": "s01|grey armchair"
+  },
+  "s01_c2/s01_403000019": {
+   "split": "train",
+   "stratum": "s01|red fire truck"
+  },
+  "s01_c2/s01_403000020": {
+   "split": "train",
+   "stratum": "s01|green cube"
+  },
+  "s01_c2/s01_403000021": {
+   "split": "train",
+   "stratum": "s01|man in blue jacket"
+  },
+  "s01_c2/s01_403000022": {
+   "split": "train",
+   "stratum": "s01|green cube"
+  },
+  "s01_c2/s01_403000023": {
+   "split": "train",
+   "stratum": "s01|covered car"
+  },
+  "s01_c2/s01_403000024": {
+   "split": "train",
+   "stratum": "s01|man in blue jacket"
+  },
+  "s01_c2/s01_403000025": {
+   "split": "val",
+   "stratum": "s01|red fire truck"
+  },
+  "s01_c2/s01_403000026": {
+   "split": "train",
+   "stratum": "s01|yellow cube"
+  },
+  "s01_c2/s01_403000027": {
+   "split": "train",
+   "stratum": "s01|white plastic chair"
+  },
+  "s01_c2/s01_403000028": {
+   "split": "train",
+   "stratum": "s01|blue school chair"
+  },
+  "s01_c2/s01_403000029": {
+   "split": "train",
+   "stratum": "s01|black leather sofa"
+  },
+  "s01_c2/s01_403000030": {
+   "split": "train",
+   "stratum": "s01|green sphere"
+  },
+  "s01_c2/s01_403000031": {
+   "split": "train",
+   "stratum": "s01|round wooden table"
+  },
+  "s01_c2/s01_403000032": {
+   "split": "train",
+   "stratum": "s01|police car"
+  },
+  "s01_c2/s01_403000033": {
+   "split": "train",
+   "stratum": "s01|grey armchair"
+  },
+  "s01_c2/s01_403000034": {
+   "split": "val",
+   "stratum": "s01|yellow generator"
+  },
+  "s01_c2/s01_403000035": {
+   "split": "train",
+   "stratum": "s01|green garbage truck"
+  },
+  "s01_c2/s01_403000036": {
+   "split": "val",
+   "stratum": "s01|green sphere"
+  },
+  "s01_c2/s01_403000037": {
+   "split": "train",
+   "stratum": "s01|police car"
+  },
+  "s01_c2/s01_403000038": {
+   "split": "train",
+   "stratum": "s01|red wooden bench"
+  },
+  "s01_c2/s01_403000039": {
+   "split": "train",
+   "stratum": "s01|white pickup truck"
+  },
+  "s01_c2/s01_403000040": {
+   "split": "train",
+   "stratum": "s01|orange cone"
+  },
+  "s01_c2/s01_403000041": {
+   "split": "train",
+   "stratum": "s01|bald man in green shirt"
+  },
+  "s01_c2/s01_403000042": {
+   "split": "train",
+   "stratum": "s01|person in purple shirt"
+  },
+  "s01_c2/s01_403000043": {
+   "split": "train",
+   "stratum": "s01|green sphere"
+  },
+  "s01_c2/s01_403000044": {
+   "split": "train",
+   "stratum": "s01|bronze whale statue"
+  },
+  "s01_c2/s01_403000045": {
+   "split": "train",
+   "stratum": "s01|yellow generator"
+  },
+  "s01_c2/s01_403000046": {
+   "split": "train",
+   "stratum": "s01|police car"
+  },
+  "s01_c2/s01_403000047": {
+   "split": "train",
+   "stratum": "s01|green cube"
+  },
+  "s01_c2/s01_403000048": {
+   "split": "train",
+   "stratum": "s01|green armchair"
+  },
+  "s01_c2/s01_403000049": {
+   "split": "train",
+   "stratum": "s01|blue van"
+  },
+  "s01_c2/s01_403000051": {
+   "split": "train",
+   "stratum": "s01|red sedan"
+  },
+  "s01_c3/s01_404000000": {
+   "split": "train",
+   "stratum": "s01|yellow generator"
+  },
+  "s01_c3/s01_404000001": {
+   "split": "train",
+   "stratum": "s01|man in blue jacket"
+  },
+  "s01_c3/s01_404000002": {
+   "split": "train",
+   "stratum": "s01|yellow taxi"
+  },
+  "s01_c3/s01_404000003": {
+   "split": "train",
+   "stratum": "s01|yellow taxi"
+  },
+  "s01_c3/s01_404000004": {
+   "split": "train",
+   "stratum": "s01|orange cone"
+  },
+  "s01_c3/s01_404000005": {
+   "split": "train",
+   "stratum": "s01|police car"
+  },
+  "s01_c3/s01_404000006": {
+   "split": "train",
+   "stratum": "s01|green armchair"
+  },
+  "s01_c3/s01_404000007": {
+   "split": "train",
+   "stratum": "s01|red fire truck"
+  },
+  "s01_c3/s01_404000008": {
+   "split": "train",
+   "stratum": "s01|white plastic chair"
+  },
+  "s01_c3/s01_404000009": {
+   "split": "train",
+   "stratum": "s01|red cube"
+  },
+  "s01_c3/s01_404000010": {
+   "split": "train",
+   "stratum": "s01|old television"
+  },
+  "s01_c3/s01_404000011": {
+   "split": "train",
+   "stratum": "s01|beige sofa"
+  },
+  "s01_c3/s01_404000012": {
+   "split": "train",
+   "stratum": "s01|ambulance"
+  },
+  "s01_c3/s01_404000013": {
+   "split": "train",
+   "stratum": "s01|green sphere"
+  },
+  "s01_c3/s01_404000014": {
+   "split": "train",
+   "stratum": "s01|ambulance"
+  },
+  "s01_c3/s01_404000015": {
+   "split": "train",
+   "stratum": "s01|yellow cube"
+  },
+  "s01_c3/s01_404000016": {
+   "split": "train",
+   "stratum": "s01|green hatchback"
+  },
+  "s01_c3/s01_404000017": {
+   "split": "train",
+   "stratum": "s01|person in purple shirt"
+  },
+  "s01_c3/s01_404000018": {
+   "split": "train",
+   "stratum": "s01|girl in yellow shirt"
+  },
+  "s01_c3/s01_404000019": {
+   "split": "train",
+   "stratum": "s01|green garbage truck"
+  },
+  "s01_c3/s01_404000020": {
+   "split": "train",
+   "stratum": "s01|white plastic chair"
+  },
+  "s01_c3/s01_404000022": {
+   "split": "train",
+   "stratum": "s01|blue cone"
+  },
+  "s01_c3/s01_404000023": {
+   "split": "train",
+   "stratum": "s01|old television"
+  },
+  "s01_c3/s01_404000024": {
+   "split": "train",
+   "stratum": "s01|green armchair"
+  },
+  "s01_c3/s01_404000025": {
+   "split": "val",
+   "stratum": "s01|orange cone"
+  },
+  "s01_c3/s01_404000026": {
+   "split": "train",
+   "stratum": "s01|police officer"
+  },
+  "s01_c3/s01_404000027": {
+   "split": "val",
+   "stratum": "s01|yellow cube"
+  },
+  "s01_c3/s01_404000028": {
+   "split": "train",
+   "stratum": "s01|red wooden bench"
+  },
+  "s01_c3/s01_404000029": {
+   "split": "train",
+   "stratum": "s01|white pickup truck"
+  },
+  "s01_c3/s01_404000030": {
+   "split": "train",
+   "stratum": "s01|red wooden bench"
+  },
+  "s01_c3/s01_404000031": {
+   "split": "train",
+   "stratum": "s01|white cabinet"
+  },
+  "s01_c3/s01_404000032": {
+   "split": "train",
+   "stratum": "s01|yellow generator"
+  },
+  "s01_c3/s01_404000033": {
+   "split": "train",
+   "stratum": "s01|green armchair"
+  },
+  "s01_c3/s01_404000034": {
+   "split": "train",
+   "stratum": "s01|round wooden table"
+  },
+  "s01_c3/s01_404000035": {
+   "split": "train",
+   "stratum": "s01|red sedan"
+  },
+  "s01_c3/s01_404000036": {
+   "split": "train",
+   "stratum": "s01|black leather sofa"
+  },
+  "s01_c3/s01_404000037": {
+   "split": "train",
+   "stratum": "s01|red sedan"
+  },
+  "s01_c3/s01_404000038": {
+   "split": "train",
+   "stratum": "s01|orange cone"
+  },
+  "s01_c3/s01_404000039": {
+   "split": "val",
+   "stratum": "s01|man in blue jacket"
+  },
+  "s01_c3/s01_404000040": {
+   "split": "train",
+   "stratum": "s01|doctor in white coat"
+  },
+  "s01_c3/s01_404000041": {
+   "split": "train",
+   "stratum": "s01|yellow wet floor sign"
+  },
+  "s01_c3/s01_404000042": {
+   "split": "train",
+   "stratum": "s01|blue cone"
+  },
+  "s01_c3/s01_404000043": {
+   "split": "train",
+   "stratum": "s01|white pickup truck"
+  },
+  "s01_c3/s01_404000044": {
+   "split": "train",
+   "stratum": "s01|yellow cube"
+  },
+  "s01_c3/s01_404000045": {
+   "split": "train",
+   "stratum": "s01|green suitcase"
+  },
+  "s01_c3/s01_404000046": {
+   "split": "train",
+   "stratum": "s01|yellow cube"
+  },
+  "s01_c3/s01_404000047": {
+   "split": "train",
+   "stratum": "s01|blue van"
+  },
+  "s01_c3/s01_404000048": {
+   "split": "train",
+   "stratum": "s01|round wooden table"
+  },
+  "s01_c3/s01_404000049": {
+   "split": "train",
+   "stratum": "s01|person in purple shirt"
+  },
+  "s01_c3/s01_404000050": {
+   "split": "train",
+   "stratum": "s01|beige sofa"
+  },
+  "s01_c4/s01_405000000": {
+   "split": "train",
+   "stratum": "s01|person in purple shirt"
+  },
+  "s01_c4/s01_405000001": {
+   "split": "train",
+   "stratum": "s01|police officer"
+  },
+  "s01_c4/s01_405000002": {
+   "split": "train",
+   "stratum": "s01|green hatchback"
+  },
+  "s01_c4/s01_405000003": {
+   "split": "train",
+   "stratum": "s01|yellow taxi"
+  },
+  "s01_c4/s01_405000004": {
+   "split": "train",
+   "stratum": "s01|grey armchair"
+  },
+  "s01_c4/s01_405000005": {
+   "split": "train",
+   "stratum": "s01|blue van"
+  },
+  "s01_c4/s01_405000006": {
+   "split": "train",
+   "stratum": "s01|red fire extinguisher"
+  },
+  "s01_c4/s01_405000007": {
+   "split": "train",
+   "stratum": "s01|white pickup truck"
+  },
+  "s01_c4/s01_405000008": {
+   "split": "train",
+   "stratum": "s01|white cabinet"
+  },
+  "s01_c4/s01_405000009": {
+   "split": "train",
+   "stratum": "s01|orange cone"
+  },
+  "s01_c4/s01_405000010": {
+   "split": "train",
+   "stratum": "s01|doctor in white coat"
+  },
+  "s01_c4/s01_405000011": {
+   "split": "train",
+   "stratum": "s01|man in black suit"
+  },
+  "s01_c4/s01_405000012": {
+   "split": "train",
+   "stratum": "s01|beige sofa"
+  },
+  "s01_c4/s01_405000013": {
+   "split": "train",
+   "stratum": "s01|blue van"
+  },
+  "s01_c4/s01_405000014": {
+   "split": "train",
+   "stratum": "s01|green sphere"
+  },
+  "s01_c4/s01_405000015": {
+   "split": "train",
+   "stratum": "s01|yellow suv"
+  },
+  "s01_c4/s01_405000016": {
+   "split": "train",
+   "stratum": "s01|white pickup truck"
+  },
+  "s01_c4/s01_405000017": {
+   "split": "train",
+   "stratum": "s01|green sphere"
+  },
+  "s01_c4/s01_405000018": {
+   "split": "train",
+   "stratum": "s01|red sedan"
+  },
+  "s01_c4/s01_405000019": {
+   "split": "train",
+   "stratum": "s01|beige sofa"
+  },
+  "s01_c4/s01_405000021": {
+   "split": "train",
+   "stratum": "s01|man in black suit"
+  },
+  "s01_c4/s01_405000022": {
+   "split": "train",
+   "stratum": "s01|girl in yellow shirt"
+  },
+  "s01_c4/s01_405000023": {
+   "split": "train",
+   "stratum": "s01|old television"
+  },
+  "s01_c4/s01_405000024": {
+   "split": "train",
+   "stratum": "s01|orange cone"
+  },
+  "s01_c4/s01_405000025": {
+   "split": "train",
+   "stratum": "s01|blue school chair"
+  },
+  "s01_c4/s01_405000026": {
+   "split": "train",
+   "stratum": "s01|man in brown jacket"
+  },
+  "s01_c4/s01_405000027": {
+   "split": "val",
+   "stratum": "s01|old television"
+  },
+  "s01_c4/s01_405000028": {
+   "split": "train",
+   "stratum": "s01|yellow generator"
+  },
+  "s01_c4/s01_405000029": {
+   "split": "train",
+   "stratum": "s01|green garbage truck"
+  },
+  "s01_c4/s01_405000030": {
+   "split": "train",
+   "stratum": "s01|doctor in white coat"
+  },
+  "s01_c4/s01_405000031": {
+   "split": "train",
+   "stratum": "s01|red cube"
+  },
+  "s01_c4/s01_405000032": {
+   "split": "train",
+   "stratum": "s01|blue school chair"
+  },
+  "s01_c4/s01_405000033": {
+   "split": "train",
+   "stratum": "s01|yellow wet floor sign"
+  },
+  "s01_c4/s01_405000034": {
+   "split": "train",
+   "stratum": "s01|covered car"
+  },
+  "s01_c4/s01_405000036": {
+   "split": "train",
+   "stratum": "s01|green armchair"
+  },
+  "s01_c4/s01_405000037": {
+   "split": "train",
+   "stratum": "s01|green cube"
+  },
+  "s01_c4/s01_405000038": {
+   "split": "train",
+   "stratum": "s01|police officer"
+  },
+  "s01_c4/s01_405000039": {
+   "split": "train",
+   "stratum": "s01|yellow cube"
+  },
+  "s01_c4/s01_405000040": {
+   "split": "train",
+   "stratum": "s01|red fire truck"
+  },
+  "s01_c4/s01_405000041": {
+   "split": "val",
+   "stratum": "s01|yellow sphere"
+  },
+  "s01_c4/s01_405000042": {
+   "split": "train",
+   "stratum": "s01|round wooden table"
+  },
+  "s01_c4/s01_405000043": {
+   "split": "train",
+   "stratum": "s01|green sphere"
+  },
+  "s01_c4/s01_405000044": {
+   "split": "train",
+   "stratum": "s01|red sedan"
+  },
+  "s01_c4/s01_405000045": {
+   "split": "train",
+   "stratum": "s01|person in purple shirt"
+  },
+  "s01_c4/s01_405000046": {
+   "split": "train",
+   "stratum": "s01|covered car"
+  },
+  "s01_c4/s01_405000047": {
+   "split": "train",
+   "stratum": "s01|man in blue jacket"
+  },
+  "s01_c4/s01_405000048": {
+   "split": "train",
+   "stratum": "s01|beige sofa"
+  },
+  "s01_c4/s01_405000049": {
+   "split": "train",
+   "stratum": "s01|police car"
+  },
+  "s01_c4/s01_405000050": {
+   "split": "train",
+   "stratum": "s01|green armchair"
+  },
+  "s01_c4/s01_405000051": {
+   "split": "train",
+   "stratum": "s01|police officer"
+  },
+  "s01d_c1/s01d_412000000": {
+   "split": "train",
+   "stratum": "s01d|man in black suit"
+  },
+  "s01d_c1/s01d_412000002": {
+   "split": "train",
+   "stratum": "s01d|man in blue jacket"
+  },
+  "s01d_c1/s01d_412000003": {
+   "split": "train",
+   "stratum": "s01d|red tool chest"
+  },
+  "s01d_c1/s01d_412000005": {
+   "split": "train",
+   "stratum": "s01d|person in purple shirt"
+  },
+  "s01d_c1/s01d_412000006": {
+   "split": "train",
+   "stratum": "s01d|police car"
+  },
+  "s01d_c1/s01d_412000007": {
+   "split": "train",
+   "stratum": "s01d|red sedan"
+  },
+  "s01d_c1/s01d_412000008": {
+   "split": "val",
+   "stratum": "s01d|man in black suit"
+  },
+  "s01d_c1/s01d_412000009": {
+   "split": "train",
+   "stratum": "s01d|man in blue jacket"
+  },
+  "s01d_c1/s01d_412000010": {
+   "split": "train",
+   "stratum": "s01d|white cabinet"
+  },
+  "s01d_c1/s01d_412000011": {
+   "split": "train",
+   "stratum": "s01d|red sedan"
+  },
+  "s01d_c1/s01d_412000012": {
+   "split": "train",
+   "stratum": "s01d|grey armchair"
+  },
+  "s01d_c1/s01d_412000013": {
+   "split": "train",
+   "stratum": "s01d|red cube"
+  },
+  "s01d_c1/s01d_412000014": {
+   "split": "train",
+   "stratum": "s01d|green armchair"
+  },
+  "s01d_c1/s01d_412000015": {
+   "split": "train",
+   "stratum": "s01d|yellow cube"
+  },
+  "s01d_c1/s01d_412000016": {
+   "split": "train",
+   "stratum": "s01d|police car"
+  },
+  "s01d_c1/s01d_412000017": {
+   "split": "train",
+   "stratum": "s01d|man in black suit"
+  },
+  "s01d_c1/s01d_412000018": {
+   "split": "train",
+   "stratum": "s01d|red tool chest"
+  },
+  "s01d_c1/s01d_412000019": {
+   "split": "train",
+   "stratum": "s01d|man in blue jacket"
+  },
+  "s01d_c1/s01d_412000020": {
+   "split": "train",
+   "stratum": "s01d|yellow cube"
+  },
+  "s01d_c1/s01d_412000021": {
+   "split": "train",
+   "stratum": "s01d|red fire extinguisher"
+  },
+  "s01d_c1/s01d_412000022": {
+   "split": "train",
+   "stratum": "s01d|red sedan"
+  },
+  "s01d_c1/s01d_412000023": {
+   "split": "train",
+   "stratum": "s01d|red cube"
+  },
+  "s01d_c1/s01d_412000024": {
+   "split": "train",
+   "stratum": "s01d|red wooden bench"
+  },
+  "s01d_c1/s01d_412000025": {
+   "split": "train",
+   "stratum": "s01d|black leather sofa"
+  },
+  "s01d_c1/s01d_412000026": {
+   "split": "train",
+   "stratum": "s01d|green hatchback"
+  },
+  "s01d_c1/s01d_412000027": {
+   "split": "val",
+   "stratum": "s01d|police car"
+  },
+  "s01d_c1/s01d_412000028": {
+   "split": "val",
+   "stratum": "s01d|old television"
+  },
+  "s01d_c1/s01d_412000029": {
+   "split": "train",
+   "stratum": "s01d|beige sofa"
+  },
+  "s01d_c1/s01d_412000031": {
+   "split": "train",
+   "stratum": "s01d|round wooden table"
+  },
+  "s01d_c1/s01d_412000032": {
+   "split": "train",
+   "stratum": "s01d|man in black suit"
+  },
+  "s01d_c1/s01d_412000034": {
+   "split": "train",
+   "stratum": "s01d|green suitcase"
+  },
+  "s01d_c1/s01d_412000035": {
+   "split": "train",
+   "stratum": "s01d|yellow cube"
+  },
+  "s01d_c1/s01d_412000036": {
+   "split": "train",
+   "stratum": "s01d|yellow wet floor sign"
+  },
+  "s01d_c1/s01d_412000037": {
+   "split": "train",
+   "stratum": "s01d|covered car"
+  },
+  "s01d_c1/s01d_412000038": {
+   "split": "train",
+   "stratum": "s01d|man in red shirt"
+  },
+  "s01d_c1/s01d_412000039": {
+   "split": "train",
+   "stratum": "s01d|yellow generator"
+  },
+  "s01d_c1/s01d_412000040": {
+   "split": "train",
+   "stratum": "s01d|bald man in green shirt"
+  },
+  "s01d_c1/s01d_412000041": {
+   "split": "val",
+   "stratum": "s01d|bald man in green shirt"
+  },
+  "s01d_c1/s01d_412000043": {
+   "split": "train",
+   "stratum": "s01d|man in blue jacket"
+  },
+  "s01d_c1/s01d_412000044": {
+   "split": "train",
+   "stratum": "s01d|bald man in green shirt"
+  },
+  "s01d_c1/s01d_412000045": {
+   "split": "train",
+   "stratum": "s01d|white cabinet"
+  },
+  "s01d_c1/s01d_412000046": {
+   "split": "train",
+   "stratum": "s01d|yellow cube"
+  },
+  "s01d_c1/s01d_412000047": {
+   "split": "train",
+   "stratum": "s01d|yellow sphere"
+  },
+  "s01d_c1/s01d_412000048": {
+   "split": "train",
+   "stratum": "s01d|beige sofa"
+  },
+  "s01d_c1/s01d_412000049": {
+   "split": "train",
+   "stratum": "s01d|green hatchback"
+  },
+  "s01d_c1/s01d_412000051": {
+   "split": "train",
+   "stratum": "s01d|blue school chair"
+  },
+  "s01d_c1/s01d_412000052": {
+   "split": "train",
+   "stratum": "s01d|white cabinet"
+  },
+  "s01d_c1/s01d_412000053": {
+   "split": "train",
+   "stratum": "s01d|white plastic chair"
+  },
+  "s01d_c1/s01d_412000054": {
+   "split": "train",
+   "stratum": "s01d|beige sofa"
+  },
+  "s01d_c1/s01d_412000055": {
+   "split": "train",
+   "stratum": "s01d|covered car"
+  },
+  "s01d_c2/s01d_413000000": {
+   "split": "train",
+   "stratum": "s01d|blue school chair"
+  },
+  "s01d_c2/s01d_413000001": {
+   "split": "train",
+   "stratum": "s01d|bronze whale statue"
+  },
+  "s01d_c2/s01d_413000002": {
+   "split": "train",
+   "stratum": "s01d|red cube"
+  },
+  "s01d_c2/s01d_413000003": {
+   "split": "train",
+   "stratum": "s01d|police car"
+  },
+  "s01d_c2/s01d_413000004": {
+   "split": "train",
+   "stratum": "s01d|black leather sofa"
+  },
+  "s01d_c2/s01d_413000005": {
+   "split": "train",
+   "stratum": "s01d|old television"
+  },
+  "s01d_c2/s01d_413000006": {
+   "split": "train",
+   "stratum": "s01d|green sphere"
+  },
+  "s01d_c2/s01d_413000007": {
+   "split": "train",
+   "stratum": "s01d|red tool chest"
+  },
+  "s01d_c2/s01d_413000008": {
+   "split": "train",
+   "stratum": "s01d|blue school chair"
+  },
+  "s01d_c2/s01d_413000009": {
+   "split": "val",
+   "stratum": "s01d|green garbage truck"
+  },
+  "s01d_c2/s01d_413000010": {
+   "split": "train",
+   "stratum": "s01d|man in black suit"
+  },
+  "s01d_c2/s01d_413000011": {
+   "split": "train",
+   "stratum": "s01d|man in red shirt"
+  },
+  "s01d_c2/s01d_413000012": {
+   "split": "train",
+   "stratum": "s01d|police car"
+  },
+  "s01d_c2/s01d_413000013": {
+   "split": "train",
+   "stratum": "s01d|yellow taxi"
+  },
+  "s01d_c2/s01d_413000014": {
+   "split": "train",
+   "stratum": "s01d|green garbage truck"
+  },
+  "s01d_c2/s01d_413000015": {
+   "split": "train",
+   "stratum": "s01d|yellow wet floor sign"
+  },
+  "s01d_c2/s01d_413000016": {
+   "split": "train",
+   "stratum": "s01d|white plastic chair"
+  },
+  "s01d_c2/s01d_413000017": {
+   "split": "train",
+   "stratum": "s01d|round wooden table"
+  },
+  "s01d_c2/s01d_413000018": {
+   "split": "train",
+   "stratum": "s01d|police officer"
+  },
+  "s01d_c2/s01d_413000019": {
+   "split": "train",
+   "stratum": "s01d|old television"
+  },
+  "s01d_c2/s01d_413000020": {
+   "split": "train",
+   "stratum": "s01d|police car"
+  },
+  "s01d_c2/s01d_413000021": {
+   "split": "train",
+   "stratum": "s01d|bald man in green shirt"
+  },
+  "s01d_c2/s01d_413000022": {
+   "split": "train",
+   "stratum": "s01d|old television"
+  },
+  "s01d_c2/s01d_413000024": {
+   "split": "train",
+   "stratum": "s01d|green garbage truck"
+  },
+  "s01d_c2/s01d_413000026": {
+   "split": "train",
+   "stratum": "s01d|girl in yellow shirt"
+  },
+  "s01d_c2/s01d_413000027": {
+   "split": "train",
+   "stratum": "s01d|grey armchair"
+  },
+  "s01d_c2/s01d_413000029": {
+   "split": "train",
+   "stratum": "s01d|green cube"
+  },
+  "s01d_c2/s01d_413000030": {
+   "split": "train",
+   "stratum": "s01d|green suitcase"
+  },
+  "s01d_c2/s01d_413000031": {
+   "split": "train",
+   "stratum": "s01d|red fire extinguisher"
+  },
+  "s01d_c2/s01d_413000032": {
+   "split": "train",
+   "stratum": "s01d|grey armchair"
+  },
+  "s01d_c2/s01d_413000033": {
+   "split": "train",
+   "stratum": "s01d|person in purple shirt"
+  },
+  "s01d_c2/s01d_413000034": {
+   "split": "train",
+   "stratum": "s01d|red cube"
+  },
+  "s01d_c2/s01d_413000035": {
+   "split": "train",
+   "stratum": "s01d|red sedan"
+  },
+  "s01d_c2/s01d_413000036": {
+   "split": "train",
+   "stratum": "s01d|person in purple shirt"
+  },
+  "s01d_c2/s01d_413000037": {
+   "split": "train",
+   "stratum": "s01d|green hatchback"
+  },
+  "s01d_c2/s01d_413000038": {
+   "split": "train",
+   "stratum": "s01d|police car"
+  },
+  "s01d_c2/s01d_413000039": {
+   "split": "train",
+   "stratum": "s01d|police officer"
+  },
+  "s01d_c2/s01d_413000040": {
+   "split": "train",
+   "stratum": "s01d|white plastic chair"
+  },
+  "s01d_c2/s01d_413000041": {
+   "split": "train",
+   "stratum": "s01d|old television"
+  },
+  "s01d_c2/s01d_413000042": {
+   "split": "train",
+   "stratum": "s01d|yellow suv"
+  },
+  "s01d_c2/s01d_413000043": {
+   "split": "train",
+   "stratum": "s01d|red sedan"
+  },
+  "s01d_c2/s01d_413000044": {
+   "split": "train",
+   "stratum": "s01d|white plastic chair"
+  },
+  "s01d_c2/s01d_413000045": {
+   "split": "train",
+   "stratum": "s01d|red sedan"
+  },
+  "s01d_c2/s01d_413000046": {
+   "split": "val",
+   "stratum": "s01d|yellow taxi"
+  },
+  "s01d_c2/s01d_413000047": {
+   "split": "train",
+   "stratum": "s01d|round wooden table"
+  },
+  "s01d_c2/s01d_413000048": {
+   "split": "train",
+   "stratum": "s01d|green suitcase"
+  },
+  "s01d_c2/s01d_413000050": {
+   "split": "train",
+   "stratum": "s01d|beige sofa"
+  },
+  "s01d_c2/s01d_413000051": {
+   "split": "train",
+   "stratum": "s01d|girl in yellow shirt"
+  },
+  "s01d_c2/s01d_413000053": {
+   "split": "train",
+   "stratum": "s01d|black leather sofa"
+  },
+  "s01d_c2/s01d_413000054": {
+   "split": "train",
+   "stratum": "s01d|yellow taxi"
+  },
+  "s01d_c3/s01d_414000000": {
+   "split": "train",
+   "stratum": "s01d|green hatchback"
+  },
+  "s01d_c3/s01d_414000002": {
+   "split": "val",
+   "stratum": "s01d|man in blue jacket"
+  },
+  "s01d_c3/s01d_414000003": {
+   "split": "train",
+   "stratum": "s01d|police officer"
+  },
+  "s01d_c3/s01d_414000004": {
+   "split": "train",
+   "stratum": "s01d|man in black suit"
+  },
+  "s01d_c3/s01d_414000005": {
+   "split": "train",
+   "stratum": "s01d|man in red shirt"
+  },
+  "s01d_c3/s01d_414000006": {
+   "split": "train",
+   "stratum": "s01d|green cube"
+  },
+  "s01d_c3/s01d_414000007": {
+   "split": "train",
+   "stratum": "s01d|green hatchback"
+  },
+  "s01d_c3/s01d_414000008": {
+   "split": "train",
+   "stratum": "s01d|bronze whale statue"
+  },
+  "s01d_c3/s01d_414000009": {
+   "split": "train",
+   "stratum": "s01d|blue van"
+  },
+  "s01d_c3/s01d_414000011": {
+   "split": "train",
+   "stratum": "s01d|man in red shirt"
+  },
+  "s01d_c3/s01d_414000012": {
+   "split": "train",
+   "stratum": "s01d|green suitcase"
+  },
+  "s01d_c3/s01d_414000013": {
+   "split": "train",
+   "stratum": "s01d|person in purple shirt"
+  },
+  "s01d_c3/s01d_414000015": {
+   "split": "train",
+   "stratum": "s01d|yellow generator"
+  },
+  "s01d_c3/s01d_414000016": {
+   "split": "train",
+   "stratum": "s01d|round wooden table"
+  },
+  "s01d_c3/s01d_414000017": {
+   "split": "train",
+   "stratum": "s01d|yellow taxi"
+  },
+  "s01d_c3/s01d_414000018": {
+   "split": "train",
+   "stratum": "s01d|bronze whale statue"
+  },
+  "s01d_c3/s01d_414000019": {
+   "split": "train",
+   "stratum": "s01d|orange cone"
+  },
+  "s01d_c3/s01d_414000020": {
+   "split": "train",
+   "stratum": "s01d|old television"
+  },
+  "s01d_c3/s01d_414000022": {
+   "split": "train",
+   "stratum": "s01d|red wooden bench"
+  },
+  "s01d_c3/s01d_414000023": {
+   "split": "train",
+   "stratum": "s01d|green armchair"
+  },
+  "s01d_c3/s01d_414000024": {
+   "split": "train",
+   "stratum": "s01d|yellow taxi"
+  },
+  "s01d_c3/s01d_414000025": {
+   "split": "val",
+   "stratum": "s01d|red cube"
+  },
+  "s01d_c3/s01d_414000026": {
+   "split": "train",
+   "stratum": "s01d|man in black suit"
+  },
+  "s01d_c3/s01d_414000027": {
+   "split": "train",
+   "stratum": "s01d|yellow generator"
+  },
+  "s01d_c3/s01d_414000028": {
+   "split": "train",
+   "stratum": "s01d|doctor in white coat"
+  },
+  "s01d_c3/s01d_414000031": {
+   "split": "train",
+   "stratum": "s01d|green armchair"
+  },
+  "s01d_c3/s01d_414000032": {
+   "split": "val",
+   "stratum": "s01d|person in purple shirt"
+  },
+  "s01d_c3/s01d_414000033": {
+   "split": "train",
+   "stratum": "s01d|girl in yellow shirt"
+  },
+  "s01d_c3/s01d_414000034": {
+   "split": "train",
+   "stratum": "s01d|red fire truck"
+  },
+  "s01d_c3/s01d_414000036": {
+   "split": "train",
+   "stratum": "s01d|bald man in green shirt"
+  },
+  "s01d_c3/s01d_414000037": {
+   "split": "train",
+   "stratum": "s01d|red fire extinguisher"
+  },
+  "s01d_c3/s01d_414000038": {
+   "split": "train",
+   "stratum": "s01d|doctor in white coat"
+  },
+  "s01d_c3/s01d_414000039": {
+   "split": "val",
+   "stratum": "s01d|white cabinet"
+  },
+  "s01d_c3/s01d_414000040": {
+   "split": "train",
+   "stratum": "s01d|white plastic chair"
+  },
+  "s01d_c3/s01d_414000041": {
+   "split": "train",
+   "stratum": "s01d|red fire extinguisher"
+  },
+  "s01d_c3/s01d_414000042": {
+   "split": "train",
+   "stratum": "s01d|blue van"
+  },
+  "s01d_c3/s01d_414000043": {
+   "split": "train",
+   "stratum": "s01d|orange cone"
+  },
+  "s01d_c3/s01d_414000044": {
+   "split": "train",
+   "stratum": "s01d|red cube"
+  },
+  "s01d_c3/s01d_414000045": {
+   "split": "train",
+   "stratum": "s01d|old television"
+  },
+  "s01d_c3/s01d_414000048": {
+   "split": "train",
+   "stratum": "s01d|blue cone"
+  },
+  "s01d_c3/s01d_414000049": {
+   "split": "train",
+   "stratum": "s01d|white cabinet"
+  },
+  "s01d_c3/s01d_414000051": {
+   "split": "train",
+   "stratum": "s01d|red wooden bench"
+  },
+  "s01d_c3/s01d_414000052": {
+   "split": "train",
+   "stratum": "s01d|red cube"
+  },
+  "s01d_c3/s01d_414000053": {
+   "split": "train",
+   "stratum": "s01d|white cabinet"
+  },
+  "s01d_c3/s01d_414000054": {
+   "split": "train",
+   "stratum": "s01d|green sphere"
+  },
+  "s01d_c3/s01d_414000055": {
+   "split": "train",
+   "stratum": "s01d|red tool chest"
+  },
+  "s01d_c3/s01d_414000056": {
+   "split": "val",
+   "stratum": "s01d|red sedan"
+  },
+  "s01d_c3/s01d_414000057": {
+   "split": "train",
+   "stratum": "s01d|red fire truck"
+  },
+  "s01d_c3/s01d_414000058": {
+   "split": "train",
+   "stratum": "s01d|grey armchair"
+  },
+  "s01d_c3/s01d_414000060": {
+   "split": "train",
+   "stratum": "s01d|grey armchair"
+  },
+  "s01d_c4/s01d_415000000": {
+   "split": "train",
+   "stratum": "s01d|bald man in green shirt"
+  },
+  "s01d_c4/s01d_415000001": {
+   "split": "train",
+   "stratum": "s01d|man in black suit"
+  },
+  "s01d_c4/s01d_415000002": {
+   "split": "train",
+   "stratum": "s01d|girl in yellow shirt"
+  },
+  "s01d_c4/s01d_415000005": {
+   "split": "train",
+   "stratum": "s01d|red wooden bench"
+  },
+  "s01d_c4/s01d_415000006": {
+   "split": "train",
+   "stratum": "s01d|yellow taxi"
+  },
+  "s01d_c4/s01d_415000007": {
+   "split": "train",
+   "stratum": "s01d|blue van"
+  },
+  "s01d_c4/s01d_415000008": {
+   "split": "train",
+   "stratum": "s01d|blue cone"
+  },
+  "s01d_c4/s01d_415000009": {
+   "split": "train",
+   "stratum": "s01d|orange cone"
+  },
+  "s01d_c4/s01d_415000010": {
+   "split": "train",
+   "stratum": "s01d|man in blue jacket"
+  },
+  "s01d_c4/s01d_415000011": {
+   "split": "train",
+   "stratum": "s01d|girl in yellow shirt"
+  },
+  "s01d_c4/s01d_415000012": {
+   "split": "train",
+   "stratum": "s01d|red cube"
+  },
+  "s01d_c4/s01d_415000013": {
+   "split": "train",
+   "stratum": "s01d|yellow generator"
+  },
+  "s01d_c4/s01d_415000014": {
+   "split": "train",
+   "stratum": "s01d|doctor in white coat"
+  },
+  "s01d_c4/s01d_415000015": {
+   "split": "train",
+   "stratum": "s01d|man in red shirt"
+  },
+  "s01d_c4/s01d_415000016": {
+   "split": "train",
+   "stratum": "s01d|orange cone"
+  },
+  "s01d_c4/s01d_415000018": {
+   "split": "train",
+   "stratum": "s01d|doctor in white coat"
+  },
+  "s01d_c4/s01d_415000019": {
+   "split": "train",
+   "stratum": "s01d|red sedan"
+  },
+  "s01d_c4/s01d_415000020": {
+   "split": "train",
+   "stratum": "s01d|green cube"
+  },
+  "s01d_c4/s01d_415000021": {
+   "split": "train",
+   "stratum": "s01d|round wooden table"
+  },
+  "s01d_c4/s01d_415000022": {
+   "split": "train",
+   "stratum": "s01d|round wooden table"
+  },
+  "s01d_c4/s01d_415000023": {
+   "split": "train",
+   "stratum": "s01d|man in blue jacket"
+  },
+  "s01d_c4/s01d_415000024": {
+   "split": "train",
+   "stratum": "s01d|yellow generator"
+  },
+  "s01d_c4/s01d_415000025": {
+   "split": "train",
+   "stratum": "s01d|beige sofa"
+  },
+  "s01d_c4/s01d_415000026": {
+   "split": "val",
+   "stratum": "s01d|yellow cube"
+  },
+  "s01d_c4/s01d_415000028": {
+   "split": "train",
+   "stratum": "s01d|doctor in white coat"
+  },
+  "s01d_c4/s01d_415000029": {
+   "split": "train",
+   "stratum": "s01d|yellow cube"
+  },
+  "s01d_c4/s01d_415000030": {
+   "split": "train",
+   "stratum": "s01d|green garbage truck"
+  },
+  "s01d_c4/s01d_415000031": {
+   "split": "train",
+   "stratum": "s01d|girl in yellow shirt"
+  },
+  "s01d_c4/s01d_415000032": {
+   "split": "train",
+   "stratum": "s01d|man in red shirt"
+  },
+  "s01d_c4/s01d_415000033": {
+   "split": "train",
+   "stratum": "s01d|police officer"
+  },
+  "s01d_c4/s01d_415000035": {
+   "split": "train",
+   "stratum": "s01d|green sphere"
+  },
+  "s01d_c4/s01d_415000036": {
+   "split": "train",
+   "stratum": "s01d|person in purple shirt"
+  },
+  "s01d_c4/s01d_415000037": {
+   "split": "train",
+   "stratum": "s01d|white plastic chair"
+  },
+  "s01d_c4/s01d_415000038": {
+   "split": "train",
+   "stratum": "s01d|red tool chest"
+  },
+  "s01d_c4/s01d_415000039": {
+   "split": "train",
+   "stratum": "s01d|man in black suit"
+  },
+  "s01d_c4/s01d_415000040": {
+   "split": "train",
+   "stratum": "s01d|green garbage truck"
+  },
+  "s01d_c4/s01d_415000041": {
+   "split": "train",
+   "stratum": "s01d|blue cone"
+  },
+  "s01d_c4/s01d_415000042": {
+   "split": "train",
+   "stratum": "s01d|white pickup truck"
+  },
+  "s01d_c4/s01d_415000043": {
+   "split": "train",
+   "stratum": "s01d|beige sofa"
+  },
+  "s01d_c4/s01d_415000044": {
+   "split": "train",
+   "stratum": "s01d|green garbage truck"
+  },
+  "s01d_c4/s01d_415000045": {
+   "split": "train",
+   "stratum": "s01d|blue cone"
+  },
+  "s01d_c4/s01d_415000046": {
+   "split": "train",
+   "stratum": "s01d|white cabinet"
+  },
+  "s01d_c4/s01d_415000047": {
+   "split": "train",
+   "stratum": "s01d|bald man in green shirt"
+  },
+  "s01d_c4/s01d_415000048": {
+   "split": "train",
+   "stratum": "s01d|green armchair"
+  },
+  "s01d_c4/s01d_415000049": {
+   "split": "train",
+   "stratum": "s01d|old television"
+  },
+  "s01d_c4/s01d_415000051": {
+   "split": "train",
+   "stratum": "s01d|person in purple shirt"
+  },
+  "s01d_c4/s01d_415000052": {
+   "split": "train",
+   "stratum": "s01d|covered car"
+  },
+  "s01d_c4/s01d_415000053": {
+   "split": "train",
+   "stratum": "s01d|yellow taxi"
+  },
+  "s01d_c4/s01d_415000054": {
+   "split": "train",
+   "stratum": "s01d|yellow sphere"
+  },
+  "s01d_c4/s01d_415000055": {
+   "split": "train",
+   "stratum": "s01d|green hatchback"
+  },
+  "s02_c1/s02_422000000": {
+   "split": "val",
+   "stratum": "s02|black leather sofa"
+  },
+  "s02_c1/s02_422000001": {
+   "split": "train",
+   "stratum": "s02|yellow sphere"
+  },
+  "s02_c1/s02_422000002": {
+   "split": "train",
+   "stratum": "s02|man in black suit"
+  },
+  "s02_c1/s02_422000003": {
+   "split": "train",
+   "stratum": "s02|yellow wet floor sign"
+  },
+  "s02_c1/s02_422000004": {
+   "split": "train",
+   "stratum": "s02|white plastic chair"
+  },
+  "s02_c1/s02_422000005": {
+   "split": "train",
+   "stratum": "s02|yellow sphere"
+  },
+  "s02_c1/s02_422000008": {
+   "split": "train",
+   "stratum": "s02|beige sofa"
+  },
+  "s02_c1/s02_422000009": {
+   "split": "train",
+   "stratum": "s02|round wooden table"
+  },
+  "s02_c1/s02_422000010": {
+   "split": "val",
+   "stratum": "s02|blue cylinder"
+  },
+  "s02_c1/s02_422000011": {
+   "split": "train",
+   "stratum": "s02|blue school chair"
+  },
+  "s02_c1/s02_422000012": {
+   "split": "train",
+   "stratum": "s02|green armchair"
+  },
+  "s02_c1/s02_422000013": {
+   "split": "train",
+   "stratum": "s02|blue school chair"
+  },
+  "s02_c1/s02_422000014": {
+   "split": "train",
+   "stratum": "s02|man in red shirt"
+  },
+  "s02_c1/s02_422000015": {
+   "split": "train",
+   "stratum": "s02|black leather sofa"
+  },
+  "s02_c1/s02_422000016": {
+   "split": "train",
+   "stratum": "s02|white plastic chair"
+  },
+  "s02_c1/s02_422000017": {
+   "split": "train",
+   "stratum": "s02|red barrel"
+  },
+  "s02_c1/s02_422000018": {
+   "split": "train",
+   "stratum": "s02|green suitcase"
+  },
+  "s02_c1/s02_422000019": {
+   "split": "train",
+   "stratum": "s02|blue cone"
+  },
+  "s02_c1/s02_422000021": {
+   "split": "train",
+   "stratum": "s02|person in purple shirt"
+  },
+  "s02_c1/s02_422000023": {
+   "split": "train",
+   "stratum": "s02|blue cylinder"
+  },
+  "s02_c1/s02_422000024": {
+   "split": "train",
+   "stratum": "s02|black leather sofa"
+  },
+  "s02_c1/s02_422000026": {
+   "split": "train",
+   "stratum": "s02|bald man in green shirt"
+  },
+  "s02_c1/s02_422000027": {
+   "split": "train",
+   "stratum": "s02|red cube"
+  },
+  "s02_c1/s02_422000029": {
+   "split": "train",
+   "stratum": "s02|girl in yellow shirt"
+  },
+  "s02_c1/s02_422000030": {
+   "split": "train",
+   "stratum": "s02|yellow sphere"
+  },
+  "s02_c1/s02_422000031": {
+   "split": "train",
+   "stratum": "s02|red barrel"
+  },
+  "s02_c1/s02_422000032": {
+   "split": "train",
+   "stratum": "s02|black leather sofa"
+  },
+  "s02_c1/s02_422000033": {
+   "split": "train",
+   "stratum": "s02|police car"
+  },
+  "s02_c1/s02_422000034": {
+   "split": "train",
+   "stratum": "s02|red fire extinguisher"
+  },
+  "s02_c1/s02_422000035": {
+   "split": "train",
+   "stratum": "s02|man in blue jacket"
+  },
+  "s02_c1/s02_422000036": {
+   "split": "train",
+   "stratum": "s02|man in brown jacket"
+  },
+  "s02_c1/s02_422000037": {
+   "split": "train",
+   "stratum": "s02|police officer"
+  },
+  "s02_c1/s02_422000038": {
+   "split": "train",
+   "stratum": "s02|green sphere"
+  },
+  "s02_c1/s02_422000040": {
+   "split": "train",
+   "stratum": "s02|red wooden bench"
+  },
+  "s02_c1/s02_422000041": {
+   "split": "train",
+   "stratum": "s02|red barrel"
+  },
+  "s02_c1/s02_422000042": {
+   "split": "train",
+   "stratum": "s02|green garbage truck"
+  },
+  "s02_c1/s02_422000043": {
+   "split": "val",
+   "stratum": "s02|yellow wet floor sign"
+  },
+  "s02_c1/s02_422000045": {
+   "split": "train",
+   "stratum": "s02|red barrel"
+  },
+  "s02_c1/s02_422000046": {
+   "split": "train",
+   "stratum": "s02|red cube"
+  },
+  "s02_c1/s02_422000049": {
+   "split": "train",
+   "stratum": "s02|old television"
+  },
+  "s02_c1/s02_422000051": {
+   "split": "train",
+   "stratum": "s02|man in brown jacket"
+  },
+  "s02_c1/s02_422000052": {
+   "split": "train",
+   "stratum": "s02|blue cylinder"
+  },
+  "s02_c1/s02_422000053": {
+   "split": "train",
+   "stratum": "s02|grey armchair"
+  },
+  "s02_c1/s02_422000054": {
+   "split": "train",
+   "stratum": "s02|green sphere"
+  },
+  "s02_c1/s02_422000055": {
+   "split": "train",
+   "stratum": "s02|red fire truck"
+  },
+  "s02_c1/s02_422000056": {
+   "split": "train",
+   "stratum": "s02|black leather sofa"
+  },
+  "s02_c1/s02_422000058": {
+   "split": "train",
+   "stratum": "s02|orange cone"
+  },
+  "s02_c1/s02_422000059": {
+   "split": "train",
+   "stratum": "s02|blue barrel"
+  },
+  "s02_c1/s02_422000060": {
+   "split": "train",
+   "stratum": "s02|blue barrel"
+  },
+  "s02_c1/s02_422000061": {
+   "split": "train",
+   "stratum": "s02|red fire extinguisher"
+  },
+  "s02_c2/s02_423000000": {
+   "split": "train",
+   "stratum": "s02|wooden barrel"
+  },
+  "s02_c2/s02_423000001": {
+   "split": "train",
+   "stratum": "s02|green sphere"
+  },
+  "s02_c2/s02_423000002": {
+   "split": "train",
+   "stratum": "s02|white pickup truck"
+  },
+  "s02_c2/s02_423000003": {
+   "split": "train",
+   "stratum": "s02|red cube"
+  },
+  "s02_c2/s02_423000004": {
+   "split": "train",
+   "stratum": "s02|bronze whale statue"
+  },
+  "s02_c2/s02_423000005": {
+   "split": "train",
+   "stratum": "s02|yellow wet floor sign"
+  },
+  "s02_c2/s02_423000007": {
+   "split": "train",
+   "stratum": "s02|man in brown jacket"
+  },
+  "s02_c2/s02_423000008": {
+   "split": "train",
+   "stratum": "s02|grey armchair"
+  },
+  "s02_c2/s02_423000009": {
+   "split": "train",
+   "stratum": "s02|green armchair"
+  },
+  "s02_c2/s02_423000011": {
+   "split": "train",
+   "stratum": "s02|green garbage truck"
+  },
+  "s02_c2/s02_423000012": {
+   "split": "train",
+   "stratum": "s02|red barrel"
+  },
+  "s02_c2/s02_423000013": {
+   "split": "train",
+   "stratum": "s02|red cylinder"
+  },
+  "s02_c2/s02_423000014": {
+   "split": "train",
+   "stratum": "s02|wooden barrel"
+  },
+  "s02_c2/s02_423000015": {
+   "split": "train",
+   "stratum": "s02|orange cone"
+  },
+  "s02_c2/s02_423000016": {
+   "split": "train",
+   "stratum": "s02|red wooden bench"
+  },
+  "s02_c2/s02_423000017": {
+   "split": "train",
+   "stratum": "s02|grey armchair"
+  },
+  "s02_c2/s02_423000018": {
+   "split": "train",
+   "stratum": "s02|white cabinet"
+  },
+  "s02_c2/s02_423000019": {
+   "split": "train",
+   "stratum": "s02|orange cone"
+  },
+  "s02_c2/s02_423000020": {
+   "split": "train",
+   "stratum": "s02|bronze whale statue"
+  },
+  "s02_c2/s02_423000021": {
+   "split": "train",
+   "stratum": "s02|man in black suit"
+  },
+  "s02_c2/s02_423000022": {
+   "split": "train",
+   "stratum": "s02|white pickup truck"
+  },
+  "s02_c2/s02_423000023": {
+   "split": "train",
+   "stratum": "s02|blue cone"
+  },
+  "s02_c2/s02_423000024": {
+   "split": "train",
+   "stratum": "s02|police car"
+  },
+  "s02_c2/s02_423000026": {
+   "split": "train",
+   "stratum": "s02|orange cylinder"
+  },
+  "s02_c2/s02_423000027": {
+   "split": "train",
+   "stratum": "s02|yellow cube"
+  },
+  "s02_c2/s02_423000029": {
+   "split": "train",
+   "stratum": "s02|ambulance"
+  },
+  "s02_c2/s02_423000031": {
+   "split": "train",
+   "stratum": "s02|green suitcase"
+  },
+  "s02_c2/s02_423000033": {
+   "split": "train",
+   "stratum": "s02|green sphere"
+  },
+  "s02_c2/s02_423000034": {
+   "split": "train",
+   "stratum": "s02|yellow suv"
+  },
+  "s02_c2/s02_423000035": {
+   "split": "train",
+   "stratum": "s02|black leather sofa"
+  },
+  "s02_c2/s02_423000036": {
+   "split": "train",
+   "stratum": "s02|red cylinder"
+  },
+  "s02_c2/s02_423000037": {
+   "split": "train",
+   "stratum": "s02|green suitcase"
+  },
+  "s02_c2/s02_423000038": {
+   "split": "train",
+   "stratum": "s02|red wooden bench"
+  },
+  "s02_c2/s02_423000039": {
+   "split": "train",
+   "stratum": "s02|beige sofa"
+  },
+  "s02_c2/s02_423000040": {
+   "split": "train",
+   "stratum": "s02|yellow generator"
+  },
+  "s02_c2/s02_423000041": {
+   "split": "train",
+   "stratum": "s02|girl in yellow shirt"
+  },
+  "s02_c2/s02_423000042": {
+   "split": "train",
+   "stratum": "s02|person in purple shirt"
+  },
+  "s02_c2/s02_423000044": {
+   "split": "val",
+   "stratum": "s02|red barrel"
+  },
+  "s02_c2/s02_423000047": {
+   "split": "train",
+   "stratum": "s02|man in blue jacket"
+  },
+  "s02_c2/s02_423000048": {
+   "split": "train",
+   "stratum": "s02|blue school chair"
+  },
+  "s02_c2/s02_423000049": {
+   "split": "train",
+   "stratum": "s02|red barrel"
+  },
+  "s02_c2/s02_423000051": {
+   "split": "train",
+   "stratum": "s02|bald man in green shirt"
+  },
+  "s02_c2/s02_423000052": {
+   "split": "train",
+   "stratum": "s02|person in purple shirt"
+  },
+  "s02_c2/s02_423000053": {
+   "split": "train",
+   "stratum": "s02|blue cylinder"
+  },
+  "s02_c2/s02_423000054": {
+   "split": "train",
+   "stratum": "s02|doctor in white coat"
+  },
+  "s02_c2/s02_423000055": {
+   "split": "train",
+   "stratum": "s02|wooden barrel"
+  },
+  "s02_c2/s02_423000056": {
+   "split": "train",
+   "stratum": "s02|green suitcase"
+  },
+  "s02_c2/s02_423000057": {
+   "split": "train",
+   "stratum": "s02|green armchair"
+  },
+  "s02_c2/s02_423000060": {
+   "split": "train",
+   "stratum": "s02|police officer"
+  },
+  "s02_c2/s02_423000061": {
+   "split": "train",
+   "stratum": "s02|red sedan"
+  },
+  "s02_c3/s02_424000001": {
+   "split": "train",
+   "stratum": "s02|yellow cylinder"
+  },
+  "s02_c3/s02_424000002": {
+   "split": "train",
+   "stratum": "s02|yellow cube"
+  },
+  "s02_c3/s02_424000004": {
+   "split": "train",
+   "stratum": "s02|blue school chair"
+  },
+  "s02_c3/s02_424000005": {
+   "split": "train",
+   "stratum": "s02|doctor in white coat"
+  },
+  "s02_c3/s02_424000006": {
+   "split": "train",
+   "stratum": "s02|police officer"
+  },
+  "s02_c3/s02_424000007": {
+   "split": "val",
+   "stratum": "s02|red wooden bench"
+  },
+  "s02_c3/s02_424000011": {
+   "split": "train",
+   "stratum": "s02|man in blue jacket"
+  },
+  "s02_c3/s02_424000012": {
+   "split": "train",
+   "stratum": "s02|yellow cube"
+  },
+  "s02_c3/s02_424000013": {
+   "split": "train",
+   "stratum": "s02|yellow suv"
+  },
+  "s02_c3/s02_424000014": {
+   "split": "train",
+   "stratum": "s02|wooden barrel"
+  },
+  "s02_c3/s02_424000015": {
+   "split": "train",
+   "stratum": "s02|yellow taxi"
+  },
+  "s02_c3/s02_424000016": {
+   "split": "train",
+   "stratum": "s02|red tool chest"
+  },
+  "s02_c3/s02_424000018": {
+   "split": "train",
+   "stratum": "s02|old television"
+  },
+  "s02_c3/s02_424000019": {
+   "split": "train",
+   "stratum": "s02|doctor in white coat"
+  },
+  "s02_c3/s02_424000020": {
+   "split": "train",
+   "stratum": "s02|man in brown jacket"
+  },
+  "s02_c3/s02_424000021": {
+   "split": "train",
+   "stratum": "s02|green suitcase"
+  },
+  "s02_c3/s02_424000022": {
+   "split": "train",
+   "stratum": "s02|beige sofa"
+  },
+  "s02_c3/s02_424000023": {
+   "split": "train",
+   "stratum": "s02|grey armchair"
+  },
+  "s02_c3/s02_424000024": {
+   "split": "train",
+   "stratum": "s02|grey armchair"
+  },
+  "s02_c3/s02_424000025": {
+   "split": "train",
+   "stratum": "s02|green sphere"
+  },
+  "s02_c3/s02_424000027": {
+   "split": "train",
+   "stratum": "s02|yellow wet floor sign"
+  },
+  "s02_c3/s02_424000028": {
+   "split": "train",
+   "stratum": "s02|blue cylinder"
+  },
+  "s02_c3/s02_424000029": {
+   "split": "val",
+   "stratum": "s02|man in brown jacket"
+  },
+  "s02_c3/s02_424000030": {
+   "split": "train",
+   "stratum": "s02|grey armchair"
+  },
+  "s02_c3/s02_424000032": {
+   "split": "train",
+   "stratum": "s02|white plastic chair"
+  },
+  "s02_c3/s02_424000033": {
+   "split": "train",
+   "stratum": "s02|round wooden table"
+  },
+  "s02_c3/s02_424000034": {
+   "split": "train",
+   "stratum": "s02|old television"
+  },
+  "s02_c3/s02_424000036": {
+   "split": "train",
+   "stratum": "s02|round wooden table"
+  },
+  "s02_c3/s02_424000037": {
+   "split": "train",
+   "stratum": "s02|yellow wet floor sign"
+  },
+  "s02_c3/s02_424000039": {
+   "split": "train",
+   "stratum": "s02|red fire extinguisher"
+  },
+  "s02_c3/s02_424000040": {
+   "split": "train",
+   "stratum": "s02|red fire extinguisher"
+  },
+  "s02_c3/s02_424000041": {
+   "split": "train",
+   "stratum": "s02|doctor in white coat"
+  },
+  "s02_c3/s02_424000043": {
+   "split": "val",
+   "stratum": "s02|wooden barrel"
+  },
+  "s02_c3/s02_424000044": {
+   "split": "train",
+   "stratum": "s02|red fire extinguisher"
+  },
+  "s02_c3/s02_424000045": {
+   "split": "train",
+   "stratum": "s02|orange cylinder"
+  },
+  "s02_c3/s02_424000046": {
+   "split": "train",
+   "stratum": "s02|bald man in green shirt"
+  },
+  "s02_c3/s02_424000047": {
+   "split": "train",
+   "stratum": "s02|girl in yellow shirt"
+  },
+  "s02_c3/s02_424000049": {
+   "split": "train",
+   "stratum": "s02|wooden barrel"
+  },
+  "s02_c3/s02_424000050": {
+   "split": "val",
+   "stratum": "s02|girl in yellow shirt"
+  },
+  "s02_c3/s02_424000051": {
+   "split": "train",
+   "stratum": "s02|blue cone"
+  },
+  "s02_c3/s02_424000053": {
+   "split": "train",
+   "stratum": "s02|man in red shirt"
+  },
+  "s02_c3/s02_424000054": {
+   "split": "train",
+   "stratum": "s02|yellow cube"
+  },
+  "s02_c3/s02_424000055": {
+   "split": "train",
+   "stratum": "s02|red wooden bench"
+  },
+  "s02_c3/s02_424000056": {
+   "split": "train",
+   "stratum": "s02|black leather sofa"
+  },
+  "s02_c3/s02_424000057": {
+   "split": "train",
+   "stratum": "s02|red fire truck"
+  },
+  "s02_c3/s02_424000058": {
+   "split": "val",
+   "stratum": "s02|grey armchair"
+  },
+  "s02_c3/s02_424000062": {
+   "split": "train",
+   "stratum": "s02|green sphere"
+  },
+  "s02_c3/s02_424000063": {
+   "split": "train",
+   "stratum": "s02|bronze whale statue"
+  },
+  "s02_c3/s02_424000064": {
+   "split": "train",
+   "stratum": "s02|yellow generator"
+  },
+  "s02_c3/s02_424000065": {
+   "split": "train",
+   "stratum": "s02|red fire extinguisher"
+  },
+  "s02_c4/s02_425000000": {
+   "split": "val",
+   "stratum": "s02|orange cone"
+  },
+  "s02_c4/s02_425000003": {
+   "split": "train",
+   "stratum": "s02|green sphere"
+  },
+  "s02_c4/s02_425000005": {
+   "split": "train",
+   "stratum": "s02|girl in yellow shirt"
+  },
+  "s02_c4/s02_425000006": {
+   "split": "train",
+   "stratum": "s02|grey armchair"
+  },
+  "s02_c4/s02_425000007": {
+   "split": "train",
+   "stratum": "s02|doctor in white coat"
+  },
+  "s02_c4/s02_425000009": {
+   "split": "train",
+   "stratum": "s02|wooden barrel"
+  },
+  "s02_c4/s02_425000010": {
+   "split": "train",
+   "stratum": "s02|police officer"
+  },
+  "s02_c4/s02_425000011": {
+   "split": "train",
+   "stratum": "s02|blue cylinder"
+  },
+  "s02_c4/s02_425000012": {
+   "split": "train",
+   "stratum": "s02|round wooden table"
+  },
+  "s02_c4/s02_425000013": {
+   "split": "train",
+   "stratum": "s02|blue cone"
+  },
+  "s02_c4/s02_425000014": {
+   "split": "val",
+   "stratum": "s02|blue barrel"
+  },
+  "s02_c4/s02_425000015": {
+   "split": "train",
+   "stratum": "s02|doctor in white coat"
+  },
+  "s02_c4/s02_425000016": {
+   "split": "train",
+   "stratum": "s02|orange cone"
+  },
+  "s02_c4/s02_425000017": {
+   "split": "train",
+   "stratum": "s02|covered car"
+  },
+  "s02_c4/s02_425000018": {
+   "split": "train",
+   "stratum": "s02|red tool chest"
+  },
+  "s02_c4/s02_425000020": {
+   "split": "train",
+   "stratum": "s02|blue barrel"
+  },
+  "s02_c4/s02_425000022": {
+   "split": "train",
+   "stratum": "s02|old television"
+  },
+  "s02_c4/s02_425000023": {
+   "split": "train",
+   "stratum": "s02|yellow wet floor sign"
+  },
+  "s02_c4/s02_425000024": {
+   "split": "train",
+   "stratum": "s02|yellow cube"
+  },
+  "s02_c4/s02_425000025": {
+   "split": "train",
+   "stratum": "s02|round wooden table"
+  },
+  "s02_c4/s02_425000027": {
+   "split": "train",
+   "stratum": "s02|green suitcase"
+  },
+  "s02_c4/s02_425000028": {
+   "split": "train",
+   "stratum": "s02|white plastic chair"
+  },
+  "s02_c4/s02_425000030": {
+   "split": "train",
+   "stratum": "s02|yellow cylinder"
+  },
+  "s02_c4/s02_425000031": {
+   "split": "train",
+   "stratum": "s02|man in brown jacket"
+  },
+  "s02_c4/s02_425000033": {
+   "split": "train",
+   "stratum": "s02|white cabinet"
+  },
+  "s02_c4/s02_425000035": {
+   "split": "train",
+   "stratum": "s02|blue barrel"
+  },
+  "s02_c4/s02_425000036": {
+   "split": "train",
+   "stratum": "s02|white plastic chair"
+  },
+  "s02_c4/s02_425000037": {
+   "split": "train",
+   "stratum": "s02|black leather sofa"
+  },
+  "s02_c4/s02_425000038": {
+   "split": "train",
+   "stratum": "s02|white plastic chair"
+  },
+  "s02_c4/s02_425000039": {
+   "split": "train",
+   "stratum": "s02|blue barrel"
+  },
+  "s02_c4/s02_425000040": {
+   "split": "train",
+   "stratum": "s02|black leather sofa"
+  },
+  "s02_c4/s02_425000041": {
+   "split": "train",
+   "stratum": "s02|red wooden bench"
+  },
+  "s02_c4/s02_425000043": {
+   "split": "val",
+   "stratum": "s02|green sphere"
+  },
+  "s02_c4/s02_425000044": {
+   "split": "train",
+   "stratum": "s02|blue cylinder"
+  },
+  "s02_c4/s02_425000045": {
+   "split": "train",
+   "stratum": "s02|wooden barrel"
+  },
+  "s02_c4/s02_425000046": {
+   "split": "train",
+   "stratum": "s02|red wooden bench"
+  },
+  "s02_c4/s02_425000047": {
+   "split": "train",
+   "stratum": "s02|red cube"
+  },
+  "s02_c4/s02_425000048": {
+   "split": "train",
+   "stratum": "s02|white plastic chair"
+  },
+  "s02_c4/s02_425000049": {
+   "split": "train",
+   "stratum": "s02|white cabinet"
+  },
+  "s02_c4/s02_425000050": {
+   "split": "train",
+   "stratum": "s02|blue barrel"
+  },
+  "s02_c4/s02_425000051": {
+   "split": "train",
+   "stratum": "s02|orange cone"
+  },
+  "s02_c4/s02_425000052": {
+   "split": "train",
+   "stratum": "s02|man in black suit"
+  },
+  "s02_c4/s02_425000054": {
+   "split": "val",
+   "stratum": "s02|white plastic chair"
+  },
+  "s02_c4/s02_425000055": {
+   "split": "train",
+   "stratum": "s02|bald man in green shirt"
+  },
+  "s02_c4/s02_425000056": {
+   "split": "train",
+   "stratum": "s02|girl in yellow shirt"
+  },
+  "s02_c4/s02_425000057": {
+   "split": "train",
+   "stratum": "s02|man in black suit"
+  },
+  "s02_c4/s02_425000058": {
+   "split": "train",
+   "stratum": "s02|red tool chest"
+  },
+  "s02_c4/s02_425000060": {
+   "split": "train",
+   "stratum": "s02|girl in yellow shirt"
+  },
+  "s02_c4/s02_425000062": {
+   "split": "train",
+   "stratum": "s02|red fire truck"
+  },
+  "s02_c4/s02_425000063": {
+   "split": "train",
+   "stratum": "s02|man in black suit"
+  },
+  "s03_c1/s03_432000000": {
+   "split": "train",
+   "stratum": "s03|red cube"
+  },
+  "s03_c1/s03_432000001": {
+   "split": "train",
+   "stratum": "s03|blue cylinder"
+  },
+  "s03_c1/s03_432000002": {
+   "split": "train",
+   "stratum": "s03|man in brown jacket"
+  },
+  "s03_c1/s03_432000005": {
+   "split": "train",
+   "stratum": "s03|red sedan"
+  },
+  "s03_c1/s03_432000007": {
+   "split": "train",
+   "stratum": "s03|yellow wet floor sign"
+  },
+  "s03_c1/s03_432000009": {
+   "split": "train",
+   "stratum": "s03|blue cone"
+  },
+  "s03_c1/s03_432000010": {
+   "split": "train",
+   "stratum": "s03|grey armchair"
+  },
+  "s03_c1/s03_432000011": {
+   "split": "train",
+   "stratum": "s03|blue van"
+  },
+  "s03_c1/s03_432000012": {
+   "split": "train",
+   "stratum": "s03|man in red shirt"
+  },
+  "s03_c1/s03_432000015": {
+   "split": "train",
+   "stratum": "s03|girl in yellow shirt"
+  },
+  "s03_c1/s03_432000016": {
+   "split": "train",
+   "stratum": "s03|man in black suit"
+  },
+  "s03_c1/s03_432000018": {
+   "split": "train",
+   "stratum": "s03|red cube"
+  },
+  "s03_c1/s03_432000019": {
+   "split": "train",
+   "stratum": "s03|man in blue jacket"
+  },
+  "s03_c1/s03_432000021": {
+   "split": "train",
+   "stratum": "s03|orange cylinder"
+  },
+  "s03_c1/s03_432000023": {
+   "split": "train",
+   "stratum": "s03|white pickup truck"
+  },
+  "s03_c1/s03_432000024": {
+   "split": "train",
+   "stratum": "s03|person in purple shirt"
+  },
+  "s03_c1/s03_432000026": {
+   "split": "train",
+   "stratum": "s03|black leather sofa"
+  },
+  "s03_c1/s03_432000028": {
+   "split": "train",
+   "stratum": "s03|black leather sofa"
+  },
+  "s03_c1/s03_432000030": {
+   "split": "train",
+   "stratum": "s03|covered car"
+  },
+  "s03_c1/s03_432000031": {
+   "split": "train",
+   "stratum": "s03|yellow cylinder"
+  },
+  "s03_c1/s03_432000032": {
+   "split": "train",
+   "stratum": "s03|man in red shirt"
+  },
+  "s03_c1/s03_432000033": {
+   "split": "train",
+   "stratum": "s03|red barrel"
+  },
+  "s03_c1/s03_432000034": {
+   "split": "train",
+   "stratum": "s03|yellow cube"
+  },
+  "s03_c1/s03_432000035": {
+   "split": "train",
+   "stratum": "s03|orange cone"
+  },
+  "s03_c1/s03_432000037": {
+   "split": "train",
+   "stratum": "s03|red fire extinguisher"
+  },
+  "s03_c1/s03_432000038": {
+   "split": "train",
+   "stratum": "s03|man in red shirt"
+  },
+  "s03_c1/s03_432000040": {
+   "split": "train",
+   "stratum": "s03|orange cylinder"
+  },
+  "s03_c1/s03_432000041": {
+   "split": "train",
+   "stratum": "s03|yellow cylinder"
+  },
+  "s03_c1/s03_432000042": {
+   "split": "val",
+   "stratum": "s03|yellow wet floor sign"
+  },
+  "s03_c1/s03_432000043": {
+   "split": "train",
+   "stratum": "s03|police officer"
+  },
+  "s03_c1/s03_432000044": {
+   "split": "train",
+   "stratum": "s03|orange cone"
+  },
+  "s03_c1/s03_432000051": {
+   "split": "train",
+   "stratum": "s03|black leather sofa"
+  },
+  "s03_c1/s03_432000052": {
+   "split": "train",
+   "stratum": "s03|white pickup truck"
+  },
+  "s03_c1/s03_432000054": {
+   "split": "train",
+   "stratum": "s03|white plastic chair"
+  },
+  "s03_c1/s03_432000055": {
+   "split": "train",
+   "stratum": "s03|red barrel"
+  },
+  "s03_c1/s03_432000056": {
+   "split": "train",
+   "stratum": "s03|yellow cylinder"
+  },
+  "s03_c1/s03_432000058": {
+   "split": "train",
+   "stratum": "s03|red sedan"
+  },
+  "s03_c1/s03_432000059": {
+   "split": "train",
+   "stratum": "s03|ambulance"
+  },
+  "s03_c1/s03_432000062": {
+   "split": "train",
+   "stratum": "s03|red wooden bench"
+  },
+  "s03_c1/s03_432000063": {
+   "split": "train",
+   "stratum": "s03|person in purple shirt"
+  },
+  "s03_c1/s03_432000064": {
+   "split": "train",
+   "stratum": "s03|blue barrel"
+  },
+  "s03_c1/s03_432000065": {
+   "split": "train",
+   "stratum": "s03|white cabinet"
+  },
+  "s03_c1/s03_432000066": {
+   "split": "train",
+   "stratum": "s03|girl in yellow shirt"
+  },
+  "s03_c1/s03_432000067": {
+   "split": "train",
+   "stratum": "s03|person in purple shirt"
+  },
+  "s03_c1/s03_432000068": {
+   "split": "train",
+   "stratum": "s03|yellow wet floor sign"
+  },
+  "s03_c1/s03_432000069": {
+   "split": "train",
+   "stratum": "s03|red fire extinguisher"
+  },
+  "s03_c1/s03_432000070": {
+   "split": "train",
+   "stratum": "s03|wooden barrel"
+  },
+  "s03_c1/s03_432000071": {
+   "split": "train",
+   "stratum": "s03|man in red shirt"
+  },
+  "s03_c1/s03_432000074": {
+   "split": "train",
+   "stratum": "s03|bronze whale statue"
+  },
+  "s03_c1/s03_432000077": {
+   "split": "train",
+   "stratum": "s03|red sedan"
+  },
+  "s03_c2/s03_433000002": {
+   "split": "train",
+   "stratum": "s03|orange cone"
+  },
+  "s03_c2/s03_433000003": {
+   "split": "train",
+   "stratum": "s03|red cube"
+  },
+  "s03_c2/s03_433000004": {
+   "split": "train",
+   "stratum": "s03|red tool chest"
+  },
+  "s03_c2/s03_433000007": {
+   "split": "train",
+   "stratum": "s03|green armchair"
+  },
+  "s03_c2/s03_433000009": {
+   "split": "train",
+   "stratum": "s03|red cylinder"
+  },
+  "s03_c2/s03_433000010": {
+   "split": "train",
+   "stratum": "s03|beige sofa"
+  },
+  "s03_c2/s03_433000011": {
+   "split": "train",
+   "stratum": "s03|man in blue jacket"
+  },
+  "s03_c2/s03_433000012": {
+   "split": "train",
+   "stratum": "s03|blue cylinder"
+  },
+  "s03_c2/s03_433000013": {
+   "split": "train",
+   "stratum": "s03|yellow cylinder"
+  },
+  "s03_c2/s03_433000014": {
+   "split": "val",
+   "stratum": "s03|girl in yellow shirt"
+  },
+  "s03_c2/s03_433000015": {
+   "split": "train",
+   "stratum": "s03|old television"
+  },
+  "s03_c2/s03_433000017": {
+   "split": "train",
+   "stratum": "s03|blue cylinder"
+  },
+  "s03_c2/s03_433000021": {
+   "split": "train",
+   "stratum": "s03|blue cone"
+  },
+  "s03_c2/s03_433000022": {
+   "split": "train",
+   "stratum": "s03|white pickup truck"
+  },
+  "s03_c2/s03_433000024": {
+   "split": "train",
+   "stratum": "s03|white pickup truck"
+  },
+  "s03_c2/s03_433000025": {
+   "split": "train",
+   "stratum": "s03|man in black suit"
+  },
+  "s03_c2/s03_433000027": {
+   "split": "train",
+   "stratum": "s03|blue barrel"
+  },
+  "s03_c2/s03_433000030": {
+   "split": "train",
+   "stratum": "s03|white cabinet"
+  },
+  "s03_c2/s03_433000031": {
+   "split": "train",
+   "stratum": "s03|green hatchback"
+  },
+  "s03_c2/s03_433000032": {
+   "split": "train",
+   "stratum": "s03|yellow wet floor sign"
+  },
+  "s03_c2/s03_433000033": {
+   "split": "train",
+   "stratum": "s03|bronze whale statue"
+  },
+  "s03_c2/s03_433000034": {
+   "split": "train",
+   "stratum": "s03|red fire extinguisher"
+  },
+  "s03_c2/s03_433000035": {
+   "split": "train",
+   "stratum": "s03|white cabinet"
+  },
+  "s03_c2/s03_433000038": {
+   "split": "train",
+   "stratum": "s03|yellow cube"
+  },
+  "s03_c2/s03_433000039": {
+   "split": "train",
+   "stratum": "s03|doctor in white coat"
+  },
+  "s03_c2/s03_433000041": {
+   "split": "train",
+   "stratum": "s03|man in black suit"
+  },
+  "s03_c2/s03_433000042": {
+   "split": "val",
+   "stratum": "s03|beige sofa"
+  },
+  "s03_c2/s03_433000043": {
+   "split": "train",
+   "stratum": "s03|green hatchback"
+  },
+  "s03_c2/s03_433000045": {
+   "split": "train",
+   "stratum": "s03|red cylinder"
+  },
+  "s03_c2/s03_433000048": {
+   "split": "train",
+   "stratum": "s03|girl in yellow shirt"
+  },
+  "s03_c2/s03_433000049": {
+   "split": "train",
+   "stratum": "s03|grey armchair"
+  },
+  "s03_c2/s03_433000050": {
+   "split": "train",
+   "stratum": "s03|beige sofa"
+  },
+  "s03_c2/s03_433000051": {
+   "split": "train",
+   "stratum": "s03|white plastic chair"
+  },
+  "s03_c2/s03_433000054": {
+   "split": "train",
+   "stratum": "s03|man in blue jacket"
+  },
+  "s03_c2/s03_433000056": {
+   "split": "train",
+   "stratum": "s03|yellow wet floor sign"
+  },
+  "s03_c2/s03_433000057": {
+   "split": "train",
+   "stratum": "s03|yellow cylinder"
+  },
+  "s03_c2/s03_433000059": {
+   "split": "train",
+   "stratum": "s03|old television"
+  },
+  "s03_c2/s03_433000061": {
+   "split": "train",
+   "stratum": "s03|red tool chest"
+  },
+  "s03_c2/s03_433000062": {
+   "split": "train",
+   "stratum": "s03|old television"
+  },
+  "s03_c2/s03_433000063": {
+   "split": "val",
+   "stratum": "s03|white cabinet"
+  },
+  "s03_c2/s03_433000064": {
+   "split": "train",
+   "stratum": "s03|beige sofa"
+  },
+  "s03_c2/s03_433000065": {
+   "split": "train",
+   "stratum": "s03|bald man in green shirt"
+  },
+  "s03_c2/s03_433000067": {
+   "split": "train",
+   "stratum": "s03|bald man in green shirt"
+  },
+  "s03_c2/s03_433000070": {
+   "split": "train",
+   "stratum": "s03|old television"
+  },
+  "s03_c2/s03_433000071": {
+   "split": "train",
+   "stratum": "s03|black leather sofa"
+  },
+  "s03_c2/s03_433000072": {
+   "split": "train",
+   "stratum": "s03|white cabinet"
+  },
+  "s03_c2/s03_433000073": {
+   "split": "train",
+   "stratum": "s03|yellow wet floor sign"
+  },
+  "s03_c2/s03_433000075": {
+   "split": "train",
+   "stratum": "s03|beige sofa"
+  },
+  "s03_c2/s03_433000076": {
+   "split": "train",
+   "stratum": "s03|man in red shirt"
+  },
+  "s03_c2/s03_433000077": {
+   "split": "train",
+   "stratum": "s03|man in black suit"
+  },
+  "s03_c3/s03_434000000": {
+   "split": "train",
+   "stratum": "s03|green garbage truck"
+  },
+  "s03_c3/s03_434000001": {
+   "split": "train",
+   "stratum": "s03|beige sofa"
+  },
+  "s03_c3/s03_434000002": {
+   "split": "train",
+   "stratum": "s03|yellow taxi"
+  },
+  "s03_c3/s03_434000003": {
+   "split": "val",
+   "stratum": "s03|blue cylinder"
+  },
+  "s03_c3/s03_434000004": {
+   "split": "train",
+   "stratum": "s03|man in brown jacket"
+  },
+  "s03_c3/s03_434000006": {
+   "split": "train",
+   "stratum": "s03|girl in yellow shirt"
+  },
+  "s03_c3/s03_434000008": {
+   "split": "train",
+   "stratum": "s03|yellow wet floor sign"
+  },
+  "s03_c3/s03_434000009": {
+   "split": "train",
+   "stratum": "s03|person in purple shirt"
+  },
+  "s03_c3/s03_434000012": {
+   "split": "train",
+   "stratum": "s03|blue barrel"
+  },
+  "s03_c3/s03_434000020": {
+   "split": "train",
+   "stratum": "s03|red barrel"
+  },
+  "s03_c3/s03_434000022": {
+   "split": "train",
+   "stratum": "s03|man in brown jacket"
+  },
+  "s03_c3/s03_434000023": {
+   "split": "train",
+   "stratum": "s03|yellow suv"
+  },
+  "s03_c3/s03_434000024": {
+   "split": "train",
+   "stratum": "s03|man in brown jacket"
+  },
+  "s03_c3/s03_434000026": {
+   "split": "train",
+   "stratum": "s03|round wooden table"
+  },
+  "s03_c3/s03_434000027": {
+   "split": "train",
+   "stratum": "s03|person in purple shirt"
+  },
+  "s03_c3/s03_434000028": {
+   "split": "train",
+   "stratum": "s03|blue cylinder"
+  },
+  "s03_c3/s03_434000030": {
+   "split": "train",
+   "stratum": "s03|bald man in green shirt"
+  },
+  "s03_c3/s03_434000031": {
+   "split": "train",
+   "stratum": "s03|blue barrel"
+  },
+  "s03_c3/s03_434000033": {
+   "split": "train",
+   "stratum": "s03|blue cone"
+  },
+  "s03_c3/s03_434000034": {
+   "split": "train",
+   "stratum": "s03|round wooden table"
+  },
+  "s03_c3/s03_434000035": {
+   "split": "train",
+   "stratum": "s03|white cabinet"
+  },
+  "s03_c3/s03_434000036": {
+   "split": "train",
+   "stratum": "s03|yellow cube"
+  },
+  "s03_c3/s03_434000037": {
+   "split": "train",
+   "stratum": "s03|green cube"
+  },
+  "s03_c3/s03_434000038": {
+   "split": "train",
+   "stratum": "s03|bronze whale statue"
+  },
+  "s03_c3/s03_434000039": {
+   "split": "train",
+   "stratum": "s03|white pickup truck"
+  },
+  "s03_c3/s03_434000040": {
+   "split": "train",
+   "stratum": "s03|red wooden bench"
+  },
+  "s03_c3/s03_434000041": {
+   "split": "train",
+   "stratum": "s03|blue van"
+  },
+  "s03_c3/s03_434000042": {
+   "split": "train",
+   "stratum": "s03|bronze whale statue"
+  },
+  "s03_c3/s03_434000045": {
+   "split": "train",
+   "stratum": "s03|covered car"
+  },
+  "s03_c3/s03_434000046": {
+   "split": "train",
+   "stratum": "s03|red cube"
+  },
+  "s03_c3/s03_434000048": {
+   "split": "train",
+   "stratum": "s03|yellow cube"
+  },
+  "s03_c3/s03_434000049": {
+   "split": "train",
+   "stratum": "s03|yellow suv"
+  },
+  "s03_c3/s03_434000052": {
+   "split": "train",
+   "stratum": "s03|white cabinet"
+  },
+  "s03_c3/s03_434000053": {
+   "split": "train",
+   "stratum": "s03|blue cylinder"
+  },
+  "s03_c3/s03_434000056": {
+   "split": "train",
+   "stratum": "s03|police car"
+  },
+  "s03_c3/s03_434000057": {
+   "split": "train",
+   "stratum": "s03|police car"
+  },
+  "s03_c3/s03_434000059": {
+   "split": "val",
+   "stratum": "s03|bronze whale statue"
+  },
+  "s03_c3/s03_434000060": {
+   "split": "train",
+   "stratum": "s03|blue cone"
+  },
+  "s03_c3/s03_434000061": {
+   "split": "train",
+   "stratum": "s03|wooden barrel"
+  },
+  "s03_c3/s03_434000062": {
+   "split": "train",
+   "stratum": "s03|blue school chair"
+  },
+  "s03_c3/s03_434000064": {
+   "split": "train",
+   "stratum": "s03|yellow cube"
+  },
+  "s03_c3/s03_434000065": {
+   "split": "train",
+   "stratum": "s03|bald man in green shirt"
+  },
+  "s03_c3/s03_434000067": {
+   "split": "train",
+   "stratum": "s03|white plastic chair"
+  },
+  "s03_c3/s03_434000069": {
+   "split": "train",
+   "stratum": "s03|yellow generator"
+  },
+  "s03_c3/s03_434000070": {
+   "split": "train",
+   "stratum": "s03|orange cylinder"
+  },
+  "s03_c3/s03_434000071": {
+   "split": "train",
+   "stratum": "s03|covered car"
+  },
+  "s03_c3/s03_434000072": {
+   "split": "train",
+   "stratum": "s03|blue cylinder"
+  },
+  "s03_c3/s03_434000074": {
+   "split": "train",
+   "stratum": "s03|yellow generator"
+  },
+  "s03_c3/s03_434000075": {
+   "split": "train",
+   "stratum": "s03|man in blue jacket"
+  },
+  "s03_c3/s03_434000076": {
+   "split": "train",
+   "stratum": "s03|red cylinder"
+  },
+  "s03_c4/s03_435000000": {
+   "split": "train",
+   "stratum": "s03|green garbage truck"
+  },
+  "s03_c4/s03_435000002": {
+   "split": "train",
+   "stratum": "s03|red cube"
+  },
+  "s03_c4/s03_435000006": {
+   "split": "train",
+   "stratum": "s03|bald man in green shirt"
+  },
+  "s03_c4/s03_435000009": {
+   "split": "train",
+   "stratum": "s03|yellow wet floor sign"
+  },
+  "s03_c4/s03_435000010": {
+   "split": "train",
+   "stratum": "s03|bronze whale statue"
+  },
+  "s03_c4/s03_435000011": {
+   "split": "val",
+   "stratum": "s03|orange cylinder"
+  },
+  "s03_c4/s03_435000012": {
+   "split": "train",
+   "stratum": "s03|red cylinder"
+  },
+  "s03_c4/s03_435000013": {
+   "split": "train",
+   "stratum": "s03|white cabinet"
+  },
+  "s03_c4/s03_435000014": {
+   "split": "train",
+   "stratum": "s03|red cube"
+  },
+  "s03_c4/s03_435000016": {
+   "split": "train",
+   "stratum": "s03|white pickup truck"
+  },
+  "s03_c4/s03_435000018": {
+   "split": "train",
+   "stratum": "s03|man in blue jacket"
+  },
+  "s03_c4/s03_435000019": {
+   "split": "train",
+   "stratum": "s03|green cube"
+  },
+  "s03_c4/s03_435000021": {
+   "split": "train",
+   "stratum": "s03|yellow wet floor sign"
+  },
+  "s03_c4/s03_435000022": {
+   "split": "train",
+   "stratum": "s03|green armchair"
+  },
+  "s03_c4/s03_435000024": {
+   "split": "train",
+   "stratum": "s03|man in blue jacket"
+  },
+  "s03_c4/s03_435000025": {
+   "split": "train",
+   "stratum": "s03|person in purple shirt"
+  },
+  "s03_c4/s03_435000027": {
+   "split": "train",
+   "stratum": "s03|orange cylinder"
+  },
+  "s03_c4/s03_435000030": {
+   "split": "train",
+   "stratum": "s03|yellow suv"
+  },
+  "s03_c4/s03_435000031": {
+   "split": "train",
+   "stratum": "s03|yellow suv"
+  },
+  "s03_c4/s03_435000032": {
+   "split": "train",
+   "stratum": "s03|white cabinet"
+  },
+  "s03_c4/s03_435000034": {
+   "split": "train",
+   "stratum": "s03|old television"
+  },
+  "s03_c4/s03_435000036": {
+   "split": "train",
+   "stratum": "s03|red barrel"
+  },
+  "s03_c4/s03_435000038": {
+   "split": "train",
+   "stratum": "s03|old television"
+  },
+  "s03_c4/s03_435000039": {
+   "split": "train",
+   "stratum": "s03|black leather sofa"
+  },
+  "s03_c4/s03_435000040": {
+   "split": "train",
+   "stratum": "s03|orange cone"
+  },
+  "s03_c4/s03_435000041": {
+   "split": "train",
+   "stratum": "s03|police officer"
+  },
+  "s03_c4/s03_435000042": {
+   "split": "train",
+   "stratum": "s03|red tool chest"
+  },
+  "s03_c4/s03_435000045": {
+   "split": "train",
+   "stratum": "s03|girl in yellow shirt"
+  },
+  "s03_c4/s03_435000046": {
+   "split": "train",
+   "stratum": "s03|red barrel"
+  },
+  "s03_c4/s03_435000047": {
+   "split": "train",
+   "stratum": "s03|wooden barrel"
+  },
+  "s03_c4/s03_435000048": {
+   "split": "train",
+   "stratum": "s03|orange cylinder"
+  },
+  "s03_c4/s03_435000049": {
+   "split": "train",
+   "stratum": "s03|blue school chair"
+  },
+  "s03_c4/s03_435000051": {
+   "split": "train",
+   "stratum": "s03|green garbage truck"
+  },
+  "s03_c4/s03_435000054": {
+   "split": "train",
+   "stratum": "s03|orange cylinder"
+  },
+  "s03_c4/s03_435000055": {
+   "split": "train",
+   "stratum": "s03|green cube"
+  },
+  "s03_c4/s03_435000058": {
+   "split": "train",
+   "stratum": "s03|man in brown jacket"
+  },
+  "s03_c4/s03_435000060": {
+   "split": "train",
+   "stratum": "s03|wooden barrel"
+  },
+  "s03_c4/s03_435000062": {
+   "split": "train",
+   "stratum": "s03|red tool chest"
+  },
+  "s03_c4/s03_435000065": {
+   "split": "train",
+   "stratum": "s03|yellow suv"
+  },
+  "s03_c4/s03_435000066": {
+   "split": "train",
+   "stratum": "s03|bronze whale statue"
+  },
+  "s03_c4/s03_435000068": {
+   "split": "val",
+   "stratum": "s03|man in blue jacket"
+  },
+  "s03_c4/s03_435000069": {
+   "split": "train",
+   "stratum": "s03|beige sofa"
+  },
+  "s03_c4/s03_435000070": {
+   "split": "train",
+   "stratum": "s03|yellow suv"
+  },
+  "s03_c4/s03_435000071": {
+   "split": "train",
+   "stratum": "s03|blue school chair"
+  },
+  "s03_c4/s03_435000072": {
+   "split": "train",
+   "stratum": "s03|green armchair"
+  },
+  "s03_c4/s03_435000073": {
+   "split": "train",
+   "stratum": "s03|blue van"
+  },
+  "s03_c4/s03_435000074": {
+   "split": "train",
+   "stratum": "s03|red cylinder"
+  },
+  "s03_c4/s03_435000075": {
+   "split": "train",
+   "stratum": "s03|police officer"
+  },
+  "s03_c4/s03_435000077": {
+   "split": "train",
+   "stratum": "s03|girl in yellow shirt"
+  },
+  "s03_c4/s03_435000078": {
+   "split": "train",
+   "stratum": "s03|blue school chair"
+  },
+  "s04_c1/s04_442000001": {
+   "split": "train",
+   "stratum": "s04|man in black suit"
+  },
+  "s04_c1/s04_442000003": {
+   "split": "train",
+   "stratum": "s04|covered car"
+  },
+  "s04_c1/s04_442000006": {
+   "split": "train",
+   "stratum": "s04|bronze whale statue"
+  },
+  "s04_c1/s04_442000007": {
+   "split": "train",
+   "stratum": "s04|orange cone"
+  },
+  "s04_c1/s04_442000008": {
+   "split": "train",
+   "stratum": "s04|police officer"
+  },
+  "s04_c1/s04_442000010": {
+   "split": "train",
+   "stratum": "s04|man in blue jacket"
+  },
+  "s04_c1/s04_442000011": {
+   "split": "train",
+   "stratum": "s04|red fire extinguisher"
+  },
+  "s04_c1/s04_442000013": {
+   "split": "train",
+   "stratum": "s04|red sedan"
+  },
+  "s04_c1/s04_442000014": {
+   "split": "train",
+   "stratum": "s04|green hatchback"
+  },
+  "s04_c1/s04_442000015": {
+   "split": "train",
+   "stratum": "s04|blue school chair"
+  },
+  "s04_c1/s04_442000019": {
+   "split": "val",
+   "stratum": "s04|covered car"
+  },
+  "s04_c1/s04_442000020": {
+   "split": "train",
+   "stratum": "s04|green cube"
+  },
+  "s04_c1/s04_442000025": {
+   "split": "val",
+   "stratum": "s04|man in red shirt"
+  },
+  "s04_c1/s04_442000029": {
+   "split": "train",
+   "stratum": "s04|yellow taxi"
+  },
+  "s04_c1/s04_442000031": {
+   "split": "train",
+   "stratum": "s04|covered car"
+  },
+  "s04_c1/s04_442000032": {
+   "split": "train",
+   "stratum": "s04|orange cylinder"
+  },
+  "s04_c1/s04_442000034": {
+   "split": "train",
+   "stratum": "s04|grey armchair"
+  },
+  "s04_c1/s04_442000035": {
+   "split": "train",
+   "stratum": "s04|girl in yellow shirt"
+  },
+  "s04_c1/s04_442000037": {
+   "split": "train",
+   "stratum": "s04|blue barrel"
+  },
+  "s04_c1/s04_442000047": {
+   "split": "train",
+   "stratum": "s04|man in brown jacket"
+  },
+  "s04_c1/s04_442000048": {
+   "split": "train",
+   "stratum": "s04|person in purple shirt"
+  },
+  "s04_c1/s04_442000049": {
+   "split": "train",
+   "stratum": "s04|orange cylinder"
+  },
+  "s04_c1/s04_442000050": {
+   "split": "train",
+   "stratum": "s04|green armchair"
+  },
+  "s04_c1/s04_442000051": {
+   "split": "train",
+   "stratum": "s04|wooden barrel"
+  },
+  "s04_c1/s04_442000052": {
+   "split": "train",
+   "stratum": "s04|red cube"
+  },
+  "s04_c1/s04_442000053": {
+   "split": "train",
+   "stratum": "s04|man in blue jacket"
+  },
+  "s04_c1/s04_442000056": {
+   "split": "train",
+   "stratum": "s04|doctor in white coat"
+  },
+  "s04_c1/s04_442000057": {
+   "split": "train",
+   "stratum": "s04|police officer"
+  },
+  "s04_c1/s04_442000058": {
+   "split": "train",
+   "stratum": "s04|yellow cube"
+  },
+  "s04_c1/s04_442000059": {
+   "split": "train",
+   "stratum": "s04|bronze whale statue"
+  },
+  "s04_c1/s04_442000060": {
+   "split": "train",
+   "stratum": "s04|doctor in white coat"
+  },
+  "s04_c1/s04_442000062": {
+   "split": "train",
+   "stratum": "s04|blue barrel"
+  },
+  "s04_c1/s04_442000063": {
+   "split": "train",
+   "stratum": "s04|red sedan"
+  },
+  "s04_c1/s04_442000064": {
+   "split": "train",
+   "stratum": "s04|black leather sofa"
+  },
+  "s04_c1/s04_442000067": {
+   "split": "train",
+   "stratum": "s04|old television"
+  },
+  "s04_c1/s04_442000068": {
+   "split": "train",
+   "stratum": "s04|red tool chest"
+  },
+  "s04_c1/s04_442000070": {
+   "split": "train",
+   "stratum": "s04|yellow taxi"
+  },
+  "s04_c1/s04_442000073": {
+   "split": "train",
+   "stratum": "s04|man in red shirt"
+  },
+  "s04_c1/s04_442000076": {
+   "split": "train",
+   "stratum": "s04|green cube"
+  },
+  "s04_c1/s04_442000077": {
+   "split": "train",
+   "stratum": "s04|person in purple shirt"
+  },
+  "s04_c1/s04_442000078": {
+   "split": "val",
+   "stratum": "s04|doctor in white coat"
+  },
+  "s04_c1/s04_442000080": {
+   "split": "train",
+   "stratum": "s04|red wooden bench"
+  },
+  "s04_c1/s04_442000081": {
+   "split": "train",
+   "stratum": "s04|wooden barrel"
+  },
+  "s04_c1/s04_442000082": {
+   "split": "train",
+   "stratum": "s04|orange cylinder"
+  },
+  "s04_c1/s04_442000084": {
+   "split": "train",
+   "stratum": "s04|red cylinder"
+  },
+  "s04_c1/s04_442000088": {
+   "split": "train",
+   "stratum": "s04|green suitcase"
+  },
+  "s04_c1/s04_442000090": {
+   "split": "train",
+   "stratum": "s04|grey armchair"
+  },
+  "s04_c1/s04_442000091": {
+   "split": "train",
+   "stratum": "s04|orange cylinder"
+  },
+  "s04_c1/s04_442000093": {
+   "split": "train",
+   "stratum": "s04|man in black suit"
+  },
+  "s04_c1/s04_442000094": {
+   "split": "train",
+   "stratum": "s04|yellow cylinder"
+  },
+  "s04_c2/s04_443000000": {
+   "split": "train",
+   "stratum": "s04|orange cylinder"
+  },
+  "s04_c2/s04_443000001": {
+   "split": "train",
+   "stratum": "s04|wooden barrel"
+  },
+  "s04_c2/s04_443000003": {
+   "split": "train",
+   "stratum": "s04|girl in yellow shirt"
+  },
+  "s04_c2/s04_443000004": {
+   "split": "train",
+   "stratum": "s04|black leather sofa"
+  },
+  "s04_c2/s04_443000006": {
+   "split": "train",
+   "stratum": "s04|red cube"
+  },
+  "s04_c2/s04_443000010": {
+   "split": "train",
+   "stratum": "s04|green hatchback"
+  },
+  "s04_c2/s04_443000011": {
+   "split": "train",
+   "stratum": "s04|man in blue jacket"
+  },
+  "s04_c2/s04_443000015": {
+   "split": "train",
+   "stratum": "s04|red sedan"
+  },
+  "s04_c2/s04_443000018": {
+   "split": "train",
+   "stratum": "s04|man in brown jacket"
+  },
+  "s04_c2/s04_443000019": {
+   "split": "train",
+   "stratum": "s04|red fire extinguisher"
+  },
+  "s04_c2/s04_443000021": {
+   "split": "train",
+   "stratum": "s04|red fire truck"
+  },
+  "s04_c2/s04_443000024": {
+   "split": "train",
+   "stratum": "s04|yellow suv"
+  },
+  "s04_c2/s04_443000026": {
+   "split": "train",
+   "stratum": "s04|grey armchair"
+  },
+  "s04_c2/s04_443000028": {
+   "split": "train",
+   "stratum": "s04|yellow cylinder"
+  },
+  "s04_c2/s04_443000033": {
+   "split": "train",
+   "stratum": "s04|yellow wet floor sign"
+  },
+  "s04_c2/s04_443000034": {
+   "split": "train",
+   "stratum": "s04|red wooden bench"
+  },
+  "s04_c2/s04_443000035": {
+   "split": "train",
+   "stratum": "s04|white cabinet"
+  },
+  "s04_c2/s04_443000036": {
+   "split": "train",
+   "stratum": "s04|white pickup truck"
+  },
+  "s04_c2/s04_443000037": {
+   "split": "train",
+   "stratum": "s04|bronze whale statue"
+  },
+  "s04_c2/s04_443000038": {
+   "split": "train",
+   "stratum": "s04|grey armchair"
+  },
+  "s04_c2/s04_443000039": {
+   "split": "train",
+   "stratum": "s04|girl in yellow shirt"
+  },
+  "s04_c2/s04_443000040": {
+   "split": "train",
+   "stratum": "s04|doctor in white coat"
+  },
+  "s04_c2/s04_443000041": {
+   "split": "train",
+   "stratum": "s04|bronze whale statue"
+  },
+  "s04_c2/s04_443000045": {
+   "split": "val",
+   "stratum": "s04|blue barrel"
+  },
+  "s04_c2/s04_443000046": {
+   "split": "train",
+   "stratum": "s04|blue barrel"
+  },
+  "s04_c2/s04_443000051": {
+   "split": "train",
+   "stratum": "s04|green armchair"
+  },
+  "s04_c2/s04_443000053": {
+   "split": "train",
+   "stratum": "s04|white pickup truck"
+  },
+  "s04_c2/s04_443000054": {
+   "split": "train",
+   "stratum": "s04|yellow wet floor sign"
+  },
+  "s04_c2/s04_443000055": {
+   "split": "train",
+   "stratum": "s04|police car"
+  },
+  "s04_c2/s04_443000056": {
+   "split": "train",
+   "stratum": "s04|blue school chair"
+  },
+  "s04_c2/s04_443000057": {
+   "split": "train",
+   "stratum": "s04|covered car"
+  },
+  "s04_c2/s04_443000059": {
+   "split": "train",
+   "stratum": "s04|yellow suv"
+  },
+  "s04_c2/s04_443000060": {
+   "split": "train",
+   "stratum": "s04|person in purple shirt"
+  },
+  "s04_c2/s04_443000061": {
+   "split": "train",
+   "stratum": "s04|orange cylinder"
+  },
+  "s04_c2/s04_443000062": {
+   "split": "train",
+   "stratum": "s04|red tool chest"
+  },
+  "s04_c2/s04_443000064": {
+   "split": "val",
+   "stratum": "s04|grey armchair"
+  },
+  "s04_c2/s04_443000065": {
+   "split": "train",
+   "stratum": "s04|blue cone"
+  },
+  "s04_c2/s04_443000069": {
+   "split": "train",
+   "stratum": "s04|white plastic chair"
+  },
+  "s04_c2/s04_443000072": {
+   "split": "train",
+   "stratum": "s04|red cylinder"
+  },
+  "s04_c2/s04_443000075": {
+   "split": "train",
+   "stratum": "s04|grey armchair"
+  },
+  "s04_c2/s04_443000076": {
+   "split": "train",
+   "stratum": "s04|red fire extinguisher"
+  },
+  "s04_c2/s04_443000077": {
+   "split": "val",
+   "stratum": "s04|man in brown jacket"
+  },
+  "s04_c2/s04_443000080": {
+   "split": "train",
+   "stratum": "s04|bald man in green shirt"
+  },
+  "s04_c2/s04_443000081": {
+   "split": "train",
+   "stratum": "s04|blue barrel"
+  },
+  "s04_c2/s04_443000083": {
+   "split": "val",
+   "stratum": "s04|green armchair"
+  },
+  "s04_c2/s04_443000085": {
+   "split": "train",
+   "stratum": "s04|green suitcase"
+  },
+  "s04_c2/s04_443000086": {
+   "split": "train",
+   "stratum": "s04|bronze whale statue"
+  },
+  "s04_c2/s04_443000087": {
+   "split": "train",
+   "stratum": "s04|police officer"
+  },
+  "s04_c2/s04_443000088": {
+   "split": "train",
+   "stratum": "s04|girl in yellow shirt"
+  },
+  "s04_c2/s04_443000090": {
+   "split": "train",
+   "stratum": "s04|blue cylinder"
+  },
+  "s04_c3/s04_444000001": {
+   "split": "train",
+   "stratum": "s04|red sedan"
+  },
+  "s04_c3/s04_444000004": {
+   "split": "train",
+   "stratum": "s04|red sedan"
+  },
+  "s04_c3/s04_444000006": {
+   "split": "train",
+   "stratum": "s04|man in red shirt"
+  },
+  "s04_c3/s04_444000008": {
+   "split": "train",
+   "stratum": "s04|man in brown jacket"
+  },
+  "s04_c3/s04_444000011": {
+   "split": "train",
+   "stratum": "s04|red wooden bench"
+  },
+  "s04_c3/s04_444000012": {
+   "split": "train",
+   "stratum": "s04|red sedan"
+  },
+  "s04_c3/s04_444000018": {
+   "split": "train",
+   "stratum": "s04|yellow cube"
+  },
+  "s04_c3/s04_444000019": {
+   "split": "train",
+   "stratum": "s04|blue cone"
+  },
+  "s04_c3/s04_444000020": {
+   "split": "train",
+   "stratum": "s04|black leather sofa"
+  },
+  "s04_c3/s04_444000021": {
+   "split": "train",
+   "stratum": "s04|bald man in green shirt"
+  },
+  "s04_c3/s04_444000022": {
+   "split": "train",
+   "stratum": "s04|beige sofa"
+  },
+  "s04_c3/s04_444000023": {
+   "split": "train",
+   "stratum": "s04|wooden barrel"
+  },
+  "s04_c3/s04_444000026": {
+   "split": "train",
+   "stratum": "s04|green suitcase"
+  },
+  "s04_c3/s04_444000031": {
+   "split": "train",
+   "stratum": "s04|blue school chair"
+  },
+  "s04_c3/s04_444000035": {
+   "split": "train",
+   "stratum": "s04|orange cylinder"
+  },
+  "s04_c3/s04_444000036": {
+   "split": "train",
+   "stratum": "s04|man in black suit"
+  },
+  "s04_c3/s04_444000037": {
+   "split": "train",
+   "stratum": "s04|red fire extinguisher"
+  },
+  "s04_c3/s04_444000039": {
+   "split": "train",
+   "stratum": "s04|yellow cube"
+  },
+  "s04_c3/s04_444000041": {
+   "split": "train",
+   "stratum": "s04|ambulance"
+  },
+  "s04_c3/s04_444000042": {
+   "split": "train",
+   "stratum": "s04|blue cone"
+  },
+  "s04_c3/s04_444000043": {
+   "split": "train",
+   "stratum": "s04|white plastic chair"
+  },
+  "s04_c3/s04_444000044": {
+   "split": "train",
+   "stratum": "s04|green hatchback"
+  },
+  "s04_c3/s04_444000049": {
+   "split": "train",
+   "stratum": "s04|yellow taxi"
+  },
+  "s04_c3/s04_444000053": {
+   "split": "train",
+   "stratum": "s04|red cylinder"
+  },
+  "s04_c3/s04_444000058": {
+   "split": "train",
+   "stratum": "s04|beige sofa"
+  },
+  "s04_c3/s04_444000059": {
+   "split": "train",
+   "stratum": "s04|bald man in green shirt"
+  },
+  "s04_c3/s04_444000061": {
+   "split": "train",
+   "stratum": "s04|round wooden table"
+  },
+  "s04_c3/s04_444000062": {
+   "split": "train",
+   "stratum": "s04|doctor in white coat"
+  },
+  "s04_c3/s04_444000065": {
+   "split": "train",
+   "stratum": "s04|old television"
+  },
+  "s04_c3/s04_444000066": {
+   "split": "train",
+   "stratum": "s04|man in black suit"
+  },
+  "s04_c3/s04_444000068": {
+   "split": "train",
+   "stratum": "s04|man in brown jacket"
+  },
+  "s04_c3/s04_444000069": {
+   "split": "train",
+   "stratum": "s04|round wooden table"
+  },
+  "s04_c3/s04_444000070": {
+   "split": "train",
+   "stratum": "s04|red cylinder"
+  },
+  "s04_c3/s04_444000073": {
+   "split": "train",
+   "stratum": "s04|red fire extinguisher"
+  },
+  "s04_c3/s04_444000074": {
+   "split": "train",
+   "stratum": "s04|man in red shirt"
+  },
+  "s04_c3/s04_444000075": {
+   "split": "train",
+   "stratum": "s04|blue cylinder"
+  },
+  "s04_c3/s04_444000076": {
+   "split": "train",
+   "stratum": "s04|person in purple shirt"
+  },
+  "s04_c3/s04_444000077": {
+   "split": "train",
+   "stratum": "s04|red fire truck"
+  },
+  "s04_c3/s04_444000079": {
+   "split": "train",
+   "stratum": "s04|yellow cube"
+  },
+  "s04_c3/s04_444000080": {
+   "split": "train",
+   "stratum": "s04|orange cylinder"
+  },
+  "s04_c3/s04_444000082": {
+   "split": "train",
+   "stratum": "s04|red tool chest"
+  },
+  "s04_c3/s04_444000085": {
+   "split": "train",
+   "stratum": "s04|red wooden bench"
+  },
+  "s04_c3/s04_444000086": {
+   "split": "train",
+   "stratum": "s04|police officer"
+  },
+  "s04_c3/s04_444000088": {
+   "split": "train",
+   "stratum": "s04|bronze whale statue"
+  },
+  "s04_c3/s04_444000089": {
+   "split": "train",
+   "stratum": "s04|blue van"
+  },
+  "s04_c3/s04_444000090": {
+   "split": "train",
+   "stratum": "s04|yellow cylinder"
+  },
+  "s04_c3/s04_444000092": {
+   "split": "train",
+   "stratum": "s04|red tool chest"
+  },
+  "s04_c3/s04_444000093": {
+   "split": "train",
+   "stratum": "s04|ambulance"
+  },
+  "s04_c3/s04_444000094": {
+   "split": "val",
+   "stratum": "s04|orange cylinder"
+  },
+  "s04_c3/s04_444000095": {
+   "split": "train",
+   "stratum": "s04|green armchair"
+  },
+  "s04_c4/s04_445000000": {
+   "split": "train",
+   "stratum": "s04|yellow wet floor sign"
+  },
+  "s04_c4/s04_445000001": {
+   "split": "train",
+   "stratum": "s04|green hatchback"
+  },
+  "s04_c4/s04_445000003": {
+   "split": "train",
+   "stratum": "s04|blue barrel"
+  },
+  "s04_c4/s04_445000004": {
+   "split": "val",
+   "stratum": "s04|red fire extinguisher"
+  },
+  "s04_c4/s04_445000005": {
+   "split": "train",
+   "stratum": "s04|yellow generator"
+  },
+  "s04_c4/s04_445000007": {
+   "split": "train",
+   "stratum": "s04|green hatchback"
+  },
+  "s04_c4/s04_445000009": {
+   "split": "train",
+   "stratum": "s04|white cabinet"
+  },
+  "s04_c4/s04_445000010": {
+   "split": "train",
+   "stratum": "s04|blue cone"
+  },
+  "s04_c4/s04_445000012": {
+   "split": "train",
+   "stratum": "s04|grey armchair"
+  },
+  "s04_c4/s04_445000015": {
+   "split": "train",
+   "stratum": "s04|bald man in green shirt"
+  },
+  "s04_c4/s04_445000016": {
+   "split": "train",
+   "stratum": "s04|doctor in white coat"
+  },
+  "s04_c4/s04_445000017": {
+   "split": "train",
+   "stratum": "s04|black leather sofa"
+  },
+  "s04_c4/s04_445000019": {
+   "split": "val",
+   "stratum": "s04|bald man in green shirt"
+  },
+  "s04_c4/s04_445000020": {
+   "split": "train",
+   "stratum": "s04|yellow wet floor sign"
+  },
+  "s04_c4/s04_445000021": {
+   "split": "train",
+   "stratum": "s04|red cube"
+  },
+  "s04_c4/s04_445000023": {
+   "split": "train",
+   "stratum": "s04|green armchair"
+  },
+  "s04_c4/s04_445000024": {
+   "split": "train",
+   "stratum": "s04|yellow generator"
+  },
+  "s04_c4/s04_445000027": {
+   "split": "train",
+   "stratum": "s04|man in red shirt"
+  },
+  "s04_c4/s04_445000028": {
+   "split": "train",
+   "stratum": "s04|green suitcase"
+  },
+  "s04_c4/s04_445000029": {
+   "split": "train",
+   "stratum": "s04|green armchair"
+  },
+  "s04_c4/s04_445000034": {
+   "split": "train",
+   "stratum": "s04|green cube"
+  },
+  "s04_c4/s04_445000035": {
+   "split": "train",
+   "stratum": "s04|police officer"
+  },
+  "s04_c4/s04_445000036": {
+   "split": "train",
+   "stratum": "s04|grey armchair"
+  },
+  "s04_c4/s04_445000039": {
+   "split": "train",
+   "stratum": "s04|yellow generator"
+  },
+  "s04_c4/s04_445000041": {
+   "split": "train",
+   "stratum": "s04|yellow generator"
+  },
+  "s04_c4/s04_445000044": {
+   "split": "train",
+   "stratum": "s04|red fire extinguisher"
+  },
+  "s04_c4/s04_445000045": {
+   "split": "train",
+   "stratum": "s04|man in red shirt"
+  },
+  "s04_c4/s04_445000046": {
+   "split": "train",
+   "stratum": "s04|blue cylinder"
+  },
+  "s04_c4/s04_445000047": {
+   "split": "train",
+   "stratum": "s04|man in brown jacket"
+  },
+  "s04_c4/s04_445000054": {
+   "split": "train",
+   "stratum": "s04|yellow generator"
+  },
+  "s04_c4/s04_445000055": {
+   "split": "train",
+   "stratum": "s04|doctor in white coat"
+  },
+  "s04_c4/s04_445000057": {
+   "split": "train",
+   "stratum": "s04|blue barrel"
+  },
+  "s04_c4/s04_445000058": {
+   "split": "train",
+   "stratum": "s04|red barrel"
+  },
+  "s04_c4/s04_445000059": {
+   "split": "train",
+   "stratum": "s04|grey armchair"
+  },
+  "s04_c4/s04_445000061": {
+   "split": "train",
+   "stratum": "s04|yellow cube"
+  },
+  "s04_c4/s04_445000063": {
+   "split": "train",
+   "stratum": "s04|man in red shirt"
+  },
+  "s04_c4/s04_445000068": {
+   "split": "train",
+   "stratum": "s04|yellow wet floor sign"
+  },
+  "s04_c4/s04_445000070": {
+   "split": "train",
+   "stratum": "s04|grey armchair"
+  },
+  "s04_c4/s04_445000074": {
+   "split": "train",
+   "stratum": "s04|bald man in green shirt"
+  },
+  "s04_c4/s04_445000076": {
+   "split": "train",
+   "stratum": "s04|man in red shirt"
+  },
+  "s04_c4/s04_445000077": {
+   "split": "train",
+   "stratum": "s04|round wooden table"
+  },
+  "s04_c4/s04_445000078": {
+   "split": "train",
+   "stratum": "s04|man in black suit"
+  },
+  "s04_c4/s04_445000079": {
+   "split": "train",
+   "stratum": "s04|covered car"
+  },
+  "s04_c4/s04_445000080": {
+   "split": "train",
+   "stratum": "s04|white cabinet"
+  },
+  "s04_c4/s04_445000081": {
+   "split": "train",
+   "stratum": "s04|man in red shirt"
+  },
+  "s04_c4/s04_445000082": {
+   "split": "train",
+   "stratum": "s04|green suitcase"
+  },
+  "s04_c4/s04_445000085": {
+   "split": "train",
+   "stratum": "s04|red fire extinguisher"
+  },
+  "s04_c4/s04_445000088": {
+   "split": "train",
+   "stratum": "s04|red wooden bench"
+  },
+  "s04_c4/s04_445000090": {
+   "split": "train",
+   "stratum": "s04|red cube"
+  },
+  "s04_c4/s04_445000091": {
+   "split": "train",
+   "stratum": "s04|covered car"
+  },
+  "s05_c1/s05_452000003": {
+   "split": "train",
+   "stratum": "s05|yellow wet floor sign"
+  },
+  "s05_c1/s05_452000004": {
+   "split": "train",
+   "stratum": "s05|black leather sofa"
+  },
+  "s05_c1/s05_452000005": {
+   "split": "train",
+   "stratum": "s05|red cylinder"
+  },
+  "s05_c1/s05_452000009": {
+   "split": "train",
+   "stratum": "s05|doctor in white coat"
+  },
+  "s05_c1/s05_452000011": {
+   "split": "train",
+   "stratum": "s05|man in black suit"
+  },
+  "s05_c1/s05_452000012": {
+   "split": "train",
+   "stratum": "s05|yellow cylinder"
+  },
+  "s05_c1/s05_452000013": {
+   "split": "train",
+   "stratum": "s05|blue cylinder"
+  },
+  "s05_c1/s05_452000015": {
+   "split": "train",
+   "stratum": "s05|bald man in green shirt"
+  },
+  "s05_c1/s05_452000018": {
+   "split": "train",
+   "stratum": "s05|red cylinder"
+  },
+  "s05_c1/s05_452000019": {
+   "split": "train",
+   "stratum": "s05|red sedan"
+  },
+  "s05_c1/s05_452000022": {
+   "split": "train",
+   "stratum": "s05|orange cone"
+  },
+  "s05_c1/s05_452000024": {
+   "split": "train",
+   "stratum": "s05|girl in yellow shirt"
+  },
+  "s05_c1/s05_452000025": {
+   "split": "train",
+   "stratum": "s05|bald man in green shirt"
+  },
+  "s05_c1/s05_452000026": {
+   "split": "train",
+   "stratum": "s05|doctor in white coat"
+  },
+  "s05_c1/s05_452000027": {
+   "split": "train",
+   "stratum": "s05|red fire extinguisher"
+  },
+  "s05_c1/s05_452000028": {
+   "split": "train",
+   "stratum": "s05|red wooden bench"
+  },
+  "s05_c1/s05_452000030": {
+   "split": "train",
+   "stratum": "s05|orange cylinder"
+  },
+  "s05_c1/s05_452000031": {
+   "split": "train",
+   "stratum": "s05|green garbage truck"
+  },
+  "s05_c1/s05_452000035": {
+   "split": "train",
+   "stratum": "s05|green suitcase"
+  },
+  "s05_c1/s05_452000036": {
+   "split": "train",
+   "stratum": "s05|yellow taxi"
+  },
+  "s05_c1/s05_452000037": {
+   "split": "train",
+   "stratum": "s05|green armchair"
+  },
+  "s05_c1/s05_452000040": {
+   "split": "train",
+   "stratum": "s05|yellow cube"
+  },
+  "s05_c1/s05_452000044": {
+   "split": "train",
+   "stratum": "s05|ambulance"
+  },
+  "s05_c1/s05_452000045": {
+   "split": "train",
+   "stratum": "s05|man in brown jacket"
+  },
+  "s05_c1/s05_452000048": {
+   "split": "train",
+   "stratum": "s05|bronze whale statue"
+  },
+  "s05_c1/s05_452000052": {
+   "split": "train",
+   "stratum": "s05|person in purple shirt"
+  },
+  "s05_c1/s05_452000060": {
+   "split": "train",
+   "stratum": "s05|yellow cube"
+  },
+  "s05_c1/s05_452000061": {
+   "split": "train",
+   "stratum": "s05|blue cylinder"
+  },
+  "s05_c1/s05_452000062": {
+   "split": "train",
+   "stratum": "s05|blue cone"
+  },
+  "s05_c1/s05_452000064": {
+   "split": "train",
+   "stratum": "s05|red fire extinguisher"
+  },
+  "s05_c1/s05_452000065": {
+   "split": "train",
+   "stratum": "s05|blue cone"
+  },
+  "s05_c1/s05_452000067": {
+   "split": "train",
+   "stratum": "s05|green garbage truck"
+  },
+  "s05_c1/s05_452000068": {
+   "split": "train",
+   "stratum": "s05|grey armchair"
+  },
+  "s05_c1/s05_452000070": {
+   "split": "train",
+   "stratum": "s05|red cube"
+  },
+  "s05_c1/s05_452000072": {
+   "split": "train",
+   "stratum": "s05|police car"
+  },
+  "s05_c1/s05_452000073": {
+   "split": "train",
+   "stratum": "s05|man in brown jacket"
+  },
+  "s05_c1/s05_452000076": {
+   "split": "train",
+   "stratum": "s05|blue school chair"
+  },
+  "s05_c1/s05_452000077": {
+   "split": "train",
+   "stratum": "s05|red sedan"
+  },
+  "s05_c1/s05_452000079": {
+   "split": "train",
+   "stratum": "s05|bronze whale statue"
+  },
+  "s05_c1/s05_452000080": {
+   "split": "train",
+   "stratum": "s05|round wooden table"
+  },
+  "s05_c1/s05_452000081": {
+   "split": "train",
+   "stratum": "s05|beige sofa"
+  },
+  "s05_c1/s05_452000083": {
+   "split": "train",
+   "stratum": "s05|blue barrel"
+  },
+  "s05_c1/s05_452000084": {
+   "split": "train",
+   "stratum": "s05|blue van"
+  },
+  "s05_c1/s05_452000087": {
+   "split": "train",
+   "stratum": "s05|green cube"
+  },
+  "s05_c1/s05_452000089": {
+   "split": "train",
+   "stratum": "s05|police officer"
+  },
+  "s05_c1/s05_452000090": {
+   "split": "train",
+   "stratum": "s05|white cabinet"
+  },
+  "s05_c1/s05_452000094": {
+   "split": "train",
+   "stratum": "s05|green armchair"
+  },
+  "s05_c1/s05_452000096": {
+   "split": "train",
+   "stratum": "s05|green suitcase"
+  },
+  "s05_c1/s05_452000099": {
+   "split": "train",
+   "stratum": "s05|green armchair"
+  },
+  "s05_c1/s05_452000102": {
+   "split": "train",
+   "stratum": "s05|red cylinder"
+  },
+  "s05_c2/s05_453000001": {
+   "split": "train",
+   "stratum": "s05|white cabinet"
+  },
+  "s05_c2/s05_453000003": {
+   "split": "train",
+   "stratum": "s05|red fire extinguisher"
+  },
+  "s05_c2/s05_453000004": {
+   "split": "train",
+   "stratum": "s05|red wooden bench"
+  },
+  "s05_c2/s05_453000007": {
+   "split": "train",
+   "stratum": "s05|bald man in green shirt"
+  },
+  "s05_c2/s05_453000008": {
+   "split": "train",
+   "stratum": "s05|orange cone"
+  },
+  "s05_c2/s05_453000011": {
+   "split": "train",
+   "stratum": "s05|wooden barrel"
+  },
+  "s05_c2/s05_453000014": {
+   "split": "train",
+   "stratum": "s05|red barrel"
+  },
+  "s05_c2/s05_453000015": {
+   "split": "train",
+   "stratum": "s05|grey armchair"
+  },
+  "s05_c2/s05_453000016": {
+   "split": "train",
+   "stratum": "s05|yellow cylinder"
+  },
+  "s05_c2/s05_453000017": {
+   "split": "train",
+   "stratum": "s05|wooden barrel"
+  },
+  "s05_c2/s05_453000018": {
+   "split": "train",
+   "stratum": "s05|man in black suit"
+  },
+  "s05_c2/s05_453000020": {
+   "split": "train",
+   "stratum": "s05|blue cone"
+  },
+  "s05_c2/s05_453000021": {
+   "split": "train",
+   "stratum": "s05|green suitcase"
+  },
+  "s05_c2/s05_453000022": {
+   "split": "train",
+   "stratum": "s05|police officer"
+  },
+  "s05_c2/s05_453000025": {
+   "split": "train",
+   "stratum": "s05|green hatchback"
+  },
+  "s05_c2/s05_453000028": {
+   "split": "train",
+   "stratum": "s05|black leather sofa"
+  },
+  "s05_c2/s05_453000029": {
+   "split": "train",
+   "stratum": "s05|white plastic chair"
+  },
+  "s05_c2/s05_453000032": {
+   "split": "train",
+   "stratum": "s05|blue barrel"
+  },
+  "s05_c2/s05_453000034": {
+   "split": "train",
+   "stratum": "s05|man in black suit"
+  },
+  "s05_c2/s05_453000035": {
+   "split": "train",
+   "stratum": "s05|man in blue jacket"
+  },
+  "s05_c2/s05_453000036": {
+   "split": "train",
+   "stratum": "s05|blue cone"
+  },
+  "s05_c2/s05_453000037": {
+   "split": "val",
+   "stratum": "s05|yellow wet floor sign"
+  },
+  "s05_c2/s05_453000038": {
+   "split": "train",
+   "stratum": "s05|blue barrel"
+  },
+  "s05_c2/s05_453000039": {
+   "split": "train",
+   "stratum": "s05|red barrel"
+  },
+  "s05_c2/s05_453000040": {
+   "split": "train",
+   "stratum": "s05|yellow cylinder"
+  },
+  "s05_c2/s05_453000041": {
+   "split": "train",
+   "stratum": "s05|wooden barrel"
+  },
+  "s05_c2/s05_453000043": {
+   "split": "train",
+   "stratum": "s05|orange cone"
+  },
+  "s05_c2/s05_453000045": {
+   "split": "train",
+   "stratum": "s05|red barrel"
+  },
+  "s05_c2/s05_453000046": {
+   "split": "val",
+   "stratum": "s05|wooden barrel"
+  },
+  "s05_c2/s05_453000048": {
+   "split": "train",
+   "stratum": "s05|black leather sofa"
+  },
+  "s05_c2/s05_453000049": {
+   "split": "train",
+   "stratum": "s05|red wooden bench"
+  },
+  "s05_c2/s05_453000050": {
+   "split": "train",
+   "stratum": "s05|red fire truck"
+  },
+  "s05_c2/s05_453000052": {
+   "split": "train",
+   "stratum": "s05|bald man in green shirt"
+  },
+  "s05_c2/s05_453000053": {
+   "split": "train",
+   "stratum": "s05|man in blue jacket"
+  },
+  "s05_c2/s05_453000056": {
+   "split": "train",
+   "stratum": "s05|orange cone"
+  },
+  "s05_c2/s05_453000059": {
+   "split": "train",
+   "stratum": "s05|yellow cube"
+  },
+  "s05_c2/s05_453000062": {
+   "split": "train",
+   "stratum": "s05|green suitcase"
+  },
+  "s05_c2/s05_453000063": {
+   "split": "train",
+   "stratum": "s05|orange cone"
+  },
+  "s05_c2/s05_453000067": {
+   "split": "train",
+   "stratum": "s05|blue van"
+  },
+  "s05_c2/s05_453000068": {
+   "split": "train",
+   "stratum": "s05|blue cone"
+  },
+  "s05_c2/s05_453000069": {
+   "split": "val",
+   "stratum": "s05|bronze whale statue"
+  },
+  "s05_c2/s05_453000075": {
+   "split": "train",
+   "stratum": "s05|girl in yellow shirt"
+  },
+  "s05_c2/s05_453000076": {
+   "split": "train",
+   "stratum": "s05|wooden barrel"
+  },
+  "s05_c2/s05_453000077": {
+   "split": "train",
+   "stratum": "s05|green armchair"
+  },
+  "s05_c2/s05_453000078": {
+   "split": "train",
+   "stratum": "s05|red fire extinguisher"
+  },
+  "s05_c2/s05_453000079": {
+   "split": "train",
+   "stratum": "s05|white plastic chair"
+  },
+  "s05_c2/s05_453000082": {
+   "split": "train",
+   "stratum": "s05|white plastic chair"
+  },
+  "s05_c2/s05_453000084": {
+   "split": "train",
+   "stratum": "s05|yellow cube"
+  },
+  "s05_c2/s05_453000085": {
+   "split": "train",
+   "stratum": "s05|white cabinet"
+  },
+  "s05_c2/s05_453000086": {
+   "split": "train",
+   "stratum": "s05|yellow generator"
+  },
+  "s05_c3/s05_454000000": {
+   "split": "train",
+   "stratum": "s05|covered car"
+  },
+  "s05_c3/s05_454000003": {
+   "split": "train",
+   "stratum": "s05|white cabinet"
+  },
+  "s05_c3/s05_454000011": {
+   "split": "train",
+   "stratum": "s05|red fire truck"
+  },
+  "s05_c3/s05_454000013": {
+   "split": "train",
+   "stratum": "s05|bronze whale statue"
+  },
+  "s05_c3/s05_454000014": {
+   "split": "train",
+   "stratum": "s05|black leather sofa"
+  },
+  "s05_c3/s05_454000017": {
+   "split": "train",
+   "stratum": "s05|bald man in green shirt"
+  },
+  "s05_c3/s05_454000018": {
+   "split": "train",
+   "stratum": "s05|yellow cube"
+  },
+  "s05_c3/s05_454000019": {
+   "split": "train",
+   "stratum": "s05|blue van"
+  },
+  "s05_c3/s05_454000023": {
+   "split": "train",
+   "stratum": "s05|red fire truck"
+  },
+  "s05_c3/s05_454000026": {
+   "split": "train",
+   "stratum": "s05|bronze whale statue"
+  },
+  "s05_c3/s05_454000027": {
+   "split": "train",
+   "stratum": "s05|wooden barrel"
+  },
+  "s05_c3/s05_454000028": {
+   "split": "train",
+   "stratum": "s05|doctor in white coat"
+  },
+  "s05_c3/s05_454000029": {
+   "split": "train",
+   "stratum": "s05|round wooden table"
+  },
+  "s05_c3/s05_454000031": {
+   "split": "train",
+   "stratum": "s05|yellow taxi"
+  },
+  "s05_c3/s05_454000033": {
+   "split": "train",
+   "stratum": "s05|yellow generator"
+  },
+  "s05_c3/s05_454000034": {
+   "split": "train",
+   "stratum": "s05|white cabinet"
+  },
+  "s05_c3/s05_454000035": {
+   "split": "train",
+   "stratum": "s05|man in brown jacket"
+  },
+  "s05_c3/s05_454000038": {
+   "split": "train",
+   "stratum": "s05|yellow wet floor sign"
+  },
+  "s05_c3/s05_454000040": {
+   "split": "val",
+   "stratum": "s05|blue van"
+  },
+  "s05_c3/s05_454000041": {
+   "split": "val",
+   "stratum": "s05|green armchair"
+  },
+  "s05_c3/s05_454000042": {
+   "split": "val",
+   "stratum": "s05|bald man in green shirt"
+  },
+  "s05_c3/s05_454000045": {
+   "split": "train",
+   "stratum": "s05|man in blue jacket"
+  },
+  "s05_c3/s05_454000046": {
+   "split": "train",
+   "stratum": "s05|person in purple shirt"
+  },
+  "s05_c3/s05_454000047": {
+   "split": "train",
+   "stratum": "s05|round wooden table"
+  },
+  "s05_c3/s05_454000048": {
+   "split": "train",
+   "stratum": "s05|green armchair"
+  },
+  "s05_c3/s05_454000050": {
+   "split": "train",
+   "stratum": "s05|green armchair"
+  },
+  "s05_c3/s05_454000051": {
+   "split": "val",
+   "stratum": "s05|doctor in white coat"
+  },
+  "s05_c3/s05_454000052": {
+   "split": "train",
+   "stratum": "s05|covered car"
+  },
+  "s05_c3/s05_454000059": {
+   "split": "train",
+   "stratum": "s05|green armchair"
+  },
+  "s05_c3/s05_454000060": {
+   "split": "train",
+   "stratum": "s05|red sedan"
+  },
+  "s05_c3/s05_454000061": {
+   "split": "train",
+   "stratum": "s05|old television"
+  },
+  "s05_c3/s05_454000066": {
+   "split": "train",
+   "stratum": "s05|yellow cube"
+  },
+  "s05_c3/s05_454000069": {
+   "split": "train",
+   "stratum": "s05|man in red shirt"
+  },
+  "s05_c3/s05_454000071": {
+   "split": "train",
+   "stratum": "s05|white plastic chair"
+  },
+  "s05_c3/s05_454000072": {
+   "split": "train",
+   "stratum": "s05|person in purple shirt"
+  },
+  "s05_c3/s05_454000074": {
+   "split": "train",
+   "stratum": "s05|red wooden bench"
+  },
+  "s05_c3/s05_454000075": {
+   "split": "train",
+   "stratum": "s05|orange cylinder"
+  },
+  "s05_c3/s05_454000077": {
+   "split": "train",
+   "stratum": "s05|red cube"
+  },
+  "s05_c3/s05_454000082": {
+   "split": "train",
+   "stratum": "s05|orange cylinder"
+  },
+  "s05_c3/s05_454000083": {
+   "split": "train",
+   "stratum": "s05|blue barrel"
+  },
+  "s05_c3/s05_454000085": {
+   "split": "train",
+   "stratum": "s05|green suitcase"
+  },
+  "s05_c3/s05_454000094": {
+   "split": "train",
+   "stratum": "s05|orange cylinder"
+  },
+  "s05_c3/s05_454000095": {
+   "split": "train",
+   "stratum": "s05|blue van"
+  },
+  "s05_c3/s05_454000096": {
+   "split": "train",
+   "stratum": "s05|man in brown jacket"
+  },
+  "s05_c3/s05_454000098": {
+   "split": "train",
+   "stratum": "s05|beige sofa"
+  },
+  "s05_c3/s05_454000101": {
+   "split": "train",
+   "stratum": "s05|man in brown jacket"
+  },
+  "s05_c3/s05_454000102": {
+   "split": "train",
+   "stratum": "s05|orange cylinder"
+  },
+  "s05_c3/s05_454000103": {
+   "split": "train",
+   "stratum": "s05|girl in yellow shirt"
+  },
+  "s05_c3/s05_454000104": {
+   "split": "train",
+   "stratum": "s05|beige sofa"
+  },
+  "s05_c3/s05_454000107": {
+   "split": "train",
+   "stratum": "s05|blue cone"
+  },
+  "s05_c4/s05_455000000": {
+   "split": "train",
+   "stratum": "s05|person in purple shirt"
+  },
+  "s05_c4/s05_455000001": {
+   "split": "train",
+   "stratum": "s05|green hatchback"
+  },
+  "s05_c4/s05_455000003": {
+   "split": "train",
+   "stratum": "s05|blue cylinder"
+  },
+  "s05_c4/s05_455000004": {
+   "split": "train",
+   "stratum": "s05|white pickup truck"
+  },
+  "s05_c4/s05_455000005": {
+   "split": "train",
+   "stratum": "s05|red tool chest"
+  },
+  "s05_c4/s05_455000008": {
+   "split": "val",
+   "stratum": "s05|man in brown jacket"
+  },
+  "s05_c4/s05_455000009": {
+   "split": "train",
+   "stratum": "s05|red fire extinguisher"
+  },
+  "s05_c4/s05_455000011": {
+   "split": "train",
+   "stratum": "s05|red cylinder"
+  },
+  "s05_c4/s05_455000013": {
+   "split": "train",
+   "stratum": "s05|man in black suit"
+  },
+  "s05_c4/s05_455000016": {
+   "split": "train",
+   "stratum": "s05|yellow wet floor sign"
+  },
+  "s05_c4/s05_455000018": {
+   "split": "train",
+   "stratum": "s05|green hatchback"
+  },
+  "s05_c4/s05_455000022": {
+   "split": "train",
+   "stratum": "s05|wooden barrel"
+  },
+  "s05_c4/s05_455000023": {
+   "split": "train",
+   "stratum": "s05|man in brown jacket"
+  },
+  "s05_c4/s05_455000024": {
+   "split": "train",
+   "stratum": "s05|person in purple shirt"
+  },
+  "s05_c4/s05_455000025": {
+   "split": "train",
+   "stratum": "s05|man in red shirt"
+  },
+  "s05_c4/s05_455000029": {
+   "split": "train",
+   "stratum": "s05|blue barrel"
+  },
+  "s05_c4/s05_455000031": {
+   "split": "train",
+   "stratum": "s05|blue van"
+  },
+  "s05_c4/s05_455000033": {
+   "split": "train",
+   "stratum": "s05|yellow generator"
+  },
+  "s05_c4/s05_455000034": {
+   "split": "train",
+   "stratum": "s05|red barrel"
+  },
+  "s05_c4/s05_455000038": {
+   "split": "train",
+   "stratum": "s05|bald man in green shirt"
+  },
+  "s05_c4/s05_455000039": {
+   "split": "train",
+   "stratum": "s05|orange cylinder"
+  },
+  "s05_c4/s05_455000041": {
+   "split": "train",
+   "stratum": "s05|white cabinet"
+  },
+  "s05_c4/s05_455000043": {
+   "split": "train",
+   "stratum": "s05|man in brown jacket"
+  },
+  "s05_c4/s05_455000045": {
+   "split": "train",
+   "stratum": "s05|man in red shirt"
+  },
+  "s05_c4/s05_455000047": {
+   "split": "train",
+   "stratum": "s05|black leather sofa"
+  },
+  "s05_c4/s05_455000050": {
+   "split": "train",
+   "stratum": "s05|bronze whale statue"
+  },
+  "s05_c4/s05_455000051": {
+   "split": "train",
+   "stratum": "s05|yellow wet floor sign"
+  },
+  "s05_c4/s05_455000052": {
+   "split": "train",
+   "stratum": "s05|red barrel"
+  },
+  "s05_c4/s05_455000056": {
+   "split": "train",
+   "stratum": "s05|bronze whale statue"
+  },
+  "s05_c4/s05_455000057": {
+   "split": "train",
+   "stratum": "s05|covered car"
+  },
+  "s05_c4/s05_455000058": {
+   "split": "train",
+   "stratum": "s05|orange cone"
+  },
+  "s05_c4/s05_455000059": {
+   "split": "train",
+   "stratum": "s05|red fire extinguisher"
+  },
+  "s05_c4/s05_455000060": {
+   "split": "train",
+   "stratum": "s05|yellow wet floor sign"
+  },
+  "s05_c4/s05_455000061": {
+   "split": "train",
+   "stratum": "s05|black leather sofa"
+  },
+  "s05_c4/s05_455000062": {
+   "split": "train",
+   "stratum": "s05|red cube"
+  },
+  "s05_c4/s05_455000063": {
+   "split": "train",
+   "stratum": "s05|red cube"
+  },
+  "s05_c4/s05_455000065": {
+   "split": "train",
+   "stratum": "s05|old television"
+  },
+  "s05_c4/s05_455000066": {
+   "split": "train",
+   "stratum": "s05|blue cylinder"
+  },
+  "s05_c4/s05_455000067": {
+   "split": "train",
+   "stratum": "s05|ambulance"
+  },
+  "s05_c4/s05_455000068": {
+   "split": "train",
+   "stratum": "s05|yellow wet floor sign"
+  },
+  "s05_c4/s05_455000069": {
+   "split": "train",
+   "stratum": "s05|doctor in white coat"
+  },
+  "s05_c4/s05_455000070": {
+   "split": "train",
+   "stratum": "s05|doctor in white coat"
+  },
+  "s05_c4/s05_455000071": {
+   "split": "train",
+   "stratum": "s05|girl in yellow shirt"
+  },
+  "s05_c4/s05_455000075": {
+   "split": "train",
+   "stratum": "s05|doctor in white coat"
+  },
+  "s05_c4/s05_455000076": {
+   "split": "train",
+   "stratum": "s05|round wooden table"
+  },
+  "s05_c4/s05_455000078": {
+   "split": "train",
+   "stratum": "s05|red fire truck"
+  },
+  "s05_c4/s05_455000079": {
+   "split": "train",
+   "stratum": "s05|red wooden bench"
+  },
+  "s05_c4/s05_455000080": {
+   "split": "train",
+   "stratum": "s05|blue van"
+  },
+  "s05_c4/s05_455000081": {
+   "split": "train",
+   "stratum": "s05|red sedan"
+  },
+  "s05_c4/s05_455000083": {
+   "split": "train",
+   "stratum": "s05|green suitcase"
+  },
+  "s06_c1/s06_462000000": {
+   "split": "train",
+   "stratum": "s06|blue barrel"
+  },
+  "s06_c1/s06_462000002": {
+   "split": "train",
+   "stratum": "s06|orange cone"
+  },
+  "s06_c1/s06_462000010": {
+   "split": "train",
+   "stratum": "s06|blue van"
+  },
+  "s06_c1/s06_462000013": {
+   "split": "train",
+   "stratum": "s06|blue barrel"
+  },
+  "s06_c1/s06_462000015": {
+   "split": "train",
+   "stratum": "s06|bronze whale statue"
+  },
+  "s06_c1/s06_462000016": {
+   "split": "train",
+   "stratum": "s06|red cube"
+  },
+  "s06_c1/s06_462000017": {
+   "split": "train",
+   "stratum": "s06|wooden barrel"
+  },
+  "s06_c1/s06_462000018": {
+   "split": "train",
+   "stratum": "s06|police officer"
+  },
+  "s06_c1/s06_462000026": {
+   "split": "train",
+   "stratum": "s06|man in black suit"
+  },
+  "s06_c1/s06_462000032": {
+   "split": "train",
+   "stratum": "s06|red cube"
+  },
+  "s06_c1/s06_462000033": {
+   "split": "train",
+   "stratum": "s06|yellow suv"
+  },
+  "s06_c1/s06_462000034": {
+   "split": "train",
+   "stratum": "s06|man in red shirt"
+  },
+  "s06_c1/s06_462000037": {
+   "split": "train",
+   "stratum": "s06|white cabinet"
+  },
+  "s06_c1/s06_462000038": {
+   "split": "train",
+   "stratum": "s06|red cylinder"
+  },
+  "s06_c1/s06_462000039": {
+   "split": "val",
+   "stratum": "s06|orange cone"
+  },
+  "s06_c1/s06_462000042": {
+   "split": "train",
+   "stratum": "s06|blue cylinder"
+  },
+  "s06_c1/s06_462000044": {
+   "split": "train",
+   "stratum": "s06|yellow generator"
+  },
+  "s06_c1/s06_462000045": {
+   "split": "train",
+   "stratum": "s06|old television"
+  },
+  "s06_c1/s06_462000046": {
+   "split": "train",
+   "stratum": "s06|blue cylinder"
+  },
+  "s06_c1/s06_462000047": {
+   "split": "train",
+   "stratum": "s06|green suitcase"
+  },
+  "s06_c1/s06_462000054": {
+   "split": "train",
+   "stratum": "s06|man in brown jacket"
+  },
+  "s06_c1/s06_462000055": {
+   "split": "train",
+   "stratum": "s06|black leather sofa"
+  },
+  "s06_c1/s06_462000056": {
+   "split": "train",
+   "stratum": "s06|man in blue jacket"
+  },
+  "s06_c1/s06_462000058": {
+   "split": "train",
+   "stratum": "s06|white pickup truck"
+  },
+  "s06_c1/s06_462000061": {
+   "split": "train",
+   "stratum": "s06|white cabinet"
+  },
+  "s06_c1/s06_462000062": {
+   "split": "train",
+   "stratum": "s06|red tool chest"
+  },
+  "s06_c1/s06_462000063": {
+   "split": "train",
+   "stratum": "s06|white plastic chair"
+  },
+  "s06_c1/s06_462000065": {
+   "split": "train",
+   "stratum": "s06|green suitcase"
+  },
+  "s06_c1/s06_462000068": {
+   "split": "train",
+   "stratum": "s06|green hatchback"
+  },
+  "s06_c1/s06_462000070": {
+   "split": "train",
+   "stratum": "s06|orange cone"
+  },
+  "s06_c1/s06_462000071": {
+   "split": "train",
+   "stratum": "s06|orange cylinder"
+  },
+  "s06_c1/s06_462000072": {
+   "split": "train",
+   "stratum": "s06|person in purple shirt"
+  },
+  "s06_c1/s06_462000073": {
+   "split": "train",
+   "stratum": "s06|bronze whale statue"
+  },
+  "s06_c1/s06_462000077": {
+   "split": "train",
+   "stratum": "s06|yellow suv"
+  },
+  "s06_c1/s06_462000078": {
+   "split": "train",
+   "stratum": "s06|man in brown jacket"
+  },
+  "s06_c1/s06_462000079": {
+   "split": "val",
+   "stratum": "s06|white cabinet"
+  },
+  "s06_c1/s06_462000085": {
+   "split": "train",
+   "stratum": "s06|round wooden table"
+  },
+  "s06_c1/s06_462000087": {
+   "split": "train",
+   "stratum": "s06|man in red shirt"
+  },
+  "s06_c1/s06_462000099": {
+   "split": "train",
+   "stratum": "s06|green sphere"
+  },
+  "s06_c1/s06_462000103": {
+   "split": "train",
+   "stratum": "s06|white plastic chair"
+  },
+  "s06_c1/s06_462000108": {
+   "split": "train",
+   "stratum": "s06|orange cone"
+  },
+  "s06_c1/s06_462000112": {
+   "split": "train",
+   "stratum": "s06|red cube"
+  },
+  "s06_c1/s06_462000115": {
+   "split": "train",
+   "stratum": "s06|bald man in green shirt"
+  },
+  "s06_c1/s06_462000117": {
+   "split": "train",
+   "stratum": "s06|yellow suv"
+  },
+  "s06_c1/s06_462000119": {
+   "split": "train",
+   "stratum": "s06|white pickup truck"
+  },
+  "s06_c1/s06_462000120": {
+   "split": "train",
+   "stratum": "s06|bald man in green shirt"
+  },
+  "s06_c1/s06_462000121": {
+   "split": "train",
+   "stratum": "s06|red tool chest"
+  },
+  "s06_c1/s06_462000122": {
+   "split": "train",
+   "stratum": "s06|man in brown jacket"
+  },
+  "s06_c1/s06_462000124": {
+   "split": "train",
+   "stratum": "s06|red cylinder"
+  },
+  "s06_c1/s06_462000128": {
+   "split": "train",
+   "stratum": "s06|yellow cube"
+  },
+  "s06_c2/s06_463000001": {
+   "split": "train",
+   "stratum": "s06|red cube"
+  },
+  "s06_c2/s06_463000012": {
+   "split": "train",
+   "stratum": "s06|green armchair"
+  },
+  "s06_c2/s06_463000016": {
+   "split": "train",
+   "stratum": "s06|man in red shirt"
+  },
+  "s06_c2/s06_463000019": {
+   "split": "train",
+   "stratum": "s06|blue school chair"
+  },
+  "s06_c2/s06_463000020": {
+   "split": "train",
+   "stratum": "s06|yellow cylinder"
+  },
+  "s06_c2/s06_463000021": {
+   "split": "train",
+   "stratum": "s06|red cylinder"
+  },
+  "s06_c2/s06_463000022": {
+   "split": "train",
+   "stratum": "s06|yellow sphere"
+  },
+  "s06_c2/s06_463000027": {
+   "split": "train",
+   "stratum": "s06|green sphere"
+  },
+  "s06_c2/s06_463000028": {
+   "split": "train",
+   "stratum": "s06|blue cylinder"
+  },
+  "s06_c2/s06_463000029": {
+   "split": "train",
+   "stratum": "s06|red fire truck"
+  },
+  "s06_c2/s06_463000030": {
+   "split": "train",
+   "stratum": "s06|yellow suv"
+  },
+  "s06_c2/s06_463000034": {
+   "split": "train",
+   "stratum": "s06|white pickup truck"
+  },
+  "s06_c2/s06_463000040": {
+   "split": "train",
+   "stratum": "s06|green armchair"
+  },
+  "s06_c2/s06_463000041": {
+   "split": "train",
+   "stratum": "s06|red tool chest"
+  },
+  "s06_c2/s06_463000043": {
+   "split": "train",
+   "stratum": "s06|green cube"
+  },
+  "s06_c2/s06_463000044": {
+   "split": "train",
+   "stratum": "s06|white plastic chair"
+  },
+  "s06_c2/s06_463000046": {
+   "split": "train",
+   "stratum": "s06|man in black suit"
+  },
+  "s06_c2/s06_463000054": {
+   "split": "train",
+   "stratum": "s06|red sedan"
+  },
+  "s06_c2/s06_463000057": {
+   "split": "train",
+   "stratum": "s06|red wooden bench"
+  },
+  "s06_c2/s06_463000058": {
+   "split": "train",
+   "stratum": "s06|man in black suit"
+  },
+  "s06_c2/s06_463000060": {
+   "split": "train",
+   "stratum": "s06|police car"
+  },
+  "s06_c2/s06_463000062": {
+   "split": "train",
+   "stratum": "s06|police officer"
+  },
+  "s06_c2/s06_463000063": {
+   "split": "train",
+   "stratum": "s06|person in purple shirt"
+  },
+  "s06_c2/s06_463000064": {
+   "split": "train",
+   "stratum": "s06|green sphere"
+  },
+  "s06_c2/s06_463000067": {
+   "split": "train",
+   "stratum": "s06|green cube"
+  },
+  "s06_c2/s06_463000069": {
+   "split": "train",
+   "stratum": "s06|girl in yellow shirt"
+  },
+  "s06_c2/s06_463000070": {
+   "split": "train",
+   "stratum": "s06|white cabinet"
+  },
+  "s06_c2/s06_463000074": {
+   "split": "train",
+   "stratum": "s06|blue cylinder"
+  },
+  "s06_c2/s06_463000075": {
+   "split": "train",
+   "stratum": "s06|blue school chair"
+  },
+  "s06_c2/s06_463000076": {
+   "split": "train",
+   "stratum": "s06|man in brown jacket"
+  },
+  "s06_c2/s06_463000078": {
+   "split": "train",
+   "stratum": "s06|man in black suit"
+  },
+  "s06_c2/s06_463000081": {
+   "split": "train",
+   "stratum": "s06|white plastic chair"
+  },
+  "s06_c2/s06_463000082": {
+   "split": "train",
+   "stratum": "s06|blue school chair"
+  },
+  "s06_c2/s06_463000087": {
+   "split": "train",
+   "stratum": "s06|yellow cylinder"
+  },
+  "s06_c2/s06_463000091": {
+   "split": "train",
+   "stratum": "s06|green suitcase"
+  },
+  "s06_c2/s06_463000092": {
+   "split": "train",
+   "stratum": "s06|man in black suit"
+  },
+  "s06_c2/s06_463000095": {
+   "split": "train",
+   "stratum": "s06|green suitcase"
+  },
+  "s06_c2/s06_463000103": {
+   "split": "train",
+   "stratum": "s06|round wooden table"
+  },
+  "s06_c2/s06_463000111": {
+   "split": "train",
+   "stratum": "s06|red fire extinguisher"
+  },
+  "s06_c2/s06_463000113": {
+   "split": "train",
+   "stratum": "s06|bald man in green shirt"
+  },
+  "s06_c2/s06_463000114": {
+   "split": "train",
+   "stratum": "s06|round wooden table"
+  },
+  "s06_c2/s06_463000124": {
+   "split": "train",
+   "stratum": "s06|red cylinder"
+  },
+  "s06_c2/s06_463000129": {
+   "split": "train",
+   "stratum": "s06|police officer"
+  },
+  "s06_c2/s06_463000130": {
+   "split": "train",
+   "stratum": "s06|covered car"
+  },
+  "s06_c2/s06_463000132": {
+   "split": "train",
+   "stratum": "s06|orange cone"
+  },
+  "s06_c2/s06_463000134": {
+   "split": "train",
+   "stratum": "s06|orange cylinder"
+  },
+  "s06_c2/s06_463000135": {
+   "split": "train",
+   "stratum": "s06|orange cylinder"
+  },
+  "s06_c2/s06_463000136": {
+   "split": "train",
+   "stratum": "s06|beige sofa"
+  },
+  "s06_c2/s06_463000137": {
+   "split": "train",
+   "stratum": "s06|doctor in white coat"
+  },
+  "s06_c2/s06_463000143": {
+   "split": "train",
+   "stratum": "s06|red barrel"
+  },
+  "s06_c3/s06_464000002": {
+   "split": "train",
+   "stratum": "s06|man in blue jacket"
+  },
+  "s06_c3/s06_464000003": {
+   "split": "train",
+   "stratum": "s06|man in blue jacket"
+  },
+  "s06_c3/s06_464000004": {
+   "split": "train",
+   "stratum": "s06|bronze whale statue"
+  },
+  "s06_c3/s06_464000010": {
+   "split": "train",
+   "stratum": "s06|red barrel"
+  },
+  "s06_c3/s06_464000011": {
+   "split": "val",
+   "stratum": "s06|yellow cylinder"
+  },
+  "s06_c3/s06_464000012": {
+   "split": "train",
+   "stratum": "s06|red fire extinguisher"
+  },
+  "s06_c3/s06_464000014": {
+   "split": "train",
+   "stratum": "s06|man in red shirt"
+  },
+  "s06_c3/s06_464000019": {
+   "split": "train",
+   "stratum": "s06|green sphere"
+  },
+  "s06_c3/s06_464000020": {
+   "split": "train",
+   "stratum": "s06|man in black suit"
+  },
+  "s06_c3/s06_464000022": {
+   "split": "train",
+   "stratum": "s06|yellow cylinder"
+  },
+  "s06_c3/s06_464000024": {
+   "split": "train",
+   "stratum": "s06|yellow cube"
+  },
+  "s06_c3/s06_464000027": {
+   "split": "train",
+   "stratum": "s06|yellow generator"
+  },
+  "s06_c3/s06_464000029": {
+   "split": "train",
+   "stratum": "s06|yellow wet floor sign"
+  },
+  "s06_c3/s06_464000037": {
+   "split": "train",
+   "stratum": "s06|orange cylinder"
+  },
+  "s06_c3/s06_464000038": {
+   "split": "val",
+   "stratum": "s06|blue school chair"
+  },
+  "s06_c3/s06_464000039": {
+   "split": "train",
+   "stratum": "s06|man in brown jacket"
+  },
+  "s06_c3/s06_464000043": {
+   "split": "train",
+   "stratum": "s06|red barrel"
+  },
+  "s06_c3/s06_464000044": {
+   "split": "train",
+   "stratum": "s06|red fire truck"
+  },
+  "s06_c3/s06_464000054": {
+   "split": "train",
+   "stratum": "s06|green suitcase"
+  },
+  "s06_c3/s06_464000055": {
+   "split": "train",
+   "stratum": "s06|old television"
+  },
+  "s06_c3/s06_464000056": {
+   "split": "train",
+   "stratum": "s06|police car"
+  },
+  "s06_c3/s06_464000058": {
+   "split": "train",
+   "stratum": "s06|blue school chair"
+  },
+  "s06_c3/s06_464000060": {
+   "split": "train",
+   "stratum": "s06|blue school chair"
+  },
+  "s06_c3/s06_464000063": {
+   "split": "train",
+   "stratum": "s06|blue school chair"
+  },
+  "s06_c3/s06_464000068": {
+   "split": "val",
+   "stratum": "s06|orange cylinder"
+  },
+  "s06_c3/s06_464000075": {
+   "split": "train",
+   "stratum": "s06|yellow suv"
+  },
+  "s06_c3/s06_464000080": {
+   "split": "train",
+   "stratum": "s06|green cube"
+  },
+  "s06_c3/s06_464000081": {
+   "split": "train",
+   "stratum": "s06|green armchair"
+  },
+  "s06_c3/s06_464000082": {
+   "split": "val",
+   "stratum": "s06|white pickup truck"
+  },
+  "s06_c3/s06_464000083": {
+   "split": "train",
+   "stratum": "s06|black leather sofa"
+  },
+  "s06_c3/s06_464000088": {
+   "split": "train",
+   "stratum": "s06|red sedan"
+  },
+  "s06_c3/s06_464000092": {
+   "split": "train",
+   "stratum": "s06|red tool chest"
+  },
+  "s06_c3/s06_464000094": {
+   "split": "train",
+   "stratum": "s06|person in purple shirt"
+  },
+  "s06_c3/s06_464000095": {
+   "split": "train",
+   "stratum": "s06|police officer"
+  },
+  "s06_c3/s06_464000098": {
+   "split": "train",
+   "stratum": "s06|red fire truck"
+  },
+  "s06_c3/s06_464000100": {
+   "split": "train",
+   "stratum": "s06|girl in yellow shirt"
+  },
+  "s06_c3/s06_464000102": {
+   "split": "train",
+   "stratum": "s06|red wooden bench"
+  },
+  "s06_c3/s06_464000106": {
+   "split": "train",
+   "stratum": "s06|red fire extinguisher"
+  },
+  "s06_c3/s06_464000108": {
+   "split": "train",
+   "stratum": "s06|blue cone"
+  },
+  "s06_c3/s06_464000110": {
+   "split": "train",
+   "stratum": "s06|man in blue jacket"
+  },
+  "s06_c3/s06_464000113": {
+   "split": "train",
+   "stratum": "s06|yellow wet floor sign"
+  },
+  "s06_c3/s06_464000118": {
+   "split": "train",
+   "stratum": "s06|yellow wet floor sign"
+  },
+  "s06_c3/s06_464000120": {
+   "split": "train",
+   "stratum": "s06|red fire extinguisher"
+  },
+  "s06_c3/s06_464000121": {
+   "split": "val",
+   "stratum": "s06|red tool chest"
+  },
+  "s06_c3/s06_464000122": {
+   "split": "train",
+   "stratum": "s06|police officer"
+  },
+  "s06_c3/s06_464000124": {
+   "split": "train",
+   "stratum": "s06|yellow sphere"
+  },
+  "s06_c3/s06_464000128": {
+   "split": "train",
+   "stratum": "s06|police car"
+  },
+  "s06_c3/s06_464000129": {
+   "split": "train",
+   "stratum": "s06|red barrel"
+  },
+  "s06_c3/s06_464000130": {
+   "split": "train",
+   "stratum": "s06|bald man in green shirt"
+  },
+  "s06_c3/s06_464000133": {
+   "split": "train",
+   "stratum": "s06|wooden barrel"
+  },
+  "s06_c4/s06_465000002": {
+   "split": "train",
+   "stratum": "s06|yellow cube"
+  },
+  "s06_c4/s06_465000003": {
+   "split": "train",
+   "stratum": "s06|white pickup truck"
+  },
+  "s06_c4/s06_465000005": {
+   "split": "train",
+   "stratum": "s06|man in black suit"
+  },
+  "s06_c4/s06_465000010": {
+   "split": "val",
+   "stratum": "s06|man in black suit"
+  },
+  "s06_c4/s06_465000015": {
+   "split": "val",
+   "stratum": "s06|green sphere"
+  },
+  "s06_c4/s06_465000024": {
+   "split": "train",
+   "stratum": "s06|red wooden bench"
+  },
+  "s06_c4/s06_465000026": {
+   "split": "train",
+   "stratum": "s06|white plastic chair"
+  },
+  "s06_c4/s06_465000027": {
+   "split": "train",
+   "stratum": "s06|round wooden table"
+  },
+  "s06_c4/s06_465000033": {
+   "split": "train",
+   "stratum": "s06|white pickup truck"
+  },
+  "s06_c4/s06_465000035": {
+   "split": "train",
+   "stratum": "s06|green cube"
+  },
+  "s06_c4/s06_465000038": {
+   "split": "train",
+   "stratum": "s06|green suitcase"
+  },
+  "s06_c4/s06_465000039": {
+   "split": "train",
+   "stratum": "s06|orange cone"
+  },
+  "s06_c4/s06_465000046": {
+   "split": "train",
+   "stratum": "s06|person in purple shirt"
+  },
+  "s06_c4/s06_465000048": {
+   "split": "train",
+   "stratum": "s06|orange cylinder"
+  },
+  "s06_c4/s06_465000053": {
+   "split": "train",
+   "stratum": "s06|green armchair"
+  },
+  "s06_c4/s06_465000054": {
+   "split": "train",
+   "stratum": "s06|red tool chest"
+  },
+  "s06_c4/s06_465000060": {
+   "split": "train",
+   "stratum": "s06|man in red shirt"
+  },
+  "s06_c4/s06_465000062": {
+   "split": "train",
+   "stratum": "s06|girl in yellow shirt"
+  },
+  "s06_c4/s06_465000065": {
+   "split": "train",
+   "stratum": "s06|blue van"
+  },
+  "s06_c4/s06_465000068": {
+   "split": "train",
+   "stratum": "s06|doctor in white coat"
+  },
+  "s06_c4/s06_465000071": {
+   "split": "train",
+   "stratum": "s06|yellow cylinder"
+  },
+  "s06_c4/s06_465000075": {
+   "split": "train",
+   "stratum": "s06|yellow sphere"
+  },
+  "s06_c4/s06_465000076": {
+   "split": "train",
+   "stratum": "s06|person in purple shirt"
+  },
+  "s06_c4/s06_465000078": {
+   "split": "train",
+   "stratum": "s06|beige sofa"
+  },
+  "s06_c4/s06_465000079": {
+   "split": "train",
+   "stratum": "s06|red fire extinguisher"
+  },
+  "s06_c4/s06_465000082": {
+   "split": "train",
+   "stratum": "s06|covered car"
+  },
+  "s06_c4/s06_465000083": {
+   "split": "train",
+   "stratum": "s06|white cabinet"
+  },
+  "s06_c4/s06_465000085": {
+   "split": "train",
+   "stratum": "s06|red cylinder"
+  },
+  "s06_c4/s06_465000086": {
+   "split": "train",
+   "stratum": "s06|blue van"
+  },
+  "s06_c4/s06_465000087": {
+   "split": "train",
+   "stratum": "s06|red barrel"
+  },
+  "s06_c4/s06_465000088": {
+   "split": "train",
+   "stratum": "s06|white cabinet"
+  },
+  "s06_c4/s06_465000090": {
+   "split": "train",
+   "stratum": "s06|green sphere"
+  },
+  "s06_c4/s06_465000092": {
+   "split": "train",
+   "stratum": "s06|green hatchback"
+  },
+  "s06_c4/s06_465000093": {
+   "split": "train",
+   "stratum": "s06|old television"
+  },
+  "s06_c4/s06_465000094": {
+   "split": "train",
+   "stratum": "s06|green sphere"
+  },
+  "s06_c4/s06_465000099": {
+   "split": "train",
+   "stratum": "s06|red sedan"
+  },
+  "s06_c4/s06_465000101": {
+   "split": "train",
+   "stratum": "s06|old television"
+  },
+  "s06_c4/s06_465000105": {
+   "split": "train",
+   "stratum": "s06|ambulance"
+  },
+  "s06_c4/s06_465000106": {
+   "split": "train",
+   "stratum": "s06|doctor in white coat"
+  },
+  "s06_c4/s06_465000107": {
+   "split": "train",
+   "stratum": "s06|man in brown jacket"
+  },
+  "s06_c4/s06_465000109": {
+   "split": "train",
+   "stratum": "s06|man in red shirt"
+  },
+  "s06_c4/s06_465000110": {
+   "split": "train",
+   "stratum": "s06|yellow cylinder"
+  },
+  "s06_c4/s06_465000112": {
+   "split": "train",
+   "stratum": "s06|yellow cylinder"
+  },
+  "s06_c4/s06_465000114": {
+   "split": "train",
+   "stratum": "s06|green sphere"
+  },
+  "s06_c4/s06_465000115": {
+   "split": "train",
+   "stratum": "s06|yellow wet floor sign"
+  },
+  "s06_c4/s06_465000116": {
+   "split": "train",
+   "stratum": "s06|man in black suit"
+  },
+  "s06_c4/s06_465000120": {
+   "split": "train",
+   "stratum": "s06|man in blue jacket"
+  },
+  "s06_c4/s06_465000121": {
+   "split": "train",
+   "stratum": "s06|yellow sphere"
+  },
+  "s06_c4/s06_465000123": {
+   "split": "train",
+   "stratum": "s06|yellow generator"
+  },
+  "s06_c4/s06_465000125": {
+   "split": "train",
+   "stratum": "s06|police car"
+  },
+  "s07_c1/s07_472000000": {
+   "split": "train",
+   "stratum": "s07|red sedan"
+  },
+  "s07_c1/s07_472000001": {
+   "split": "train",
+   "stratum": "s07|red wooden bench"
+  },
+  "s07_c1/s07_472000002": {
+   "split": "train",
+   "stratum": "s07|grey armchair"
+  },
+  "s07_c1/s07_472000003": {
+   "split": "train",
+   "stratum": "s07|ambulance"
+  },
+  "s07_c1/s07_472000004": {
+   "split": "train",
+   "stratum": "s07|yellow cylinder"
+  },
+  "s07_c1/s07_472000005": {
+   "split": "train",
+   "stratum": "s07|ambulance"
+  },
+  "s07_c1/s07_472000006": {
+   "split": "train",
+   "stratum": "s07|blue school chair"
+  },
+  "s07_c1/s07_472000007": {
+   "split": "train",
+   "stratum": "s07|man in black suit"
+  },
+  "s07_c1/s07_472000008": {
+   "split": "train",
+   "stratum": "s07|blue van"
+  },
+  "s07_c1/s07_472000009": {
+   "split": "train",
+   "stratum": "s07|orange cylinder"
+  },
+  "s07_c1/s07_472000010": {
+   "split": "train",
+   "stratum": "s07|yellow wet floor sign"
+  },
+  "s07_c1/s07_472000011": {
+   "split": "train",
+   "stratum": "s07|man in blue jacket"
+  },
+  "s07_c1/s07_472000012": {
+   "split": "train",
+   "stratum": "s07|girl in yellow shirt"
+  },
+  "s07_c1/s07_472000013": {
+   "split": "train",
+   "stratum": "s07|orange cone"
+  },
+  "s07_c1/s07_472000014": {
+   "split": "train",
+   "stratum": "s07|red fire extinguisher"
+  },
+  "s07_c1/s07_472000015": {
+   "split": "train",
+   "stratum": "s07|red fire extinguisher"
+  },
+  "s07_c1/s07_472000016": {
+   "split": "train",
+   "stratum": "s07|beige sofa"
+  },
+  "s07_c1/s07_472000017": {
+   "split": "train",
+   "stratum": "s07|orange cylinder"
+  },
+  "s07_c1/s07_472000018": {
+   "split": "train",
+   "stratum": "s07|doctor in white coat"
+  },
+  "s07_c1/s07_472000019": {
+   "split": "train",
+   "stratum": "s07|man in brown jacket"
+  },
+  "s07_c1/s07_472000020": {
+   "split": "val",
+   "stratum": "s07|round wooden table"
+  },
+  "s07_c1/s07_472000021": {
+   "split": "train",
+   "stratum": "s07|green armchair"
+  },
+  "s07_c1/s07_472000022": {
+   "split": "train",
+   "stratum": "s07|police officer"
+  },
+  "s07_c1/s07_472000023": {
+   "split": "train",
+   "stratum": "s07|bald man in green shirt"
+  },
+  "s07_c1/s07_472000024": {
+   "split": "train",
+   "stratum": "s07|white plastic chair"
+  },
+  "s07_c1/s07_472000025": {
+   "split": "train",
+   "stratum": "s07|blue school chair"
+  },
+  "s07_c1/s07_472000026": {
+   "split": "train",
+   "stratum": "s07|man in black suit"
+  },
+  "s07_c1/s07_472000027": {
+   "split": "train",
+   "stratum": "s07|bronze whale statue"
+  },
+  "s07_c1/s07_472000028": {
+   "split": "train",
+   "stratum": "s07|green sphere"
+  },
+  "s07_c1/s07_472000029": {
+   "split": "train",
+   "stratum": "s07|round wooden table"
+  },
+  "s07_c1/s07_472000030": {
+   "split": "train",
+   "stratum": "s07|yellow suv"
+  },
+  "s07_c1/s07_472000031": {
+   "split": "train",
+   "stratum": "s07|man in red shirt"
+  },
+  "s07_c1/s07_472000032": {
+   "split": "train",
+   "stratum": "s07|blue cone"
+  },
+  "s07_c1/s07_472000033": {
+   "split": "train",
+   "stratum": "s07|round wooden table"
+  },
+  "s07_c1/s07_472000034": {
+   "split": "train",
+   "stratum": "s07|old television"
+  },
+  "s07_c1/s07_472000035": {
+   "split": "train",
+   "stratum": "s07|man in black suit"
+  },
+  "s07_c1/s07_472000036": {
+   "split": "train",
+   "stratum": "s07|bronze whale statue"
+  },
+  "s07_c1/s07_472000037": {
+   "split": "train",
+   "stratum": "s07|green armchair"
+  },
+  "s07_c1/s07_472000038": {
+   "split": "train",
+   "stratum": "s07|green sphere"
+  },
+  "s07_c1/s07_472000039": {
+   "split": "train",
+   "stratum": "s07|old television"
+  },
+  "s07_c1/s07_472000040": {
+   "split": "train",
+   "stratum": "s07|old television"
+  },
+  "s07_c1/s07_472000041": {
+   "split": "train",
+   "stratum": "s07|yellow cylinder"
+  },
+  "s07_c1/s07_472000042": {
+   "split": "train",
+   "stratum": "s07|blue barrel"
+  },
+  "s07_c1/s07_472000043": {
+   "split": "train",
+   "stratum": "s07|yellow taxi"
+  },
+  "s07_c1/s07_472000044": {
+   "split": "train",
+   "stratum": "s07|orange cylinder"
+  },
+  "s07_c1/s07_472000045": {
+   "split": "train",
+   "stratum": "s07|green hatchback"
+  },
+  "s07_c1/s07_472000046": {
+   "split": "train",
+   "stratum": "s07|green garbage truck"
+  },
+  "s07_c1/s07_472000047": {
+   "split": "train",
+   "stratum": "s07|blue cone"
+  },
+  "s07_c1/s07_472000048": {
+   "split": "val",
+   "stratum": "s07|person in purple shirt"
+  },
+  "s07_c1/s07_472000049": {
+   "split": "train",
+   "stratum": "s07|yellow wet floor sign"
+  },
+  "s07_c2/s07_473000001": {
+   "split": "train",
+   "stratum": "s07|red sedan"
+  },
+  "s07_c2/s07_473000003": {
+   "split": "train",
+   "stratum": "s07|yellow cylinder"
+  },
+  "s07_c2/s07_473000004": {
+   "split": "train",
+   "stratum": "s07|blue cylinder"
+  },
+  "s07_c2/s07_473000005": {
+   "split": "train",
+   "stratum": "s07|yellow wet floor sign"
+  },
+  "s07_c2/s07_473000006": {
+   "split": "train",
+   "stratum": "s07|man in black suit"
+  },
+  "s07_c2/s07_473000007": {
+   "split": "train",
+   "stratum": "s07|girl in yellow shirt"
+  },
+  "s07_c2/s07_473000008": {
+   "split": "train",
+   "stratum": "s07|blue barrel"
+  },
+  "s07_c2/s07_473000009": {
+   "split": "train",
+   "stratum": "s07|green garbage truck"
+  },
+  "s07_c2/s07_473000010": {
+   "split": "train",
+   "stratum": "s07|blue school chair"
+  },
+  "s07_c2/s07_473000011": {
+   "split": "train",
+   "stratum": "s07|green suitcase"
+  },
+  "s07_c2/s07_473000013": {
+   "split": "train",
+   "stratum": "s07|white plastic chair"
+  },
+  "s07_c2/s07_473000014": {
+   "split": "train",
+   "stratum": "s07|red fire truck"
+  },
+  "s07_c2/s07_473000015": {
+   "split": "train",
+   "stratum": "s07|orange cone"
+  },
+  "s07_c2/s07_473000016": {
+   "split": "train",
+   "stratum": "s07|person in purple shirt"
+  },
+  "s07_c2/s07_473000017": {
+   "split": "train",
+   "stratum": "s07|blue school chair"
+  },
+  "s07_c2/s07_473000018": {
+   "split": "train",
+   "stratum": "s07|green suitcase"
+  },
+  "s07_c2/s07_473000020": {
+   "split": "train",
+   "stratum": "s07|red cylinder"
+  },
+  "s07_c2/s07_473000021": {
+   "split": "train",
+   "stratum": "s07|doctor in white coat"
+  },
+  "s07_c2/s07_473000022": {
+   "split": "train",
+   "stratum": "s07|green sphere"
+  },
+  "s07_c2/s07_473000023": {
+   "split": "train",
+   "stratum": "s07|red cylinder"
+  },
+  "s07_c2/s07_473000024": {
+   "split": "train",
+   "stratum": "s07|green suitcase"
+  },
+  "s07_c2/s07_473000025": {
+   "split": "train",
+   "stratum": "s07|red wooden bench"
+  },
+  "s07_c2/s07_473000026": {
+   "split": "train",
+   "stratum": "s07|doctor in white coat"
+  },
+  "s07_c2/s07_473000027": {
+   "split": "train",
+   "stratum": "s07|green garbage truck"
+  },
+  "s07_c2/s07_473000028": {
+   "split": "val",
+   "stratum": "s07|blue school chair"
+  },
+  "s07_c2/s07_473000029": {
+   "split": "val",
+   "stratum": "s07|beige sofa"
+  },
+  "s07_c2/s07_473000030": {
+   "split": "train",
+   "stratum": "s07|man in red shirt"
+  },
+  "s07_c2/s07_473000031": {
+   "split": "train",
+   "stratum": "s07|beige sofa"
+  },
+  "s07_c2/s07_473000032": {
+   "split": "train",
+   "stratum": "s07|yellow wet floor sign"
+  },
+  "s07_c2/s07_473000033": {
+   "split": "train",
+   "stratum": "s07|green garbage truck"
+  },
+  "s07_c2/s07_473000034": {
+   "split": "train",
+   "stratum": "s07|bronze whale statue"
+  },
+  "s07_c2/s07_473000035": {
+   "split": "train",
+   "stratum": "s07|blue school chair"
+  },
+  "s07_c2/s07_473000036": {
+   "split": "train",
+   "stratum": "s07|police officer"
+  },
+  "s07_c2/s07_473000037": {
+   "split": "train",
+   "stratum": "s07|round wooden table"
+  },
+  "s07_c2/s07_473000038": {
+   "split": "train",
+   "stratum": "s07|bald man in green shirt"
+  },
+  "s07_c2/s07_473000039": {
+   "split": "train",
+   "stratum": "s07|man in black suit"
+  },
+  "s07_c2/s07_473000040": {
+   "split": "train",
+   "stratum": "s07|bald man in green shirt"
+  },
+  "s07_c2/s07_473000041": {
+   "split": "train",
+   "stratum": "s07|person in purple shirt"
+  },
+  "s07_c2/s07_473000042": {
+   "split": "train",
+   "stratum": "s07|ambulance"
+  },
+  "s07_c2/s07_473000043": {
+   "split": "train",
+   "stratum": "s07|wooden barrel"
+  },
+  "s07_c2/s07_473000044": {
+   "split": "train",
+   "stratum": "s07|grey armchair"
+  },
+  "s07_c2/s07_473000045": {
+   "split": "train",
+   "stratum": "s07|person in purple shirt"
+  },
+  "s07_c2/s07_473000046": {
+   "split": "train",
+   "stratum": "s07|covered car"
+  },
+  "s07_c2/s07_473000047": {
+   "split": "train",
+   "stratum": "s07|yellow suv"
+  },
+  "s07_c2/s07_473000048": {
+   "split": "train",
+   "stratum": "s07|red wooden bench"
+  },
+  "s07_c2/s07_473000049": {
+   "split": "train",
+   "stratum": "s07|green hatchback"
+  },
+  "s07_c2/s07_473000050": {
+   "split": "train",
+   "stratum": "s07|red barrel"
+  },
+  "s07_c2/s07_473000051": {
+   "split": "train",
+   "stratum": "s07|beige sofa"
+  },
+  "s07_c2/s07_473000052": {
+   "split": "val",
+   "stratum": "s07|yellow wet floor sign"
+  },
+  "s07_c2/s07_473000053": {
+   "split": "train",
+   "stratum": "s07|yellow wet floor sign"
+  },
+  "s07_c3/s07_474000000": {
+   "split": "train",
+   "stratum": "s07|man in brown jacket"
+  },
+  "s07_c3/s07_474000001": {
+   "split": "train",
+   "stratum": "s07|red barrel"
+  },
+  "s07_c3/s07_474000002": {
+   "split": "train",
+   "stratum": "s07|covered car"
+  },
+  "s07_c3/s07_474000003": {
+   "split": "train",
+   "stratum": "s07|red cylinder"
+  },
+  "s07_c3/s07_474000004": {
+   "split": "train",
+   "stratum": "s07|old television"
+  },
+  "s07_c3/s07_474000005": {
+   "split": "train",
+   "stratum": "s07|green hatchback"
+  },
+  "s07_c3/s07_474000006": {
+   "split": "train",
+   "stratum": "s07|yellow wet floor sign"
+  },
+  "s07_c3/s07_474000007": {
+   "split": "train",
+   "stratum": "s07|blue school chair"
+  },
+  "s07_c3/s07_474000008": {
+   "split": "train",
+   "stratum": "s07|old television"
+  },
+  "s07_c3/s07_474000009": {
+   "split": "val",
+   "stratum": "s07|orange cylinder"
+  },
+  "s07_c3/s07_474000010": {
+   "split": "train",
+   "stratum": "s07|police car"
+  },
+  "s07_c3/s07_474000011": {
+   "split": "train",
+   "stratum": "s07|person in purple shirt"
+  },
+  "s07_c3/s07_474000012": {
+   "split": "train",
+   "stratum": "s07|red cylinder"
+  },
+  "s07_c3/s07_474000013": {
+   "split": "train",
+   "stratum": "s07|black leather sofa"
+  },
+  "s07_c3/s07_474000014": {
+   "split": "train",
+   "stratum": "s07|green sphere"
+  },
+  "s07_c3/s07_474000015": {
+   "split": "train",
+   "stratum": "s07|ambulance"
+  },
+  "s07_c3/s07_474000016": {
+   "split": "train",
+   "stratum": "s07|man in red shirt"
+  },
+  "s07_c3/s07_474000017": {
+   "split": "train",
+   "stratum": "s07|orange cylinder"
+  },
+  "s07_c3/s07_474000018": {
+   "split": "train",
+   "stratum": "s07|blue cylinder"
+  },
+  "s07_c3/s07_474000019": {
+   "split": "train",
+   "stratum": "s07|police officer"
+  },
+  "s07_c3/s07_474000020": {
+   "split": "train",
+   "stratum": "s07|blue cylinder"
+  },
+  "s07_c3/s07_474000021": {
+   "split": "train",
+   "stratum": "s07|yellow generator"
+  },
+  "s07_c3/s07_474000022": {
+   "split": "train",
+   "stratum": "s07|red cylinder"
+  },
+  "s07_c3/s07_474000023": {
+   "split": "train",
+   "stratum": "s07|blue cone"
+  },
+  "s07_c3/s07_474000024": {
+   "split": "train",
+   "stratum": "s07|yellow cylinder"
+  },
+  "s07_c3/s07_474000025": {
+   "split": "train",
+   "stratum": "s07|police car"
+  },
+  "s07_c3/s07_474000026": {
+   "split": "train",
+   "stratum": "s07|wooden barrel"
+  },
+  "s07_c3/s07_474000027": {
+   "split": "train",
+   "stratum": "s07|man in blue jacket"
+  },
+  "s07_c3/s07_474000028": {
+   "split": "train",
+   "stratum": "s07|yellow wet floor sign"
+  },
+  "s07_c3/s07_474000029": {
+   "split": "train",
+   "stratum": "s07|yellow wet floor sign"
+  },
+  "s07_c3/s07_474000030": {
+   "split": "train",
+   "stratum": "s07|bronze whale statue"
+  },
+  "s07_c3/s07_474000031": {
+   "split": "train",
+   "stratum": "s07|green sphere"
+  },
+  "s07_c3/s07_474000032": {
+   "split": "train",
+   "stratum": "s07|red fire extinguisher"
+  },
+  "s07_c3/s07_474000033": {
+   "split": "train",
+   "stratum": "s07|yellow sphere"
+  },
+  "s07_c3/s07_474000034": {
+   "split": "train",
+   "stratum": "s07|round wooden table"
+  },
+  "s07_c3/s07_474000035": {
+   "split": "train",
+   "stratum": "s07|blue van"
+  },
+  "s07_c3/s07_474000036": {
+   "split": "train",
+   "stratum": "s07|covered car"
+  },
+  "s07_c3/s07_474000037": {
+   "split": "train",
+   "stratum": "s07|green garbage truck"
+  },
+  "s07_c3/s07_474000038": {
+   "split": "train",
+   "stratum": "s07|bald man in green shirt"
+  },
+  "s07_c3/s07_474000039": {
+   "split": "train",
+   "stratum": "s07|green sphere"
+  },
+  "s07_c3/s07_474000040": {
+   "split": "train",
+   "stratum": "s07|white pickup truck"
+  },
+  "s07_c3/s07_474000041": {
+   "split": "train",
+   "stratum": "s07|bald man in green shirt"
+  },
+  "s07_c3/s07_474000042": {
+   "split": "train",
+   "stratum": "s07|yellow wet floor sign"
+  },
+  "s07_c3/s07_474000043": {
+   "split": "train",
+   "stratum": "s07|yellow wet floor sign"
+  },
+  "s07_c3/s07_474000044": {
+   "split": "train",
+   "stratum": "s07|wooden barrel"
+  },
+  "s07_c3/s07_474000045": {
+   "split": "train",
+   "stratum": "s07|round wooden table"
+  },
+  "s07_c3/s07_474000046": {
+   "split": "train",
+   "stratum": "s07|orange cylinder"
+  },
+  "s07_c3/s07_474000047": {
+   "split": "train",
+   "stratum": "s07|covered car"
+  },
+  "s07_c3/s07_474000048": {
+   "split": "train",
+   "stratum": "s07|ambulance"
+  },
+  "s07_c3/s07_474000049": {
+   "split": "val",
+   "stratum": "s07|green sphere"
+  },
+  "s07_c4/s07_475000000": {
+   "split": "train",
+   "stratum": "s07|man in brown jacket"
+  },
+  "s07_c4/s07_475000001": {
+   "split": "train",
+   "stratum": "s07|man in red shirt"
+  },
+  "s07_c4/s07_475000002": {
+   "split": "train",
+   "stratum": "s07|round wooden table"
+  },
+  "s07_c4/s07_475000003": {
+   "split": "train",
+   "stratum": "s07|ambulance"
+  },
+  "s07_c4/s07_475000004": {
+   "split": "train",
+   "stratum": "s07|white pickup truck"
+  },
+  "s07_c4/s07_475000005": {
+   "split": "train",
+   "stratum": "s07|yellow generator"
+  },
+  "s07_c4/s07_475000006": {
+   "split": "train",
+   "stratum": "s07|girl in yellow shirt"
+  },
+  "s07_c4/s07_475000007": {
+   "split": "train",
+   "stratum": "s07|yellow suv"
+  },
+  "s07_c4/s07_475000008": {
+   "split": "train",
+   "stratum": "s07|ambulance"
+  },
+  "s07_c4/s07_475000009": {
+   "split": "train",
+   "stratum": "s07|red sedan"
+  },
+  "s07_c4/s07_475000010": {
+   "split": "train",
+   "stratum": "s07|blue school chair"
+  },
+  "s07_c4/s07_475000011": {
+   "split": "train",
+   "stratum": "s07|blue cylinder"
+  },
+  "s07_c4/s07_475000012": {
+   "split": "train",
+   "stratum": "s07|green hatchback"
+  },
+  "s07_c4/s07_475000013": {
+   "split": "val",
+   "stratum": "s07|ambulance"
+  },
+  "s07_c4/s07_475000014": {
+   "split": "train",
+   "stratum": "s07|white pickup truck"
+  },
+  "s07_c4/s07_475000015": {
+   "split": "train",
+   "stratum": "s07|round wooden table"
+  },
+  "s07_c4/s07_475000016": {
+   "split": "train",
+   "stratum": "s07|ambulance"
+  },
+  "s07_c4/s07_475000017": {
+   "split": "train",
+   "stratum": "s07|beige sofa"
+  },
+  "s07_c4/s07_475000018": {
+   "split": "train",
+   "stratum": "s07|police officer"
+  },
+  "s07_c4/s07_475000019": {
+   "split": "train",
+   "stratum": "s07|round wooden table"
+  },
+  "s07_c4/s07_475000020": {
+   "split": "train",
+   "stratum": "s07|blue cone"
+  },
+  "s07_c4/s07_475000021": {
+   "split": "train",
+   "stratum": "s07|doctor in white coat"
+  },
+  "s07_c4/s07_475000022": {
+   "split": "train",
+   "stratum": "s07|blue cylinder"
+  },
+  "s07_c4/s07_475000023": {
+   "split": "train",
+   "stratum": "s07|doctor in white coat"
+  },
+  "s07_c4/s07_475000024": {
+   "split": "train",
+   "stratum": "s07|red cylinder"
+  },
+  "s07_c4/s07_475000025": {
+   "split": "train",
+   "stratum": "s07|orange cylinder"
+  },
+  "s07_c4/s07_475000026": {
+   "split": "train",
+   "stratum": "s07|blue van"
+  },
+  "s07_c4/s07_475000027": {
+   "split": "train",
+   "stratum": "s07|red sedan"
+  },
+  "s07_c4/s07_475000028": {
+   "split": "val",
+   "stratum": "s07|red cylinder"
+  },
+  "s07_c4/s07_475000029": {
+   "split": "train",
+   "stratum": "s07|blue barrel"
+  },
+  "s07_c4/s07_475000030": {
+   "split": "train",
+   "stratum": "s07|red sedan"
+  },
+  "s07_c4/s07_475000031": {
+   "split": "train",
+   "stratum": "s07|girl in yellow shirt"
+  },
+  "s07_c4/s07_475000032": {
+   "split": "train",
+   "stratum": "s07|red fire extinguisher"
+  },
+  "s07_c4/s07_475000033": {
+   "split": "train",
+   "stratum": "s07|green armchair"
+  },
+  "s07_c4/s07_475000034": {
+   "split": "train",
+   "stratum": "s07|white pickup truck"
+  },
+  "s07_c4/s07_475000035": {
+   "split": "train",
+   "stratum": "s07|green suitcase"
+  },
+  "s07_c4/s07_475000036": {
+   "split": "train",
+   "stratum": "s07|yellow sphere"
+  },
+  "s07_c4/s07_475000037": {
+   "split": "train",
+   "stratum": "s07|green armchair"
+  },
+  "s07_c4/s07_475000038": {
+   "split": "train",
+   "stratum": "s07|round wooden table"
+  },
+  "s07_c4/s07_475000039": {
+   "split": "train",
+   "stratum": "s07|police car"
+  },
+  "s07_c4/s07_475000040": {
+   "split": "train",
+   "stratum": "s07|orange cone"
+  },
+  "s07_c4/s07_475000041": {
+   "split": "train",
+   "stratum": "s07|green hatchback"
+  },
+  "s07_c4/s07_475000042": {
+   "split": "train",
+   "stratum": "s07|blue cylinder"
+  },
+  "s07_c4/s07_475000043": {
+   "split": "train",
+   "stratum": "s07|grey armchair"
+  },
+  "s07_c4/s07_475000044": {
+   "split": "train",
+   "stratum": "s07|blue van"
+  },
+  "s07_c4/s07_475000045": {
+   "split": "train",
+   "stratum": "s07|person in purple shirt"
+  },
+  "s07_c4/s07_475000046": {
+   "split": "train",
+   "stratum": "s07|orange cone"
+  },
+  "s07_c4/s07_475000047": {
+   "split": "train",
+   "stratum": "s07|beige sofa"
+  },
+  "s07_c4/s07_475000048": {
+   "split": "train",
+   "stratum": "s07|orange cone"
+  },
+  "s07_c4/s07_475000049": {
+   "split": "train",
+   "stratum": "s07|blue barrel"
+  },
+  "s09_c1/s09_482000000": {
+   "split": "train",
+   "stratum": "s09|man in black suit"
+  },
+  "s09_c1/s09_482000001": {
+   "split": "train",
+   "stratum": "s09|bronze whale statue"
+  },
+  "s09_c1/s09_482000002": {
+   "split": "train",
+   "stratum": "s09|covered car"
+  },
+  "s09_c1/s09_482000003": {
+   "split": "train",
+   "stratum": "s09|white cabinet"
+  },
+  "s09_c1/s09_482000004": {
+   "split": "train",
+   "stratum": "s09|old television"
+  },
+  "s09_c1/s09_482000005": {
+   "split": "train",
+   "stratum": "s09|red cube"
+  },
+  "s09_c1/s09_482000007": {
+   "split": "train",
+   "stratum": "s09|red fire truck"
+  },
+  "s09_c1/s09_482000008": {
+   "split": "train",
+   "stratum": "s09|old television"
+  },
+  "s09_c1/s09_482000009": {
+   "split": "train",
+   "stratum": "s09|round wooden table"
+  },
+  "s09_c1/s09_482000010": {
+   "split": "train",
+   "stratum": "s09|doctor in white coat"
+  },
+  "s09_c1/s09_482000011": {
+   "split": "val",
+   "stratum": "s09|blue van"
+  },
+  "s09_c1/s09_482000012": {
+   "split": "train",
+   "stratum": "s09|red cube"
+  },
+  "s09_c1/s09_482000013": {
+   "split": "train",
+   "stratum": "s09|yellow cube"
+  },
+  "s09_c1/s09_482000015": {
+   "split": "train",
+   "stratum": "s09|doctor in white coat"
+  },
+  "s09_c1/s09_482000016": {
+   "split": "train",
+   "stratum": "s09|blue school chair"
+  },
+  "s09_c1/s09_482000017": {
+   "split": "val",
+   "stratum": "s09|old television"
+  },
+  "s09_c1/s09_482000018": {
+   "split": "train",
+   "stratum": "s09|police car"
+  },
+  "s09_c1/s09_482000019": {
+   "split": "train",
+   "stratum": "s09|green garbage truck"
+  },
+  "s09_c1/s09_482000020": {
+   "split": "train",
+   "stratum": "s09|blue cone"
+  },
+  "s09_c1/s09_482000022": {
+   "split": "train",
+   "stratum": "s09|white plastic chair"
+  },
+  "s09_c1/s09_482000023": {
+   "split": "train",
+   "stratum": "s09|covered car"
+  },
+  "s09_c1/s09_482000024": {
+   "split": "train",
+   "stratum": "s09|old television"
+  },
+  "s09_c1/s09_482000025": {
+   "split": "train",
+   "stratum": "s09|red tool chest"
+  },
+  "s09_c1/s09_482000026": {
+   "split": "train",
+   "stratum": "s09|yellow cube"
+  },
+  "s09_c1/s09_482000027": {
+   "split": "train",
+   "stratum": "s09|police officer"
+  },
+  "s09_c1/s09_482000028": {
+   "split": "train",
+   "stratum": "s09|red sedan"
+  },
+  "s09_c1/s09_482000029": {
+   "split": "train",
+   "stratum": "s09|green armchair"
+  },
+  "s09_c1/s09_482000030": {
+   "split": "train",
+   "stratum": "s09|green garbage truck"
+  },
+  "s09_c1/s09_482000031": {
+   "split": "train",
+   "stratum": "s09|bald man in green shirt"
+  },
+  "s09_c1/s09_482000032": {
+   "split": "train",
+   "stratum": "s09|orange cone"
+  },
+  "s09_c1/s09_482000033": {
+   "split": "train",
+   "stratum": "s09|man in black suit"
+  },
+  "s09_c1/s09_482000035": {
+   "split": "train",
+   "stratum": "s09|yellow suv"
+  },
+  "s09_c1/s09_482000036": {
+   "split": "val",
+   "stratum": "s09|red tool chest"
+  },
+  "s09_c1/s09_482000037": {
+   "split": "train",
+   "stratum": "s09|police officer"
+  },
+  "s09_c1/s09_482000038": {
+   "split": "train",
+   "stratum": "s09|green armchair"
+  },
+  "s09_c1/s09_482000039": {
+   "split": "train",
+   "stratum": "s09|blue school chair"
+  },
+  "s09_c1/s09_482000040": {
+   "split": "train",
+   "stratum": "s09|red cube"
+  },
+  "s09_c1/s09_482000041": {
+   "split": "train",
+   "stratum": "s09|yellow suv"
+  },
+  "s09_c1/s09_482000042": {
+   "split": "train",
+   "stratum": "s09|green garbage truck"
+  },
+  "s09_c1/s09_482000043": {
+   "split": "train",
+   "stratum": "s09|man in black suit"
+  },
+  "s09_c1/s09_482000044": {
+   "split": "train",
+   "stratum": "s09|girl in yellow shirt"
+  },
+  "s09_c1/s09_482000045": {
+   "split": "train",
+   "stratum": "s09|bald man in green shirt"
+  },
+  "s09_c1/s09_482000046": {
+   "split": "train",
+   "stratum": "s09|yellow cube"
+  },
+  "s09_c1/s09_482000048": {
+   "split": "train",
+   "stratum": "s09|red tool chest"
+  },
+  "s09_c1/s09_482000049": {
+   "split": "train",
+   "stratum": "s09|girl in yellow shirt"
+  },
+  "s09_c1/s09_482000050": {
+   "split": "train",
+   "stratum": "s09|beige sofa"
+  },
+  "s09_c1/s09_482000052": {
+   "split": "train",
+   "stratum": "s09|man in black suit"
+  },
+  "s09_c1/s09_482000054": {
+   "split": "train",
+   "stratum": "s09|white cabinet"
+  },
+  "s09_c1/s09_482000055": {
+   "split": "train",
+   "stratum": "s09|green cube"
+  },
+  "s09_c1/s09_482000056": {
+   "split": "train",
+   "stratum": "s09|white cabinet"
+  },
+  "s09_c2/s09_483000000": {
+   "split": "train",
+   "stratum": "s09|bronze whale statue"
+  },
+  "s09_c2/s09_483000001": {
+   "split": "train",
+   "stratum": "s09|red sedan"
+  },
+  "s09_c2/s09_483000002": {
+   "split": "train",
+   "stratum": "s09|yellow generator"
+  },
+  "s09_c2/s09_483000003": {
+   "split": "train",
+   "stratum": "s09|police car"
+  },
+  "s09_c2/s09_483000004": {
+   "split": "train",
+   "stratum": "s09|red fire extinguisher"
+  },
+  "s09_c2/s09_483000005": {
+   "split": "train",
+   "stratum": "s09|green armchair"
+  },
+  "s09_c2/s09_483000006": {
+   "split": "train",
+   "stratum": "s09|green sphere"
+  },
+  "s09_c2/s09_483000007": {
+   "split": "train",
+   "stratum": "s09|yellow cube"
+  },
+  "s09_c2/s09_483000008": {
+   "split": "train",
+   "stratum": "s09|blue van"
+  },
+  "s09_c2/s09_483000009": {
+   "split": "train",
+   "stratum": "s09|green hatchback"
+  },
+  "s09_c2/s09_483000010": {
+   "split": "train",
+   "stratum": "s09|yellow suv"
+  },
+  "s09_c2/s09_483000011": {
+   "split": "val",
+   "stratum": "s09|white cabinet"
+  },
+  "s09_c2/s09_483000012": {
+   "split": "train",
+   "stratum": "s09|yellow wet floor sign"
+  },
+  "s09_c2/s09_483000013": {
+   "split": "train",
+   "stratum": "s09|round wooden table"
+  },
+  "s09_c2/s09_483000014": {
+   "split": "train",
+   "stratum": "s09|red sedan"
+  },
+  "s09_c2/s09_483000016": {
+   "split": "train",
+   "stratum": "s09|old television"
+  },
+  "s09_c2/s09_483000017": {
+   "split": "train",
+   "stratum": "s09|man in brown jacket"
+  },
+  "s09_c2/s09_483000018": {
+   "split": "train",
+   "stratum": "s09|blue van"
+  },
+  "s09_c2/s09_483000019": {
+   "split": "train",
+   "stratum": "s09|red fire truck"
+  },
+  "s09_c2/s09_483000020": {
+   "split": "train",
+   "stratum": "s09|blue cone"
+  },
+  "s09_c2/s09_483000021": {
+   "split": "train",
+   "stratum": "s09|green hatchback"
+  },
+  "s09_c2/s09_483000022": {
+   "split": "val",
+   "stratum": "s09|red cube"
+  },
+  "s09_c2/s09_483000023": {
+   "split": "train",
+   "stratum": "s09|red cube"
+  },
+  "s09_c2/s09_483000024": {
+   "split": "train",
+   "stratum": "s09|bald man in green shirt"
+  },
+  "s09_c2/s09_483000025": {
+   "split": "train",
+   "stratum": "s09|white pickup truck"
+  },
+  "s09_c2/s09_483000026": {
+   "split": "train",
+   "stratum": "s09|blue cone"
+  },
+  "s09_c2/s09_483000027": {
+   "split": "train",
+   "stratum": "s09|bald man in green shirt"
+  },
+  "s09_c2/s09_483000028": {
+   "split": "train",
+   "stratum": "s09|yellow suv"
+  },
+  "s09_c2/s09_483000029": {
+   "split": "train",
+   "stratum": "s09|white plastic chair"
+  },
+  "s09_c2/s09_483000030": {
+   "split": "train",
+   "stratum": "s09|man in red shirt"
+  },
+  "s09_c2/s09_483000031": {
+   "split": "train",
+   "stratum": "s09|person in purple shirt"
+  },
+  "s09_c2/s09_483000032": {
+   "split": "train",
+   "stratum": "s09|man in black suit"
+  },
+  "s09_c2/s09_483000033": {
+   "split": "train",
+   "stratum": "s09|bronze whale statue"
+  },
+  "s09_c2/s09_483000034": {
+   "split": "train",
+   "stratum": "s09|red wooden bench"
+  },
+  "s09_c2/s09_483000035": {
+   "split": "train",
+   "stratum": "s09|red sedan"
+  },
+  "s09_c2/s09_483000036": {
+   "split": "train",
+   "stratum": "s09|red tool chest"
+  },
+  "s09_c2/s09_483000037": {
+   "split": "train",
+   "stratum": "s09|yellow generator"
+  },
+  "s09_c2/s09_483000038": {
+   "split": "train",
+   "stratum": "s09|red wooden bench"
+  },
+  "s09_c2/s09_483000039": {
+   "split": "train",
+   "stratum": "s09|yellow wet floor sign"
+  },
+  "s09_c2/s09_483000040": {
+   "split": "val",
+   "stratum": "s09|yellow cube"
+  },
+  "s09_c2/s09_483000041": {
+   "split": "val",
+   "stratum": "s09|bald man in green shirt"
+  },
+  "s09_c2/s09_483000042": {
+   "split": "train",
+   "stratum": "s09|red wooden bench"
+  },
+  "s09_c2/s09_483000043": {
+   "split": "train",
+   "stratum": "s09|green garbage truck"
+  },
+  "s09_c2/s09_483000044": {
+   "split": "train",
+   "stratum": "s09|green cube"
+  },
+  "s09_c2/s09_483000045": {
+   "split": "val",
+   "stratum": "s09|orange cone"
+  },
+  "s09_c2/s09_483000046": {
+   "split": "train",
+   "stratum": "s09|man in blue jacket"
+  },
+  "s09_c2/s09_483000047": {
+   "split": "train",
+   "stratum": "s09|red tool chest"
+  },
+  "s09_c2/s09_483000048": {
+   "split": "train",
+   "stratum": "s09|bald man in green shirt"
+  },
+  "s09_c2/s09_483000049": {
+   "split": "train",
+   "stratum": "s09|red sedan"
+  },
+  "s09_c2/s09_483000050": {
+   "split": "train",
+   "stratum": "s09|doctor in white coat"
+  },
+  "s09_c3/s09_484000000": {
+   "split": "train",
+   "stratum": "s09|orange cone"
+  },
+  "s09_c3/s09_484000001": {
+   "split": "train",
+   "stratum": "s09|police car"
+  },
+  "s09_c3/s09_484000002": {
+   "split": "train",
+   "stratum": "s09|round wooden table"
+  },
+  "s09_c3/s09_484000003": {
+   "split": "train",
+   "stratum": "s09|yellow sphere"
+  },
+  "s09_c3/s09_484000004": {
+   "split": "train",
+   "stratum": "s09|red wooden bench"
+  },
+  "s09_c3/s09_484000005": {
+   "split": "train",
+   "stratum": "s09|green garbage truck"
+  },
+  "s09_c3/s09_484000006": {
+   "split": "train",
+   "stratum": "s09|red tool chest"
+  },
+  "s09_c3/s09_484000007": {
+   "split": "train",
+   "stratum": "s09|yellow suv"
+  },
+  "s09_c3/s09_484000008": {
+   "split": "train",
+   "stratum": "s09|yellow wet floor sign"
+  },
+  "s09_c3/s09_484000009": {
+   "split": "train",
+   "stratum": "s09|yellow cube"
+  },
+  "s09_c3/s09_484000010": {
+   "split": "train",
+   "stratum": "s09|green hatchback"
+  },
+  "s09_c3/s09_484000011": {
+   "split": "train",
+   "stratum": "s09|yellow sphere"
+  },
+  "s09_c3/s09_484000012": {
+   "split": "train",
+   "stratum": "s09|green cube"
+  },
+  "s09_c3/s09_484000014": {
+   "split": "train",
+   "stratum": "s09|bronze whale statue"
+  },
+  "s09_c3/s09_484000015": {
+   "split": "train",
+   "stratum": "s09|green hatchback"
+  },
+  "s09_c3/s09_484000016": {
+   "split": "train",
+   "stratum": "s09|green garbage truck"
+  },
+  "s09_c3/s09_484000017": {
+   "split": "train",
+   "stratum": "s09|ambulance"
+  },
+  "s09_c3/s09_484000018": {
+   "split": "train",
+   "stratum": "s09|grey armchair"
+  },
+  "s09_c3/s09_484000019": {
+   "split": "train",
+   "stratum": "s09|beige sofa"
+  },
+  "s09_c3/s09_484000020": {
+   "split": "train",
+   "stratum": "s09|white plastic chair"
+  },
+  "s09_c3/s09_484000021": {
+   "split": "train",
+   "stratum": "s09|yellow sphere"
+  },
+  "s09_c3/s09_484000022": {
+   "split": "train",
+   "stratum": "s09|grey armchair"
+  },
+  "s09_c3/s09_484000023": {
+   "split": "train",
+   "stratum": "s09|beige sofa"
+  },
+  "s09_c3/s09_484000024": {
+   "split": "train",
+   "stratum": "s09|police officer"
+  },
+  "s09_c3/s09_484000025": {
+   "split": "train",
+   "stratum": "s09|white cabinet"
+  },
+  "s09_c3/s09_484000026": {
+   "split": "train",
+   "stratum": "s09|man in brown jacket"
+  },
+  "s09_c3/s09_484000027": {
+   "split": "train",
+   "stratum": "s09|yellow sphere"
+  },
+  "s09_c3/s09_484000028": {
+   "split": "train",
+   "stratum": "s09|orange cone"
+  },
+  "s09_c3/s09_484000029": {
+   "split": "train",
+   "stratum": "s09|green garbage truck"
+  },
+  "s09_c3/s09_484000030": {
+   "split": "train",
+   "stratum": "s09|orange cone"
+  },
+  "s09_c3/s09_484000031": {
+   "split": "train",
+   "stratum": "s09|man in red shirt"
+  },
+  "s09_c3/s09_484000032": {
+   "split": "train",
+   "stratum": "s09|yellow wet floor sign"
+  },
+  "s09_c3/s09_484000033": {
+   "split": "train",
+   "stratum": "s09|beige sofa"
+  },
+  "s09_c3/s09_484000034": {
+   "split": "train",
+   "stratum": "s09|red tool chest"
+  },
+  "s09_c3/s09_484000035": {
+   "split": "train",
+   "stratum": "s09|man in red shirt"
+  },
+  "s09_c3/s09_484000036": {
+   "split": "train",
+   "stratum": "s09|man in black suit"
+  },
+  "s09_c3/s09_484000038": {
+   "split": "train",
+   "stratum": "s09|ambulance"
+  },
+  "s09_c3/s09_484000039": {
+   "split": "train",
+   "stratum": "s09|blue van"
+  },
+  "s09_c3/s09_484000040": {
+   "split": "train",
+   "stratum": "s09|person in purple shirt"
+  },
+  "s09_c3/s09_484000041": {
+   "split": "train",
+   "stratum": "s09|girl in yellow shirt"
+  },
+  "s09_c3/s09_484000042": {
+   "split": "train",
+   "stratum": "s09|yellow sphere"
+  },
+  "s09_c3/s09_484000043": {
+   "split": "train",
+   "stratum": "s09|police car"
+  },
+  "s09_c3/s09_484000044": {
+   "split": "train",
+   "stratum": "s09|police officer"
+  },
+  "s09_c3/s09_484000045": {
+   "split": "train",
+   "stratum": "s09|ambulance"
+  },
+  "s09_c3/s09_484000046": {
+   "split": "train",
+   "stratum": "s09|red fire truck"
+  },
+  "s09_c3/s09_484000047": {
+   "split": "train",
+   "stratum": "s09|blue school chair"
+  },
+  "s09_c3/s09_484000048": {
+   "split": "val",
+   "stratum": "s09|yellow sphere"
+  },
+  "s09_c3/s09_484000049": {
+   "split": "train",
+   "stratum": "s09|green hatchback"
+  },
+  "s09_c3/s09_484000050": {
+   "split": "train",
+   "stratum": "s09|green hatchback"
+  },
+  "s09_c3/s09_484000051": {
+   "split": "train",
+   "stratum": "s09|green armchair"
+  },
+  "s09_c4/s09_485000000": {
+   "split": "train",
+   "stratum": "s09|doctor in white coat"
+  },
+  "s09_c4/s09_485000001": {
+   "split": "train",
+   "stratum": "s09|green sphere"
+  },
+  "s09_c4/s09_485000002": {
+   "split": "train",
+   "stratum": "s09|yellow generator"
+  },
+  "s09_c4/s09_485000003": {
+   "split": "train",
+   "stratum": "s09|doctor in white coat"
+  },
+  "s09_c4/s09_485000004": {
+   "split": "train",
+   "stratum": "s09|red cube"
+  },
+  "s09_c4/s09_485000005": {
+   "split": "train",
+   "stratum": "s09|red cube"
+  },
+  "s09_c4/s09_485000006": {
+   "split": "train",
+   "stratum": "s09|old television"
+  },
+  "s09_c4/s09_485000007": {
+   "split": "train",
+   "stratum": "s09|green sphere"
+  },
+  "s09_c4/s09_485000008": {
+   "split": "train",
+   "stratum": "s09|red cube"
+  },
+  "s09_c4/s09_485000009": {
+   "split": "train",
+   "stratum": "s09|white plastic chair"
+  },
+  "s09_c4/s09_485000010": {
+   "split": "train",
+   "stratum": "s09|girl in yellow shirt"
+  },
+  "s09_c4/s09_485000011": {
+   "split": "train",
+   "stratum": "s09|black leather sofa"
+  },
+  "s09_c4/s09_485000012": {
+   "split": "val",
+   "stratum": "s09|yellow suv"
+  },
+  "s09_c4/s09_485000013": {
+   "split": "train",
+   "stratum": "s09|round wooden table"
+  },
+  "s09_c4/s09_485000014": {
+   "split": "train",
+   "stratum": "s09|yellow suv"
+  },
+  "s09_c4/s09_485000015": {
+   "split": "train",
+   "stratum": "s09|yellow cube"
+  },
+  "s09_c4/s09_485000016": {
+   "split": "train",
+   "stratum": "s09|black leather sofa"
+  },
+  "s09_c4/s09_485000017": {
+   "split": "train",
+   "stratum": "s09|blue cone"
+  },
+  "s09_c4/s09_485000018": {
+   "split": "train",
+   "stratum": "s09|yellow taxi"
+  },
+  "s09_c4/s09_485000019": {
+   "split": "train",
+   "stratum": "s09|green sphere"
+  },
+  "s09_c4/s09_485000020": {
+   "split": "train",
+   "stratum": "s09|yellow generator"
+  },
+  "s09_c4/s09_485000021": {
+   "split": "train",
+   "stratum": "s09|girl in yellow shirt"
+  },
+  "s09_c4/s09_485000022": {
+   "split": "train",
+   "stratum": "s09|doctor in white coat"
+  },
+  "s09_c4/s09_485000023": {
+   "split": "train",
+   "stratum": "s09|man in brown jacket"
+  },
+  "s09_c4/s09_485000024": {
+   "split": "val",
+   "stratum": "s09|doctor in white coat"
+  },
+  "s09_c4/s09_485000025": {
+   "split": "train",
+   "stratum": "s09|bald man in green shirt"
+  },
+  "s09_c4/s09_485000026": {
+   "split": "train",
+   "stratum": "s09|ambulance"
+  },
+  "s09_c4/s09_485000027": {
+   "split": "train",
+   "stratum": "s09|blue van"
+  },
+  "s09_c4/s09_485000028": {
+   "split": "train",
+   "stratum": "s09|red sedan"
+  },
+  "s09_c4/s09_485000029": {
+   "split": "train",
+   "stratum": "s09|blue van"
+  },
+  "s09_c4/s09_485000030": {
+   "split": "train",
+   "stratum": "s09|green cube"
+  },
+  "s09_c4/s09_485000031": {
+   "split": "train",
+   "stratum": "s09|green suitcase"
+  },
+  "s09_c4/s09_485000032": {
+   "split": "train",
+   "stratum": "s09|white cabinet"
+  },
+  "s09_c4/s09_485000033": {
+   "split": "train",
+   "stratum": "s09|man in blue jacket"
+  },
+  "s09_c4/s09_485000034": {
+   "split": "train",
+   "stratum": "s09|bald man in green shirt"
+  },
+  "s09_c4/s09_485000035": {
+   "split": "train",
+   "stratum": "s09|round wooden table"
+  },
+  "s09_c4/s09_485000036": {
+   "split": "train",
+   "stratum": "s09|red fire extinguisher"
+  },
+  "s09_c4/s09_485000037": {
+   "split": "train",
+   "stratum": "s09|old television"
+  },
+  "s09_c4/s09_485000038": {
+   "split": "train",
+   "stratum": "s09|orange cone"
+  },
+  "s09_c4/s09_485000039": {
+   "split": "train",
+   "stratum": "s09|yellow wet floor sign"
+  },
+  "s09_c4/s09_485000040": {
+   "split": "train",
+   "stratum": "s09|yellow suv"
+  },
+  "s09_c4/s09_485000041": {
+   "split": "val",
+   "stratum": "s09|green garbage truck"
+  },
+  "s09_c4/s09_485000042": {
+   "split": "train",
+   "stratum": "s09|green sphere"
+  },
+  "s09_c4/s09_485000043": {
+   "split": "train",
+   "stratum": "s09|yellow taxi"
+  },
+  "s09_c4/s09_485000044": {
+   "split": "train",
+   "stratum": "s09|police officer"
+  },
+  "s09_c4/s09_485000045": {
+   "split": "train",
+   "stratum": "s09|green armchair"
+  },
+  "s09_c4/s09_485000046": {
+   "split": "train",
+   "stratum": "s09|blue school chair"
+  },
+  "s09_c4/s09_485000047": {
+   "split": "train",
+   "stratum": "s09|bronze whale statue"
+  },
+  "s09_c4/s09_485000048": {
+   "split": "train",
+   "stratum": "s09|green armchair"
+  },
+  "s09_c4/s09_485000049": {
+   "split": "train",
+   "stratum": "s09|yellow wet floor sign"
+  }
+ }
+}
