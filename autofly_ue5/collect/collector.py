@@ -188,6 +188,8 @@ def collect(model, env, *, scene: SceneFile, writer: RawDatasetWriter, seed_base
                    seeds_flown=[seed_base, None])
     if visibility is not None:  # only with a pool: a pool-free collection's summary stays M3's
         summary["first_frame_visibility"] = {status: 0 for status in FIRST_FRAME_STATUSES}
+        # every session warm-up the env completed (expert/env.py), each also in the provenance of the next episode
+        summary["session_warmups"] = []
     for seed in range(seed_base, seed_base + max_attempts):
         if summary["kept"] >= n_keep:
             break
@@ -221,6 +223,13 @@ def collect(model, env, *, scene: SceneFile, writer: RawDatasetWriter, seed_base
             instruction = dataset_instruction(scene, setup.instruction, target_name)
         provenance = _provenance(scene, layout_sha256, seed, flight, deterministic=deterministic, target_name=name,
                                  target_name_status=name_status)
+        if visibility is not None:
+            # A warm-up completed since the last recorded episode (in this flight's reset, or in an attempt a fault cut
+            # short): the collection's record keeps each, the first episode after it the session's own.
+            warmups = env.unwrapped.session_warmups[len(summary["session_warmups"]):]
+            if warmups:
+                summary["session_warmups"].extend(warmups)
+                provenance["session_warmup"] = warmups[-1]
         if outcome == "success":
             writer.write_episode(
                 episode_id=episode_id, scene_id=scene.id, split=scene.split, seed=seed,

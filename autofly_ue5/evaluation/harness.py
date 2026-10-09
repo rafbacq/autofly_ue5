@@ -184,6 +184,8 @@ def _fly_once(policy: Any, env: ResilientAutoFlyEnv, episode: EvalEpisode, *, a0
     """One attempt at `episode`: its record, or {"fault": name} when a backend fault cut it short. `name` names the
     policy in its errors."""
     obs, info = env.reset(seed=episode.seed, options={"a0": a0})
+    # the reset's settle hold, and whether it spawned an object new to the session (expert/env.py; with a pool)
+    reset_facts = {key: info[key] for key in ("prewarm_steps", "first_use") if key in info}
     base = env.unwrapped
     setup = base.setup
     raw = base.last_observation
@@ -239,6 +241,7 @@ def _fly_once(policy: Any, env: ResilientAutoFlyEnv, episode: EvalEpisode, *, a0
         **{key: info[key] for key in ("footprint_contact", "footprint_nearest", "inferred_from") if key in info},
         "actions": _action_summary(asked, commanded),
         "policy_act_s": {"mean": sum(act_s) / len(act_s), "max": max(act_s)} if act_s else None,
+        **reset_facts,
     }
 
 
@@ -355,7 +358,9 @@ def run_condition(policy: Any, condition_file: Path | ConditionFile, *, instance
             "map": plan.resolved.map_path, "scene_config": _config_record(scene_config(plan.resolved)),
             "target_split": plan.entry["target_split"], "episodes_requested": len(plan.episodes),
             "contact_rules": task_contact_rules(layout, shape=TASK_FOOTPRINT_SHAPE),
-            "dynamic": plan.resolved.scene.dynamic is not None, "metrics": None, "backend_faults": None}
+            "dynamic": plan.resolved.scene.dynamic is not None, "metrics": None, "backend_faults": None,
+            # each simulator session's warm-up of the pool's pairs (expert/env.py), also in the next episode's record
+            "session_warmups": []}
 
     def write(final: bool = False) -> None:
         if out_path is None:
@@ -392,6 +397,10 @@ def run_condition(policy: Any, condition_file: Path | ConditionFile, *, instance
                                          max_steps=max_steps, layout=plan.resolved.layout,
                                          success_radius_m=success_radius_m, max_fault_retries=max_fault_retries,
                                          policy_name=name)
+                    warmups = env.unwrapped.session_warmups[len(scene["session_warmups"]):]
+                    if warmups:  # completed in this episode's reset, or in an attempt a fault cut short
+                        scene["session_warmups"].extend(warmups)
+                        result["session_warmup"] = warmups[-1]
                     flown.append(result)
                     episodes.append(result)
                     scene["metrics"], record["overall"] = summarise(flown), summarise(episodes)

@@ -13,15 +13,24 @@ from __future__ import annotations
 import dataclasses
 import math
 import sys
+import time
 from typing import Any, Callable
 
 import gymnasium as gym
 import numpy as np
 from gymnasium import spaces
 
-from autofly_ue5.dataset.targets import TargetPool
+from autofly_ue5.dataset.targets import TargetEntry, TargetPool
 from autofly_ue5.expert.altitude_margin import AltitudeMarginPenalty
-from autofly_ue5.expert.episode import EpisodeSetup, a0_aligned, apply_setup, clear_setup, sample_setup
+from autofly_ue5.expert.episode import (
+    EpisodeSetup,
+    _runtime_material_path,
+    _spawn_asset_name,
+    a0_aligned,
+    apply_setup,
+    clear_setup,
+    sample_setup,
+)
 from autofly_ue5.expert.footprint_contact import (
     DEFAULT_SHAPE,
     FootprintContactRule,
@@ -46,7 +55,17 @@ from autofly_ue5.frames import wrap_pi
 from autofly_ue5.scenes.footprint_field import FootprintFields
 from autofly_ue5.scenes.model import AssetRegistry, Layout, SceneFile, load_registry
 from autofly_ue5.sim.protocol import Simulator
-from autofly_ue5.sim.types import CONTROL_DT_S, CameraPoseError, KinematicsJumpError, Observation, Pose, StartCollisionError
+from autofly_ue5.sim.types import (
+    CONTROL_DT_S,
+    CameraPoseError,
+    KinematicsJumpError,
+    Observation,
+    Pose,
+    SimConnectionLostError,
+    SimRequestTimeoutError,
+    StartCollisionError,
+)
+from autofly_ue5.validate.target_probe import choose_view, depth_check, expected_box, hold, placement, region
 
 def action_space() -> spaces.Box:
     """Forward speed 0-2 m/s, yaw rate -1..1 rad/s, vertical speed -1..1 m/s (spec §8). A function, so a check that
@@ -69,6 +88,14 @@ MOVER_INFERABLE_FAULTS = (CameraPoseError, KinematicsJumpError)
 #   slice 33 of 36 first frames held for showed their target, 1 of 4 warm ones without the hold, and a warm garbage
 #   truck appeared 7 records in (data/s01_c0 s01_401000016). So the hold is not for first use only.
 PREWARM_HOLD_STEPS = 5
+
+# The session warm-up (2026-10-08 evening). First use under load outlasts any per-episode hold (s05 seed 451000001: the
+# bronze whale statue drawn ~20 steps after its first spawn, beside 8 simulators), so at the first pool reset of every
+# simulator session each (asset, material) pair the env could draw is spawned once ahead of a clear view, the probe's
+# way (validate/target_probe.py), and held until the depth check sees it: at most WARMUP_MAX_STEPS hover steps.
+WARMUP_MAX_STEPS = 60
+WARMUP_DISTANCE_M = (6.0, 10.0)  # camera to the object's centre, by its size (the probe's rule, its nearest at 6 m)
+WARMUP_SPAWN_NAME = "autofly_warmup_target"
 
 
 class AutoFlyEnv(gym.Env):
@@ -111,6 +138,17 @@ class AutoFlyEnv(gym.Env):
     info says how many (`prewarm_steps`) and whether the episode spawned an object, an entry's mesh and material, new to
     this simulator session (`first_use`): the objects count as warm once a hold completes, and a launch, a relaunch
     included, starts cold. Without a pool nothing changes, call for call.
+
+    The session warm-up (with a pool only): at the first reset of every simulator session, a relaunch's included, and
+    before the episode's own reset, every (asset, material) pair this env could draw (its split's entries after the
+    scene's exclusions; with target_split "unseen" the unseen entries too) is spawned 6-10 m ahead of a clear view and
+    held, a reset to the view per pair as the target probe does, until the probe's depth check sees it (at most
+    WARMUP_MAX_STEPS hover steps); then destroyed. A pair seen counts as warm, so first use stays out of the episodes and
+    the per-episode hold is the backstop for the render lag every spawn has. A pair never seen (or that cannot spawn)
+    is said on stderr, recorded, and left cold, never the end of the collection. A backend fault during the warm-up
+    leaves it to the next reset, which resumes it. Each completed warm-up is kept (`session_warmups`, and the reset info
+    of the reset that completed it, `session_warmup`): its pairs, their steps to visible, its failures, total hover
+    steps and resets, and wall seconds.
     """
 
     metadata: dict[str, Any] = {"render_modes": []}
@@ -232,8 +270,12 @@ class AutoFlyEnv(gym.Env):
         self._last_pose: Pose | None = None
         self._last_obs: dict[str, np.ndarray] | None = None
         self._last_raw: Observation | None = None
-        # The pool objects (asset, material) this simulator session has spawned and held for: the first-use hold.
+        # The pool objects (asset, material) this simulator session has spawned and held for (or warmed up): first use.
         self._warm: set[tuple[str | None, str | None]] = set()
+        # The session warm-up: due at a session's first pool reset; its record while it accumulates over attempts.
+        self._warmup_pending = False
+        self._warmup_record: dict | None = None
+        self._session_warmups: list[dict] = []
         # Advances by one on every seed=None reset() so a given env instance replays episodes 0, 1, 2,
         # ... in a fixed, reproducible order (offset per-env by seed_base, so vectorised workers stay
         # disjoint even when the caller resets every one of them with seed=None). An explicit seed does
@@ -250,6 +292,8 @@ class AutoFlyEnv(gym.Env):
             self._displaced = set()  # a freshly launched level has every pillar at home
             self._movers = None
             self._warm = set()  # and has loaded no pool object yet
+            self._warmup_pending = self._target_pool is not None
+            self._warmup_record = None
         return self._sim
 
     def reset(self, seed: int | None = None, options: dict | None = None) -> tuple[dict[str, np.ndarray], dict]:
@@ -271,6 +315,8 @@ class AutoFlyEnv(gym.Env):
         self._movers = None
         self._static = None
         self._footprint = None
+        # A session's first pool reset warms every pair it could draw first (see the class docstring); no draw is made.
+        warmup = self._session_warmup(sim) if self._warmup_pending else None
         if self._displaced:
             # Out of the way of the reset's up-across-down sequence: the drone may have ended on a vacated home spot,
             # and sending a pillar home there would put it inside the drone.
@@ -371,6 +417,8 @@ class AutoFlyEnv(gym.Env):
         if first_use is not None:  # with a pool only: every pool-free reset's info stays as it was
             info["prewarm_steps"] = PREWARM_HOLD_STEPS
             info["first_use"] = first_use
+        if warmup is not None:  # the reset that completed its session's warm-up
+            info["session_warmup"] = warmup
         self._last_obs = {"depth": self._stacker.reset(encode_depth(obs.depth)),
                           "vector": encode_vector(obs.pose, obs.velocity_ned, obs.yaw_rate, setup.target_xy_z),
                           **self._mover_obs(obs.pose)}
@@ -512,6 +560,102 @@ class AutoFlyEnv(gym.Env):
                           "vector": encode_vector(obs.pose, obs.velocity_ned, obs.yaw_rate, self._setup.target_xy_z),
                           **self._mover_obs(obs.pose)}
         return self._last_obs, reward, result.terminated, result.truncated, info
+
+    def _warmup_pairs(self) -> list[tuple[str | None, str | None, TargetEntry]]:
+        """(asset, material, an entry drawn with them) for every pair this env could draw, in the pool file's order."""
+        split = self._scene.split if self._target_split is None else self._target_split
+        targets, rest = self._target_pool.draw_lists(split, scene_id=self._scene.id)
+        drawable = set(targets) | set(rest)
+        pairs, seen = [], set()
+        for entry in self._target_pool.entries:
+            if entry in drawable and (entry.asset, entry.material) not in seen:
+                seen.add((entry.asset, entry.material))
+                pairs.append((entry.asset, entry.material, entry))
+        return pairs
+
+    def _session_warmup(self, sim: Simulator) -> dict:
+        """Warm every pair this session could draw (see the class docstring) and return the session's record. A backend
+        fault propagates with the record kept: the next reset resumes it, the pairs already recorded skipped."""
+        record = self._warmup_record
+        if record is None:
+            record = self._warmup_record = {"view": None, "pairs": 0, "warmed": 0, "steps": 0, "resets": 0,
+                                            "wall_s": 0.0, "attempts": 0, "per_pair": [], "failed": [], "error": None}
+        record["attempts"] += 1
+        started = time.monotonic()
+        try:
+            self._warm_pairs(sim, record)
+        finally:
+            record["wall_s"] = round(record["wall_s"] + time.monotonic() - started, 3)
+        self._warmup_pending, self._warmup_record = False, None
+        self._session_warmups.append(record)
+        never = [f["name"] for f in record["failed"]]
+        print(f"WARMUP instance {self._instance}: {record['warmed']}/{record['pairs']} pairs drawn, {record['steps']} hover "
+              f"steps over {record['resets']} resets in {record['wall_s']:.1f} s"
+              + (f"; never drawn: {', '.join(never)}" if never else "")
+              + (f"; skipped: {record['error']}" if record["error"] else ""), file=sys.stderr, flush=True)
+        return record
+
+    def _warm_pairs(self, sim: Simulator, record: dict) -> None:
+        registry = load_registry()
+        pairs = self._warmup_pairs()
+        record["pairs"] = len(pairs)
+        try:
+            view = choose_view(self._layout)
+        except ValueError as err:  # no clear line of view in this layout: the per-episode hold alone remains
+            record["error"] = f"no clear view to warm up from ({err})"
+            return
+        record["view"] = [view.x, view.y, view.z, view.yaw]
+        done = {(p["asset"], p["material"]) for p in record["per_pair"]}  # shown or failed in an earlier attempt
+        for asset_key, material_key, entry in pairs:
+            if (asset_key, material_key) in done:
+                continue
+            asset = registry.assets[asset_key]
+            position, distance = placement(asset, entry.scale, view, min_distance_m=WARMUP_DISTANCE_M[0],
+                                           max_distance_m=WARMUP_DISTANCE_M[1])
+            centre, size = expected_box(asset, entry.scale, position)
+            before = sim.reset(view)  # the frame without it, the drone where the probe stands it
+            record["resets"] += 1
+            if not np.isfinite(before.depth).any():
+                record["error"] = "the depth frame at the view shows nothing, not even the ground: nothing to judge by"
+                return
+            mask, box = region(centre, size, view, before.depth.shape[0])
+            pair = {"asset": asset_key, "material": material_key, "name": entry.name, "distance_m": round(distance, 2),
+                    "steps": None, "error": None, "attempt": record["attempts"]}
+            try:
+                name = sim.spawn(WARMUP_SPAWN_NAME, _spawn_asset_name(asset.ue_path),
+                                 Pose(position[0], position[1], position[2], 0.0), entry.scale,
+                                 _runtime_material_path(registry, material_key))
+            except (SimConnectionLostError, SimRequestTimeoutError):
+                raise  # the backend, not the pair: the next reset (a relaunch) resumes the warm-up with it
+            except Exception as err:  # a pair the runtime cannot spawn: recorded and said, never the collection's end
+                if type(err).__module__.split(".")[0] == "pynng":
+                    raise  # the client's own transport errors reach us raw (MEMORY.md): the backend, not the pair
+                pair["error"] = f"{type(err).__name__}: {err}"
+            else:
+                try:
+                    for k in range(1, WARMUP_MAX_STEPS + 1):
+                        obs = hold(sim)
+                        record["steps"] += 1
+                        if depth_check(before.depth, obs.depth, mask, box)[0]["ok"]:
+                            pair["steps"] = k
+                            break
+                finally:
+                    clear_setup(sim, (name,))
+            record["per_pair"].append(pair)
+            if pair["steps"] is not None:
+                self._warm.add((asset_key, material_key))
+                record["warmed"] += 1
+            else:
+                reason = pair["error"] or f"not drawn within {WARMUP_MAX_STEPS} hover steps"
+                record["failed"].append({"asset": asset_key, "material": material_key, "name": entry.name,
+                                         "reason": reason})
+                print(f"WARMUP-NEVER instance {self._instance}: {entry.name} ({asset_key}, {material_key}): {reason}",
+                      file=sys.stderr, flush=True)
+
+    @property
+    def session_warmups(self) -> list[dict]:
+        """Every completed session warm-up of this env, in order (one per simulator session with a pool)."""
+        return list(self._session_warmups)
 
     def _settle_hold(self, sim: Simulator, setup: EpisodeSetup) -> bool:
         """PREWARM_HOLD_STEPS more hover steps, in every pool episode; whether it spawned an object (an entry's mesh and
