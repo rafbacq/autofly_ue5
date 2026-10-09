@@ -6,6 +6,14 @@ stale "fact". Standing rules live in `CLAUDE.md`; this file is the reasoning and
 
 ## Traps: read these before touching the simulator path
 
+- **Under load a spawned object is not drawn in the next frame, and a first use can take 20+ steps (2026-10-08).**
+  Beside seven collectors the target probe found 59 of 60 targets, primitives included, invisible one step after their
+  spawn (5 of 60 on a quieter host), all visible 5 steps later; a bronze statue new to its session stayed blank for
+  ~21-25 steps with three other new objects spawned at once. Every pool episode now holds 5 hover steps after its
+  spawns, and every simulator session first spawns each pool pair up close and waits until the depth camera sees it
+  (`expert/env.py` warm-up; `docs/decisions/2026-10-08-reset-hold-and-warmup.md`). Episodes collected before it
+  (the thin slice) are kept out of the dataset.
+
 - **The drone's collision reaches past its rotor tips (2026-10-08).** Physical collisions registered at 0.51 m (mover
   probe d1) and 0.52-0.63 m (run 5's static collisions) from a surface, centre to surface, against the rotors' 0.48 m:
   the drone's UE mesh collision is larger than its rotor discs. Any geometric rule meant to keep the body off
@@ -129,6 +137,13 @@ stale "fact". Standing rules live in `CLAUDE.md`; this file is the reasoning and
   The launch guard then refuses every simulator launch; wait or coordinate.
 
 ## RL and evaluation learnings
+
+- **The plan 6 dataset in numbers (2026-10-09).** 1,800 kept of 2,709 flights in about 5 h on seven simulators
+  (~9 flights/min) plus one evaluator: s01 0.94, s01d 0.88, s02 0.79, s03 0.64, s04 0.53, s05 0.52, s06 0.38, s07 0.98,
+  s09 0.95. Through the harness each pilot lands within its kept-rate's interval. Low-rate scenes keep slightly easier
+  episodes: rejected flights' straight lines pass 5-15 % more obstacles within 2 m.
+- **A first-frame "missing" is mostly the check, not the render (2026-10-09).** Of 853 judgeable first frames, 52 were
+  flagged: 41 on 1-2 pixels, most others open-frame objects (tables, chairs) whose projected centre shows the background.
 
 - **A strong pillar expert transfers to other solid-obstacle scenes (2026-10-08, `runs/screening/`).** The accepted
   s01d mean (pillars + movers, 3 depth frames, mover input zeroed on static scenes) flew s07 stacked boxes and s09
@@ -334,6 +349,20 @@ stale "fact". Standing rules live in `CLAUDE.md`; this file is the reasoning and
   attempt.
 
 ## Environment and tooling learnings
+
+- **A Monitor that pipes through `awk` here delivers nothing (2026-10-09).** This host's awk is mawk, which reads piped
+  input in blocks, so a watcher's lines sat in its buffer for 30 minutes; and `grep` is ugrep, which rejects
+  back-references in `-E`. Filter inside the watcher script itself (bash `[[ =~ ]]`), and test a watcher by
+  running it for a few seconds before arming it. `bash -n a.sh b.sh` checks only `a.sh` (the rest are its arguments):
+  loop over files.
+- **Copying into `docs/gates/` during a test run fails the suite (2026-10-08).** `tests/conftest.py` flags any change
+  there while a test runs, the main agent's own copies included. Copy evidence only when no pytest runs.
+- **Grounding DINO on the GPU: `runs/tools/gdino_gpu_venv` (2026-10-09).** `gdino_venv` holds a CPU-only torch; its twin
+  with torch 2.14.1+cu130 (same transformers 5.19.0, numpy 2.5.3) scores 14 frames/s alone at batch 1, about 17/s
+  over four processes (CPU: 0.36), with first detections equal to the dense CPU run and scores within 2.8e-3.
+  Use it only while no simulator may launch.
+- **Agents' worktrees made every collector record "dirty" (2026-10-08).** `.claude/worktrees/` was untracked, so
+  `git status --porcelain` was never empty; it is now ignored.
 
 - **Grounding DINO runs on this host's CPU at 0.34-0.37 frames/s (2026-10-06, tiny, 8 threads, the default 800 px input).**
   `.venv` cannot take `transformers` (numpy 1.26.4), so `runs/tools/gdino_venv` holds a CPU-only torch 2.14.1 +
