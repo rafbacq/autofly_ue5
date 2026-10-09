@@ -682,6 +682,24 @@ def test_every_object_of_a_pool_episode_carries_its_entry_s_stand_in_mark(tmp_pa
     assert seen_marks == {True, False}
 
 
+def test_the_merged_export_reads_each_kept_episode_s_stand_in_mark_from_its_provenance(tmp_path):
+    # The merge (dataset/merge.py) takes target_stand_in from provenance target.stand_in, its placeholder-status
+    # fallback being for stores collected before the mark: the Kenney stand-ins are "imported" now.
+    from autofly_ue5.dataset.merge import episode_metadata
+
+    record = _pilot(tmp_path, n_episodes=4, targets=_real_entries_pool(tmp_path))
+    assert record["status"] == "ok", record["error"]
+    root = tmp_path / "data" / "pilot"
+    marks = {}
+    for entry in json.loads((root / "manifest.json").read_text())["episodes"]:
+        provenance = json.loads((root / "provenance" / f"{entry['id']}.json").read_text())
+        meta, filled = episode_metadata("pilot", entry, provenance, pool={})
+        assert filled == [] and meta["target_stand_in"] is (entry["target_name"] == "red sedan")
+        assert meta["target_status"] in ("imported", "primitive")
+        marks[entry["target_name"]] = meta["target_stand_in"]
+    assert set(marks.values()) == {True, False}, f"a stand-in and a model were both read: {marks}"
+
+
 def test_a_pool_free_episode_records_no_first_use_hold(tmp_path):
     record = _pilot(tmp_path, n_episodes=1)
     prov = json.loads(next((tmp_path / "data" / "pilot" / "provenance").glob("*.json")).read_text())
