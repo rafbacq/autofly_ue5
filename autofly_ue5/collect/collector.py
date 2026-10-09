@@ -65,14 +65,16 @@ def record_inputs(raw: Observation, setup: EpisodeSetup) -> tuple[np.ndarray, np
 def _fly(model, env, seed: int, *, deterministic: bool, max_steps: int,
          visibility: FirstFrameVisibility | None = None) -> dict[str, Any]:
     obs, info = env.reset(seed=seed, options={"a0": "sector8"})
-    prewarm_steps = info.get("prewarm_steps")  # the reset's first-use hold, with a pool (expert/env.py)
+    # the reset's settle hold, and whether it spawned an object new to the session; with a pool (expert/env.py)
+    prewarm_steps, first_use = info.get("prewarm_steps"), info.get("first_use")
     base = env.unwrapped
     setup = base.setup
     spawned = tuple(base.spawned)
     low, high = env.action_space.low, env.action_space.high
     raw = base.last_observation
     # the frame recorded first: does it show the target? (validate/visibility.py)
-    first_frame = visibility(raw, setup, prewarm_steps=prewarm_steps) if visibility is not None else None
+    first_frame = (visibility(raw, setup, prewarm_steps=prewarm_steps, first_use=first_use)
+                   if visibility is not None else None)
     frames, states, actions, times, poses, movers = [], [], [], [], [], []
     for _ in range(max_steps):
         action, _ = model.predict(obs, deterministic=deterministic)
@@ -92,10 +94,10 @@ def _fly(model, env, seed: int, *, deterministic: bool, max_steps: int,
             return {"setup": setup, "spawned": spawned, "outcome": info["outcome"], "info": info, "frames": frames, "states": states,
                     "actions": actions, "times": times, "poses": poses, "movers": movers,
                     "final_pose": [raw.pose.x, raw.pose.y, raw.pose.z, raw.pose.yaw], "prewarm_steps": prewarm_steps,
-                    "first_frame": first_frame}
+                    "first_use": first_use, "first_frame": first_frame}
     return {"setup": setup, "spawned": spawned, "outcome": "exceeded_max_steps", "info": info, "frames": frames, "states": states,
             "actions": actions, "times": times, "poses": poses, "movers": movers, "final_pose": poses[-1],
-            "prewarm_steps": prewarm_steps, "first_frame": first_frame}
+            "prewarm_steps": prewarm_steps, "first_use": first_use, "first_frame": first_frame}
 
 
 def _pool_object(entry, spawned: dict) -> dict:
@@ -139,9 +141,11 @@ def _provenance(scene: SceneFile, layout_sha256: str | None, seed: int, flight: 
         "poses_per_record": flight["poses"],
         "sim_time_ns": [int(t) for t in flight["times"]],
         "final_pose": flight["final_pose"],
-        # With a pool: how many more hover steps the reset held before the first record because the episode spawned an
-        # object new to the simulator session (plan 6 step 2a). A pool-free episode's provenance stays M3's, key for key.
-        **({"prewarm_steps": flight["prewarm_steps"]} if flight.get("prewarm_steps") is not None else {}),
+        # With a pool: how many more hover steps the reset held before the first record (every pool episode: the render
+        # lag after a spawn), and whether it spawned an object new to the simulator session (plan 6 step 2a). A pool-free
+        # episode's provenance stays M3's, key for key.
+        **({"prewarm_steps": flight["prewarm_steps"], "first_use": flight["first_use"]}
+           if flight.get("prewarm_steps") is not None else {}),
         # With a pool: whether the first recorded frame shows the target (validate/visibility.py), kept or rejected.
         **({"first_frame_visibility": flight["first_frame"]} if flight.get("first_frame") is not None else {}),
         "termination": flight["outcome"],

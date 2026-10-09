@@ -148,7 +148,8 @@ class FirstFrameVisibility:
                   for i, ((asset, scale), (dx, dy, _dz)) in enumerate(zip(distractors, setup.distractors, strict=True))]
         return box, others
 
-    def __call__(self, obs: Observation, setup: EpisodeSetup, *, prewarm_steps: int | None) -> dict:
+    def __call__(self, obs: Observation, setup: EpisodeSetup, *, prewarm_steps: int | None,
+                 first_use: bool | None = None) -> dict:
         depth = np.asarray(obs.depth, dtype=np.float64)
         if depth.ndim != 2 or depth.shape[0] != depth.shape[1]:
             raise ValueError(f"the first-frame check reads a square depth frame, got shape {depth.shape}")
@@ -160,7 +161,8 @@ class FirstFrameVisibility:
         row, col, planar = project_point(pose, centre, image_size=n)
         tolerance = max(MIN_TOLERANCE_M, RANGE_TOLERANCE * planar)
         record = {"status": None, "range_m": round(math.dist(origin, centre), 3), "planar_depth_m": round(planar, 3),
-                  "pixel": None, "depth_window_min_m": None, "prewarm_steps": prewarm_steps, "depth_frame": [n, n],
+                  "pixel": None, "depth_window_min_m": None, "prewarm_steps": prewarm_steps, "first_use": first_use,
+                  "depth_frame": [n, n],
                   "tolerance_m": round(tolerance, 3), "expected_m": None, "occluder": None, "informative_px": 0,
                   "matching_px": 0, "nearer_px": 0, "farther_px": 0, "unmodeled_depth_m": None, "window": None}
         if planar <= 0 or not (0 <= row < n and 0 <= col < n):

@@ -627,8 +627,11 @@ def test_each_pool_episode_records_its_first_use_hold_and_which_objects_were_sta
     episodes = [json.loads((root / "provenance" / f"{e['id']}.json").read_text())
                 for e in json.loads((root / "manifest.json").read_text())["episodes"]]
     episodes += [json.loads(p.read_text())["provenance"] for p in (tmp_path / "data" / "rejects" / "pilot").glob("*.json")]
-    holds = [prov["prewarm_steps"] for prov in episodes]
-    assert holds[0] == PREWARM_HOLD_STEPS and set(holds) <= {0, PREWARM_HOLD_STEPS}, holds
+    # every pool episode holds (the render lag after any spawn); first_use says which spawned an object new to the session
+    assert all(prov["prewarm_steps"] == PREWARM_HOLD_STEPS for prov in episodes)
+    first_uses = [prov["first_use"] for prov in episodes]
+    assert all(isinstance(flag, bool) for flag in first_uses) and True in first_uses, first_uses
+    assert all(prov["first_frame_visibility"]["first_use"] is prov["first_use"] for prov in episodes)
     for prov in episodes:
         for obj in (prov["target"], *prov["distractors"]):
             assert obj["stand_in"] is (obj["name"] == "grey boulder"), obj
@@ -662,7 +665,8 @@ def test_a_kenney_target_s_provenance_says_stand_in_and_a_poly_haven_one_does_no
     for name, mark in (("red sedan", True), ("covered car", False)):
         setup = dataclasses.replace(base, target=by_name[name], target_scale=by_name[name].scale)
         flight = {"setup": setup, "spawned": ("target",), "info": {}, "movers": [], "poses": [], "times": [],
-                  "final_pose": [0.0] * 4, "outcome": "success", "prewarm_steps": 0, "first_frame": None}
+                  "final_pose": [0.0] * 4, "outcome": "success", "prewarm_steps": 5, "first_use": False,
+                  "first_frame": None}
         target = _provenance(scene, "sha", 1, flight, deterministic=False, target_name=name,
                              target_name_status="pool")["target"]
         assert target["name"] == name and target["stand_in"] is mark and target["status"] == "imported"

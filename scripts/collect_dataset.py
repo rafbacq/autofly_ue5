@@ -18,10 +18,11 @@ is recorded as M3's gate.
   pool, less what the scene's entry of the pool's exclusion table names (assets/target_exclusions.json, plan 6 step
   2c), and the instruction names the target; the card lists the scene's names with status "pool". Each episode's
   provenance records its target's and distractors' entries, their `stand_in` mark included (plan 6 step 2b), and
-  `prewarm_steps`: the hover steps its reset held before the first record for an object new to the simulator session
-  (plan 6 step 2a), and `first_frame_visibility`: whether that first recorded frame shows the target (visible, missing,
-  occluded, out_of_view or undetermined; validate/visibility.py), counted in the record's collection summary, every
-  `missing` said on stderr. Without it, M3's way: the orange cylinder under `--target-name` (default "orange
+  `prewarm_steps`: the hover steps its reset held before the first record (every pool episode: under load a spawned
+  object is drawn only frames after its spawn), with `first_use` saying whether it spawned an object new to the
+  simulator session (plan 6 step 2a), and `first_frame_visibility`: whether that first recorded frame shows the target
+  (visible, missing, occluded, occluded_unmodeled, out_of_view or undetermined; validate/visibility.py), counted in the
+  record's collection summary, every `missing` said on stderr. Without it, M3's way: the orange cylinder under `--target-name` (default "orange
   cylinder", a placeholder in the card). Not both.
 - The gate record (default docs/gates/m3_gate.json, never written over) passes when the requested episodes were kept,
   the validator passes, and the engine-fault audit is clean. The TFDS read-back is recorded next to it.

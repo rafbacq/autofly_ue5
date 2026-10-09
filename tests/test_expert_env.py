@@ -401,23 +401,27 @@ def _reset_counting(env, seed):
     return info, env._sim.steps_called - before[0], env._sim.commands[before[1]:]
 
 
-def test_a_pool_reset_holds_five_more_hover_steps_the_first_time_an_object_is_spawned_in_a_session(tmp_path):
+def test_every_pool_reset_holds_five_hover_steps_and_says_whether_it_spawned_a_first_use(tmp_path):
+    # Under load a spawned object is not drawn in the frame right after its spawn, warm or not (2026-10-08 evening:
+    # 59 of 60 probed targets, and 1 of 4 warm first frames shown without the hold): every pool episode holds, and
+    # first_use tells an object new to the session from the render lag every spawn has.
     from autofly_ue5.expert.env import PREWARM_HOLD_STEPS
     from tests.test_dataset_targets import wide_pool
 
     assert PREWARM_HOLD_STEPS == 5
     env = make_env(target_pool=wide_pool(tmp_path))
     env._sim_factory = CountingSim
-    warmed, holds = set(), []
+    warmed, first_uses = set(), []
     for seed in range(12):
         info, steps, commands = _reset_counting(env, seed)
-        expected = 0 if _objects(env.setup) <= warmed else PREWARM_HOLD_STEPS
-        assert info["prewarm_steps"] == expected and steps == 1 + expected, f"seed {seed}"
+        first_use = not _objects(env.setup) <= warmed
+        assert info["prewarm_steps"] == PREWARM_HOLD_STEPS and steps == 1 + PREWARM_HOLD_STEPS, f"seed {seed}"
+        assert info["first_use"] is first_use, f"seed {seed}"
         assert commands == [(0.0, 0.0, 0.0)] * steps, "every step of a reset hovers"
         assert info["steps"] == 0, "the hold is not an episode step"
         warmed |= _objects(env.setup)
-        holds.append(expected)
-    assert holds[0] == PREWARM_HOLD_STEPS and 0 in holds, holds
+        first_uses.append(first_use)
+    assert first_uses[0] is True and False in first_uses, first_uses
     # the observation returned is the frame after the hold, and the episode starts from it
     _obs, _reward, _term, _trunc, info = env.step(np.array([0.0, 0.0, 0.0], dtype=np.float32))
     assert info["steps"] == 1
@@ -431,14 +435,15 @@ def test_a_relaunched_simulator_forgets_what_was_warm(tmp_path):
     env = make_env(target_pool=wide_pool(tmp_path))
     env._sim_factory = CountingSim
     wrapper = ResilientAutoFlyEnv(env, instance=0, sim_root=tmp_path / "sim")
-    assert _reset_counting(env, 3)[0]["prewarm_steps"] == PREWARM_HOLD_STEPS
-    assert _reset_counting(env, 3)[0]["prewarm_steps"] == 0, "the same objects again, in the same session"
+    assert _reset_counting(env, 3)[0]["first_use"] is True
+    info = _reset_counting(env, 3)[0]
+    assert info["first_use"] is False and info["prewarm_steps"] == PREWARM_HOLD_STEPS, "the same objects, the same session"
     first = env._sim
     wrapper._relaunch()  # what a fault that needs a fresh simulator does
     info, steps, _commands = _reset_counting(env, 3)
-    assert env._sim is not first and info["prewarm_steps"] == PREWARM_HOLD_STEPS and steps == 1 + PREWARM_HOLD_STEPS
+    assert env._sim is not first and info["first_use"] is True and steps == 1 + PREWARM_HOLD_STEPS
     env.close()
-    assert _reset_counting(env, 3)[0]["prewarm_steps"] == PREWARM_HOLD_STEPS, "a closed env's next session too"
+    assert _reset_counting(env, 3)[0]["first_use"] is True, "a closed env's next session too"
 
 
 def test_a_hold_cut_short_by_a_fault_is_held_again(tmp_path):
@@ -462,7 +467,8 @@ def test_a_hold_cut_short_by_a_fault_is_held_again(tmp_path):
     with pytest.raises(CameraPoseError):
         env.reset(seed=new_seed)
     sim.step = real_step
-    assert _reset_counting(env, new_seed)[0]["prewarm_steps"] == PREWARM_HOLD_STEPS
+    info = _reset_counting(env, new_seed)[0]
+    assert info["first_use"] is True and info["prewarm_steps"] == PREWARM_HOLD_STEPS, "not warm: its hold was cut short"
 
 
 def _peek(env, seed):
