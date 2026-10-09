@@ -1,0 +1,3347 @@
+{
+ "harness": "autofly_ue5.evaluation",
+ "record_version": 1,
+ "description": "Closed-loop evaluation (spec \u00a712 M6, plan 6 item 6): SR, CR, out-of-bounds and timeout rates with 95 % Wilson intervals; PER = L_opt / max(L, L_opt) over successes, an interval between the straight line to the success disc and the grid's shortest path.",
+ "condition": {
+  "name": "unseen_targets",
+  "file": "/home/nvidiasims/research_uav/autofly_ue5/assets/eval_episodes/unseen_targets.json",
+  "sha256": "7b6b0fcb8e998c0fbecc1dcc8234d12887e41444463bacf725853c830d675f96",
+  "episodes_per_scene": 20,
+  "scenes": [
+   "s01",
+   "s01d",
+   "s02",
+   "s03",
+   "s04",
+   "s05",
+   "s06",
+   "s07",
+   "s09"
+  ]
+ },
+ "policy": {
+  "name": "expert",
+  "kind": "sac_expert",
+  "checkpoint": "runs/expert/s01_r2/best/best_model.zip",
+  "sha256": "8c2c7500041907a98d5d696b9007e30578731ff5136f63c384270c0f4fcbf8dc",
+  "deterministic": false,
+  "obs_config": {
+   "depth_frames": 1,
+   "depth_dtype": "float32"
+  },
+  "privileged_observation": true,
+  "trained_footprint_shape": null
+ },
+ "privileged_state": false,
+ "privileged_state_indices": [
+  0,
+  1
+ ],
+ "a0": "sector8",
+ "max_steps": 300,
+ "max_episodes_per_scene": null,
+ "contact_rule_shape": "outline",
+ "target_pool": {
+  "path": "/home/nvidiasims/research_uav/autofly_ue5/assets/targets.json",
+  "sha256": "0a8bfa72f11d2c590b6d3a42a222450875c5347d3e26030029648f49f36ae7b7",
+  "version": 1
+ },
+ "l_opt": {
+  "inflate_m": 1.4,
+  "resolution_m": 0.5
+ },
+ "instance": 7,
+ "provenance": {
+  "git_head": "0388392a0c78f86a5c61b90a4d62327e1ed79917",
+  "tree_dirty": false,
+  "argv": [
+   "run",
+   "--instance",
+   "7",
+   "--out",
+   "runs/eval/final/unseen_expert_s01.json",
+   "--policy",
+   "expert:runs/expert/s01_r2/best/best_model.zip",
+   "--condition",
+   "unseen_targets",
+   "--scenes",
+   "s01"
+  ]
+ },
+ "scenes": {
+  "s01": {
+   "status": "ok",
+   "reason": null,
+   "error": null,
+   "requires_gate": null,
+   "gate": null,
+   "scene_sha256": "a6b461b38cf65867d6f97a749a2a0a0b9d1aa1eec3f71b2b2028017c22ef7acc",
+   "layout_sha256": "0cf2b005cd08c238afcd73e13631fcdd43f2c75b0b14fdc356e3b2d2b26d6cc6",
+   "map": "/Game/AutoFly/Maps/S01",
+   "scene_config": {
+    "file": "scene_autofly_s01_fast.jsonc",
+    "sha256": "f3fe5ac8a23faefc58186b3fc8d6aa3134d01346431bd21c50b63d0b24b77c94"
+   },
+   "target_split": "unseen",
+   "episodes_requested": 20,
+   "contact_rules": null,
+   "dynamic": false,
+   "metrics": {
+    "episodes": 20,
+    "outcomes": {
+     "success": 19,
+     "collision": 0,
+     "out_of_bounds": 1,
+     "timeout": 0
+    },
+    "success_rate": {
+     "value": 0.95,
+     "wilson95": [
+      0.763868806553258,
+      0.9911185511992047
+     ]
+    },
+    "collision_rate": {
+     "value": 0.0,
+     "wilson95": [
+      0.0,
+      0.16112515805281938
+     ]
+    },
+    "out_of_bounds_rate": {
+     "value": 0.05,
+     "wilson95": [
+      0.008881448800795402,
+      0.23613119344674205
+     ]
+    },
+    "timeout_rate": {
+     "value": 0.0,
+     "wilson95": [
+      0.0,
+      0.16112515805281938
+     ]
+    },
+    "per": {
+     "successes": 19,
+     "episodes": 19,
+     "without_grid_optimum": 0,
+     "lower": 0.9775549560805664,
+     "upper": 1.0
+    },
+    "collision_sources": {},
+    "mean_steps": 193.2,
+    "mean_path_length_m": 68.36488242371531,
+    "policy_act_s": {
+     "mean": 0.005046191909812621,
+     "max": 0.20002802298404276
+    }
+   },
+   "backend_faults": {
+    "instance": 7,
+    "fault_counts": {
+     "CameraPoseError": 0,
+     "StepTimingError": 0,
+     "StaleStateError": 0,
+     "CommandTimeoutError": 0,
+     "Timeout": 0,
+     "ConnectionReset": 0,
+     "KinematicsJumpError": 0,
+     "SimRequestTimeoutError": 0,
+     "ObjectMoveRefusedError": 0,
+     "FrameTimeoutError": 0,
+     "FrameTimestampError": 0,
+     "ResetPoseError": 0,
+     "StartCollisionError": 0,
+     "SetPoseError": 0,
+     "EpisodeSetupError": 0,
+     "SimExitedError": 0,
+     "SimReadyTimeout": 0,
+     "SimConnectionLostError": 0
+    },
+    "recovered_counts": {
+     "CameraPoseError": 0,
+     "StepTimingError": 0,
+     "StaleStateError": 0,
+     "CommandTimeoutError": 0,
+     "Timeout": 0,
+     "ConnectionReset": 0,
+     "KinematicsJumpError": 0,
+     "SimRequestTimeoutError": 0,
+     "ObjectMoveRefusedError": 0,
+     "FrameTimeoutError": 0,
+     "FrameTimestampError": 0,
+     "ResetPoseError": 0,
+     "StartCollisionError": 0,
+     "SetPoseError": 0,
+     "EpisodeSetupError": 0,
+     "SimExitedError": 0,
+     "SimReadyTimeout": 0,
+     "SimConnectionLostError": 0
+    },
+    "relaunch_count": 0
+   },
+   "session_warmups": [
+    {
+     "view": [
+      -33.0,
+      33.0,
+      -2.0,
+      -1.5707963267948966
+     ],
+     "pairs": 53,
+     "warmed": 53,
+     "steps": 105,
+     "resets": 53,
+     "wall_s": 76.686,
+     "attempts": 1,
+     "per_pair": [
+      {
+       "asset": "tgt_covered_car",
+       "material": null,
+       "name": "covered car",
+       "distance_m": 9.0,
+       "steps": 1,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "tgt_sedan",
+       "material": null,
+       "name": "red sedan",
+       "distance_m": 9.0,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "tgt_hatchback_sports",
+       "material": null,
+       "name": "green hatchback",
+       "distance_m": 8.7,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "tgt_van",
+       "material": null,
+       "name": "blue van",
+       "distance_m": 9.0,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "tgt_taxi",
+       "material": null,
+       "name": "yellow taxi",
+       "distance_m": 9.0,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "tgt_police",
+       "material": null,
+       "name": "police car",
+       "distance_m": 9.0,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "tgt_ambulance",
+       "material": null,
+       "name": "ambulance",
+       "distance_m": 9.0,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "tgt_firetruck",
+       "material": null,
+       "name": "red fire truck",
+       "distance_m": 9.0,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "tgt_garbage_truck",
+       "material": null,
+       "name": "green garbage truck",
+       "distance_m": 9.0,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "tgt_suv_luxury",
+       "material": null,
+       "name": "yellow suv",
+       "distance_m": 9.0,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "tgt_truck_flat",
+       "material": null,
+       "name": "white pickup truck",
+       "distance_m": 9.0,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "tgt_crane",
+       "material": null,
+       "name": "crane",
+       "distance_m": 8.52,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "tgt_tractor_shovel",
+       "material": null,
+       "name": "green front loader",
+       "distance_m": 8.25,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "cube",
+       "material": "runtime_red",
+       "name": "red cube",
+       "distance_m": 6.0,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "cube",
+       "material": "runtime_green",
+       "name": "green cube",
+       "distance_m": 6.0,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "cube",
+       "material": "runtime_yellow",
+       "name": "yellow cube",
+       "distance_m": 6.0,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "cone",
+       "material": "runtime_blue",
+       "name": "blue cone",
+       "distance_m": 6.0,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "cone",
+       "material": "orange",
+       "name": "orange cone",
+       "distance_m": 6.0,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "sphere",
+       "material": "runtime_yellow",
+       "name": "yellow sphere",
+       "distance_m": 6.0,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "sphere",
+       "material": "runtime_green",
+       "name": "green sphere",
+       "distance_m": 6.0,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "cone",
+       "material": "runtime_green",
+       "name": "green cone",
+       "distance_m": 6.0,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "tgt_sofa_01",
+       "material": null,
+       "name": "beige sofa",
+       "distance_m": 6.0,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "tgt_sofa_02",
+       "material": null,
+       "name": "black leather sofa",
+       "distance_m": 6.0,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "tgt_armchair_01",
+       "material": null,
+       "name": "grey armchair",
+       "distance_m": 6.0,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "tgt_greenchair_01",
+       "material": null,
+       "name": "green armchair",
+       "distance_m": 6.0,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "tgt_plastic_monobloc_chair_01",
+       "material": null,
+       "name": "white plastic chair",
+       "distance_m": 6.0,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "tgt_schoolchair_01",
+       "material": null,
+       "name": "blue school chair",
+       "distance_m": 6.0,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "tgt_painted_wooden_bench",
+       "material": null,
+       "name": "red wooden bench",
+       "distance_m": 6.0,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "tgt_round_wooden_table_01",
+       "material": null,
+       "name": "round wooden table",
+       "distance_m": 6.0,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "tgt_painted_wooden_cabinet",
+       "material": null,
+       "name": "white cabinet",
+       "distance_m": 6.0,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "tgt_vintage_grandfather_clock_01",
+       "material": null,
+       "name": "grandfather clock",
+       "distance_m": 6.29,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "tgt_wooden_picnic_table",
+       "material": null,
+       "name": "wooden picnic table",
+       "distance_m": 7.53,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "tgt_vintage_suitcase_01",
+       "material": null,
+       "name": "green suitcase",
+       "distance_m": 6.0,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "tgt_television_01",
+       "material": null,
+       "name": "old television",
+       "distance_m": 6.0,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "tgt_korean_fire_extinguisher_01",
+       "material": null,
+       "name": "red fire extinguisher",
+       "distance_m": 6.0,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "tgt_portable_generator",
+       "material": null,
+       "name": "yellow generator",
+       "distance_m": 6.0,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "tgt_metal_tool_chest",
+       "material": null,
+       "name": "red tool chest",
+       "distance_m": 6.0,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "tgt_wetfloorsign_01",
+       "material": null,
+       "name": "yellow wet floor sign",
+       "distance_m": 6.0,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "tgt_cone",
+       "material": null,
+       "name": "orange traffic cone",
+       "distance_m": 6.0,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "tgt_wooden_ladder_02",
+       "material": null,
+       "name": "wooden ladder",
+       "distance_m": 6.0,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "tgt_character_a",
+       "material": null,
+       "name": "man in brown jacket",
+       "distance_m": 6.0,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "tgt_character_b",
+       "material": null,
+       "name": "man in red shirt",
+       "distance_m": 6.0,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "tgt_character_c",
+       "material": null,
+       "name": "bald man in green shirt",
+       "distance_m": 6.0,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "tgt_character_e",
+       "material": null,
+       "name": "person in purple shirt",
+       "distance_m": 6.0,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "tgt_character_i",
+       "material": null,
+       "name": "doctor in white coat",
+       "distance_m": 6.0,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "tgt_character_j",
+       "material": null,
+       "name": "police officer",
+       "distance_m": 6.0,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "tgt_character_p",
+       "material": null,
+       "name": "man in blue jacket",
+       "distance_m": 6.0,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "tgt_character_q",
+       "material": null,
+       "name": "man in black suit",
+       "distance_m": 6.0,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "tgt_character_female_b",
+       "material": null,
+       "name": "girl in yellow shirt",
+       "distance_m": 6.0,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "tgt_character_female_d",
+       "material": null,
+       "name": "woman in grey suit",
+       "distance_m": 6.0,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "tgt_bronze_whale_statue",
+       "material": null,
+       "name": "bronze whale statue",
+       "distance_m": 6.0,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "tgt_animal_tiger",
+       "material": null,
+       "name": "tiger",
+       "distance_m": 6.0,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      },
+      {
+       "asset": "tgt_animal_elephant",
+       "material": null,
+       "name": "elephant",
+       "distance_m": 8.07,
+       "steps": 2,
+       "error": null,
+       "attempt": 1
+      }
+     ],
+     "failed": [],
+     "error": null
+    }
+   ]
+  }
+ },
+ "overall": {
+  "episodes": 20,
+  "outcomes": {
+   "success": 19,
+   "collision": 0,
+   "out_of_bounds": 1,
+   "timeout": 0
+  },
+  "success_rate": {
+   "value": 0.95,
+   "wilson95": [
+    0.763868806553258,
+    0.9911185511992047
+   ]
+  },
+  "collision_rate": {
+   "value": 0.0,
+   "wilson95": [
+    0.0,
+    0.16112515805281938
+   ]
+  },
+  "out_of_bounds_rate": {
+   "value": 0.05,
+   "wilson95": [
+    0.008881448800795402,
+    0.23613119344674205
+   ]
+  },
+  "timeout_rate": {
+   "value": 0.0,
+   "wilson95": [
+    0.0,
+    0.16112515805281938
+   ]
+  },
+  "per": {
+   "successes": 19,
+   "episodes": 19,
+   "without_grid_optimum": 0,
+   "lower": 0.9775549560805664,
+   "upper": 1.0
+  },
+  "collision_sources": {},
+  "mean_steps": 193.2,
+  "mean_path_length_m": 68.36488242371531,
+  "policy_act_s": {
+   "mean": 0.005046191909812621,
+   "max": 0.20002802298404276
+  }
+ },
+ "episodes": [
+  {
+   "scene": "s01",
+   "seed": 602000000,
+   "target_split": "unseen",
+   "outcome": "success",
+   "steps": 181,
+   "instruction": "advance to grandfather clock while avioding white pillars and other obstacles",
+   "target": {
+    "name": "grandfather clock",
+    "category": "furniture",
+    "seen": false,
+    "asset": "tgt_vintage_grandfather_clock_01",
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "status": "imported",
+    "stand_in": false
+   },
+   "distractors": [
+    "old television",
+    "red tool chest",
+    "red fire extinguisher",
+    "green armchair",
+    "man in blue jacket"
+   ],
+   "start_pose": [
+    2.791191742619752,
+    32.078557144727505,
+    -1.9822088099398267,
+    -1.5707963267948966
+   ],
+   "target_xyz": [
+    -22.961847532619622,
+    -33.330606789612396,
+    -1.0
+   ],
+   "final_pose": [
+    -21.294883728027344,
+    -28.709625244140625,
+    -2.330876588821411,
+    -1.831758031729327
+   ],
+   "final_distance_m": 4.91245750815327,
+   "final_bearing_deg": -4.884298009480571,
+   "path_length_m": 67.10559031015224,
+   "l_opt": {
+    "straight_m": 65.29635665168838,
+    "grid_m": 71.0651479307451,
+    "inflate_m": 1.4,
+    "resolution_m": 0.5,
+    "excluded_obstacles": 0
+   },
+   "per": {
+    "lower": 0.9730390024124392,
+    "upper": 1.0
+   },
+   "collision_source": null,
+   "oob_kind": null,
+   "n_movers": 0,
+   "mover_in_view": null,
+   "mover_contact": null,
+   "actions": {
+    "fields": [
+     "forward_m_s",
+     "yaw_rate_rad_s",
+     "vertical_m_s"
+    ],
+    "n": 181,
+    "mean": [
+     1.9337,
+     -0.0085,
+     -0.0035
+    ],
+    "std": [
+     0.166,
+     0.7845,
+     0.5245
+    ],
+    "min": [
+     0.0008,
+     -0.9936,
+     -0.9818
+    ],
+    "max": [
+     1.9985,
+     0.9928,
+     0.9622
+    ],
+    "clipped_fraction": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "policy_act_s": {
+    "mean": 0.006167664763437924,
+    "max": 0.20002802298404276
+   },
+   "prewarm_steps": 5,
+   "first_use": false,
+   "retries": 0,
+   "fault_counts": {},
+   "session_warmup": {
+    "view": [
+     -33.0,
+     33.0,
+     -2.0,
+     -1.5707963267948966
+    ],
+    "pairs": 53,
+    "warmed": 53,
+    "steps": 105,
+    "resets": 53,
+    "wall_s": 76.686,
+    "attempts": 1,
+    "per_pair": [
+     {
+      "asset": "tgt_covered_car",
+      "material": null,
+      "name": "covered car",
+      "distance_m": 9.0,
+      "steps": 1,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "tgt_sedan",
+      "material": null,
+      "name": "red sedan",
+      "distance_m": 9.0,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "tgt_hatchback_sports",
+      "material": null,
+      "name": "green hatchback",
+      "distance_m": 8.7,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "tgt_van",
+      "material": null,
+      "name": "blue van",
+      "distance_m": 9.0,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "tgt_taxi",
+      "material": null,
+      "name": "yellow taxi",
+      "distance_m": 9.0,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "tgt_police",
+      "material": null,
+      "name": "police car",
+      "distance_m": 9.0,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "tgt_ambulance",
+      "material": null,
+      "name": "ambulance",
+      "distance_m": 9.0,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "tgt_firetruck",
+      "material": null,
+      "name": "red fire truck",
+      "distance_m": 9.0,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "tgt_garbage_truck",
+      "material": null,
+      "name": "green garbage truck",
+      "distance_m": 9.0,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "tgt_suv_luxury",
+      "material": null,
+      "name": "yellow suv",
+      "distance_m": 9.0,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "tgt_truck_flat",
+      "material": null,
+      "name": "white pickup truck",
+      "distance_m": 9.0,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "tgt_crane",
+      "material": null,
+      "name": "crane",
+      "distance_m": 8.52,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "tgt_tractor_shovel",
+      "material": null,
+      "name": "green front loader",
+      "distance_m": 8.25,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "cube",
+      "material": "runtime_red",
+      "name": "red cube",
+      "distance_m": 6.0,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "cube",
+      "material": "runtime_green",
+      "name": "green cube",
+      "distance_m": 6.0,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "cube",
+      "material": "runtime_yellow",
+      "name": "yellow cube",
+      "distance_m": 6.0,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "cone",
+      "material": "runtime_blue",
+      "name": "blue cone",
+      "distance_m": 6.0,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "cone",
+      "material": "orange",
+      "name": "orange cone",
+      "distance_m": 6.0,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "sphere",
+      "material": "runtime_yellow",
+      "name": "yellow sphere",
+      "distance_m": 6.0,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "sphere",
+      "material": "runtime_green",
+      "name": "green sphere",
+      "distance_m": 6.0,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "cone",
+      "material": "runtime_green",
+      "name": "green cone",
+      "distance_m": 6.0,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "tgt_sofa_01",
+      "material": null,
+      "name": "beige sofa",
+      "distance_m": 6.0,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "tgt_sofa_02",
+      "material": null,
+      "name": "black leather sofa",
+      "distance_m": 6.0,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "tgt_armchair_01",
+      "material": null,
+      "name": "grey armchair",
+      "distance_m": 6.0,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "tgt_greenchair_01",
+      "material": null,
+      "name": "green armchair",
+      "distance_m": 6.0,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "tgt_plastic_monobloc_chair_01",
+      "material": null,
+      "name": "white plastic chair",
+      "distance_m": 6.0,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "tgt_schoolchair_01",
+      "material": null,
+      "name": "blue school chair",
+      "distance_m": 6.0,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "tgt_painted_wooden_bench",
+      "material": null,
+      "name": "red wooden bench",
+      "distance_m": 6.0,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "tgt_round_wooden_table_01",
+      "material": null,
+      "name": "round wooden table",
+      "distance_m": 6.0,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "tgt_painted_wooden_cabinet",
+      "material": null,
+      "name": "white cabinet",
+      "distance_m": 6.0,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "tgt_vintage_grandfather_clock_01",
+      "material": null,
+      "name": "grandfather clock",
+      "distance_m": 6.29,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "tgt_wooden_picnic_table",
+      "material": null,
+      "name": "wooden picnic table",
+      "distance_m": 7.53,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "tgt_vintage_suitcase_01",
+      "material": null,
+      "name": "green suitcase",
+      "distance_m": 6.0,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "tgt_television_01",
+      "material": null,
+      "name": "old television",
+      "distance_m": 6.0,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "tgt_korean_fire_extinguisher_01",
+      "material": null,
+      "name": "red fire extinguisher",
+      "distance_m": 6.0,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "tgt_portable_generator",
+      "material": null,
+      "name": "yellow generator",
+      "distance_m": 6.0,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "tgt_metal_tool_chest",
+      "material": null,
+      "name": "red tool chest",
+      "distance_m": 6.0,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "tgt_wetfloorsign_01",
+      "material": null,
+      "name": "yellow wet floor sign",
+      "distance_m": 6.0,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "tgt_cone",
+      "material": null,
+      "name": "orange traffic cone",
+      "distance_m": 6.0,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "tgt_wooden_ladder_02",
+      "material": null,
+      "name": "wooden ladder",
+      "distance_m": 6.0,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "tgt_character_a",
+      "material": null,
+      "name": "man in brown jacket",
+      "distance_m": 6.0,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "tgt_character_b",
+      "material": null,
+      "name": "man in red shirt",
+      "distance_m": 6.0,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "tgt_character_c",
+      "material": null,
+      "name": "bald man in green shirt",
+      "distance_m": 6.0,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "tgt_character_e",
+      "material": null,
+      "name": "person in purple shirt",
+      "distance_m": 6.0,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "tgt_character_i",
+      "material": null,
+      "name": "doctor in white coat",
+      "distance_m": 6.0,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "tgt_character_j",
+      "material": null,
+      "name": "police officer",
+      "distance_m": 6.0,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "tgt_character_p",
+      "material": null,
+      "name": "man in blue jacket",
+      "distance_m": 6.0,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "tgt_character_q",
+      "material": null,
+      "name": "man in black suit",
+      "distance_m": 6.0,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "tgt_character_female_b",
+      "material": null,
+      "name": "girl in yellow shirt",
+      "distance_m": 6.0,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "tgt_character_female_d",
+      "material": null,
+      "name": "woman in grey suit",
+      "distance_m": 6.0,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "tgt_bronze_whale_statue",
+      "material": null,
+      "name": "bronze whale statue",
+      "distance_m": 6.0,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "tgt_animal_tiger",
+      "material": null,
+      "name": "tiger",
+      "distance_m": 6.0,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     },
+     {
+      "asset": "tgt_animal_elephant",
+      "material": null,
+      "name": "elephant",
+      "distance_m": 8.07,
+      "steps": 2,
+      "error": null,
+      "attempt": 1
+     }
+    ],
+    "failed": [],
+    "error": null
+   }
+  },
+  {
+   "scene": "s01",
+   "seed": 602000001,
+   "target_split": "unseen",
+   "outcome": "success",
+   "steps": 159,
+   "instruction": "go through and avoid the white pillars or other obstacles to reach the crane",
+   "target": {
+    "name": "crane",
+    "category": "vehicle",
+    "seen": false,
+    "asset": "tgt_crane",
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "status": "imported",
+    "stand_in": true
+   },
+   "distractors": [
+    "black leather sofa",
+    "white pickup truck",
+    "girl in yellow shirt",
+    "man in black suit"
+   ],
+   "start_pose": [
+    -32.0367960797598,
+    -24.230198923521485,
+    -1.4640225969466796,
+    0.0
+   ],
+   "target_xyz": [
+    32.50804816653949,
+    -19.005043431293572,
+    -1.0
+   ],
+   "final_pose": [
+    27.611412048339844,
+    -19.178436279296875,
+    -2.349782705307007,
+    0.1720571493410159
+   ],
+   "final_distance_m": 4.899705129270126,
+   "final_bearing_deg": -7.830117642298465,
+   "path_length_m": 60.01280786785566,
+   "l_opt": {
+    "straight_m": 59.75599716394609,
+    "grid_m": 61.44433307305213,
+    "inflate_m": 1.4,
+    "resolution_m": 0.5,
+    "excluded_obstacles": 0
+   },
+   "per": {
+    "lower": 0.9957207350725024,
+    "upper": 1.0
+   },
+   "collision_source": null,
+   "oob_kind": null,
+   "n_movers": 0,
+   "mover_in_view": null,
+   "mover_contact": null,
+   "actions": {
+    "fields": [
+     "forward_m_s",
+     "yaw_rate_rad_s",
+     "vertical_m_s"
+    ],
+    "n": 159,
+    "mean": [
+     1.9598,
+     -0.0033,
+     0.0185
+    ],
+    "std": [
+     0.0544,
+     0.7053,
+     0.5513
+    ],
+    "min": [
+     1.5214,
+     -0.9765,
+     -0.9676
+    ],
+    "max": [
+     1.9982,
+     0.9931,
+     0.9784
+    ],
+    "clipped_fraction": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "policy_act_s": {
+    "mean": 0.0050630310741428914,
+    "max": 0.008419886988122016
+   },
+   "prewarm_steps": 5,
+   "first_use": false,
+   "retries": 0,
+   "fault_counts": {}
+  },
+  {
+   "scene": "s01",
+   "seed": 602000002,
+   "target_split": "unseen",
+   "outcome": "success",
+   "steps": 210,
+   "instruction": "advance to green front loader while avioding white pillars and other obstacles",
+   "target": {
+    "name": "green front loader",
+    "category": "vehicle",
+    "seen": false,
+    "asset": "tgt_tractor_shovel",
+    "scale": [
+     1.416,
+     1.416,
+     1.416
+    ],
+    "material": null,
+    "status": "imported",
+    "stand_in": true
+   },
+   "distractors": [
+    "old television",
+    "red tool chest",
+    "green hatchback",
+    "yellow wet floor sign",
+    "man in black suit"
+   ],
+   "start_pose": [
+    -19.532398562725014,
+    30.093118691521244,
+    -1.372975884544368,
+    -0.7853981633974483
+   ],
+   "target_xyz": [
+    32.4510978626342,
+    -32.91224426444197,
+    -1.0
+   ],
+   "final_pose": [
+    30.212480545043945,
+    -28.557207107543945,
+    -2.1142334938049316,
+    -1.043767158008061
+   ],
+   "final_distance_m": 4.896708704076387,
+   "final_bearing_deg": -2.9920487774813744,
+   "path_length_m": 78.62547522083874,
+   "l_opt": {
+    "straight_m": 76.6820645051164,
+    "grid_m": 81.58397970727242,
+    "inflate_m": 1.4,
+    "resolution_m": 0.5,
+    "excluded_obstacles": 0
+   },
+   "per": {
+    "lower": 0.9752826840122264,
+    "upper": 1.0
+   },
+   "collision_source": null,
+   "oob_kind": null,
+   "n_movers": 0,
+   "mover_in_view": null,
+   "mover_contact": null,
+   "actions": {
+    "fields": [
+     "forward_m_s",
+     "yaw_rate_rad_s",
+     "vertical_m_s"
+    ],
+    "n": 210,
+    "mean": [
+     1.9364,
+     -0.005,
+     0.0082
+    ],
+    "std": [
+     0.1643,
+     0.6662,
+     0.5601
+    ],
+    "min": [
+     0.4672,
+     -0.9993,
+     -0.9719
+    ],
+    "max": [
+     1.9985,
+     0.9919,
+     0.9435
+    ],
+    "clipped_fraction": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "policy_act_s": {
+    "mean": 0.005038349975144402,
+    "max": 0.007363365963101387
+   },
+   "prewarm_steps": 5,
+   "first_use": false,
+   "retries": 0,
+   "fault_counts": {}
+  },
+  {
+   "scene": "s01",
+   "seed": 602000003,
+   "target_split": "unseen",
+   "outcome": "success",
+   "steps": 172,
+   "instruction": "advance to wooden ladder while avioding white pillars and other obstacles",
+   "target": {
+    "name": "wooden ladder",
+    "category": "equipment",
+    "seen": false,
+    "asset": "tgt_wooden_ladder_02",
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "status": "imported",
+    "stand_in": false
+   },
+   "distractors": [
+    "man in blue jacket",
+    "police car",
+    "red sedan",
+    "yellow sphere"
+   ],
+   "start_pose": [
+    18.073288050748545,
+    -32.04964596480292,
+    -1.7440276242661334,
+    1.5707963267948966
+   ],
+   "target_xyz": [
+    6.6771047204284955,
+    34.47465828587069,
+    -1.0
+   ],
+   "final_pose": [
+    7.125381946563721,
+    29.517045974731445,
+    -2.349275588989258,
+    1.855079825181712
+   ],
+   "final_distance_m": 4.977838114988361,
+   "final_bearing_deg": -11.121496379957925,
+   "path_length_m": 63.63825167771454,
+   "l_opt": {
+    "straight_m": 62.49337782726877,
+    "grid_m": 65.99000746396942,
+    "inflate_m": 1.4,
+    "resolution_m": 0.5,
+    "excluded_obstacles": 0
+   },
+   "per": {
+    "lower": 0.9820096589666889,
+    "upper": 1.0
+   },
+   "collision_source": null,
+   "oob_kind": null,
+   "n_movers": 0,
+   "mover_in_view": null,
+   "mover_contact": null,
+   "actions": {
+    "fields": [
+     "forward_m_s",
+     "yaw_rate_rad_s",
+     "vertical_m_s"
+    ],
+    "n": 172,
+    "mean": [
+     1.9225,
+     0.0013,
+     0.0047
+    ],
+    "std": [
+     0.1872,
+     0.7337,
+     0.5355
+    ],
+    "min": [
+     0.063,
+     -0.9938,
+     -0.9461
+    ],
+    "max": [
+     1.9987,
+     0.9962,
+     0.995
+    ],
+    "clipped_fraction": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "policy_act_s": {
+    "mean": 0.004922970299619835,
+    "max": 0.006563987000845373
+   },
+   "prewarm_steps": 5,
+   "first_use": false,
+   "retries": 0,
+   "fault_counts": {}
+  },
+  {
+   "scene": "s01",
+   "seed": 602000004,
+   "target_split": "unseen",
+   "outcome": "out_of_bounds",
+   "steps": 160,
+   "instruction": "go through and avoid the white pillars or other obstacles to reach the elephant",
+   "target": {
+    "name": "elephant",
+    "category": "other",
+    "seen": false,
+    "asset": "tgt_animal_elephant",
+    "scale": [
+     1.8,
+     1.8,
+     1.8
+    ],
+    "material": null,
+    "status": "imported",
+    "stand_in": true
+   },
+   "distractors": [
+    "yellow suv",
+    "doctor in white coat",
+    "beige sofa",
+    "blue cone"
+   ],
+   "start_pose": [
+    30.418534887583846,
+    -9.977630616516088,
+    -2.1431268885811194,
+    3.141592653589793
+   ],
+   "target_xyz": [
+    -32.75713688750273,
+    -7.119341333237415,
+    -1.0
+   ],
+   "final_pose": [
+    -27.031169891357422,
+    -8.649067878723145,
+    -3.0289878845214844,
+    -3.1010299500892304
+   ],
+   "final_distance_m": 5.926783389403484,
+   "final_bearing_deg": -17.28166207509076,
+   "path_length_m": 57.70490040235725,
+   "l_opt": {
+    "straight_m": 58.2402982429746,
+    "grid_m": 58.99033761621055,
+    "inflate_m": 1.4,
+    "resolution_m": 0.5,
+    "excluded_obstacles": 0
+   },
+   "per": {
+    "lower": null,
+    "upper": null
+   },
+   "collision_source": null,
+   "oob_kind": "altitude_high",
+   "n_movers": 0,
+   "mover_in_view": null,
+   "mover_contact": null,
+   "actions": {
+    "fields": [
+     "forward_m_s",
+     "yaw_rate_rad_s",
+     "vertical_m_s"
+    ],
+    "n": 160,
+    "mean": [
+     1.8556,
+     -0.003,
+     0.0143
+    ],
+    "std": [
+     0.3907,
+     0.6724,
+     0.5698
+    ],
+    "min": [
+     0.0088,
+     -0.9865,
+     -0.9517
+    ],
+    "max": [
+     1.9988,
+     0.9943,
+     0.9541
+    ],
+    "clipped_fraction": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "policy_act_s": {
+    "mean": 0.004969304836413358,
+    "max": 0.007092237996403128
+   },
+   "prewarm_steps": 5,
+   "first_use": false,
+   "retries": 0,
+   "fault_counts": {}
+  },
+  {
+   "scene": "s01",
+   "seed": 602000005,
+   "target_split": "unseen",
+   "outcome": "success",
+   "steps": 219,
+   "instruction": "go through and avoid the white pillars or other obstacles to reach the green cone",
+   "target": {
+    "name": "green cone",
+    "category": "geometry",
+    "seen": false,
+    "asset": "cone",
+    "scale": [
+     1.0,
+     1.0,
+     1.5
+    ],
+    "material": "runtime_green",
+    "status": "primitive",
+    "stand_in": false
+   },
+   "distractors": [
+    "bald man in green shirt",
+    "doctor in white coat",
+    "yellow generator",
+    "man in brown jacket"
+   ],
+   "start_pose": [
+    -20.23025018720287,
+    -31.68818162961172,
+    -2.0784633386539424,
+    0.7853981633974483
+   ],
+   "target_xyz": [
+    30.405491155246793,
+    33.17873945630138,
+    -1.0
+   ],
+   "final_pose": [
+    26.61237335205078,
+    30.21649932861328,
+    -1.81731116771698,
+    0.8429621027988181
+   ],
+   "final_distance_m": 4.812754849668549,
+   "final_bearing_deg": -10.310068949411967,
+   "path_length_m": 79.24422824792555,
+   "l_opt": {
+    "straight_m": 77.2903138435232,
+    "grid_m": 82.11872044860215,
+    "inflate_m": 1.4,
+    "resolution_m": 0.5,
+    "excluded_obstacles": 0
+   },
+   "per": {
+    "lower": 0.975343132899354,
+    "upper": 1.0
+   },
+   "collision_source": null,
+   "oob_kind": null,
+   "n_movers": 0,
+   "mover_in_view": null,
+   "mover_contact": null,
+   "actions": {
+    "fields": [
+     "forward_m_s",
+     "yaw_rate_rad_s",
+     "vertical_m_s"
+    ],
+    "n": 219,
+    "mean": [
+     1.853,
+     -0.0103,
+     -0.0213
+    ],
+    "std": [
+     0.3737,
+     0.6571,
+     0.5781
+    ],
+    "min": [
+     0.0168,
+     -0.9979,
+     -0.993
+    ],
+    "max": [
+     1.9991,
+     0.9856,
+     0.9993
+    ],
+    "clipped_fraction": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "policy_act_s": {
+    "mean": 0.004731800147495977,
+    "max": 0.006131603964604437
+   },
+   "prewarm_steps": 5,
+   "first_use": false,
+   "retries": 0,
+   "fault_counts": {}
+  },
+  {
+   "scene": "s01",
+   "seed": 602000006,
+   "target_split": "unseen",
+   "outcome": "success",
+   "steps": 184,
+   "instruction": "advance to green cone while avioding white pillars and other obstacles",
+   "target": {
+    "name": "green cone",
+    "category": "geometry",
+    "seen": false,
+    "asset": "cone",
+    "scale": [
+     1.0,
+     1.0,
+     1.5
+    ],
+    "material": "runtime_green",
+    "status": "primitive",
+    "stand_in": false
+   },
+   "distractors": [
+    "green garbage truck",
+    "yellow suv",
+    "doctor in white coat"
+   ],
+   "start_pose": [
+    -6.842742188307561,
+    32.907578993284716,
+    -1.379066115725453,
+    -1.5707963267948966
+   ],
+   "target_xyz": [
+    7.7575265219680745,
+    -34.21396148496192,
+    -1.0
+   ],
+   "final_pose": [
+    7.694790363311768,
+    -29.24300193786621,
+    -2.137197494506836,
+    -1.5195750011545894
+   ],
+   "final_distance_m": 4.971355413211263,
+   "final_bearing_deg": -2.2117008959540296,
+   "path_length_m": 65.53805097857025,
+   "l_opt": {
+    "straight_m": 63.69111327227965,
+    "grid_m": 67.8605144164303,
+    "inflate_m": 1.4,
+    "resolution_m": 0.5,
+    "excluded_obstacles": 0
+   },
+   "per": {
+    "lower": 0.9718188490699163,
+    "upper": 1.0
+   },
+   "collision_source": null,
+   "oob_kind": null,
+   "n_movers": 0,
+   "mover_in_view": null,
+   "mover_contact": null,
+   "actions": {
+    "fields": [
+     "forward_m_s",
+     "yaw_rate_rad_s",
+     "vertical_m_s"
+    ],
+    "n": 184,
+    "mean": [
+     1.8183,
+     -0.0127,
+     0.0112
+    ],
+    "std": [
+     0.4506,
+     0.7137,
+     0.581
+    ],
+    "min": [
+     0.0019,
+     -0.9978,
+     -0.9945
+    ],
+    "max": [
+     1.9988,
+     0.9922,
+     0.9686
+    ],
+    "clipped_fraction": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "policy_act_s": {
+    "mean": 0.004953707771757921,
+    "max": 0.007006652012933046
+   },
+   "prewarm_steps": 5,
+   "first_use": false,
+   "retries": 0,
+   "fault_counts": {}
+  },
+  {
+   "scene": "s01",
+   "seed": 602000007,
+   "target_split": "unseen",
+   "outcome": "success",
+   "steps": 186,
+   "instruction": "go through and avoid the white pillars or other obstacles to reach the elephant",
+   "target": {
+    "name": "elephant",
+    "category": "other",
+    "seen": false,
+    "asset": "tgt_animal_elephant",
+    "scale": [
+     1.8,
+     1.8,
+     1.8
+    ],
+    "material": null,
+    "status": "imported",
+    "stand_in": true
+   },
+   "distractors": [
+    "police car",
+    "round wooden table",
+    "red tool chest",
+    "bald man in green shirt",
+    "yellow cube"
+   ],
+   "start_pose": [
+    27.579030289053065,
+    31.593267331075527,
+    -1.490550409195428,
+    -2.356194490192345
+   ],
+   "target_xyz": [
+    -2.570071105935284,
+    -32.54381215997714,
+    -1.0
+   ],
+   "final_pose": [
+    0.3794117867946625,
+    -29.55071449279785,
+    -2.9375832080841064,
+    -2.119281034785346
+   ],
+   "final_distance_m": 4.202152184271856,
+   "final_bearing_deg": -13.153633951765885,
+   "path_length_m": 67.73241189024236,
+   "l_opt": {
+    "straight_m": 65.86983336065423,
+    "grid_m": 72.34111250086055,
+    "inflate_m": 1.4,
+    "resolution_m": 0.5,
+    "excluded_obstacles": 0
+   },
+   "per": {
+    "lower": 0.9725009271394858,
+    "upper": 1.0
+   },
+   "collision_source": null,
+   "oob_kind": null,
+   "n_movers": 0,
+   "mover_in_view": null,
+   "mover_contact": null,
+   "actions": {
+    "fields": [
+     "forward_m_s",
+     "yaw_rate_rad_s",
+     "vertical_m_s"
+    ],
+    "n": 186,
+    "mean": [
+     1.8559,
+     -0.0067,
+     0.0236
+    ],
+    "std": [
+     0.3899,
+     0.7388,
+     0.601
+    ],
+    "min": [
+     0.0022,
+     -0.9946,
+     -0.9726
+    ],
+    "max": [
+     1.9978,
+     0.9941,
+     0.9905
+    ],
+    "clipped_fraction": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "policy_act_s": {
+    "mean": 0.005040462593540489,
+    "max": 0.007904400990810245
+   },
+   "prewarm_steps": 5,
+   "first_use": false,
+   "retries": 0,
+   "fault_counts": {}
+  },
+  {
+   "scene": "s01",
+   "seed": 602000008,
+   "target_split": "unseen",
+   "outcome": "success",
+   "steps": 161,
+   "instruction": "advance to wooden ladder while avioding white pillars and other obstacles",
+   "target": {
+    "name": "wooden ladder",
+    "category": "equipment",
+    "seen": false,
+    "asset": "tgt_wooden_ladder_02",
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "status": "imported",
+    "stand_in": false
+   },
+   "distractors": [
+    "green sphere",
+    "red sedan",
+    "man in blue jacket"
+   ],
+   "start_pose": [
+    31.16902409351408,
+    -21.490697023305813,
+    -1.8965630884743112,
+    -3.141592653589793
+   ],
+   "target_xyz": [
+    -33.22386937364181,
+    -23.266591691769623,
+    -1.0
+   ],
+   "final_pose": [
+    -28.469308853149414,
+    -23.74378204345703,
+    -2.0637378692626953,
+    -3.0269730582759733
+   ],
+   "final_distance_m": 4.7784470672770345,
+   "final_bearing_deg": -12.298504047882295,
+   "path_length_m": 59.91616324941994,
+   "l_opt": {
+    "straight_m": 59.41737755408835,
+    "grid_m": 60.253953055621494,
+    "inflate_m": 1.4,
+    "resolution_m": 0.5,
+    "excluded_obstacles": 0
+   },
+   "per": {
+    "lower": 0.9916752731102751,
+    "upper": 1.0
+   },
+   "collision_source": null,
+   "oob_kind": null,
+   "n_movers": 0,
+   "mover_in_view": null,
+   "mover_contact": null,
+   "actions": {
+    "fields": [
+     "forward_m_s",
+     "yaw_rate_rad_s",
+     "vertical_m_s"
+    ],
+    "n": 161,
+    "mean": [
+     1.9216,
+     -0.0069,
+     -0.0042
+    ],
+    "std": [
+     0.2167,
+     0.6439,
+     0.5801
+    ],
+    "min": [
+     0.0154,
+     -0.9881,
+     -0.9685
+    ],
+    "max": [
+     1.9994,
+     0.98,
+     0.9304
+    ],
+    "clipped_fraction": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "policy_act_s": {
+    "mean": 0.005130015204802317,
+    "max": 0.006887805997394025
+   },
+   "prewarm_steps": 5,
+   "first_use": false,
+   "retries": 0,
+   "fault_counts": {}
+  },
+  {
+   "scene": "s01",
+   "seed": 602000009,
+   "target_split": "unseen",
+   "outcome": "success",
+   "steps": 187,
+   "instruction": "go through and avoid the white pillars or other obstacles to reach the crane",
+   "target": {
+    "name": "crane",
+    "category": "vehicle",
+    "seen": false,
+    "asset": "tgt_crane",
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "status": "imported",
+    "stand_in": true
+   },
+   "distractors": [
+    "grey armchair",
+    "man in blue jacket",
+    "red cube",
+    "red sedan"
+   ],
+   "start_pose": [
+    32.50920932984809,
+    -6.286207883337912,
+    -2.3508619233449,
+    -3.141592653589793
+   ],
+   "target_xyz": [
+    -32.388613100884335,
+    -29.234788452423253,
+    -1.0
+   ],
+   "final_pose": [
+    -28.58907127380371,
+    -26.51848793029785,
+    -1.8539798259735107,
+    -2.4281138218193603
+   ],
+   "final_distance_m": 4.670632357854116,
+   "final_bearing_deg": -5.318268832503797,
+   "path_length_m": 66.68140640348665,
+   "l_opt": {
+    "straight_m": 63.83578071313404,
+    "grid_m": 69.54599722533975,
+    "inflate_m": 1.4,
+    "resolution_m": 0.5,
+    "excluded_obstacles": 0
+   },
+   "per": {
+    "lower": 0.9573250499077084,
+    "upper": 1.0
+   },
+   "collision_source": null,
+   "oob_kind": null,
+   "n_movers": 0,
+   "mover_in_view": null,
+   "mover_contact": null,
+   "actions": {
+    "fields": [
+     "forward_m_s",
+     "yaw_rate_rad_s",
+     "vertical_m_s"
+    ],
+    "n": 187,
+    "mean": [
+     1.8555,
+     0.0149,
+     -0.0279
+    ],
+    "std": [
+     0.3803,
+     0.7214,
+     0.5329
+    ],
+    "min": [
+     0.0123,
+     -0.9946,
+     -0.9744
+    ],
+    "max": [
+     1.9988,
+     0.9975,
+     0.9692
+    ],
+    "clipped_fraction": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "policy_act_s": {
+    "mean": 0.004922065932433156,
+    "max": 0.007537522003985941
+   },
+   "prewarm_steps": 5,
+   "first_use": false,
+   "retries": 0,
+   "fault_counts": {}
+  },
+  {
+   "scene": "s01",
+   "seed": 602000010,
+   "target_split": "unseen",
+   "outcome": "success",
+   "steps": 169,
+   "instruction": "go through and avoid the white pillars or other obstacles to reach the elephant",
+   "target": {
+    "name": "elephant",
+    "category": "other",
+    "seen": false,
+    "asset": "tgt_animal_elephant",
+    "scale": [
+     1.8,
+     1.8,
+     1.8
+    ],
+    "material": null,
+    "status": "imported",
+    "stand_in": true
+   },
+   "distractors": [
+    "green garbage truck",
+    "police officer",
+    "white pickup truck",
+    "white plastic chair",
+    "white cabinet"
+   ],
+   "start_pose": [
+    -23.151321204100647,
+    31.226063630940967,
+    -2.034525071762899,
+    -1.5707963267948966
+   ],
+   "target_xyz": [
+    -27.900694168381513,
+    -33.43075277817016,
+    -1.0
+   ],
+   "final_pose": [
+    -26.078969955444336,
+    -29.007793426513672,
+    -2.524097204208374,
+    -1.7834593825497493
+   ],
+   "final_distance_m": 4.783434805075444,
+   "final_bearing_deg": -10.201040025010728,
+   "path_length_m": 61.1766641655759,
+   "l_opt": {
+    "straight_m": 59.83101458187542,
+    "grid_m": 61.551287876636096,
+    "inflate_m": 1.4,
+    "resolution_m": 0.5,
+    "excluded_obstacles": 0
+   },
+   "per": {
+    "lower": 0.9780038744829491,
+    "upper": 1.0
+   },
+   "collision_source": null,
+   "oob_kind": null,
+   "n_movers": 0,
+   "mover_in_view": null,
+   "mover_contact": null,
+   "actions": {
+    "fields": [
+     "forward_m_s",
+     "yaw_rate_rad_s",
+     "vertical_m_s"
+    ],
+    "n": 169,
+    "mean": [
+     1.8772,
+     -0.0081,
+     -0.0019
+    ],
+    "std": [
+     0.3219,
+     0.7456,
+     0.5752
+    ],
+    "min": [
+     0.0671,
+     -0.9977,
+     -0.9929
+    ],
+    "max": [
+     1.999,
+     0.9997,
+     0.9475
+    ],
+    "clipped_fraction": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "policy_act_s": {
+    "mean": 0.005006043195308423,
+    "max": 0.007505718036554754
+   },
+   "prewarm_steps": 5,
+   "first_use": false,
+   "retries": 0,
+   "fault_counts": {}
+  },
+  {
+   "scene": "s01",
+   "seed": 602000011,
+   "target_split": "unseen",
+   "outcome": "success",
+   "steps": 165,
+   "instruction": "go through and avoid the white pillars or other obstacles to reach the green front loader",
+   "target": {
+    "name": "green front loader",
+    "category": "vehicle",
+    "seen": false,
+    "asset": "tgt_tractor_shovel",
+    "scale": [
+     1.416,
+     1.416,
+     1.416
+    ],
+    "material": null,
+    "status": "imported",
+    "stand_in": true
+   },
+   "distractors": [
+    "red tool chest",
+    "yellow suv",
+    "white plastic chair"
+   ],
+   "start_pose": [
+    2.8551628484199227,
+    -32.01641059253002,
+    -2.0854551985464345,
+    1.5707963267948966
+   ],
+   "target_xyz": [
+    -8.37580807302718,
+    32.311230257891516,
+    -1.0
+   ],
+   "final_pose": [
+    -6.513430118560791,
+    27.704408645629883,
+    -2.8800454139709473,
+    2.157799952342702
+   ],
+   "final_distance_m": 4.969029785831766,
+   "final_bearing_deg": -11.621057355036232,
+   "path_length_m": 61.29815034526535,
+   "l_opt": {
+    "straight_m": 60.30068977598333,
+    "grid_m": 63.72144432484237,
+    "inflate_m": 1.4,
+    "resolution_m": 0.5,
+    "excluded_obstacles": 0
+   },
+   "per": {
+    "lower": 0.9837277215762015,
+    "upper": 1.0
+   },
+   "collision_source": null,
+   "oob_kind": null,
+   "n_movers": 0,
+   "mover_in_view": null,
+   "mover_contact": null,
+   "actions": {
+    "fields": [
+     "forward_m_s",
+     "yaw_rate_rad_s",
+     "vertical_m_s"
+    ],
+    "n": 165,
+    "mean": [
+     1.8946,
+     0.0075,
+     0.0035
+    ],
+    "std": [
+     0.3251,
+     0.6763,
+     0.5501
+    ],
+    "min": [
+     0.0005,
+     -0.9933,
+     -0.9944
+    ],
+    "max": [
+     1.9975,
+     0.9923,
+     0.9762
+    ],
+    "clipped_fraction": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "policy_act_s": {
+    "mean": 0.0049665415119803085,
+    "max": 0.006744139012880623
+   },
+   "prewarm_steps": 5,
+   "first_use": false,
+   "retries": 0,
+   "fault_counts": {}
+  },
+  {
+   "scene": "s01",
+   "seed": 602000012,
+   "target_split": "unseen",
+   "outcome": "success",
+   "steps": 229,
+   "instruction": "go through and avoid the white pillars or other obstacles to reach the orange traffic cone",
+   "target": {
+    "name": "orange traffic cone",
+    "category": "equipment",
+    "seen": false,
+    "asset": "tgt_cone",
+    "scale": [
+     1.512,
+     1.512,
+     1.512
+    ],
+    "material": null,
+    "status": "imported",
+    "stand_in": true
+   },
+   "distractors": [
+    "bronze whale statue",
+    "red wooden bench",
+    "man in brown jacket",
+    "black leather sofa"
+   ],
+   "start_pose": [
+    23.284338815692905,
+    -31.761721994800872,
+    -1.9854370922067321,
+    2.356194490192345
+   ],
+   "target_xyz": [
+    -10.41388418764404,
+    34.16466185724779,
+    -1.0
+   ],
+   "final_pose": [
+    -8.093977928161621,
+    29.743139266967773,
+    -2.3378372192382812,
+    2.049737503714609
+   ],
+   "final_distance_m": 4.993178053018163,
+   "final_bearing_deg": 0.24401114932461776,
+   "path_length_m": 70.6694291786023,
+   "l_opt": {
+    "straight_m": 69.03957267158079,
+    "grid_m": 74.5840116387565,
+    "inflate_m": 1.4,
+    "resolution_m": 0.5,
+    "excluded_obstacles": 0
+   },
+   "per": {
+    "lower": 0.9769368944115511,
+    "upper": 1.0
+   },
+   "collision_source": null,
+   "oob_kind": null,
+   "n_movers": 0,
+   "mover_in_view": null,
+   "mover_contact": null,
+   "actions": {
+    "fields": [
+     "forward_m_s",
+     "yaw_rate_rad_s",
+     "vertical_m_s"
+    ],
+    "n": 229,
+    "mean": [
+     1.5713,
+     -0.0024,
+     -0.0038
+    ],
+    "std": [
+     0.7095,
+     0.6743,
+     0.5842
+    ],
+    "min": [
+     0.0009,
+     -0.9934,
+     -0.9913
+    ],
+    "max": [
+     1.9983,
+     0.9936,
+     0.9941
+    ],
+    "clipped_fraction": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "policy_act_s": {
+    "mean": 0.0049785721056289384,
+    "max": 0.007106209988705814
+   },
+   "prewarm_steps": 5,
+   "first_use": false,
+   "retries": 0,
+   "fault_counts": {}
+  },
+  {
+   "scene": "s01",
+   "seed": 602000013,
+   "target_split": "unseen",
+   "outcome": "success",
+   "steps": 184,
+   "instruction": "go through and avoid the white pillars or other obstacles to reach the wooden ladder",
+   "target": {
+    "name": "wooden ladder",
+    "category": "equipment",
+    "seen": false,
+    "asset": "tgt_wooden_ladder_02",
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "status": "imported",
+    "stand_in": false
+   },
+   "distractors": [
+    "blue school chair",
+    "ambulance",
+    "black leather sofa",
+    "red fire extinguisher",
+    "bronze whale statue"
+   ],
+   "start_pose": [
+    31.656685083391125,
+    29.553890730271597,
+    -2.4409975685356464,
+    -2.356194490192345
+   ],
+   "target_xyz": [
+    -4.318673446063581,
+    -33.3143935009035,
+    -1.0
+   ],
+   "final_pose": [
+    -0.5676999688148499,
+    -30.36445426940918,
+    -2.006119966506958,
+    -2.2141379053919192
+   ],
+   "final_distance_m": 4.771995756131048,
+   "final_bearing_deg": -14.95609303736183,
+   "path_length_m": 69.16757968099915,
+   "l_opt": {
+    "straight_m": 67.43374616499294,
+    "grid_m": 73.19404936872482,
+    "inflate_m": 1.4,
+    "resolution_m": 0.5,
+    "excluded_obstacles": 0
+   },
+   "per": {
+    "lower": 0.974932858370892,
+    "upper": 1.0
+   },
+   "collision_source": null,
+   "oob_kind": null,
+   "n_movers": 0,
+   "mover_in_view": null,
+   "mover_contact": null,
+   "actions": {
+    "fields": [
+     "forward_m_s",
+     "yaw_rate_rad_s",
+     "vertical_m_s"
+    ],
+    "n": 184,
+    "mean": [
+     1.9402,
+     0.0041,
+     -0.0196
+    ],
+    "std": [
+     0.1476,
+     0.687,
+     0.5448
+    ],
+    "min": [
+     0.6391,
+     -0.9932,
+     -0.9739
+    ],
+    "max": [
+     1.9987,
+     0.9971,
+     0.9406
+    ],
+    "clipped_fraction": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "policy_act_s": {
+    "mean": 0.005029704226889526,
+    "max": 0.007425779011100531
+   },
+   "prewarm_steps": 5,
+   "first_use": false,
+   "retries": 0,
+   "fault_counts": {}
+  },
+  {
+   "scene": "s01",
+   "seed": 602000014,
+   "target_split": "unseen",
+   "outcome": "success",
+   "steps": 241,
+   "instruction": "advance to orange traffic cone while avioding white pillars and other obstacles",
+   "target": {
+    "name": "orange traffic cone",
+    "category": "equipment",
+    "seen": false,
+    "asset": "tgt_cone",
+    "scale": [
+     1.512,
+     1.512,
+     1.512
+    ],
+    "material": null,
+    "status": "imported",
+    "stand_in": true
+   },
+   "distractors": [
+    "man in red shirt",
+    "blue cone",
+    "man in blue jacket",
+    "white cabinet"
+   ],
+   "start_pose": [
+    -31.967354783925856,
+    12.332604535131388,
+    -1.9099860041521755,
+    -0.7853981633974483
+   ],
+   "target_xyz": [
+    34.02471405723257,
+    -15.78542168513319,
+    -1.0
+   ],
+   "final_pose": [
+    30.105205535888672,
+    -12.681031227111816,
+    -2.336733818054199,
+    -0.5949875206571076
+   ],
+   "final_distance_m": 4.999978716428862,
+   "final_bearing_deg": -4.290205139835793,
+   "path_length_m": 67.84388396799264,
+   "l_opt": {
+    "straight_m": 66.73267420401723,
+    "grid_m": 72.29496812185428,
+    "inflate_m": 1.4,
+    "resolution_m": 0.5,
+    "excluded_obstacles": 0
+   },
+   "per": {
+    "lower": 0.9836210768165977,
+    "upper": 1.0
+   },
+   "collision_source": null,
+   "oob_kind": null,
+   "n_movers": 0,
+   "mover_in_view": null,
+   "mover_contact": null,
+   "actions": {
+    "fields": [
+     "forward_m_s",
+     "yaw_rate_rad_s",
+     "vertical_m_s"
+    ],
+    "n": 241,
+    "mean": [
+     1.4332,
+     -0.0049,
+     -0.0073
+    ],
+    "std": [
+     0.8132,
+     0.698,
+     0.5924
+    ],
+    "min": [
+     0.0019,
+     -0.9926,
+     -0.9996
+    ],
+    "max": [
+     1.9988,
+     0.9973,
+     0.9986
+    ],
+    "clipped_fraction": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "policy_act_s": {
+    "mean": 0.005039858947222071,
+    "max": 0.00722328299889341
+   },
+   "prewarm_steps": 5,
+   "first_use": false,
+   "retries": 0,
+   "fault_counts": {}
+  },
+  {
+   "scene": "s01",
+   "seed": 602000015,
+   "target_split": "unseen",
+   "outcome": "success",
+   "steps": 167,
+   "instruction": "advance to green front loader while avioding white pillars and other obstacles",
+   "target": {
+    "name": "green front loader",
+    "category": "vehicle",
+    "seen": false,
+    "asset": "tgt_tractor_shovel",
+    "scale": [
+     1.416,
+     1.416,
+     1.416
+    ],
+    "material": null,
+    "status": "imported",
+    "stand_in": true
+   },
+   "distractors": [
+    "bald man in green shirt",
+    "yellow cube",
+    "green cube",
+    "ambulance"
+   ],
+   "start_pose": [
+    13.602088637179932,
+    -31.792894917747862,
+    -1.7077886024209115,
+    1.5707963267948966
+   ],
+   "target_xyz": [
+    6.051906912156326,
+    32.473003002807246,
+    -1.0
+   ],
+   "final_pose": [
+    6.947063446044922,
+    27.60387420654297,
+    -2.340095043182373,
+    1.8431733411466669
+   ],
+   "final_distance_m": 4.950729285143095,
+   "final_bearing_deg": -5.18893126955349,
+   "path_length_m": 60.96190109363658,
+   "l_opt": {
+    "straight_m": 59.70788885148464,
+    "grid_m": 62.33997332847465,
+    "inflate_m": 1.4,
+    "resolution_m": 0.5,
+    "excluded_obstacles": 0
+   },
+   "per": {
+    "lower": 0.9794295745431922,
+    "upper": 1.0
+   },
+   "collision_source": null,
+   "oob_kind": null,
+   "n_movers": 0,
+   "mover_in_view": null,
+   "mover_contact": null,
+   "actions": {
+    "fields": [
+     "forward_m_s",
+     "yaw_rate_rad_s",
+     "vertical_m_s"
+    ],
+    "n": 167,
+    "mean": [
+     1.8868,
+     0.0088,
+     0.0
+    ],
+    "std": [
+     0.3366,
+     0.6557,
+     0.5912
+    ],
+    "min": [
+     0.0027,
+     -0.9948,
+     -0.9774
+    ],
+    "max": [
+     1.9994,
+     0.9885,
+     0.9696
+    ],
+    "clipped_fraction": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "policy_act_s": {
+    "mean": 0.0049636298609328664,
+    "max": 0.00689431099453941
+   },
+   "prewarm_steps": 5,
+   "first_use": false,
+   "retries": 0,
+   "fault_counts": {}
+  },
+  {
+   "scene": "s01",
+   "seed": 602000016,
+   "target_split": "unseen",
+   "outcome": "success",
+   "steps": 175,
+   "instruction": "go through and avoid the white pillars or other obstacles to reach the grandfather clock",
+   "target": {
+    "name": "grandfather clock",
+    "category": "furniture",
+    "seen": false,
+    "asset": "tgt_vintage_grandfather_clock_01",
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "status": "imported",
+    "stand_in": false
+   },
+   "distractors": [
+    "green armchair",
+    "man in blue jacket",
+    "girl in yellow shirt",
+    "man in red shirt"
+   ],
+   "start_pose": [
+    -29.31389308816742,
+    4.127087641266712,
+    -2.4748553782668488,
+    -0.7853981633974483
+   ],
+   "target_xyz": [
+    33.83627855235199,
+    -24.79965981314426,
+    -1.0
+   ],
+   "final_pose": [
+    30.790348052978516,
+    -20.972675323486328,
+    -2.6673622131347656,
+    -0.7930440427678261
+   ],
+   "final_distance_m": 4.891165800818444,
+   "final_bearing_deg": -6.045333880679102,
+   "path_length_m": 65.86413409940128,
+   "l_opt": {
+    "straight_m": 64.46006691990969,
+    "grid_m": 70.02940012737982,
+    "inflate_m": 1.4,
+    "resolution_m": 0.5,
+    "excluded_obstacles": 0
+   },
+   "per": {
+    "lower": 0.9786823709338895,
+    "upper": 1.0
+   },
+   "collision_source": null,
+   "oob_kind": null,
+   "n_movers": 0,
+   "mover_in_view": null,
+   "mover_contact": null,
+   "actions": {
+    "fields": [
+     "forward_m_s",
+     "yaw_rate_rad_s",
+     "vertical_m_s"
+    ],
+    "n": 175,
+    "mean": [
+     1.9562,
+     0.0018,
+     0.0002
+    ],
+    "std": [
+     0.0443,
+     0.6804,
+     0.5633
+    ],
+    "min": [
+     1.795,
+     -0.9911,
+     -0.9972
+    ],
+    "max": [
+     1.9992,
+     0.9987,
+     0.9301
+    ],
+    "clipped_fraction": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "policy_act_s": {
+    "mean": 0.0050423407002485226,
+    "max": 0.006705248029902577
+   },
+   "prewarm_steps": 5,
+   "first_use": false,
+   "retries": 0,
+   "fault_counts": {}
+  },
+  {
+   "scene": "s01",
+   "seed": 602000017,
+   "target_split": "unseen",
+   "outcome": "success",
+   "steps": 280,
+   "instruction": "advance to orange traffic cone while avioding white pillars and other obstacles",
+   "target": {
+    "name": "orange traffic cone",
+    "category": "equipment",
+    "seen": false,
+    "asset": "tgt_cone",
+    "scale": [
+     1.512,
+     1.512,
+     1.512
+    ],
+    "material": null,
+    "status": "imported",
+    "stand_in": true
+   },
+   "distractors": [
+    "police car",
+    "green suitcase",
+    "man in brown jacket"
+   ],
+   "start_pose": [
+    32.95154147619246,
+    -24.465144514600937,
+    -2.087936966514228,
+    2.356194490192345
+   ],
+   "target_xyz": [
+    -34.58447571130697,
+    21.66497760266722,
+    -1.0
+   ],
+   "final_pose": [
+    -31.17268180847168,
+    18.032684326171875,
+    -2.389051914215088,
+    2.4189617227790583
+   ],
+   "final_distance_m": 4.983361524302383,
+   "final_bearing_deg": -5.389228124877733,
+   "path_length_m": 80.1601055075557,
+   "l_opt": {
+    "straight_m": 76.78692917639279,
+    "grid_m": 82.19176807419223,
+    "inflate_m": 1.4,
+    "resolution_m": 0.5,
+    "excluded_obstacles": 0
+   },
+   "per": {
+    "lower": 0.9579195123334142,
+    "upper": 1.0
+   },
+   "collision_source": null,
+   "oob_kind": null,
+   "n_movers": 0,
+   "mover_in_view": null,
+   "mover_contact": null,
+   "actions": {
+    "fields": [
+     "forward_m_s",
+     "yaw_rate_rad_s",
+     "vertical_m_s"
+    ],
+    "n": 280,
+    "mean": [
+     1.452,
+     -0.0109,
+     -0.0028
+    ],
+    "std": [
+     0.7869,
+     0.6755,
+     0.6002
+    ],
+    "min": [
+     0.0015,
+     -0.9973,
+     -0.9981
+    ],
+    "max": [
+     1.9984,
+     0.9892,
+     0.9903
+    ],
+    "clipped_fraction": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "policy_act_s": {
+    "mean": 0.004964440809895418,
+    "max": 0.006819545000325888
+   },
+   "prewarm_steps": 5,
+   "first_use": false,
+   "retries": 0,
+   "fault_counts": {}
+  },
+  {
+   "scene": "s01",
+   "seed": 602000018,
+   "target_split": "unseen",
+   "outcome": "success",
+   "steps": 238,
+   "instruction": "go through and avoid the white pillars or other obstacles to reach the crane",
+   "target": {
+    "name": "crane",
+    "category": "vehicle",
+    "seen": false,
+    "asset": "tgt_crane",
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "material": null,
+    "status": "imported",
+    "stand_in": true
+   },
+   "distractors": [
+    "white pickup truck",
+    "green cube",
+    "red tool chest",
+    "red fire extinguisher",
+    "covered car"
+   ],
+   "start_pose": [
+    -32.1495625322622,
+    -32.15650320043049,
+    -2.6247375922233194,
+    0.7853981633974483
+   ],
+   "target_xyz": [
+    34.12875127400093,
+    33.86396559847735,
+    -1.0
+   ],
+   "final_pose": [
+    30.34630012512207,
+    31.122190475463867,
+    -1.6675891876220703,
+    0.6064069487128398
+   ],
+   "final_distance_m": 4.67164505488491,
+   "final_bearing_deg": 1.1925688142677515,
+   "path_length_m": 90.01641134847152,
+   "l_opt": {
+    "straight_m": 88.54954399369916,
+    "grid_m": 94.79764561631258,
+    "inflate_m": 1.4,
+    "resolution_m": 0.5,
+    "excluded_obstacles": 0
+   },
+   "per": {
+    "lower": 0.9837044453028256,
+    "upper": 1.0
+   },
+   "collision_source": null,
+   "oob_kind": null,
+   "n_movers": 0,
+   "mover_in_view": null,
+   "mover_contact": null,
+   "actions": {
+    "fields": [
+     "forward_m_s",
+     "yaw_rate_rad_s",
+     "vertical_m_s"
+    ],
+    "n": 238,
+    "mean": [
+     1.9523,
+     -0.003,
+     -0.0302
+    ],
+    "std": [
+     0.1301,
+     0.6791,
+     0.5657
+    ],
+    "min": [
+     0.1347,
+     -0.9953,
+     -0.9892
+    ],
+    "max": [
+     1.9988,
+     0.998,
+     0.9901
+    ],
+    "clipped_fraction": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "policy_act_s": {
+    "mean": 0.0050177570572318584,
+    "max": 0.007724489958491176
+   },
+   "prewarm_steps": 5,
+   "first_use": false,
+   "retries": 0,
+   "fault_counts": {}
+  },
+  {
+   "scene": "s01",
+   "seed": 602000019,
+   "target_split": "unseen",
+   "outcome": "success",
+   "steps": 197,
+   "instruction": "go through and avoid the white pillars or other obstacles to reach the woman in grey suit",
+   "target": {
+    "name": "woman in grey suit",
+    "category": "human",
+    "seen": false,
+    "asset": "tgt_character_female_d",
+    "scale": [
+     2.127,
+     2.127,
+     2.127
+    ],
+    "material": null,
+    "status": "imported",
+    "stand_in": true
+   },
+   "distractors": [
+    "covered car",
+    "police car",
+    "yellow cube",
+    "green armchair"
+   ],
+   "start_pose": [
+    -11.853037286793693,
+    -31.125654647323856,
+    -2.486330671916703,
+    0.7853981633974483
+   ],
+   "target_xyz": [
+    32.42475077531792,
+    32.60170661353236,
+    -1.0
+   ],
+   "final_pose": [
+    29.48291015625,
+    28.615304946899414,
+    -1.90204656124115,
+    0.989659627360665
+   ],
+   "final_distance_m": 4.954374276912456,
+   "final_bearing_deg": -3.1294933289308675,
+   "path_length_m": 73.94010283824267,
+   "l_opt": {
+    "straight_m": 72.59960753086932,
+    "grid_m": 78.14424428969156,
+    "inflate_m": 1.4,
+    "resolution_m": 0.5,
+    "excluded_obstacles": 0
+   },
+   "per": {
+    "lower": 0.9818705241686515,
+    "upper": 1.0
+   },
+   "collision_source": null,
+   "oob_kind": null,
+   "n_movers": 0,
+   "mover_in_view": null,
+   "mover_contact": null,
+   "actions": {
+    "fields": [
+     "forward_m_s",
+     "yaw_rate_rad_s",
+     "vertical_m_s"
+    ],
+    "n": 197,
+    "mean": [
+     1.9485,
+     0.0042,
+     -0.0291
+    ],
+    "std": [
+     0.0897,
+     0.728,
+     0.5523
+    ],
+    "min": [
+     1.0288,
+     -0.9922,
+     -0.9575
+    ],
+    "max": [
+     1.998,
+     0.9976,
+     0.957
+    ],
+    "clipped_fraction": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "policy_act_s": {
+    "mean": 0.005098077020050041,
+    "max": 0.007263619045261294
+   },
+   "prewarm_steps": 5,
+   "first_use": false,
+   "retries": 0,
+   "fault_counts": {}
+  }
+ ],
+ "status": "ok",
+ "error": null,
+ "run_started": "2026-10-09 02:14:25",
+ "run_finished": "2026-10-09 02:31:52",
+ "faults_ok": true,
+ "engine_faults": {
+  "xid_delta": 0,
+  "boot_changed": false,
+  "device_lost": {
+   "/home/nvidiasims/research_uav/autofly_ue5/runs/sim/inst7/sim.log": 0
+  },
+  "logs_scanned": 1,
+  "kernel_journal_readable": true
+ }
+}

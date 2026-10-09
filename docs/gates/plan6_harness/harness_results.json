@@ -1,0 +1,3251 @@
+{
+  "tool": "scripts/harness_figures.py",
+  "generated": "2026-10-09 03:30:36",
+  "inputs": {
+    "records": [
+      {
+        "path": "runs/eval/final/seen_expert_s01d_s07_s09.json",
+        "sha256": "fac18d6f1ddd504f325a1f7283d177653975ac8a769b73367b8fb819141a8cb7",
+        "status": "ok",
+        "condition": "seen",
+        "policy": "expert",
+        "run_started": "2026-10-08 22:25:39",
+        "run_finished": "2026-10-08 23:14:39",
+        "scenes": {
+          "s01d": {
+            "status": "ok",
+            "episodes": 20
+          },
+          "s07": {
+            "status": "ok",
+            "episodes": 20
+          },
+          "s09": {
+            "status": "ok",
+            "episodes": 20
+          }
+        }
+      },
+      {
+        "path": "runs/eval/final/seen_expert_s01.json",
+        "sha256": "dff00173e8f3f871470450da2f28deffe9f90179daf8da1e8120f99f2c211833",
+        "status": "ok",
+        "condition": "seen",
+        "policy": "expert",
+        "run_started": "2026-10-08 22:07:17",
+        "run_finished": "2026-10-08 22:25:06",
+        "scenes": {
+          "s01": {
+            "status": "ok",
+            "episodes": 20
+          }
+        }
+      },
+      {
+        "path": "runs/eval/final/seen_expert_s02_to_s06.json",
+        "sha256": "68e8c32d03a5c6ae56c20a59b8615ef217ad3feb311277539eee6460c1c9e5c5",
+        "status": "ok",
+        "condition": "seen",
+        "policy": "expert",
+        "run_started": "2026-10-08 23:15:12",
+        "run_finished": "2026-10-09 00:31:41",
+        "scenes": {
+          "s02": {
+            "status": "ok",
+            "episodes": 20
+          },
+          "s03": {
+            "status": "ok",
+            "episodes": 20
+          },
+          "s04": {
+            "status": "ok",
+            "episodes": 20
+          },
+          "s05": {
+            "status": "ok",
+            "episodes": 20
+          },
+          "s06": {
+            "status": "ok",
+            "episodes": 20
+          }
+        }
+      },
+      {
+        "path": "runs/eval/final/seen_hover_s01_s05.json",
+        "sha256": "6505e82af0e14aead6531df9d5e82b190a8e575010ad2f65b3b8c9ca9569d0aa",
+        "status": "ok",
+        "condition": "seen",
+        "policy": "hover",
+        "run_started": "2026-10-09 02:45:59",
+        "run_finished": "2026-10-09 02:53:29",
+        "scenes": {
+          "s01": {
+            "status": "ok",
+            "episodes": 3
+          },
+          "s05": {
+            "status": "ok",
+            "episodes": 3
+          }
+        }
+      },
+      {
+        "path": "runs/eval/final/seen_scripted_privileged.json",
+        "sha256": "f3c77166f292263e16c560939ad3f97c05344c82586244dabc0c96820196afae",
+        "status": "ok",
+        "condition": "seen",
+        "policy": "scripted (privileged state)",
+        "run_started": "2026-10-09 00:32:12",
+        "run_finished": "2026-10-09 01:33:37",
+        "scenes": {
+          "s01": {
+            "status": "ok",
+            "episodes": 20
+          },
+          "s01d": {
+            "status": "ok",
+            "episodes": 20
+          },
+          "s02": {
+            "status": "ok",
+            "episodes": 20
+          },
+          "s03": {
+            "status": "ok",
+            "episodes": 20
+          },
+          "s04": {
+            "status": "ok",
+            "episodes": 20
+          },
+          "s05": {
+            "status": "ok",
+            "episodes": 20
+          },
+          "s06": {
+            "status": "ok",
+            "episodes": 20
+          },
+          "s07": {
+            "status": "ok",
+            "episodes": 20
+          },
+          "s09": {
+            "status": "ok",
+            "episodes": 20
+          }
+        }
+      },
+      {
+        "path": "runs/eval/final/test_seen_expert_s02.json",
+        "sha256": "414d10cbcc94f922ebe1c054c5f2fa476f9af79a1ba1a7826670f128de4b5d73",
+        "status": "ok",
+        "condition": "test_seen",
+        "policy": "expert",
+        "run_started": "2026-10-09 01:34:10",
+        "run_finished": "2026-10-09 02:01:20",
+        "scenes": {
+          "s05r": {
+            "status": "ok",
+            "episodes": 20
+          },
+          "s06r": {
+            "status": "ok",
+            "episodes": 20
+          }
+        }
+      },
+      {
+        "path": "runs/eval/final/test_seen_scripted.json",
+        "sha256": "1a5a9c80290915cec5ae7308de6fb78c3e71704207fe406eceb2ecbf8ed9f0ea",
+        "status": "ok",
+        "condition": "test_seen",
+        "policy": "scripted (privileged state)",
+        "run_started": "2026-10-09 02:01:51",
+        "run_finished": "2026-10-09 02:13:53",
+        "scenes": {
+          "s05r": {
+            "status": "ok",
+            "episodes": 20
+          },
+          "s06r": {
+            "status": "ok",
+            "episodes": 20
+          }
+        }
+      },
+      {
+        "path": "runs/eval/final/unseen_expert_s01d_s07_s09.json",
+        "sha256": "20c594ae856aa2f75e44317ae857c7ae48242dd85e6d2db6d439c7d1d303d759",
+        "status": "ok",
+        "condition": "unseen_targets",
+        "policy": "expert",
+        "run_started": "2026-10-09 02:32:24",
+        "run_finished": "2026-10-09 03:10:33",
+        "scenes": {
+          "s01d": {
+            "status": "ok",
+            "episodes": 20
+          },
+          "s07": {
+            "status": "ok",
+            "episodes": 20
+          },
+          "s09": {
+            "status": "ok",
+            "episodes": 20
+          }
+        }
+      },
+      {
+        "path": "runs/eval/final/unseen_expert_s01.json",
+        "sha256": "adcf455c9099c58acd7044b0d2cfcd598a8cfecc529b281c21b3332b5c265d35",
+        "status": "ok",
+        "condition": "unseen_targets",
+        "policy": "expert",
+        "run_started": "2026-10-09 02:14:25",
+        "run_finished": "2026-10-09 02:31:52",
+        "scenes": {
+          "s01": {
+            "status": "ok",
+            "episodes": 20
+          }
+        }
+      },
+      {
+        "path": "runs/eval/final/unseen_expert_s02_to_s06.json",
+        "sha256": "40c9897193d9f99cc011418c6e5ab8de972d76f70f77c656ae87b7c013d8268f",
+        "status": "ok",
+        "condition": "unseen_targets",
+        "policy": "expert",
+        "run_started": "2026-10-09 02:45:02",
+        "run_finished": "2026-10-09 03:23:48",
+        "scenes": {
+          "s02": {
+            "status": "ok",
+            "episodes": 20
+          },
+          "s03": {
+            "status": "ok",
+            "episodes": 20
+          },
+          "s04": {
+            "status": "ok",
+            "episodes": 20
+          },
+          "s05": {
+            "status": "ok",
+            "episodes": 20
+          },
+          "s06": {
+            "status": "ok",
+            "episodes": 20
+          }
+        }
+      }
+    ],
+    "pilots": {
+      "path": "docs/gates/plan6_pilots.json",
+      "sha256": "d41fa851eacd6efa804f303a79f312f826d1d5ada7976aa3f8641fce5cfa0a09"
+    },
+    "dropped": []
+  },
+  "policies": {
+    "expert": {
+      "name": "expert",
+      "kind": "sac_expert",
+      "deterministic": false,
+      "privileged_state": false,
+      "per_scene_checkpoint": true,
+      "role": 0,
+      "colour": "#2a78d6",
+      "description": "each scene's collection pilot: SAC on privileged depth and the target's position",
+      "identity": {
+        "name": "expert",
+        "kind": "sac_expert",
+        "deterministic": false,
+        "privileged_observation": true
+      }
+    },
+    "scripted (privileged state)": {
+      "name": "scripted",
+      "kind": "privileged_straight_line",
+      "deterministic": null,
+      "privileged_state": true,
+      "per_scene_checkpoint": false,
+      "role": 1,
+      "colour": "#eb6834",
+      "description": "flies straight at the target's true bearing and avoids nothing",
+      "identity": {
+        "name": "scripted",
+        "kind": "privileged_straight_line",
+        "requires_privileged_state": true,
+        "cruise_m_s": 2.0,
+        "altitude_m": 2.0,
+        "aligned_rad": 0.3,
+        "turn_gain": 2.0,
+        "climb_gain": 1.0
+      }
+    },
+    "hover": {
+      "name": "hover",
+      "kind": "floor",
+      "deterministic": null,
+      "privileged_state": false,
+      "per_scene_checkpoint": false,
+      "role": 2,
+      "colour": "#1baf7a",
+      "description": "commands nothing: the floor",
+      "identity": {
+        "name": "hover",
+        "kind": "floor",
+        "action": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    }
+  },
+  "conditions": {
+    "seen": {
+      "file": "/home/nvidiasims/research_uav/autofly_ue5/assets/eval_episodes/seen.json",
+      "sha256": "adaa9f7c582ce4e71164dc64aa2df81292e082285bca32194d363879cd37196a",
+      "episodes_per_scene": 20,
+      "scenes": [
+        "s01",
+        "s01d",
+        "s02",
+        "s03",
+        "s04",
+        "s05",
+        "s06",
+        "s07",
+        "s09"
+      ],
+      "listed_scenes": [
+        "s01",
+        "s01d",
+        "s02",
+        "s03",
+        "s04",
+        "s05",
+        "s06",
+        "s07",
+        "s09"
+      ],
+      "a0": "sector8",
+      "max_steps": 300,
+      "contact_rule_shape": "outline",
+      "target_pools": [
+        "0a8bfa72f11d2c590b6d3a42a222450875c5347d3e26030029648f49f36ae7b7"
+      ],
+      "policies": {
+        "expert": {
+          "scenes": {
+            "s01": {
+              "status": "ok",
+              "reason": null,
+              "complete": true,
+              "episodes": 20,
+              "condition_episodes": 20,
+              "records": [
+                "runs/eval/final/seen_expert_s01.json"
+              ],
+              "checkpoint": "runs/expert/s01_r2/best/best_model.zip",
+              "sha256": "8c2c7500041907a98d5d696b9007e30578731ff5136f63c384270c0f4fcbf8dc",
+              "outcomes": {
+                "success": 20,
+                "collision": 0,
+                "out_of_bounds": 0,
+                "timeout": 0
+              },
+              "success_rate": {
+                "value": 1.0,
+                "wilson95": [
+                  0.8389,
+                  1.0
+                ]
+              },
+              "collision_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "out_of_bounds_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "timeout_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "per": {
+                "successes": 20,
+                "episodes": 20,
+                "without_grid_optimum": 0,
+                "lower": 0.9719,
+                "upper": 0.9974
+              },
+              "collision_sources": {},
+              "mean_steps": 195.7
+            },
+            "s01d": {
+              "status": "ok",
+              "reason": null,
+              "complete": true,
+              "episodes": 20,
+              "condition_episodes": 20,
+              "records": [
+                "runs/eval/final/seen_expert_s01d_s07_s09.json"
+              ],
+              "checkpoint": "runs/expert/s01d_r6/averaged/avg_250k_550k.zip",
+              "sha256": "55e666a555800de5a1fe97c89de58a667b333d45c2cb17a4ff6ce1c3944efbfd",
+              "outcomes": {
+                "success": 19,
+                "collision": 1,
+                "out_of_bounds": 0,
+                "timeout": 0
+              },
+              "success_rate": {
+                "value": 0.95,
+                "wilson95": [
+                  0.7639,
+                  0.9911
+                ]
+              },
+              "collision_rate": {
+                "value": 0.05,
+                "wilson95": [
+                  0.0089,
+                  0.2361
+                ]
+              },
+              "out_of_bounds_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "timeout_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "per": {
+                "successes": 19,
+                "episodes": 19,
+                "without_grid_optimum": 0,
+                "lower": 0.949,
+                "upper": 0.9892
+              },
+              "collision_sources": {
+                "sim": 1
+              },
+              "mean_steps": 193.45
+            },
+            "s02": {
+              "status": "ok",
+              "reason": null,
+              "complete": true,
+              "episodes": 20,
+              "condition_episodes": 20,
+              "records": [
+                "runs/eval/final/seen_expert_s02_to_s06.json"
+              ],
+              "checkpoint": "runs/expert/s02_r1/averaged/avg_350k_end.zip",
+              "sha256": "0971010abb0512c2660c4dd33ad7f75e8d19acbcbb400d38935ba12c08f3ca73",
+              "outcomes": {
+                "success": 13,
+                "collision": 2,
+                "out_of_bounds": 3,
+                "timeout": 2
+              },
+              "success_rate": {
+                "value": 0.65,
+                "wilson95": [
+                  0.4329,
+                  0.8188
+                ]
+              },
+              "collision_rate": {
+                "value": 0.1,
+                "wilson95": [
+                  0.0279,
+                  0.301
+                ]
+              },
+              "out_of_bounds_rate": {
+                "value": 0.15,
+                "wilson95": [
+                  0.0524,
+                  0.3604
+                ]
+              },
+              "timeout_rate": {
+                "value": 0.1,
+                "wilson95": [
+                  0.0279,
+                  0.301
+                ]
+              },
+              "per": {
+                "successes": 13,
+                "episodes": 13,
+                "without_grid_optimum": 0,
+                "lower": 0.9661,
+                "upper": 0.9997
+              },
+              "collision_sources": {
+                "footprint": 2
+              },
+              "mean_steps": 181.3
+            },
+            "s03": {
+              "status": "ok",
+              "reason": null,
+              "complete": true,
+              "episodes": 20,
+              "condition_episodes": 20,
+              "records": [
+                "runs/eval/final/seen_expert_s02_to_s06.json"
+              ],
+              "checkpoint": "runs/expert/s02_r1/averaged/avg_350k_end.zip",
+              "sha256": "0971010abb0512c2660c4dd33ad7f75e8d19acbcbb400d38935ba12c08f3ca73",
+              "outcomes": {
+                "success": 9,
+                "collision": 6,
+                "out_of_bounds": 4,
+                "timeout": 1
+              },
+              "success_rate": {
+                "value": 0.45,
+                "wilson95": [
+                  0.2582,
+                  0.6579
+                ]
+              },
+              "collision_rate": {
+                "value": 0.3,
+                "wilson95": [
+                  0.1455,
+                  0.519
+                ]
+              },
+              "out_of_bounds_rate": {
+                "value": 0.2,
+                "wilson95": [
+                  0.0807,
+                  0.416
+                ]
+              },
+              "timeout_rate": {
+                "value": 0.05,
+                "wilson95": [
+                  0.0089,
+                  0.2361
+                ]
+              },
+              "per": {
+                "successes": 9,
+                "episodes": 9,
+                "without_grid_optimum": 0,
+                "lower": 0.9146,
+                "upper": 0.9957
+              },
+              "collision_sources": {
+                "footprint": 6
+              },
+              "mean_steps": 177.1
+            },
+            "s04": {
+              "status": "ok",
+              "reason": null,
+              "complete": true,
+              "episodes": 20,
+              "condition_episodes": 20,
+              "records": [
+                "runs/eval/final/seen_expert_s02_to_s06.json"
+              ],
+              "checkpoint": "runs/expert/s02_r1/averaged/avg_350k_end.zip",
+              "sha256": "0971010abb0512c2660c4dd33ad7f75e8d19acbcbb400d38935ba12c08f3ca73",
+              "outcomes": {
+                "success": 11,
+                "collision": 7,
+                "out_of_bounds": 2,
+                "timeout": 0
+              },
+              "success_rate": {
+                "value": 0.55,
+                "wilson95": [
+                  0.3421,
+                  0.7418
+                ]
+              },
+              "collision_rate": {
+                "value": 0.35,
+                "wilson95": [
+                  0.1812,
+                  0.5671
+                ]
+              },
+              "out_of_bounds_rate": {
+                "value": 0.1,
+                "wilson95": [
+                  0.0279,
+                  0.301
+                ]
+              },
+              "timeout_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "per": {
+                "successes": 11,
+                "episodes": 11,
+                "without_grid_optimum": 0,
+                "lower": 0.9364,
+                "upper": 0.989
+              },
+              "collision_sources": {
+                "footprint": 7
+              },
+              "mean_steps": 181.35
+            },
+            "s05": {
+              "status": "ok",
+              "reason": null,
+              "complete": true,
+              "episodes": 20,
+              "condition_episodes": 20,
+              "records": [
+                "runs/eval/final/seen_expert_s02_to_s06.json"
+              ],
+              "checkpoint": "runs/expert/s02_r1/averaged/avg_350k_end.zip",
+              "sha256": "0971010abb0512c2660c4dd33ad7f75e8d19acbcbb400d38935ba12c08f3ca73",
+              "outcomes": {
+                "success": 10,
+                "collision": 8,
+                "out_of_bounds": 2,
+                "timeout": 0
+              },
+              "success_rate": {
+                "value": 0.5,
+                "wilson95": [
+                  0.2993,
+                  0.7007
+                ]
+              },
+              "collision_rate": {
+                "value": 0.4,
+                "wilson95": [
+                  0.2188,
+                  0.6134
+                ]
+              },
+              "out_of_bounds_rate": {
+                "value": 0.1,
+                "wilson95": [
+                  0.0279,
+                  0.301
+                ]
+              },
+              "timeout_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "per": {
+                "successes": 10,
+                "episodes": 10,
+                "without_grid_optimum": 0,
+                "lower": 0.9254,
+                "upper": 0.9798
+              },
+              "collision_sources": {
+                "footprint": 8
+              },
+              "mean_steps": 151.15
+            },
+            "s06": {
+              "status": "ok",
+              "reason": null,
+              "complete": true,
+              "episodes": 20,
+              "condition_episodes": 20,
+              "records": [
+                "runs/eval/final/seen_expert_s02_to_s06.json"
+              ],
+              "checkpoint": "runs/expert/s02_r1/averaged/avg_350k_end.zip",
+              "sha256": "0971010abb0512c2660c4dd33ad7f75e8d19acbcbb400d38935ba12c08f3ca73",
+              "outcomes": {
+                "success": 7,
+                "collision": 10,
+                "out_of_bounds": 3,
+                "timeout": 0
+              },
+              "success_rate": {
+                "value": 0.35,
+                "wilson95": [
+                  0.1812,
+                  0.5671
+                ]
+              },
+              "collision_rate": {
+                "value": 0.5,
+                "wilson95": [
+                  0.2993,
+                  0.7007
+                ]
+              },
+              "out_of_bounds_rate": {
+                "value": 0.15,
+                "wilson95": [
+                  0.0524,
+                  0.3604
+                ]
+              },
+              "timeout_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "per": {
+                "successes": 7,
+                "episodes": 7,
+                "without_grid_optimum": 0,
+                "lower": 0.9568,
+                "upper": 1.0
+              },
+              "collision_sources": {
+                "footprint": 10
+              },
+              "mean_steps": 138.05
+            },
+            "s07": {
+              "status": "ok",
+              "reason": null,
+              "complete": true,
+              "episodes": 20,
+              "condition_episodes": 20,
+              "records": [
+                "runs/eval/final/seen_expert_s01d_s07_s09.json"
+              ],
+              "checkpoint": "runs/expert/s01d_r6/averaged/avg_250k_550k.zip",
+              "sha256": "55e666a555800de5a1fe97c89de58a667b333d45c2cb17a4ff6ce1c3944efbfd",
+              "outcomes": {
+                "success": 19,
+                "collision": 1,
+                "out_of_bounds": 0,
+                "timeout": 0
+              },
+              "success_rate": {
+                "value": 0.95,
+                "wilson95": [
+                  0.7639,
+                  0.9911
+                ]
+              },
+              "collision_rate": {
+                "value": 0.05,
+                "wilson95": [
+                  0.0089,
+                  0.2361
+                ]
+              },
+              "out_of_bounds_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "timeout_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "per": {
+                "successes": 19,
+                "episodes": 19,
+                "without_grid_optimum": 0,
+                "lower": 0.9815,
+                "upper": 0.9994
+              },
+              "collision_sources": {
+                "sim": 1
+              },
+              "mean_steps": 163.55
+            },
+            "s09": {
+              "status": "ok",
+              "reason": null,
+              "complete": true,
+              "episodes": 20,
+              "condition_episodes": 20,
+              "records": [
+                "runs/eval/final/seen_expert_s01d_s07_s09.json"
+              ],
+              "checkpoint": "runs/expert/s01d_r6/averaged/avg_250k_550k.zip",
+              "sha256": "55e666a555800de5a1fe97c89de58a667b333d45c2cb17a4ff6ce1c3944efbfd",
+              "outcomes": {
+                "success": 19,
+                "collision": 1,
+                "out_of_bounds": 0,
+                "timeout": 0
+              },
+              "success_rate": {
+                "value": 0.95,
+                "wilson95": [
+                  0.7639,
+                  0.9911
+                ]
+              },
+              "collision_rate": {
+                "value": 0.05,
+                "wilson95": [
+                  0.0089,
+                  0.2361
+                ]
+              },
+              "out_of_bounds_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "timeout_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "per": {
+                "successes": 19,
+                "episodes": 19,
+                "without_grid_optimum": 0,
+                "lower": 0.9664,
+                "upper": 0.998
+              },
+              "collision_sources": {
+                "sim": 1
+              },
+              "mean_steps": 174.5
+            }
+          },
+          "all": {
+            "scenes": [
+              "s01",
+              "s01d",
+              "s02",
+              "s03",
+              "s04",
+              "s05",
+              "s06",
+              "s07",
+              "s09"
+            ],
+            "episodes": 180,
+            "outcomes": {
+              "success": 127,
+              "collision": 36,
+              "out_of_bounds": 14,
+              "timeout": 3
+            },
+            "success_rate": {
+              "value": 0.7056,
+              "wilson95": [
+                0.6352,
+                0.7673
+              ]
+            },
+            "collision_rate": {
+              "value": 0.2,
+              "wilson95": [
+                0.1481,
+                0.2644
+              ]
+            },
+            "out_of_bounds_rate": {
+              "value": 0.0778,
+              "wilson95": [
+                0.0469,
+                0.1263
+              ]
+            },
+            "timeout_rate": {
+              "value": 0.0167,
+              "wilson95": [
+                0.0057,
+                0.0478
+              ]
+            },
+            "per": {
+              "successes": 127,
+              "episodes": 127,
+              "without_grid_optimum": 0,
+              "lower": 0.9569,
+              "upper": 0.9947
+            },
+            "collision_sources": {
+              "sim": 3,
+              "footprint": 33
+            },
+            "mean_steps": 172.91
+          }
+        },
+        "scripted (privileged state)": {
+          "scenes": {
+            "s01": {
+              "status": "ok",
+              "reason": null,
+              "complete": true,
+              "episodes": 20,
+              "condition_episodes": 20,
+              "records": [
+                "runs/eval/final/seen_scripted_privileged.json"
+              ],
+              "checkpoint": null,
+              "sha256": null,
+              "outcomes": {
+                "success": 0,
+                "collision": 20,
+                "out_of_bounds": 0,
+                "timeout": 0
+              },
+              "success_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "collision_rate": {
+                "value": 1.0,
+                "wilson95": [
+                  0.8389,
+                  1.0
+                ]
+              },
+              "out_of_bounds_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "timeout_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "per": {
+                "successes": 0,
+                "episodes": 0,
+                "without_grid_optimum": 0,
+                "lower": null,
+                "upper": null
+              },
+              "collision_sources": {
+                "sim": 20
+              },
+              "mean_steps": 46.0
+            },
+            "s01d": {
+              "status": "ok",
+              "reason": null,
+              "complete": true,
+              "episodes": 20,
+              "condition_episodes": 20,
+              "records": [
+                "runs/eval/final/seen_scripted_privileged.json"
+              ],
+              "checkpoint": null,
+              "sha256": null,
+              "outcomes": {
+                "success": 0,
+                "collision": 20,
+                "out_of_bounds": 0,
+                "timeout": 0
+              },
+              "success_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "collision_rate": {
+                "value": 1.0,
+                "wilson95": [
+                  0.8389,
+                  1.0
+                ]
+              },
+              "out_of_bounds_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "timeout_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "per": {
+                "successes": 0,
+                "episodes": 0,
+                "without_grid_optimum": 0,
+                "lower": null,
+                "upper": null
+              },
+              "collision_sources": {
+                "mover": 5,
+                "sim": 15
+              },
+              "mean_steps": 52.9
+            },
+            "s02": {
+              "status": "ok",
+              "reason": null,
+              "complete": true,
+              "episodes": 20,
+              "condition_episodes": 20,
+              "records": [
+                "runs/eval/final/seen_scripted_privileged.json"
+              ],
+              "checkpoint": null,
+              "sha256": null,
+              "outcomes": {
+                "success": 0,
+                "collision": 20,
+                "out_of_bounds": 0,
+                "timeout": 0
+              },
+              "success_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "collision_rate": {
+                "value": 1.0,
+                "wilson95": [
+                  0.8389,
+                  1.0
+                ]
+              },
+              "out_of_bounds_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "timeout_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "per": {
+                "successes": 0,
+                "episodes": 0,
+                "without_grid_optimum": 0,
+                "lower": null,
+                "upper": null
+              },
+              "collision_sources": {
+                "footprint": 20
+              },
+              "mean_steps": 56.25
+            },
+            "s03": {
+              "status": "ok",
+              "reason": null,
+              "complete": true,
+              "episodes": 20,
+              "condition_episodes": 20,
+              "records": [
+                "runs/eval/final/seen_scripted_privileged.json"
+              ],
+              "checkpoint": null,
+              "sha256": null,
+              "outcomes": {
+                "success": 0,
+                "collision": 20,
+                "out_of_bounds": 0,
+                "timeout": 0
+              },
+              "success_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "collision_rate": {
+                "value": 1.0,
+                "wilson95": [
+                  0.8389,
+                  1.0
+                ]
+              },
+              "out_of_bounds_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "timeout_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "per": {
+                "successes": 0,
+                "episodes": 0,
+                "without_grid_optimum": 0,
+                "lower": null,
+                "upper": null
+              },
+              "collision_sources": {
+                "footprint": 20
+              },
+              "mean_steps": 42.8
+            },
+            "s04": {
+              "status": "ok",
+              "reason": null,
+              "complete": true,
+              "episodes": 20,
+              "condition_episodes": 20,
+              "records": [
+                "runs/eval/final/seen_scripted_privileged.json"
+              ],
+              "checkpoint": null,
+              "sha256": null,
+              "outcomes": {
+                "success": 0,
+                "collision": 20,
+                "out_of_bounds": 0,
+                "timeout": 0
+              },
+              "success_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "collision_rate": {
+                "value": 1.0,
+                "wilson95": [
+                  0.8389,
+                  1.0
+                ]
+              },
+              "out_of_bounds_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "timeout_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "per": {
+                "successes": 0,
+                "episodes": 0,
+                "without_grid_optimum": 0,
+                "lower": null,
+                "upper": null
+              },
+              "collision_sources": {
+                "footprint": 20
+              },
+              "mean_steps": 37.25
+            },
+            "s05": {
+              "status": "ok",
+              "reason": null,
+              "complete": true,
+              "episodes": 20,
+              "condition_episodes": 20,
+              "records": [
+                "runs/eval/final/seen_scripted_privileged.json"
+              ],
+              "checkpoint": null,
+              "sha256": null,
+              "outcomes": {
+                "success": 1,
+                "collision": 19,
+                "out_of_bounds": 0,
+                "timeout": 0
+              },
+              "success_rate": {
+                "value": 0.05,
+                "wilson95": [
+                  0.0089,
+                  0.2361
+                ]
+              },
+              "collision_rate": {
+                "value": 0.95,
+                "wilson95": [
+                  0.7639,
+                  0.9911
+                ]
+              },
+              "out_of_bounds_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "timeout_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "per": {
+                "successes": 1,
+                "episodes": 1,
+                "without_grid_optimum": 0,
+                "lower": 0.9977,
+                "upper": 1.0
+              },
+              "collision_sources": {
+                "footprint": 19
+              },
+              "mean_steps": 42.3
+            },
+            "s06": {
+              "status": "ok",
+              "reason": null,
+              "complete": true,
+              "episodes": 20,
+              "condition_episodes": 20,
+              "records": [
+                "runs/eval/final/seen_scripted_privileged.json"
+              ],
+              "checkpoint": null,
+              "sha256": null,
+              "outcomes": {
+                "success": 0,
+                "collision": 20,
+                "out_of_bounds": 0,
+                "timeout": 0
+              },
+              "success_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "collision_rate": {
+                "value": 1.0,
+                "wilson95": [
+                  0.8389,
+                  1.0
+                ]
+              },
+              "out_of_bounds_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "timeout_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "per": {
+                "successes": 0,
+                "episodes": 0,
+                "without_grid_optimum": 0,
+                "lower": null,
+                "upper": null
+              },
+              "collision_sources": {
+                "footprint": 20
+              },
+              "mean_steps": 50.85
+            },
+            "s07": {
+              "status": "ok",
+              "reason": null,
+              "complete": true,
+              "episodes": 20,
+              "condition_episodes": 20,
+              "records": [
+                "runs/eval/final/seen_scripted_privileged.json"
+              ],
+              "checkpoint": null,
+              "sha256": null,
+              "outcomes": {
+                "success": 8,
+                "collision": 12,
+                "out_of_bounds": 0,
+                "timeout": 0
+              },
+              "success_rate": {
+                "value": 0.4,
+                "wilson95": [
+                  0.2188,
+                  0.6134
+                ]
+              },
+              "collision_rate": {
+                "value": 0.6,
+                "wilson95": [
+                  0.3866,
+                  0.7812
+                ]
+              },
+              "out_of_bounds_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "timeout_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "per": {
+                "successes": 8,
+                "episodes": 8,
+                "without_grid_optimum": 0,
+                "lower": 0.9957,
+                "upper": 1.0
+              },
+              "collision_sources": {
+                "sim": 12
+              },
+              "mean_steps": 99.9
+            },
+            "s09": {
+              "status": "ok",
+              "reason": null,
+              "complete": true,
+              "episodes": 20,
+              "condition_episodes": 20,
+              "records": [
+                "runs/eval/final/seen_scripted_privileged.json"
+              ],
+              "checkpoint": null,
+              "sha256": null,
+              "outcomes": {
+                "success": 2,
+                "collision": 18,
+                "out_of_bounds": 0,
+                "timeout": 0
+              },
+              "success_rate": {
+                "value": 0.1,
+                "wilson95": [
+                  0.0279,
+                  0.301
+                ]
+              },
+              "collision_rate": {
+                "value": 0.9,
+                "wilson95": [
+                  0.699,
+                  0.9721
+                ]
+              },
+              "out_of_bounds_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "timeout_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "per": {
+                "successes": 2,
+                "episodes": 2,
+                "without_grid_optimum": 0,
+                "lower": 0.9979,
+                "upper": 1.0
+              },
+              "collision_sources": {
+                "sim": 18
+              },
+              "mean_steps": 75.0
+            }
+          },
+          "all": {
+            "scenes": [
+              "s01",
+              "s01d",
+              "s02",
+              "s03",
+              "s04",
+              "s05",
+              "s06",
+              "s07",
+              "s09"
+            ],
+            "episodes": 180,
+            "outcomes": {
+              "success": 11,
+              "collision": 169,
+              "out_of_bounds": 0,
+              "timeout": 0
+            },
+            "success_rate": {
+              "value": 0.0611,
+              "wilson95": [
+                0.0345,
+                0.1061
+              ]
+            },
+            "collision_rate": {
+              "value": 0.9389,
+              "wilson95": [
+                0.8939,
+                0.9655
+              ]
+            },
+            "out_of_bounds_rate": {
+              "value": 0.0,
+              "wilson95": [
+                0.0,
+                0.0209
+              ]
+            },
+            "timeout_rate": {
+              "value": 0.0,
+              "wilson95": [
+                0.0,
+                0.0209
+              ]
+            },
+            "per": {
+              "successes": 11,
+              "episodes": 11,
+              "without_grid_optimum": 0,
+              "lower": 0.9963,
+              "upper": 1.0
+            },
+            "collision_sources": {
+              "sim": 65,
+              "mover": 5,
+              "footprint": 99
+            },
+            "mean_steps": 55.92
+          }
+        },
+        "hover": {
+          "scenes": {
+            "s01": {
+              "status": "ok",
+              "reason": null,
+              "complete": false,
+              "episodes": 3,
+              "condition_episodes": 20,
+              "records": [
+                "runs/eval/final/seen_hover_s01_s05.json"
+              ],
+              "checkpoint": null,
+              "sha256": null,
+              "outcomes": {
+                "success": 0,
+                "collision": 0,
+                "out_of_bounds": 0,
+                "timeout": 3
+              },
+              "success_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.5615
+                ]
+              },
+              "collision_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.5615
+                ]
+              },
+              "out_of_bounds_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.5615
+                ]
+              },
+              "timeout_rate": {
+                "value": 1.0,
+                "wilson95": [
+                  0.4385,
+                  1.0
+                ]
+              },
+              "per": {
+                "successes": 0,
+                "episodes": 0,
+                "without_grid_optimum": 0,
+                "lower": null,
+                "upper": null
+              },
+              "collision_sources": {},
+              "mean_steps": 300.0
+            },
+            "s05": {
+              "status": "ok",
+              "reason": null,
+              "complete": false,
+              "episodes": 3,
+              "condition_episodes": 20,
+              "records": [
+                "runs/eval/final/seen_hover_s01_s05.json"
+              ],
+              "checkpoint": null,
+              "sha256": null,
+              "outcomes": {
+                "success": 0,
+                "collision": 0,
+                "out_of_bounds": 0,
+                "timeout": 3
+              },
+              "success_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.5615
+                ]
+              },
+              "collision_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.5615
+                ]
+              },
+              "out_of_bounds_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.5615
+                ]
+              },
+              "timeout_rate": {
+                "value": 1.0,
+                "wilson95": [
+                  0.4385,
+                  1.0
+                ]
+              },
+              "per": {
+                "successes": 0,
+                "episodes": 0,
+                "without_grid_optimum": 0,
+                "lower": null,
+                "upper": null
+              },
+              "collision_sources": {},
+              "mean_steps": 300.0
+            }
+          },
+          "all": {
+            "scenes": [
+              "s01",
+              "s05"
+            ],
+            "episodes": 6,
+            "outcomes": {
+              "success": 0,
+              "collision": 0,
+              "out_of_bounds": 0,
+              "timeout": 6
+            },
+            "success_rate": {
+              "value": 0.0,
+              "wilson95": [
+                0.0,
+                0.3903
+              ]
+            },
+            "collision_rate": {
+              "value": 0.0,
+              "wilson95": [
+                0.0,
+                0.3903
+              ]
+            },
+            "out_of_bounds_rate": {
+              "value": 0.0,
+              "wilson95": [
+                0.0,
+                0.3903
+              ]
+            },
+            "timeout_rate": {
+              "value": 1.0,
+              "wilson95": [
+                0.6097,
+                1.0
+              ]
+            },
+            "per": {
+              "successes": 0,
+              "episodes": 0,
+              "without_grid_optimum": 0,
+              "lower": null,
+              "upper": null
+            },
+            "collision_sources": {},
+            "mean_steps": 300.0
+          }
+        }
+      },
+      "scripted_vs_expert": {
+        "s01": {
+          "expert": "expert",
+          "scripted": "scripted (privileged state)",
+          "expert_success": {
+            "value": 1.0,
+            "wilson95": [
+              0.8389,
+              1.0
+            ],
+            "episodes": 20
+          },
+          "scripted_success": {
+            "value": 0.0,
+            "wilson95": [
+              0.0,
+              0.1611
+            ],
+            "episodes": 20
+          },
+          "below": true,
+          "separated": true
+        },
+        "s01d": {
+          "expert": "expert",
+          "scripted": "scripted (privileged state)",
+          "expert_success": {
+            "value": 0.95,
+            "wilson95": [
+              0.7639,
+              0.9911
+            ],
+            "episodes": 20
+          },
+          "scripted_success": {
+            "value": 0.0,
+            "wilson95": [
+              0.0,
+              0.1611
+            ],
+            "episodes": 20
+          },
+          "below": true,
+          "separated": true
+        },
+        "s02": {
+          "expert": "expert",
+          "scripted": "scripted (privileged state)",
+          "expert_success": {
+            "value": 0.65,
+            "wilson95": [
+              0.4329,
+              0.8188
+            ],
+            "episodes": 20
+          },
+          "scripted_success": {
+            "value": 0.0,
+            "wilson95": [
+              0.0,
+              0.1611
+            ],
+            "episodes": 20
+          },
+          "below": true,
+          "separated": true
+        },
+        "s03": {
+          "expert": "expert",
+          "scripted": "scripted (privileged state)",
+          "expert_success": {
+            "value": 0.45,
+            "wilson95": [
+              0.2582,
+              0.6579
+            ],
+            "episodes": 20
+          },
+          "scripted_success": {
+            "value": 0.0,
+            "wilson95": [
+              0.0,
+              0.1611
+            ],
+            "episodes": 20
+          },
+          "below": true,
+          "separated": true
+        },
+        "s04": {
+          "expert": "expert",
+          "scripted": "scripted (privileged state)",
+          "expert_success": {
+            "value": 0.55,
+            "wilson95": [
+              0.3421,
+              0.7418
+            ],
+            "episodes": 20
+          },
+          "scripted_success": {
+            "value": 0.0,
+            "wilson95": [
+              0.0,
+              0.1611
+            ],
+            "episodes": 20
+          },
+          "below": true,
+          "separated": true
+        },
+        "s05": {
+          "expert": "expert",
+          "scripted": "scripted (privileged state)",
+          "expert_success": {
+            "value": 0.5,
+            "wilson95": [
+              0.2993,
+              0.7007
+            ],
+            "episodes": 20
+          },
+          "scripted_success": {
+            "value": 0.05,
+            "wilson95": [
+              0.0089,
+              0.2361
+            ],
+            "episodes": 20
+          },
+          "below": true,
+          "separated": true
+        },
+        "s06": {
+          "expert": "expert",
+          "scripted": "scripted (privileged state)",
+          "expert_success": {
+            "value": 0.35,
+            "wilson95": [
+              0.1812,
+              0.5671
+            ],
+            "episodes": 20
+          },
+          "scripted_success": {
+            "value": 0.0,
+            "wilson95": [
+              0.0,
+              0.1611
+            ],
+            "episodes": 20
+          },
+          "below": true,
+          "separated": true
+        },
+        "s07": {
+          "expert": "expert",
+          "scripted": "scripted (privileged state)",
+          "expert_success": {
+            "value": 0.95,
+            "wilson95": [
+              0.7639,
+              0.9911
+            ],
+            "episodes": 20
+          },
+          "scripted_success": {
+            "value": 0.4,
+            "wilson95": [
+              0.2188,
+              0.6134
+            ],
+            "episodes": 20
+          },
+          "below": true,
+          "separated": true
+        },
+        "s09": {
+          "expert": "expert",
+          "scripted": "scripted (privileged state)",
+          "expert_success": {
+            "value": 0.95,
+            "wilson95": [
+              0.7639,
+              0.9911
+            ],
+            "episodes": 20
+          },
+          "scripted_success": {
+            "value": 0.1,
+            "wilson95": [
+              0.0279,
+              0.301
+            ],
+            "episodes": 20
+          },
+          "below": true,
+          "separated": true
+        }
+      }
+    },
+    "test_seen": {
+      "file": "/home/nvidiasims/research_uav/autofly_ue5/assets/eval_episodes/test_seen.json",
+      "sha256": "9c188a81112dbd3c998e91bb075b6ebf340f0faf66c1db8e569bd83d76b6bae6",
+      "episodes_per_scene": 20,
+      "scenes": [
+        "s05r",
+        "s06r"
+      ],
+      "listed_scenes": [
+        "s05r",
+        "s06r"
+      ],
+      "a0": "sector8",
+      "max_steps": 300,
+      "contact_rule_shape": "outline",
+      "target_pools": [
+        "0a8bfa72f11d2c590b6d3a42a222450875c5347d3e26030029648f49f36ae7b7"
+      ],
+      "policies": {
+        "expert": {
+          "scenes": {
+            "s05r": {
+              "status": "ok",
+              "reason": null,
+              "complete": true,
+              "episodes": 20,
+              "condition_episodes": 20,
+              "records": [
+                "runs/eval/final/test_seen_expert_s02.json"
+              ],
+              "checkpoint": "runs/expert/s02_r1/averaged/avg_350k_end.zip",
+              "sha256": "0971010abb0512c2660c4dd33ad7f75e8d19acbcbb400d38935ba12c08f3ca73",
+              "outcomes": {
+                "success": 3,
+                "collision": 8,
+                "out_of_bounds": 9,
+                "timeout": 0
+              },
+              "success_rate": {
+                "value": 0.15,
+                "wilson95": [
+                  0.0524,
+                  0.3604
+                ]
+              },
+              "collision_rate": {
+                "value": 0.4,
+                "wilson95": [
+                  0.2188,
+                  0.6134
+                ]
+              },
+              "out_of_bounds_rate": {
+                "value": 0.45,
+                "wilson95": [
+                  0.2582,
+                  0.6579
+                ]
+              },
+              "timeout_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "per": {
+                "successes": 3,
+                "episodes": 3,
+                "without_grid_optimum": 0,
+                "lower": 0.9041,
+                "upper": 0.9552
+              },
+              "collision_sources": {
+                "footprint": 8
+              },
+              "mean_steps": 132.25
+            },
+            "s06r": {
+              "status": "ok",
+              "reason": null,
+              "complete": true,
+              "episodes": 20,
+              "condition_episodes": 20,
+              "records": [
+                "runs/eval/final/test_seen_expert_s02.json"
+              ],
+              "checkpoint": "runs/expert/s02_r1/averaged/avg_350k_end.zip",
+              "sha256": "0971010abb0512c2660c4dd33ad7f75e8d19acbcbb400d38935ba12c08f3ca73",
+              "outcomes": {
+                "success": 6,
+                "collision": 11,
+                "out_of_bounds": 3,
+                "timeout": 0
+              },
+              "success_rate": {
+                "value": 0.3,
+                "wilson95": [
+                  0.1455,
+                  0.519
+                ]
+              },
+              "collision_rate": {
+                "value": 0.55,
+                "wilson95": [
+                  0.3421,
+                  0.7418
+                ]
+              },
+              "out_of_bounds_rate": {
+                "value": 0.15,
+                "wilson95": [
+                  0.0524,
+                  0.3604
+                ]
+              },
+              "timeout_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "per": {
+                "successes": 6,
+                "episodes": 6,
+                "without_grid_optimum": 0,
+                "lower": 0.9394,
+                "upper": 0.997
+              },
+              "collision_sources": {
+                "footprint": 11
+              },
+              "mean_steps": 151.1
+            }
+          },
+          "all": {
+            "scenes": [
+              "s05r",
+              "s06r"
+            ],
+            "episodes": 40,
+            "outcomes": {
+              "success": 9,
+              "collision": 19,
+              "out_of_bounds": 12,
+              "timeout": 0
+            },
+            "success_rate": {
+              "value": 0.225,
+              "wilson95": [
+                0.1232,
+                0.375
+              ]
+            },
+            "collision_rate": {
+              "value": 0.475,
+              "wilson95": [
+                0.3294,
+                0.625
+              ]
+            },
+            "out_of_bounds_rate": {
+              "value": 0.3,
+              "wilson95": [
+                0.1807,
+                0.4543
+              ]
+            },
+            "timeout_rate": {
+              "value": 0.0,
+              "wilson95": [
+                0.0,
+                0.0876
+              ]
+            },
+            "per": {
+              "successes": 9,
+              "episodes": 9,
+              "without_grid_optimum": 0,
+              "lower": 0.9276,
+              "upper": 0.9831
+            },
+            "collision_sources": {
+              "footprint": 19
+            },
+            "mean_steps": 141.68
+          }
+        },
+        "scripted (privileged state)": {
+          "scenes": {
+            "s05r": {
+              "status": "ok",
+              "reason": null,
+              "complete": true,
+              "episodes": 20,
+              "condition_episodes": 20,
+              "records": [
+                "runs/eval/final/test_seen_scripted.json"
+              ],
+              "checkpoint": null,
+              "sha256": null,
+              "outcomes": {
+                "success": 2,
+                "collision": 18,
+                "out_of_bounds": 0,
+                "timeout": 0
+              },
+              "success_rate": {
+                "value": 0.1,
+                "wilson95": [
+                  0.0279,
+                  0.301
+                ]
+              },
+              "collision_rate": {
+                "value": 0.9,
+                "wilson95": [
+                  0.699,
+                  0.9721
+                ]
+              },
+              "out_of_bounds_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "timeout_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "per": {
+                "successes": 2,
+                "episodes": 2,
+                "without_grid_optimum": 0,
+                "lower": 0.9985,
+                "upper": 1.0
+              },
+              "collision_sources": {
+                "footprint": 18
+              },
+              "mean_steps": 54.5
+            },
+            "s06r": {
+              "status": "ok",
+              "reason": null,
+              "complete": true,
+              "episodes": 20,
+              "condition_episodes": 20,
+              "records": [
+                "runs/eval/final/test_seen_scripted.json"
+              ],
+              "checkpoint": null,
+              "sha256": null,
+              "outcomes": {
+                "success": 1,
+                "collision": 19,
+                "out_of_bounds": 0,
+                "timeout": 0
+              },
+              "success_rate": {
+                "value": 0.05,
+                "wilson95": [
+                  0.0089,
+                  0.2361
+                ]
+              },
+              "collision_rate": {
+                "value": 0.95,
+                "wilson95": [
+                  0.7639,
+                  0.9911
+                ]
+              },
+              "out_of_bounds_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "timeout_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "per": {
+                "successes": 1,
+                "episodes": 1,
+                "without_grid_optimum": 0,
+                "lower": 0.9988,
+                "upper": 1.0
+              },
+              "collision_sources": {
+                "footprint": 19
+              },
+              "mean_steps": 54.1
+            }
+          },
+          "all": {
+            "scenes": [
+              "s05r",
+              "s06r"
+            ],
+            "episodes": 40,
+            "outcomes": {
+              "success": 3,
+              "collision": 37,
+              "out_of_bounds": 0,
+              "timeout": 0
+            },
+            "success_rate": {
+              "value": 0.075,
+              "wilson95": [
+                0.0258,
+                0.1986
+              ]
+            },
+            "collision_rate": {
+              "value": 0.925,
+              "wilson95": [
+                0.8014,
+                0.9742
+              ]
+            },
+            "out_of_bounds_rate": {
+              "value": 0.0,
+              "wilson95": [
+                0.0,
+                0.0876
+              ]
+            },
+            "timeout_rate": {
+              "value": 0.0,
+              "wilson95": [
+                0.0,
+                0.0876
+              ]
+            },
+            "per": {
+              "successes": 3,
+              "episodes": 3,
+              "without_grid_optimum": 0,
+              "lower": 0.9986,
+              "upper": 1.0
+            },
+            "collision_sources": {
+              "footprint": 37
+            },
+            "mean_steps": 54.3
+          }
+        }
+      },
+      "scripted_vs_expert": {
+        "s05r": {
+          "expert": "expert",
+          "scripted": "scripted (privileged state)",
+          "expert_success": {
+            "value": 0.15,
+            "wilson95": [
+              0.0524,
+              0.3604
+            ],
+            "episodes": 20
+          },
+          "scripted_success": {
+            "value": 0.1,
+            "wilson95": [
+              0.0279,
+              0.301
+            ],
+            "episodes": 20
+          },
+          "below": true,
+          "separated": false
+        },
+        "s06r": {
+          "expert": "expert",
+          "scripted": "scripted (privileged state)",
+          "expert_success": {
+            "value": 0.3,
+            "wilson95": [
+              0.1455,
+              0.519
+            ],
+            "episodes": 20
+          },
+          "scripted_success": {
+            "value": 0.05,
+            "wilson95": [
+              0.0089,
+              0.2361
+            ],
+            "episodes": 20
+          },
+          "below": true,
+          "separated": false
+        }
+      }
+    },
+    "unseen_targets": {
+      "file": "/home/nvidiasims/research_uav/autofly_ue5/assets/eval_episodes/unseen_targets.json",
+      "sha256": "7b6b0fcb8e998c0fbecc1dcc8234d12887e41444463bacf725853c830d675f96",
+      "episodes_per_scene": 20,
+      "scenes": [
+        "s01",
+        "s01d",
+        "s02",
+        "s03",
+        "s04",
+        "s05",
+        "s06",
+        "s07",
+        "s09"
+      ],
+      "listed_scenes": [
+        "s01",
+        "s01d",
+        "s02",
+        "s03",
+        "s04",
+        "s05",
+        "s06",
+        "s07",
+        "s09"
+      ],
+      "a0": "sector8",
+      "max_steps": 300,
+      "contact_rule_shape": "outline",
+      "target_pools": [
+        "0a8bfa72f11d2c590b6d3a42a222450875c5347d3e26030029648f49f36ae7b7"
+      ],
+      "policies": {
+        "expert": {
+          "scenes": {
+            "s01": {
+              "status": "ok",
+              "reason": null,
+              "complete": true,
+              "episodes": 20,
+              "condition_episodes": 20,
+              "records": [
+                "runs/eval/final/unseen_expert_s01.json"
+              ],
+              "checkpoint": "runs/expert/s01_r2/best/best_model.zip",
+              "sha256": "8c2c7500041907a98d5d696b9007e30578731ff5136f63c384270c0f4fcbf8dc",
+              "outcomes": {
+                "success": 19,
+                "collision": 0,
+                "out_of_bounds": 1,
+                "timeout": 0
+              },
+              "success_rate": {
+                "value": 0.95,
+                "wilson95": [
+                  0.7639,
+                  0.9911
+                ]
+              },
+              "collision_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "out_of_bounds_rate": {
+                "value": 0.05,
+                "wilson95": [
+                  0.0089,
+                  0.2361
+                ]
+              },
+              "timeout_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "per": {
+                "successes": 19,
+                "episodes": 19,
+                "without_grid_optimum": 0,
+                "lower": 0.9776,
+                "upper": 1.0
+              },
+              "collision_sources": {},
+              "mean_steps": 193.2
+            },
+            "s01d": {
+              "status": "ok",
+              "reason": null,
+              "complete": true,
+              "episodes": 20,
+              "condition_episodes": 20,
+              "records": [
+                "runs/eval/final/unseen_expert_s01d_s07_s09.json"
+              ],
+              "checkpoint": "runs/expert/s01d_r6/averaged/avg_250k_550k.zip",
+              "sha256": "55e666a555800de5a1fe97c89de58a667b333d45c2cb17a4ff6ce1c3944efbfd",
+              "outcomes": {
+                "success": 17,
+                "collision": 2,
+                "out_of_bounds": 1,
+                "timeout": 0
+              },
+              "success_rate": {
+                "value": 0.85,
+                "wilson95": [
+                  0.6396,
+                  0.9476
+                ]
+              },
+              "collision_rate": {
+                "value": 0.1,
+                "wilson95": [
+                  0.0279,
+                  0.301
+                ]
+              },
+              "out_of_bounds_rate": {
+                "value": 0.05,
+                "wilson95": [
+                  0.0089,
+                  0.2361
+                ]
+              },
+              "timeout_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "per": {
+                "successes": 17,
+                "episodes": 17,
+                "without_grid_optimum": 0,
+                "lower": 0.9201,
+                "upper": 0.9714
+              },
+              "collision_sources": {
+                "mover": 2
+              },
+              "mean_steps": 186.45
+            },
+            "s02": {
+              "status": "ok",
+              "reason": null,
+              "complete": true,
+              "episodes": 20,
+              "condition_episodes": 20,
+              "records": [
+                "runs/eval/final/unseen_expert_s02_to_s06.json"
+              ],
+              "checkpoint": "runs/expert/s02_r1/averaged/avg_350k_end.zip",
+              "sha256": "0971010abb0512c2660c4dd33ad7f75e8d19acbcbb400d38935ba12c08f3ca73",
+              "outcomes": {
+                "success": 17,
+                "collision": 2,
+                "out_of_bounds": 1,
+                "timeout": 0
+              },
+              "success_rate": {
+                "value": 0.85,
+                "wilson95": [
+                  0.6396,
+                  0.9476
+                ]
+              },
+              "collision_rate": {
+                "value": 0.1,
+                "wilson95": [
+                  0.0279,
+                  0.301
+                ]
+              },
+              "out_of_bounds_rate": {
+                "value": 0.05,
+                "wilson95": [
+                  0.0089,
+                  0.2361
+                ]
+              },
+              "timeout_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "per": {
+                "successes": 17,
+                "episodes": 17,
+                "without_grid_optimum": 0,
+                "lower": 0.9538,
+                "upper": 0.9972
+              },
+              "collision_sources": {
+                "sim": 1,
+                "footprint": 1
+              },
+              "mean_steps": 177.45
+            },
+            "s03": {
+              "status": "ok",
+              "reason": null,
+              "complete": true,
+              "episodes": 20,
+              "condition_episodes": 20,
+              "records": [
+                "runs/eval/final/unseen_expert_s02_to_s06.json"
+              ],
+              "checkpoint": "runs/expert/s02_r1/averaged/avg_350k_end.zip",
+              "sha256": "0971010abb0512c2660c4dd33ad7f75e8d19acbcbb400d38935ba12c08f3ca73",
+              "outcomes": {
+                "success": 10,
+                "collision": 6,
+                "out_of_bounds": 3,
+                "timeout": 1
+              },
+              "success_rate": {
+                "value": 0.5,
+                "wilson95": [
+                  0.2993,
+                  0.7007
+                ]
+              },
+              "collision_rate": {
+                "value": 0.3,
+                "wilson95": [
+                  0.1455,
+                  0.519
+                ]
+              },
+              "out_of_bounds_rate": {
+                "value": 0.15,
+                "wilson95": [
+                  0.0524,
+                  0.3604
+                ]
+              },
+              "timeout_rate": {
+                "value": 0.05,
+                "wilson95": [
+                  0.0089,
+                  0.2361
+                ]
+              },
+              "per": {
+                "successes": 10,
+                "episodes": 10,
+                "without_grid_optimum": 0,
+                "lower": 0.9334,
+                "upper": 0.9992
+              },
+              "collision_sources": {
+                "footprint": 6
+              },
+              "mean_steps": 160.35
+            },
+            "s04": {
+              "status": "ok",
+              "reason": null,
+              "complete": true,
+              "episodes": 20,
+              "condition_episodes": 20,
+              "records": [
+                "runs/eval/final/unseen_expert_s02_to_s06.json"
+              ],
+              "checkpoint": "runs/expert/s02_r1/averaged/avg_350k_end.zip",
+              "sha256": "0971010abb0512c2660c4dd33ad7f75e8d19acbcbb400d38935ba12c08f3ca73",
+              "outcomes": {
+                "success": 10,
+                "collision": 4,
+                "out_of_bounds": 6,
+                "timeout": 0
+              },
+              "success_rate": {
+                "value": 0.5,
+                "wilson95": [
+                  0.2993,
+                  0.7007
+                ]
+              },
+              "collision_rate": {
+                "value": 0.2,
+                "wilson95": [
+                  0.0807,
+                  0.416
+                ]
+              },
+              "out_of_bounds_rate": {
+                "value": 0.3,
+                "wilson95": [
+                  0.1455,
+                  0.519
+                ]
+              },
+              "timeout_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "per": {
+                "successes": 10,
+                "episodes": 10,
+                "without_grid_optimum": 0,
+                "lower": 0.953,
+                "upper": 0.9965
+              },
+              "collision_sources": {
+                "sim": 1,
+                "footprint": 3
+              },
+              "mean_steps": 176.2
+            },
+            "s05": {
+              "status": "ok",
+              "reason": null,
+              "complete": true,
+              "episodes": 20,
+              "condition_episodes": 20,
+              "records": [
+                "runs/eval/final/unseen_expert_s02_to_s06.json"
+              ],
+              "checkpoint": "runs/expert/s02_r1/averaged/avg_350k_end.zip",
+              "sha256": "0971010abb0512c2660c4dd33ad7f75e8d19acbcbb400d38935ba12c08f3ca73",
+              "outcomes": {
+                "success": 8,
+                "collision": 6,
+                "out_of_bounds": 6,
+                "timeout": 0
+              },
+              "success_rate": {
+                "value": 0.4,
+                "wilson95": [
+                  0.2188,
+                  0.6134
+                ]
+              },
+              "collision_rate": {
+                "value": 0.3,
+                "wilson95": [
+                  0.1455,
+                  0.519
+                ]
+              },
+              "out_of_bounds_rate": {
+                "value": 0.3,
+                "wilson95": [
+                  0.1455,
+                  0.519
+                ]
+              },
+              "timeout_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "per": {
+                "successes": 8,
+                "episodes": 8,
+                "without_grid_optimum": 0,
+                "lower": 0.9255,
+                "upper": 0.9897
+              },
+              "collision_sources": {
+                "footprint": 6
+              },
+              "mean_steps": 133.85
+            },
+            "s06": {
+              "status": "ok",
+              "reason": null,
+              "complete": true,
+              "episodes": 20,
+              "condition_episodes": 20,
+              "records": [
+                "runs/eval/final/unseen_expert_s02_to_s06.json"
+              ],
+              "checkpoint": "runs/expert/s02_r1/averaged/avg_350k_end.zip",
+              "sha256": "0971010abb0512c2660c4dd33ad7f75e8d19acbcbb400d38935ba12c08f3ca73",
+              "outcomes": {
+                "success": 6,
+                "collision": 10,
+                "out_of_bounds": 4,
+                "timeout": 0
+              },
+              "success_rate": {
+                "value": 0.3,
+                "wilson95": [
+                  0.1455,
+                  0.519
+                ]
+              },
+              "collision_rate": {
+                "value": 0.5,
+                "wilson95": [
+                  0.2993,
+                  0.7007
+                ]
+              },
+              "out_of_bounds_rate": {
+                "value": 0.2,
+                "wilson95": [
+                  0.0807,
+                  0.416
+                ]
+              },
+              "timeout_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "per": {
+                "successes": 6,
+                "episodes": 6,
+                "without_grid_optimum": 0,
+                "lower": 0.9548,
+                "upper": 1.0
+              },
+              "collision_sources": {
+                "footprint": 10
+              },
+              "mean_steps": 141.55
+            },
+            "s07": {
+              "status": "ok",
+              "reason": null,
+              "complete": true,
+              "episodes": 20,
+              "condition_episodes": 20,
+              "records": [
+                "runs/eval/final/unseen_expert_s01d_s07_s09.json"
+              ],
+              "checkpoint": "runs/expert/s01d_r6/averaged/avg_250k_550k.zip",
+              "sha256": "55e666a555800de5a1fe97c89de58a667b333d45c2cb17a4ff6ce1c3944efbfd",
+              "outcomes": {
+                "success": 20,
+                "collision": 0,
+                "out_of_bounds": 0,
+                "timeout": 0
+              },
+              "success_rate": {
+                "value": 1.0,
+                "wilson95": [
+                  0.8389,
+                  1.0
+                ]
+              },
+              "collision_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "out_of_bounds_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "timeout_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "per": {
+                "successes": 20,
+                "episodes": 20,
+                "without_grid_optimum": 0,
+                "lower": 0.9842,
+                "upper": 0.9998
+              },
+              "collision_sources": {},
+              "mean_steps": 174.4
+            },
+            "s09": {
+              "status": "ok",
+              "reason": null,
+              "complete": true,
+              "episodes": 20,
+              "condition_episodes": 20,
+              "records": [
+                "runs/eval/final/unseen_expert_s01d_s07_s09.json"
+              ],
+              "checkpoint": "runs/expert/s01d_r6/averaged/avg_250k_550k.zip",
+              "sha256": "55e666a555800de5a1fe97c89de58a667b333d45c2cb17a4ff6ce1c3944efbfd",
+              "outcomes": {
+                "success": 20,
+                "collision": 0,
+                "out_of_bounds": 0,
+                "timeout": 0
+              },
+              "success_rate": {
+                "value": 1.0,
+                "wilson95": [
+                  0.8389,
+                  1.0
+                ]
+              },
+              "collision_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "out_of_bounds_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "timeout_rate": {
+                "value": 0.0,
+                "wilson95": [
+                  0.0,
+                  0.1611
+                ]
+              },
+              "per": {
+                "successes": 20,
+                "episodes": 20,
+                "without_grid_optimum": 0,
+                "lower": 0.9624,
+                "upper": 0.9963
+              },
+              "collision_sources": {},
+              "mean_steps": 181.2
+            }
+          },
+          "all": {
+            "scenes": [
+              "s01",
+              "s01d",
+              "s02",
+              "s03",
+              "s04",
+              "s05",
+              "s06",
+              "s07",
+              "s09"
+            ],
+            "episodes": 180,
+            "outcomes": {
+              "success": 127,
+              "collision": 30,
+              "out_of_bounds": 22,
+              "timeout": 1
+            },
+            "success_rate": {
+              "value": 0.7056,
+              "wilson95": [
+                0.6352,
+                0.7673
+              ]
+            },
+            "collision_rate": {
+              "value": 0.1667,
+              "wilson95": [
+                0.1193,
+                0.228
+              ]
+            },
+            "out_of_bounds_rate": {
+              "value": 0.1222,
+              "wilson95": [
+                0.0821,
+                0.1781
+              ]
+            },
+            "timeout_rate": {
+              "value": 0.0056,
+              "wilson95": [
+                0.001,
+                0.0308
+              ]
+            },
+            "per": {
+              "successes": 127,
+              "episodes": 127,
+              "without_grid_optimum": 0,
+              "lower": 0.9556,
+              "upper": 0.9942
+            },
+            "collision_sources": {
+              "mover": 2,
+              "sim": 2,
+              "footprint": 26
+            },
+            "mean_steps": 169.41
+          }
+        }
+      },
+      "scripted_vs_expert": {}
+    }
+  },
+  "done_check": {
+    "condition": "seen",
+    "policy": "expert",
+    "scripted": "scripted (privileged state)",
+    "rule": "plan 6 revision 1: the expert flown through the harness lands within the CI of its kept-rate and the scripted baseline below it. Here: the expert's Wilson 95 % success interval overlaps the pilot's kept-rate interval (thin slice), and the scripted baseline's success rate is below the expert's ('separated' when its whole interval is)",
+    "pilots": {
+      "path": "docs/gates/plan6_pilots.json",
+      "sha256": "d41fa851eacd6efa804f303a79f312f826d1d5ada7976aa3f8641fce5cfa0a09"
+    },
+    "scenes": {
+      "s01": {
+        "expert_success": {
+          "value": 1.0,
+          "wilson95": [
+            0.8389,
+            1.0
+          ],
+          "episodes": 20
+        },
+        "expert_checkpoint": "runs/expert/s01_r2/best/best_model.zip",
+        "expert_sha256": "8c2c7500041907a98d5d696b9007e30578731ff5136f63c384270c0f4fcbf8dc",
+        "complete": true,
+        "pilot": {
+          "name": "s01_best",
+          "checkpoint": "runs/expert/s01_r2/best/best_model.zip",
+          "sha256": "8c2c7500041907a98d5d696b9007e30578731ff5136f63c384270c0f4fcbf8dc",
+          "kept": 50,
+          "flown": 52,
+          "kept_rate": 0.9615,
+          "wilson95": [
+            0.8702,
+            0.9894
+          ]
+        },
+        "intervals_overlap": true,
+        "expert_rate_in_pilot_interval": false,
+        "same_checkpoint": true,
+        "scripted_success": {
+          "value": 0.0,
+          "wilson95": [
+            0.0,
+            0.1611
+          ],
+          "episodes": 20
+        },
+        "scripted_below": true,
+        "scripted_separated": true
+      },
+      "s01d": {
+        "expert_success": {
+          "value": 0.95,
+          "wilson95": [
+            0.7639,
+            0.9911
+          ],
+          "episodes": 20
+        },
+        "expert_checkpoint": "runs/expert/s01d_r6/averaged/avg_250k_550k.zip",
+        "expert_sha256": "55e666a555800de5a1fe97c89de58a667b333d45c2cb17a4ff6ce1c3944efbfd",
+        "complete": true,
+        "pilot": {
+          "name": "s01d_mean",
+          "checkpoint": "runs/expert/s01d_r6/averaged/avg_250k_550k.zip",
+          "sha256": "55e666a555800de5a1fe97c89de58a667b333d45c2cb17a4ff6ce1c3944efbfd",
+          "kept": 50,
+          "flown": 55,
+          "kept_rate": 0.9091,
+          "wilson95": [
+            0.8042,
+            0.9605
+          ]
+        },
+        "intervals_overlap": true,
+        "expert_rate_in_pilot_interval": true,
+        "same_checkpoint": true,
+        "scripted_success": {
+          "value": 0.0,
+          "wilson95": [
+            0.0,
+            0.1611
+          ],
+          "episodes": 20
+        },
+        "scripted_below": true,
+        "scripted_separated": true
+      },
+      "s02": {
+        "expert_success": {
+          "value": 0.65,
+          "wilson95": [
+            0.4329,
+            0.8188
+          ],
+          "episodes": 20
+        },
+        "expert_checkpoint": "runs/expert/s02_r1/averaged/avg_350k_end.zip",
+        "expert_sha256": "0971010abb0512c2660c4dd33ad7f75e8d19acbcbb400d38935ba12c08f3ca73",
+        "complete": true,
+        "pilot": {
+          "name": "s02_pick",
+          "checkpoint": "runs/expert/s02_r1/averaged/avg_350k_end.zip",
+          "sha256": "0971010abb0512c2660c4dd33ad7f75e8d19acbcbb400d38935ba12c08f3ca73",
+          "kept": 50,
+          "flown": 68,
+          "kept_rate": 0.7353,
+          "wilson95": [
+            0.6199,
+            0.8255
+          ]
+        },
+        "intervals_overlap": true,
+        "expert_rate_in_pilot_interval": true,
+        "same_checkpoint": true,
+        "scripted_success": {
+          "value": 0.0,
+          "wilson95": [
+            0.0,
+            0.1611
+          ],
+          "episodes": 20
+        },
+        "scripted_below": true,
+        "scripted_separated": true
+      },
+      "s03": {
+        "expert_success": {
+          "value": 0.45,
+          "wilson95": [
+            0.2582,
+            0.6579
+          ],
+          "episodes": 20
+        },
+        "expert_checkpoint": "runs/expert/s02_r1/averaged/avg_350k_end.zip",
+        "expert_sha256": "0971010abb0512c2660c4dd33ad7f75e8d19acbcbb400d38935ba12c08f3ca73",
+        "complete": true,
+        "pilot": {
+          "name": "s02_pick",
+          "checkpoint": "runs/expert/s02_r1/averaged/avg_350k_end.zip",
+          "sha256": "0971010abb0512c2660c4dd33ad7f75e8d19acbcbb400d38935ba12c08f3ca73",
+          "kept": 50,
+          "flown": 83,
+          "kept_rate": 0.6024,
+          "wilson95": [
+            0.4948,
+            0.7009
+          ]
+        },
+        "intervals_overlap": true,
+        "expert_rate_in_pilot_interval": false,
+        "same_checkpoint": true,
+        "scripted_success": {
+          "value": 0.0,
+          "wilson95": [
+            0.0,
+            0.1611
+          ],
+          "episodes": 20
+        },
+        "scripted_below": true,
+        "scripted_separated": true
+      },
+      "s04": {
+        "expert_success": {
+          "value": 0.55,
+          "wilson95": [
+            0.3421,
+            0.7418
+          ],
+          "episodes": 20
+        },
+        "expert_checkpoint": "runs/expert/s02_r1/averaged/avg_350k_end.zip",
+        "expert_sha256": "0971010abb0512c2660c4dd33ad7f75e8d19acbcbb400d38935ba12c08f3ca73",
+        "complete": true,
+        "pilot": {
+          "name": "s02_pick",
+          "checkpoint": "runs/expert/s02_r1/averaged/avg_350k_end.zip",
+          "sha256": "0971010abb0512c2660c4dd33ad7f75e8d19acbcbb400d38935ba12c08f3ca73",
+          "kept": 50,
+          "flown": 89,
+          "kept_rate": 0.5618,
+          "wilson95": [
+            0.4583,
+            0.6602
+          ]
+        },
+        "intervals_overlap": true,
+        "expert_rate_in_pilot_interval": true,
+        "same_checkpoint": true,
+        "scripted_success": {
+          "value": 0.0,
+          "wilson95": [
+            0.0,
+            0.1611
+          ],
+          "episodes": 20
+        },
+        "scripted_below": true,
+        "scripted_separated": true
+      },
+      "s05": {
+        "expert_success": {
+          "value": 0.5,
+          "wilson95": [
+            0.2993,
+            0.7007
+          ],
+          "episodes": 20
+        },
+        "expert_checkpoint": "runs/expert/s02_r1/averaged/avg_350k_end.zip",
+        "expert_sha256": "0971010abb0512c2660c4dd33ad7f75e8d19acbcbb400d38935ba12c08f3ca73",
+        "complete": true,
+        "pilot": {
+          "name": "s02_pick",
+          "checkpoint": "runs/expert/s02_r1/averaged/avg_350k_end.zip",
+          "sha256": "0971010abb0512c2660c4dd33ad7f75e8d19acbcbb400d38935ba12c08f3ca73",
+          "kept": 50,
+          "flown": 101,
+          "kept_rate": 0.495,
+          "wilson95": [
+            0.3995,
+            0.5909
+          ]
+        },
+        "intervals_overlap": true,
+        "expert_rate_in_pilot_interval": true,
+        "same_checkpoint": true,
+        "scripted_success": {
+          "value": 0.05,
+          "wilson95": [
+            0.0089,
+            0.2361
+          ],
+          "episodes": 20
+        },
+        "scripted_below": true,
+        "scripted_separated": true
+      },
+      "s06": {
+        "expert_success": {
+          "value": 0.35,
+          "wilson95": [
+            0.1812,
+            0.5671
+          ],
+          "episodes": 20
+        },
+        "expert_checkpoint": "runs/expert/s02_r1/averaged/avg_350k_end.zip",
+        "expert_sha256": "0971010abb0512c2660c4dd33ad7f75e8d19acbcbb400d38935ba12c08f3ca73",
+        "complete": true,
+        "pilot": {
+          "name": "s02_pick",
+          "checkpoint": "runs/expert/s02_r1/averaged/avg_350k_end.zip",
+          "sha256": "0971010abb0512c2660c4dd33ad7f75e8d19acbcbb400d38935ba12c08f3ca73",
+          "kept": 50,
+          "flown": 127,
+          "kept_rate": 0.3937,
+          "wilson95": [
+            0.313,
+            0.4806
+          ]
+        },
+        "intervals_overlap": true,
+        "expert_rate_in_pilot_interval": true,
+        "same_checkpoint": true,
+        "scripted_success": {
+          "value": 0.0,
+          "wilson95": [
+            0.0,
+            0.1611
+          ],
+          "episodes": 20
+        },
+        "scripted_below": true,
+        "scripted_separated": true
+      },
+      "s07": {
+        "expert_success": {
+          "value": 0.95,
+          "wilson95": [
+            0.7639,
+            0.9911
+          ],
+          "episodes": 20
+        },
+        "expert_checkpoint": "runs/expert/s01d_r6/averaged/avg_250k_550k.zip",
+        "expert_sha256": "55e666a555800de5a1fe97c89de58a667b333d45c2cb17a4ff6ce1c3944efbfd",
+        "complete": true,
+        "pilot": {
+          "name": "s01d_mean",
+          "checkpoint": "runs/expert/s01d_r6/averaged/avg_250k_550k.zip",
+          "sha256": "55e666a555800de5a1fe97c89de58a667b333d45c2cb17a4ff6ce1c3944efbfd",
+          "kept": 50,
+          "flown": 51,
+          "kept_rate": 0.9804,
+          "wilson95": [
+            0.897,
+            0.9965
+          ]
+        },
+        "intervals_overlap": true,
+        "expert_rate_in_pilot_interval": true,
+        "same_checkpoint": true,
+        "scripted_success": {
+          "value": 0.4,
+          "wilson95": [
+            0.2188,
+            0.6134
+          ],
+          "episodes": 20
+        },
+        "scripted_below": true,
+        "scripted_separated": true
+      },
+      "s09": {
+        "expert_success": {
+          "value": 0.95,
+          "wilson95": [
+            0.7639,
+            0.9911
+          ],
+          "episodes": 20
+        },
+        "expert_checkpoint": "runs/expert/s01d_r6/averaged/avg_250k_550k.zip",
+        "expert_sha256": "55e666a555800de5a1fe97c89de58a667b333d45c2cb17a4ff6ce1c3944efbfd",
+        "complete": true,
+        "pilot": {
+          "name": "s01d_mean",
+          "checkpoint": "runs/expert/s01d_r6/averaged/avg_250k_550k.zip",
+          "sha256": "55e666a555800de5a1fe97c89de58a667b333d45c2cb17a4ff6ce1c3944efbfd",
+          "kept": 50,
+          "flown": 50,
+          "kept_rate": 1.0,
+          "wilson95": [
+            0.9287,
+            1.0
+          ]
+        },
+        "intervals_overlap": true,
+        "expert_rate_in_pilot_interval": true,
+        "same_checkpoint": true,
+        "scripted_success": {
+          "value": 0.1,
+          "wilson95": [
+            0.0279,
+            0.301
+          ],
+          "episodes": 20
+        },
+        "scripted_below": true,
+        "scripted_separated": true
+      }
+    },
+    "overlap_all": true,
+    "scripted_below_all": true,
+    "same_checkpoint_all": true,
+    "scenes_without_pilot": [],
+    "pilot_scenes_not_flown": []
+  },
+  "notes": [
+    "seen: each policy's whole is over the scenes it flew (expert 9, scripted (privileged state) 9, hover 2)"
+  ],
+  "files": [
+    "harness_results.png",
+    "harness_results.json",
+    "harness_results.md"
+  ]
+}
