@@ -28,6 +28,7 @@ __pycache__/
 
 # local agent / editor state (machine-specific, never shared)
 .claude/settings.local.json
+.claude/worktrees/
 .claude/settings.local.json.tmp.*
 /.vscode/
 /.idea/
