@@ -1,0 +1,581 @@
+{
+ "version": 1,
+ "description": "final_results/ for plan 6 step 7 (docs/superpowers/plans/2026-10-08-autofly-ue5-plan6-prototype-dataset.md): build with `env -u PYTHONPATH .venv/bin/python scripts/build_final_results.py build --manifest docs/final_results_manifest.json`, then `... check`. Sources are relative to the repository root; entries marked optional are outputs that exist only once the collection campaign, the merged export, the evaluation and the rebalancing have run, and are skipped (and listed) until then.",
+ "files": [
+  {
+   "source": "docs/final_results_README.md",
+   "dest": "README.md",
+   "caption": "The report: what was built and measured, linking every figure, video and record below (written last, from the records)",
+   "optional": true
+  },
+  {
+   "source": "runs/report/pipeline/pipeline.png",
+   "dest": "figures/pipeline.png",
+   "caption": "The system in eight stages: scenes, expert pilots, collector, raw stores, the merged dataset, rebalancing, the next phase's VLA and the closed-loop evaluation harness (scripts/pipeline_diagram.py)",
+   "optional": true
+  },
+  {
+   "source": "runs/report/final/*.png",
+   "dest": "figures/dataset/",
+   "caption": "The final dataset's stores: composition by scene, category and target; kept-rates per store and scene; every kept trajectory per scene; action and state distributions; lengths and PER; first frames; target close-ups (scripts/dataset_figures.py)",
+   "optional": true
+  },
+  {
+   "source": "runs/report/final/dataset_figures.json",
+   "dest": "figures/dataset/dataset_figures.json",
+   "caption": "Every number the final dataset's figures draw",
+   "optional": true
+  },
+  {
+   "source": "runs/eval/final/figures/harness_results.png",
+   "dest": "figures/harness_results.png",
+   "caption": "Closed-loop evaluation per condition, scene and policy: success, collision and out-of-bounds rates with Wilson 95 % intervals and PER over successes, the pilots' kept-rate intervals behind the expert (scripts/harness_figures.py)",
+   "optional": true
+  },
+  {
+   "source": "runs/rebalance/final/figures/rebalance_phases.png",
+   "dest": "figures/rebalance_phases.png",
+   "caption": "The final dataset's rebalancing: records per phase overall and per scene against the paper's 0.73 / 0.27, and the resampling weights against its 0.68 / 1.85 (scripts/rebalance_figures.py)",
+   "optional": true
+  },
+  {
+   "source": "runs/rebalance/final/figures/rebalance_targets.png",
+   "dest": "figures/rebalance_targets.png",
+   "caption": "Per target, the distance at each episode's first confident detection and the share of its episodes never detected (scripts/rebalance_figures.py)",
+   "optional": true
+  },
+  {
+   "source": "runs/report/thin/*.png",
+   "dest": "figures/thin_slice/",
+   "caption": "The thin slice, one 50-kept store per training scene under collection conditions (450 kept of 676 flights): composition, kept-rates, every kept trajectory per scene, action and state distributions, lengths and PER, first frames, target close-ups (scripts/dataset_figures.py)"
+  },
+  {
+   "source": "runs/report/thin/dataset_figures.json",
+   "dest": "figures/thin_slice/dataset_figures.json",
+   "caption": "Every number the thin-slice figures draw"
+  },
+  {
+   "source": "results/2026-10-07-project-status/figures/gates.png",
+   "dest": "figures/experts/gates.png",
+   "caption": "Every gated expert on its 200 held-out episodes, outcome by outcome: s01 passed at 0.98 (M2); s01d climbed from 0.775 to 0.935 over six runs against the 0.95 bar and was accepted at 0.935"
+  },
+  {
+   "source": "results/2026-10-07-project-status/figures/training.png",
+   "dest": "figures/experts/training.png",
+   "caption": "Training success of the s01 and s01d runs (rolling 300 episodes, each run's own rules) and their 20-episode evaluations along the way"
+  },
+  {
+   "source": "results/2026-10-07-project-status/figures/s02_r1_training.png",
+   "dest": "figures/experts/s02_r1_training.png",
+   "caption": "s02 run 1 (sparse trees, 12 h, 640,916 steps): training outcomes and the eval watch under the task's rules"
+  },
+  {
+   "source": "results/2026-10-07-project-status/figures/s02_r1_training.json",
+   "dest": "figures/experts/s02_r1_training.json",
+   "caption": "The numbers s02_r1_training.png draws (scripts/m5_training_figure.py)"
+  },
+  {
+   "source": "results/2026-10-07-project-status/maps/*.png",
+   "dest": "figures/experts/maps/",
+   "caption": "Top-down maps of the rendered expert flights on s01 and s01d (scripts/render_episodes.py)"
+  },
+  {
+   "source": "results/2026-10-07-project-status/figures/s02_footprint_rule.png",
+   "dest": "figures/contact_rule/",
+   "caption": "The footprint contact rule for mesh scenes: 40 scripted flights at s02's trees end 0.51-0.88 m from the circle, so no rotor tip enters it (scripts/footprint_rule_figure.py)"
+  },
+  {
+   "source": "results/2026-10-07-project-status/figures/s02_footprint_rule.json",
+   "dest": "figures/contact_rule/",
+   "caption": "The numbers s02_footprint_rule.png draws"
+  },
+  {
+   "source": "results/2026-10-07-project-status/figures/s02_footprint_endings.png",
+   "dest": "figures/contact_rule/",
+   "caption": "s02 run 1's footprint endings measured against the trees' real geometry: a median 2.70 m from any leaf, which led to the outline rule (scripts/footprint_endings_figure.py)"
+  },
+  {
+   "source": "results/2026-10-07-project-status/figures/s02_footprint_endings.json",
+   "dest": "figures/contact_rule/",
+   "caption": "The numbers s02_footprint_endings.png draws"
+  },
+  {
+   "source": "results/2026-10-07-project-status/figures/layouts.png",
+   "dest": "figures/scenes/",
+   "caption": "The scene generator's placement types: s01's jittered grid, poisson scatter, clusters and stacks, with reachability and the crossing detour"
+  },
+  {
+   "source": "results/2026-10-07-project-status/figures/layouts_c4.png",
+   "dest": "figures/scenes/",
+   "caption": "s03 scattered rocks and s06 tree clusters as laid out, accepted by the layout rule (worst crossing detours 1.167 and 1.171 against 1.25)"
+  },
+  {
+   "source": "results/2026-10-07-project-status/figures/layouts_c4.json",
+   "dest": "figures/scenes/",
+   "caption": "The numbers layouts_c4.png draws"
+  },
+  {
+   "source": "results/2026-10-07-project-status/scenes/*_snapshots.png",
+   "dest": "figures/scenes/snapshots/",
+   "caption": "Every built scene through the drone's cameras (s01-s07, s09 and the test_seen layouts s05r, s06r): RGB and depth from each edge's start and close to three obstacles (scripts/scene_snapshots.py)"
+  },
+  {
+   "source": "results/2026-10-07-project-status/scenes/*_snapshots.json",
+   "dest": "figures/scenes/snapshots/",
+   "caption": "Per-pose brightness and depth-at-surface numbers of each snapshot sheet"
+  },
+  {
+   "source": "results/2026-10-07-project-status/scenes/targets_contact_sheet.png",
+   "dest": "figures/targets/targets_contact_sheet.png",
+   "caption": "The 60 pool targets spawned live on s01 in front of the drone, one step after spawning (the first probe, m4_targets_probe.json)"
+  },
+  {
+   "source": "docs/gates/m4_targets_probe_run2_sheet.png",
+   "dest": "figures/targets/m4_targets_probe_run2_sheet.png",
+   "caption": "The 60 targets re-probed with settle steps (m4_targets_probe_run2.json)"
+  },
+  {
+   "source": "results/2026-10-07-project-status/figures/pilot_screening.png",
+   "dest": "figures/pilots/pilot_screening.png",
+   "caption": "Pilot screening: each candidate expert's kept-rate per scene, 30-40 stochastic episodes per pair under the task's rules (m5_pilot_screening.json)"
+  },
+  {
+   "source": "results/2026-10-07-project-status/figures/rebalance.png",
+   "dest": "figures/m3_pilot/rebalance.png",
+   "caption": "The M3 pilot's rebalancing: the detector's confidence against the distance to the target, the phase split against the threshold, and where the transitions happen (P0 0.652 / 0.348 at 0.7)"
+  },
+  {
+   "source": "results/2026-10-07-project-status/figures/path_efficiency.png",
+   "dest": "figures/m3_pilot/path_efficiency.png",
+   "caption": "The M3 pilot's path efficiency: flown lengths against the straight line, PER between 0.956 and 0.994"
+  },
+  {
+   "source": "runs/report/final_videos/*.mp4",
+   "dest": "videos/dataset/",
+   "caption": "The final dataset played back: a montage of one kept episode per scene, and one episode per scene with its instruction, state and action (scripts/dataset_montage_video.py)",
+   "optional": true
+  },
+  {
+   "source": "runs/report/final_videos/*.json",
+   "dest": "videos/dataset/",
+   "caption": "Which episodes the dataset videos show",
+   "optional": true
+  },
+  {
+   "source": "results/2026-10-07-project-status/videos/s01_m2_best_model_*.mp4",
+   "dest": "videos/experts/",
+   "caption": "The s01 expert (M2, best_model): a clean crossing of the pillar field and one of its four gate collisions; front RGB, the depth it flies on, the path from above (scripts/render_episodes.py)"
+  },
+  {
+   "source": "results/2026-10-07-project-status/videos/s01d_*.mp4",
+   "dest": "videos/experts/",
+   "caption": "The s01d experts among moving pillars: run 1 hit by a mover from out of view; the accepted run 6 mean weaving past movers, its remaining failure (a near miss past a yielding mover) and an exit"
+  },
+  {
+   "source": "results/2026-10-07-project-status/videos/screening/*.mp4",
+   "dest": "videos/pilots/",
+   "caption": "Pilot replays per scene (s03-s07, s09), named by scene, pilot, episode and outcome; stochastic replays, so an outcome can differ from the screening's"
+  },
+  {
+   "source": "results/2026-10-07-project-status/videos/dataset_s01_*.mp4",
+   "dest": "videos/m3_pilot/",
+   "caption": "Three M3 pilot episodes played back from the dataset: instruction, state, action, Grounding DINO's confidence and the phase the rebalancing assigns (scripts/dataset_episode_video.py)"
+  },
+  {
+   "source": "docs/gates/m0_gate.json",
+   "dest": "records/gates/m0_gate.json",
+   "caption": "M0: UE 5.7.4 + Project AirSim installed and smoke-tested (passed 2026-09-15)"
+  },
+  {
+   "source": "docs/gates/m1_gate.json",
+   "dest": "records/gates/m1_gate.json",
+   "caption": "M1: scene s01 built from JSON, packaged and checked live (passed 2026-09-16)"
+  },
+  {
+   "source": "docs/gates/m1_gate_fast.json",
+   "dest": "records/gates/m1_gate_fast.json",
+   "caption": "M1's checks on the 1 ms real-time update rate the experts trained and collected on"
+  },
+  {
+   "source": "docs/gates/m1_crash_reset_probe.json",
+   "dest": "records/gates/m1_crash_reset_probe.json",
+   "caption": "Crash-then-reset probe: none of 30 first resets after a crash missed its pose"
+  },
+  {
+   "source": "docs/gates/m2_gate.json",
+   "dest": "records/gates/m2_gate.json",
+   "caption": "M2: the s01 expert's gate, 0.98 deterministic over 200 held-out episodes (passed 2026-09-26)"
+  },
+  {
+   "source": "docs/gates/m2_gate_audit.json",
+   "dest": "records/gates/m2_gate_audit.json",
+   "caption": "M2's gate audited for episodes that started away from their start"
+  },
+  {
+   "source": "docs/gates/m2_train.json",
+   "dest": "records/gates/m2_train.json",
+   "caption": "M2: the s01 expert's training record"
+  },
+  {
+   "source": "docs/gates/m2d_gate.json",
+   "dest": "records/gates/m2d_gate.json",
+   "caption": "M2d run 1 on moving pillars: 0.775 (best_model), failed against 0.95"
+  },
+  {
+   "source": "docs/gates/m2d_mover_probe.json",
+   "dest": "records/gates/m2d_mover_probe.json",
+   "caption": "Moving a baked pillar live: moves land within microns, show in the same step's depth and collide at once"
+  },
+  {
+   "source": "docs/gates/m2d_r5_gate.json",
+   "dest": "records/gates/m2d_r5_gate.json",
+   "caption": "M2d run 5 (training contact margins): 0.885, failed"
+  },
+  {
+   "source": "docs/gates/m2d_r6_gate.json",
+   "dest": "records/gates/m2d_r6_gate.json",
+   "caption": "M2d run 6 (step 240k, pre-registered): 0.920, failed"
+  },
+  {
+   "source": "docs/gates/m2d_r6_swa_gate.json",
+   "dest": "records/gates/m2d_r6_swa_gate.json",
+   "caption": "M2d run 6, the mean of 31 checkpoints (250k-550k): 0.935, failed against 0.95; accepted by the user for collection on 2026-10-07"
+  },
+  {
+   "source": "docs/gates/m2d_r6_swa_sources.json",
+   "dest": "records/gates/m2d_r6_swa_sources.json",
+   "caption": "The checkpoints averaged into the accepted s01d expert, with their sha256"
+  },
+  {
+   "source": "docs/gates/m2d_r6s1_avg_gate.json",
+   "dest": "records/gates/m2d_r6s1_avg_gate.json",
+   "caption": "M2d run 6 session 1, the mean of its 250k-1,060k checkpoints: 0.920, failed"
+  },
+  {
+   "source": "docs/gates/m2d_r6s1_avg_confirm.json",
+   "dest": "records/gates/m2d_r6s1_avg_confirm.json",
+   "caption": "That mean on 200 unflown episodes: 0.930 (0.925 over both sets of 200)"
+  },
+  {
+   "source": "docs/gates/m3_gate.json",
+   "dest": "records/gates/m3_gate.json",
+   "caption": "M3: collector, dataset writer and validator on a 100-episode s01 pilot that TFDS read back exactly (passed 2026-10-03)"
+  },
+  {
+   "source": "docs/gates/m3_a0_probe.json",
+   "dest": "records/gates/m3_a0_probe.json",
+   "caption": "a0's aligned start costs the s01 expert nothing: 50 of 50 with it, 49 of 50 without"
+  },
+  {
+   "source": "docs/gates/m4_s02_gate.json",
+   "dest": "records/gates/m4_s02_gate.json",
+   "caption": "s02 sparse trees, first live gate: failed its crash check (a crash into a canopy wedged the actor)"
+  },
+  {
+   "source": "docs/gates/m4_s02_gate_run2.json",
+   "dest": "records/gates/m4_s02_gate_run2.json",
+   "caption": "s02's second live gate: failed (layout and crash checks)"
+  },
+  {
+   "source": "docs/gates/m4_s02_gate_run3.json",
+   "dest": "records/gates/m4_s02_gate_run3.json",
+   "caption": "s02's third live gate: passed, with the leaf cards in a no-collision mesh"
+  },
+  {
+   "source": "docs/gates/m4_s02_gate_run4.json",
+   "dest": "records/gates/m4_s02_gate_run4.json",
+   "caption": "s02's fourth live gate record: passed"
+  },
+  {
+   "source": "docs/gates/m4_s02_wood_crash_reset_probe.json",
+   "dest": "records/gates/m4_s02_wood_crash_reset_probe.json",
+   "caption": "Crashes into wood: 2 of 4 left the actor wedged, which the footprint rule answers"
+  },
+  {
+   "source": "docs/gates/m4_s03_gate.json",
+   "dest": "records/gates/m4_s03_gate.json",
+   "caption": "s03 scattered rocks: live gate passed"
+  },
+  {
+   "source": "docs/gates/m4_s04_gate.json",
+   "dest": "records/gates/m4_s04_gate.json",
+   "caption": "s04 stone field: live gate passed"
+  },
+  {
+   "source": "docs/gates/m4_s05_gate.json",
+   "dest": "records/gates/m4_s05_gate.json",
+   "caption": "s05 standing stones on snow: live gate passed"
+  },
+  {
+   "source": "docs/gates/m4_s05r_gate.json",
+   "dest": "records/gates/m4_s05r_gate.json",
+   "caption": "s05r, a test_seen layout of s05's elements: live gate passed"
+  },
+  {
+   "source": "docs/gates/m4_s06_gate.json",
+   "dest": "records/gates/m4_s06_gate.json",
+   "caption": "s06 tree clusters: live gate passed"
+  },
+  {
+   "source": "docs/gates/m4_s06r_gate.json",
+   "dest": "records/gates/m4_s06r_gate.json",
+   "caption": "s06r, a test_seen layout of s06's elements: live gate passed"
+  },
+  {
+   "source": "docs/gates/m4_s07_gate.json",
+   "dest": "records/gates/m4_s07_gate.json",
+   "caption": "s07 stacked boxes: live gate passed"
+  },
+  {
+   "source": "docs/gates/m4_s09_gate.json",
+   "dest": "records/gates/m4_s09_gate.json",
+   "caption": "s09 coloured poles: live gate passed"
+  },
+  {
+   "source": "docs/gates/m4_targets_probe.json",
+   "dest": "records/gates/m4_targets_probe.json",
+   "caption": "The 60 pool targets spawned live, first probe: 55 of 60 visible one step after spawning, the other five loading on first use (recorded as failed)"
+  },
+  {
+   "source": "docs/gates/m4_targets_probe_run2.json",
+   "dest": "records/gates/m4_targets_probe_run2.json",
+   "caption": "The 60 targets re-probed with settle steps: passed"
+  },
+  {
+   "source": "docs/gates/m5_pilot_screening.json",
+   "dest": "records/gates/m5_pilot_screening.json",
+   "caption": "Pilot screening: which existing expert flies which scene, by kept-rate"
+  },
+  {
+   "source": "docs/gates/m5_s02_train.json",
+   "dest": "records/gates/m5_s02_train.json",
+   "caption": "s02 run 1's training record (12 h, the circle rule with a 0.2 m training margin)"
+  },
+  {
+   "source": "docs/gates/m5_s02_gate.json",
+   "dest": "records/gates/m5_s02_gate.json",
+   "caption": "s02 run 1's pick gated under the circle rule: 0.580, failed"
+  },
+  {
+   "source": "docs/gates/m5_s02_gate_outline.json",
+   "dest": "records/gates/m5_s02_gate_outline.json",
+   "caption": "The same pick on the same 200 episodes under the outline rule (the separately named record)"
+  },
+  {
+   "source": "docs/gates/m5_s02_avg_sources.json",
+   "dest": "records/gates/m5_s02_avg_sources.json",
+   "caption": "The checkpoints averaged into s02 run 1's pick, with their sha256"
+  },
+  {
+   "source": "docs/gates/plan6_pilots.json",
+   "dest": "records/gates/plan6_pilots.json",
+   "caption": "Plan 6's pilots: each training scene's checkpoint and its kept-rate under collection conditions from the thin slice, with the Wilson lower bound against the 0.25 bar, the crossing check and PER"
+  },
+  {
+   "source": "runs/screening/*.json",
+   "dest": "records/screening/",
+   "caption": "The screening's per-pair records: each candidate expert's stochastic episodes on each scene"
+  },
+  {
+   "source": "runs/collect/s0*_c*.json",
+   "dest": "records/collect/",
+   "caption": "Each store's collector record: its pilot, seed slice, every flight's outcome and the first-frame checks (scripts/collect_dataset.py)"
+  },
+  {
+   "source": "runs/collect/campaign_thin_t1.json",
+   "dest": "records/collect/campaign_thin_t1.json",
+   "caption": "The thin slice's campaign plan, first part: every job's exact command (scripts/collect_campaign.py)"
+  },
+  {
+   "source": "runs/collect/campaign_thin_t2a.json",
+   "dest": "records/collect/campaign_thin_t2a.json",
+   "caption": "The thin slice's campaign plan, second part (a)"
+  },
+  {
+   "source": "runs/collect/campaign_thin_t2b.json",
+   "dest": "records/collect/campaign_thin_t2b.json",
+   "caption": "The thin slice's campaign plan, second part (b)"
+  },
+  {
+   "source": "runs/collect/campaign_final.json",
+   "dest": "records/collect/campaign_final.json",
+   "caption": "The final collection campaign's plan: four more 50-kept stores per scene, every job's exact command"
+  },
+  {
+   "source": "assets/eval_episodes/*.json",
+   "dest": "records/harness/conditions/",
+   "caption": "The frozen evaluation episodes per condition (seen, test_seen, unseen_targets): each scene pinned by sha256, seeds from the harness's own range (autofly_ue5/evaluation/episodes.py)"
+  },
+  {
+   "source": "runs/eval/final/*.json",
+   "dest": "records/harness/",
+   "caption": "The harness records, one per policy, condition and scene group: every episode's outcome, path, PER and the policy's description (scripts/eval_harness.py)",
+   "optional": true
+  },
+  {
+   "source": "runs/eval/final/*.md",
+   "dest": "records/harness/",
+   "caption": "Each harness record's summary table",
+   "optional": true
+  },
+  {
+   "source": "runs/eval/final/figures/harness_results.json",
+   "dest": "records/harness_results.json",
+   "caption": "Every number harness_results.png draws, with plan 6's done check: the expert's success interval against its pilot's kept-rate interval, and the scripted baseline below it",
+   "optional": true
+  },
+  {
+   "source": "runs/eval/final/figures/harness_results.md",
+   "dest": "records/harness_results.md",
+   "caption": "The evaluation as README tables",
+   "optional": true
+  },
+  {
+   "source": "runs/rebalance/final/rebalance.json",
+   "dest": "records/rebalance/rebalance.json",
+   "caption": "The final dataset's rebalance document: every episode's first confident detection, its phases and the weights (scripts/rebalance_dataset.py)",
+   "optional": true
+  },
+  {
+   "source": "runs/rebalance/final/figures/rebalance_summary.json",
+   "dest": "records/rebalance/rebalance_summary.json",
+   "caption": "Every number the rebalancing figures draw",
+   "optional": true
+  },
+  {
+   "source": "runs/rebalance/final/figures/rebalance_summary.md",
+   "dest": "records/rebalance/rebalance_summary.md",
+   "caption": "The rebalancing as README tables",
+   "optional": true
+  },
+  {
+   "source": "runs/rebalance/sparse_study_2026-10-08/sparse_study.json",
+   "dest": "records/rebalance/sparse_study.json",
+   "caption": "The sparse first-detection search replayed on the M3 pilot's dense scores, every stride and alert level: stride 8 and alert 0.5 chosen (scripts/sparse_search_study.py)"
+  },
+  {
+   "source": "runs/rebalance/sparse_study_2026-10-08/sparse_study.md",
+   "dest": "records/rebalance/sparse_study.md",
+   "caption": "The sparse search study's table"
+  },
+  {
+   "source": "runs/rebalance/sparse_study_2026-10-08/live_check/check.json",
+   "dest": "records/rebalance/sparse_live_check.json",
+   "caption": "The sparse search run by the detector itself on three pilot episodes: the same first detections as the dense scores"
+  },
+  {
+   "source": "results/2026-10-07-project-status/records/s01_pilot_rebalance.json",
+   "dest": "records/m3_pilot/s01_pilot_rebalance.json",
+   "caption": "The M3 pilot's rebalance document (data/s01_pilot/rebalance.json)"
+  },
+  {
+   "source": "results/2026-10-07-project-status/records/s01_pilot_path_efficiency.json",
+   "dest": "records/m3_pilot/s01_pilot_path_efficiency.json",
+   "caption": "The M3 pilot's path efficiency per episode"
+  },
+  {
+   "source": "runs/merge_thin/out/autofly_ue5_thin/dataset_card.md",
+   "dest": "records/thin_slice/dataset_card.md",
+   "caption": "The thin slice's merged export card: the export, statistics and card proven on real pool data before the campaign"
+  },
+  {
+   "source": "runs/merge_thin/out/autofly_ue5_thin/tfds_check.json",
+   "dest": "records/thin_slice/tfds_check.json",
+   "caption": "TFDS read the thin slice's merged export back (scripts/check_rlds_with_tfds.py)"
+  },
+  {
+   "source": "runs/merge_thin/out/autofly_ue5_thin/vla_loader_check.json",
+   "dest": "records/thin_slice/vla_loader_check.json",
+   "caption": "The OpenVLA-style loader iterated the thin slice's merged export (scripts/check_vla_loader.py)"
+  },
+  {
+   "source": "scenes/*.json",
+   "dest": "records/scenes/",
+   "caption": "The eleven scene files: obstacles and their placement, ground, exposure, split"
+  },
+  {
+   "source": "runs/export/autofly_ue5_proto/dataset_card.md",
+   "dest": "dataset/dataset_card.md",
+   "caption": "The dataset card: counts by scene, target and category, the instruction templates, the splits and the privileged state fields (autofly_ue5/dataset/card.py)",
+   "optional": true
+  },
+  {
+   "source": "runs/export/autofly_ue5_proto/card.json",
+   "dest": "dataset/card.json",
+   "caption": "The card's numbers",
+   "optional": true
+  },
+  {
+   "source": "runs/export/autofly_ue5_proto/dataset_statistics.json",
+   "dest": "dataset/dataset_statistics.json",
+   "caption": "Per-dimension normalisation statistics of action and state over the train split, in OpenVLA's schema",
+   "optional": true
+  },
+  {
+   "source": "runs/export/autofly_ue5_proto/merge.json",
+   "dest": "dataset/merge.json",
+   "caption": "What the merged export holds: its stores and their provenance, every episode's split, shard and metadata",
+   "optional": true
+  },
+  {
+   "source": "runs/export/autofly_ue5_proto/tfds_check.json",
+   "dest": "dataset/tfds_check.json",
+   "caption": "TFDS read every episode of the merged dataset back exactly (scripts/check_rlds_with_tfds.py)",
+   "optional": true
+  },
+  {
+   "source": "runs/export/autofly_ue5_proto/vla_loader_check.json",
+   "dest": "dataset/vla_loader_check.json",
+   "caption": "The merged dataset iterated through an OpenVLA-style RLDS pipeline (scripts/check_vla_loader.py)",
+   "optional": true
+  },
+  {
+   "source": "runs/export/autofly_ue5_proto/1.0.0/dataset_info.json",
+   "dest": "dataset/tfds/dataset_info.json",
+   "caption": "TFDS's dataset info: the splits and their shards",
+   "optional": true
+  },
+  {
+   "source": "runs/export/autofly_ue5_proto/1.0.0/features.json",
+   "dest": "dataset/tfds/features.json",
+   "caption": "TFDS's feature spec: AutoFly's four step fields and the episode metadata",
+   "optional": true
+  },
+  {
+   "source": "runs/export/*split*.json",
+   "dest": "dataset/",
+   "caption": "The frozen train/val split: every episode's assignment, stratified by scene and target",
+   "optional": true
+  },
+  {
+   "source": "assets/targets.json",
+   "dest": "dataset/targets.json",
+   "caption": "The 60-entry target pool: name, category, seen or unseen, source, stand-in mark"
+  },
+  {
+   "source": "assets/target_exclusions.json",
+   "dest": "dataset/target_exclusions.json",
+   "caption": "Per scene, the targets not drawn because they look like the scene's own obstacles"
+  },
+  {
+   "source": "docs/superpowers/plans/2026-10-08-autofly-ue5-plan6-prototype-dataset.md",
+   "dest": "docs/plan6_prototype_dataset.md",
+   "caption": "Plan 6 with revision 1: what complete means for this phase, and its done checks"
+  },
+  {
+   "source": "docs/superpowers/specs/2026-09-15-autofly-ue5-dataset-design.md",
+   "dest": "docs/design_spec.md",
+   "caption": "The design spec: the task, scenes, experts, the dataset format and the milestones"
+  },
+  {
+   "source": "docs/decisions/*.md",
+   "dest": "docs/decisions/",
+   "caption": "Every decision, ruling and incident report, dated"
+  },
+  {
+   "source": "docs/runbook-*.md",
+   "dest": "docs/runbooks/",
+   "caption": "The live procedures: training, gates, collection, rebalancing and the target probes"
+  }
+ ]
+}
