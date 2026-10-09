@@ -47,7 +47,7 @@ The records, and what each one is for:
 | `docs/gates/m5_<id>_confirm.json` | 4 | Only if a second model is gated on the same 200 episodes (see 4e). |
 | `docs/decisions/<date>-m5-<id>-expert.md` | 4 | The closeout: which file flies collection, and why. |
 | `docs/gates/m5_<id>_collect_<k>.json` | 5 | A collection batch: kept/flown, validator, RLDS, TFDS read-back. |
-| `data/<name>/` (`detections.json`, `rebalance.json`) | 5 | The dataset store, then its detections and resampling weights. |
+| `data/<name>/` (`detections.jsonl`, `rebalance.json`) | 5 | The dataset store, then its detections and resampling weights. |
 
 ## 0. Preconditions (every session)
 
@@ -540,8 +540,9 @@ $PY scripts/rebalance_dataset.py --raw data/<name>                   # data/<nam
   order of 1,700 CPU-hours, which is not feasible here. `--device cuda --allow-gpu` is unmeasured, and a torch process
   on the GPU makes the launch guard refuse every simulator launch. Use the GPU only with the user's go-ahead, when
   nothing may need to launch.
-- **Before the full collection is scored,** `detections.json` needs an appendable form. It is rewritten whole after
-  every episode, which is quadratic at M5's size.
+- **The cache** is now `data/<name>/detections.jsonl`, one appended line per episode (2026-10-08). The pilot's
+  whole-document `detections.json` is still read. A sparse search (`--sparse-stride 8 --sparse-alert 0.5`) scores
+  about a third of the frames: runbook-rebalance §2 and §4.
 
 ## 6. Closing M5
 
@@ -554,6 +555,8 @@ every milestone, it stops for the user's go-ahead.
 1. The seed-slice scheme for M5's batches.
 2. Episodes per scene toward the paper's 13K: spec §10.4 chooses them from throughput.
 3. Whether to collect before the target pool is usable.
-4. How per-store rebalancing combines into one dataset-wide weighting: `rebalance_dataset.py` works on one store at a
-   time.
-5. A GPU or faster route for the detector at full scale.
+4. How per-store rebalancing combines into one dataset-wide weighting. `rebalance_dataset.py --raw <a> --raw <b> ...
+   --out` writes one document for the union of the stores (records summed), with per-store and per-target summaries
+   (runbook-rebalance §3). Which weights apply is still to decide.
+5. A GPU or faster route for the detector at full scale. The sparse search cuts the frames about threefold on the
+   pilot (runbook-rebalance §4). GPU throughput is unmeasured.
