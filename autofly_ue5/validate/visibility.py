@@ -25,11 +25,12 @@ glTF meshes, ray-cast), and gives one of five statuses:
                 (a target smaller than a pixel at its range), or what lies behind reads within the same tolerance (a
                 target's base against the ground). Said, rather than counted as either.
 
-The thin slice's first four 'missing' records (2026-10-08 evening) are why the rule separates the last three: in each,
-the window's minimum was predicted rock or tree, a single informative pixel sat beside it, and only the RGB told a
-genuinely absent target (s05, drawn ~20 steps late) from an occluder's edge a pixel off its model (s04, s06, s02). Each
-record now keeps its window (`window`: each pixel's reading, predicted background and target interval), so a verdict
-can be re-derived from the record alone.
+The thin slice's first four 'missing' records (2026-10-08 evening) are why the rule separates the last three. In each,
+the window's minimum was what the geometry predicts beside or behind the target, and only the RGB told them apart: s05's
+statue was genuinely absent (its four informative pixels read the snow behind it; it was drawn about 21-25 steps after
+its spawn), while s04's, s06's and s02's single informative pixel sat beside a predicted rock or tree, an occluder's
+edge a pixel off its model. Each record now keeps its window (`window`: each pixel's reading, predicted background and
+target interval), so a verdict can be re-derived from the record alone.
 
 A window pixel can tell when its ray meets the target's box before everything else the geometry predicts there (the
 ground plane, the layout's obstacles near the line of sight, the distractors' boxes) and that background lies beyond the

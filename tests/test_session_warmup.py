@@ -1,8 +1,8 @@
 """The session warm-up (expert/env.py, 2026-10-08 evening): at the first pool reset of every simulator session, before
 the episode's own reset, every (asset, material) pair the env could draw is spawned once ahead of a clear view and held
 until the probe's depth check sees it (scripts/probe_targets.py's procedure, validate/target_probe.py), so an object's
-first use (slow under load: ~20 steps for s05 seed 451000001) stays out of the episodes. Against a fake that draws each
-asset only N steps after its spawn (N per asset; never, for one)."""
+first use (slow under load: about 21-25 steps for s05 seed 451000001) stays out of the episodes. Against a fake that
+draws each asset only N steps after its spawn (N per asset; never, for one)."""
 
 from __future__ import annotations
 

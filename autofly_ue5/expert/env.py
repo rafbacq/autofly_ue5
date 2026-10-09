@@ -81,8 +81,8 @@ MOVER_INFERABLE_FAULTS = (CameraPoseError, KinematicsJumpError)
 # the reset's frame as the episode's first, so with a pool every reset hovers this many more steps before it returns.
 # - First use (2026-10-08 afternoon): an object new to the simulator session drew nothing on step 1 and its whole outline
 #   by step 5 (runs/m4/targets_settle_diag/settle.json; m4_targets_probe.json counted five such first-frame misses); a
-#   second spawn showed at once. Under load first use took longer still (s05 seed 451000001: ~20 steps beside 8
-#   simulators), which the session warm-up takes out of the episodes.
+#   second spawn showed at once. Under load first use took longer still (s05 seed 451000001: about 21-25 steps, beside
+#   8 simulators), which the session warm-up takes out of the episodes.
 # - Every spawn, under load (2026-10-08 evening, beside 7 collectors): 59 of 60 probed targets, primitives included,
 #   were not drawn on the step after their spawn and all were 5 steps later (m4_targets_probe_run2.json); in the thin
 #   slice 33 of 36 first frames held for showed their target, 1 of 4 warm ones without the hold, and a warm garbage
@@ -90,9 +90,11 @@ MOVER_INFERABLE_FAULTS = (CameraPoseError, KinematicsJumpError)
 PREWARM_HOLD_STEPS = 5
 
 # The session warm-up (2026-10-08 evening). First use under load outlasts any per-episode hold (s05 seed 451000001: the
-# bronze whale statue drawn ~20 steps after its first spawn, beside 8 simulators), so at the first pool reset of every
+# bronze whale statue's pixels read as the snow behind it through record 16 and dark by record 20, about 21-25 steps
+# after its first spawn, three distractors spawned with it beside 8 simulators), so at the first pool reset of every
 # simulator session each (asset, material) pair the env could draw is spawned once ahead of a clear view, the probe's
-# way (validate/target_probe.py), and held until the depth check sees it: at most WARMUP_MAX_STEPS hover steps.
+# way (validate/target_probe.py), and held until the depth check sees it: at most WARMUP_MAX_STEPS hover steps. The
+# probe's own procedure took 150 s for 60 targets beside 7 collectors (m4_targets_probe_run2.json): about 2.5 s a pair.
 WARMUP_MAX_STEPS = 60
 WARMUP_DISTANCE_M = (6.0, 10.0)  # camera to the object's centre, by its size (the probe's rule, its nearest at 6 m)
 WARMUP_SPAWN_NAME = "autofly_warmup_target"
