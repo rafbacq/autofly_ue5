@@ -137,3 +137,10 @@ at 0.7 is the first seen, and the kind M5's real target pool must be watched for
   in its colour. With 60 targets and 3–5 distractors per scene, `first_detection.off_target` is the number to watch.
 - Applying the weights is the training pipeline's job (a later LeRobot/OpenVLA export): `stratified_resample` draws
   the paper's rebalanced set from the sub-trajectories, with replacement where a phase is upsampled.
+
+Correction (2026-10-08): "batched and single-frame scores agree to 1e-7" does not hold in general. Re-scoring pilot
+frames reproduced the stored scores exactly only in their original dense batch; alone or with other batch-mates the
+same frame moved by up to 4.1e-4 (episode 001 record 117: 0.404919 in its batch, 0.405330 alone), on the same model
+revision and frames. Two of the pilot's 100 transitions (episodes 045 and 066) lie within 4.1e-4 of 0.7, so a
+transition can depend on batching. Scoring with `--batch 1` costs the same per frame on this CPU and makes each score
+depend on its frame alone (`docs/decisions/2026-10-08-sparse-first-detection.md`).
