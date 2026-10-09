@@ -257,6 +257,35 @@ Videos: `videos/screening/` holds two or three replays per scene, named by scene
 are stochastic replays, so an outcome can differ from the screening's (s04 episode 0 crashed in screening and
 succeeds here).
 
+## 10. The thin slice: every scene collected under real conditions (plan 6, 2026-10-08 evening)
+
+Nine stores of 50 kept episodes each, one per training scene, flown by each scene's pilot with the full 60-target pool,
+per-scene look-alike exclusions, a0-aligned starts and the task's contact rules: 450 kept of 676 flights
+(`docs/gates/plan6_pilots.json`). Every pilot clears plan 6's bar (the kept-rate's 95 % lower bound at least 0.25);
+s06 tree clusters is the hardest at 0.39.
+
+![kept-rates](figures/thin_slice_kept_rates.png)
+
+The objects the drone flies to, as it reaches them (the last frame of one episode per target):
+
+![targets](figures/thin_slice_targets_closeup.png)
+
+![composition](figures/thin_slice_composition.png)
+
+Kept flights cross the obstacle field (84-94 % enter its core); collisions cluster among the trees:
+
+![s06 trajectories](figures/thin_slice_trajectories_s06.png)
+
+- **A rendering lag was found and fixed.** Under the load of eight simulators, an object spawned at an episode's
+  start was not drawn in the next frame, and a first use could take 20+ steps. Each simulator session now warms
+  every target once, verified visible, and every episode holds 5 steps after its spawns
+  (`docs/decisions/2026-10-08-reset-hold-and-warmup.md`).
+- **So the thin slice measures, and the final dataset is collected afresh**: four more 50-kept stores per scene,
+  1,800 episodes, started 22:02 on seven simulators.
+- **The pipeline works on real pool data**: the three finished stores merged into one TFDS dataset that TFDS read
+  back exactly and an OpenVLA-style loader iterated; the evaluation harness flew seen, test_seen and unseen-target
+  episodes live.
+
 ## Numbers worth knowing
 
 - Simulation runs at 1 ms real-time update rate in lock-step at 5 Hz; four simulators plus an evaluator share one
