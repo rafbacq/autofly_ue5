@@ -14,11 +14,22 @@ glTF meshes, ray-cast), and gives one of five statuses:
                 target's box; the occluder is recorded, and for a mesh whether it was its solid part or its leaf cards;
   visible       a pixel of the 5 x 5 window about the projected centre reads the target: its depth lies within the
                 target box's extent along that pixel's ray, give or take max(1.0 m, 5 % of the centre's depth);
-  missing       pixels of the window could tell the target from what lies behind it, and none reads it: the frame does
-                not show a target that is in view and unobstructed. The failure this record exists for: never dropped;
+  occluded_unmodeled
+                none reads it, and an informative pixel (below) reads NEARER than the target's near face by more than
+                the tolerance: something the layout model does not hold stands in front (a rock's or a tree's edge a
+                pixel off its model). Its depth is recorded (`unmodeled_depth_m`);
+  missing       pixels of the window could tell the target from what lies behind it, none reads it, and they read what
+                lies behind it (farther than its far face): the frame does not show a target that is in view and
+                unobstructed. The failure this record exists for: never dropped;
   undetermined  no pixel of the window can tell: none of their rays meets the target's box in front of everything else
                 (a target smaller than a pixel at its range), or what lies behind reads within the same tolerance (a
                 target's base against the ground). Said, rather than counted as either.
+
+The thin slice's first four 'missing' records (2026-10-08 evening) are why the rule separates the last three: in each,
+the window's minimum was predicted rock or tree, a single informative pixel sat beside it, and only the RGB told a
+genuinely absent target (s05, drawn ~20 steps late) from an occluder's edge a pixel off its model (s04, s06, s02). Each
+record now keeps its window (`window`: each pixel's reading, predicted background and target interval), so a verdict
+can be re-derived from the record alone.
 
 A window pixel can tell when its ray meets the target's box before everything else the geometry predicts there (the
 ground plane, the layout's obstacles near the line of sight, the distractors' boxes) and that background lies beyond the
@@ -52,7 +63,7 @@ from autofly_ue5.validate.obstacles import (
     project_point,
 )
 
-STATUSES = ("visible", "missing", "occluded", "out_of_view", "undetermined")
+STATUSES = ("visible", "missing", "occluded", "occluded_unmodeled", "out_of_view", "undetermined")
 WINDOW_HALF_PX = 2  # a 5 x 5 window about the projected centre, as scripts/probe_targets.py reads a target's centre
 MIN_TOLERANCE_M = 1.0
 RANGE_TOLERANCE = 0.05
@@ -69,6 +80,40 @@ def spawned_box(tag: str, asset: AssetEntry, scale, x: float, y: float) -> Box:
     return Box(tag=tag, x=x + origin[0] * scale[0] / 100.0, y=y + origin[1] * scale[1] / 100.0,
                radius_m=math.hypot(half[0], half[1]), z_center=standing_z_ned(asset, scale) - origin[2] * scale[2] / 100.0,
                yaw=0.0, half=half)
+
+
+def classify_window(observed, background, intervals, tolerance: float) -> dict:
+    """The window's verdict from its pixels: each pixel's reading (`observed`), the depth the model predicts there
+    without the target (`background`), and the target box's (near, far) interval on its ray (`intervals`, None where
+    the ray passes it by). A pixel is informative when its ray meets the target before the background and the
+    background lies beyond the far face by more than `tolerance`; it then reads the target (within the interval, give
+    or take the tolerance), something nearer, or what lies behind."""
+    informative = matching = nearer = farther = 0
+    nearest = math.inf
+    for value, behind, interval in zip(observed, background, intervals):
+        if interval is None or interval[1] <= 0:
+            continue  # this pixel's ray passes the target by
+        lo, hi = interval
+        if behind < lo or behind <= hi + tolerance:
+            continue  # something stands in front at this pixel, or what lies behind would read as the target
+        informative += 1
+        if lo - tolerance <= value <= hi + tolerance:
+            matching += 1
+        elif value < lo - tolerance:
+            nearer += 1
+            nearest = min(nearest, float(value))
+        else:
+            farther += 1  # NaN, inf or beyond the far face: what lies behind
+    status = ("visible" if matching else "occluded_unmodeled" if nearer else "missing" if informative
+              else "undetermined")
+    return {"status": status, "informative_px": informative, "matching_px": matching, "nearer_px": nearer,
+            "farther_px": farther, "unmodeled_depth_m": round(nearest, 3) if nearer else None}
+
+
+def _grid(values, cols: int) -> list[list]:
+    """A flat row-major window as rows, finite values rounded to the centimetre, others (inf, NaN) as null."""
+    out = [round(float(v), 2) if v is not None and math.isfinite(v) else None for v in values]
+    return [out[i:i + cols] for i in range(0, len(out), cols)]
 
 
 def _segment_point_distance(a, b, p) -> float:
@@ -117,7 +162,7 @@ class FirstFrameVisibility:
         record = {"status": None, "range_m": round(math.dist(origin, centre), 3), "planar_depth_m": round(planar, 3),
                   "pixel": None, "depth_window_min_m": None, "prewarm_steps": prewarm_steps, "depth_frame": [n, n],
                   "tolerance_m": round(tolerance, 3), "expected_m": None, "occluder": None, "informative_px": 0,
-                  "matching_px": 0}
+                  "matching_px": 0, "nearer_px": 0, "farther_px": 0, "unmodeled_depth_m": None, "window": None}
         if planar <= 0 or not (0 <= row < n and 0 <= col < n):
             record["status"] = "out_of_view"
             return record
@@ -150,19 +195,13 @@ class FirstFrameVisibility:
             behind = np.where(rays[:, 2] > 0, -origin[2] / rays[:, 2], np.inf)  # the ground plane, z = 0
         for obstacle in [*near_sight, *boxes_near]:
             behind = np.minimum(behind, obstacle.surface_distances(origin, rays))
-        informative = matching = 0
-        for direction, value, background in zip(rays, seen, behind):
-            interval = target.surface_interval(origin, tuple(direction))
-            if interval is None or interval[1] <= 0:
-                continue  # this pixel's ray passes the target by
-            lo, hi = interval
-            if background < lo or background <= hi + tolerance:
-                continue  # something stands in front at this pixel, or what lies behind would read as the target
-            informative += 1
-            if lo - tolerance <= value <= hi + tolerance:
-                matching += 1
-        record.update(informative_px=informative, matching_px=matching,
-                      status="visible" if matching else "missing" if informative else "undetermined")
+        intervals = [target.surface_interval(origin, tuple(direction)) for direction in rays]
+        record.update(classify_window(seen, behind, intervals, tolerance))
+        width = cols.stop - cols.start
+        record["window"] = {"rows": [rows.start, rows.stop - 1], "cols": [cols.start, cols.stop - 1],
+                            "observed_m": _grid(seen, width), "background_m": _grid(behind, width),
+                            "target_m": [[[round(iv[0], 2), round(iv[1], 2)] if iv is not None and iv[1] > 0 else None
+                                          for iv in intervals[i:i + width]] for i in range(0, len(intervals), width)]}
         return record
 
     @staticmethod

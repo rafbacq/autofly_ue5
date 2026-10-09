@@ -186,6 +186,97 @@ def test_the_record_says_which_depth_it_read():
     assert set(record) >= {"status", "range_m", "pixel", "depth_window_min_m", "prewarm_steps"}
 
 
+# --------------------------------------------------------------------------------------------------------
+# 'missing' only when the target's pixels read what lies behind it; nearer readings are an unmodelled occluder
+# (2026-10-08: the thin slice's first four 'missing' records, re-derived below from their stored numbers).
+# --------------------------------------------------------------------------------------------------------
+def test_an_unmodelled_surface_in_front_of_the_target_is_occluded_unmodeled_with_its_depth():
+    # A box the layout does not know (a rock edge, a branch) stands between the camera and the target: every informative
+    # pixel reads it, nearer than the target's near face by more than the tolerance.
+    setup = _setup((20.0, 0.0))
+    wall = ((12.0, 0.0, -1.0), (0.4, 3.0, 2.0))  # 11.4 m planar from the camera, not in the layout
+    record = _check(_layout(), setup, render_depth(POSE, boxes=[_box(setup.target, (20.0, 0.0)), wall]))
+    assert record["status"] == "occluded_unmodeled" and record["matching_px"] == 0
+    assert record["nearer_px"] == record["informative_px"] > 0 and record["farther_px"] == 0
+    assert record["unmodeled_depth_m"] == pytest.approx(11.4, abs=0.01)
+
+
+def test_a_target_whose_pixels_read_the_background_behind_it_stays_missing():
+    setup = _setup((20.0, 0.0))
+    record = _check(_layout(), setup, render_depth(POSE))
+    assert record["status"] == "missing" and record["nearer_px"] == 0
+    assert record["farther_px"] == record["informative_px"] > 0 and record["unmodeled_depth_m"] is None
+
+
+def test_the_record_keeps_its_window_so_every_verdict_can_be_re_derived():
+    setup = _setup((20.0, 0.0))
+    record = _check(_layout(), setup, render_depth(POSE, boxes=[_box(setup.target, (20.0, 0.0))]))
+    window = record["window"]
+    rows, cols = window["rows"], window["cols"]
+    assert rows == [record["pixel"][0] - 2, record["pixel"][0] + 2] and cols == [record["pixel"][1] - 2, record["pixel"][1] + 2]
+    for key in ("observed_m", "background_m", "target_m"):
+        assert len(window[key]) == 5 and all(len(row) == 5 for row in window[key]), key
+    assert window["observed_m"][2][2] == pytest.approx(19.0, abs=0.01), "the target's near face at the centre"
+    centre_row = record["pixel"][0]
+    assert window["background_m"][2][2] == pytest.approx(2.0 / ((centre_row + 0.5 - 128) / 128), abs=0.01), \
+        "the ground the model predicts behind the target"
+    assert window["target_m"][2][2] == pytest.approx([19.0, 20.2], abs=0.01)
+    from autofly_ue5.validate.visibility import _grid
+
+    assert _grid([math.inf, math.nan, 1.234], 3) == [[None, None, 1.23]], "no hit (inf) and NaN are null in JSON"
+
+
+# The four 'missing' first frames of the thin slice's first ~80 episodes (2026-10-08 evening), their 5 x 5 windows
+# reconstructed from each record's stored pose, target and distractors on main's built layout (read only): each pixel's
+# predicted depth without the target, and the target box's interval on the informative ones (*). The stored window
+# minimum equals the prediction to 1-10 cm in all four, so every nearer reading there is predicted geometry; what no
+# stored number says is what each informative pixel itself read.
+def _window(predicted: list[float], informative: dict[int, tuple[float, float]]) -> tuple[list, list, list]:
+    intervals = [informative.get(k) for k in range(len(predicted))]
+    return list(predicted), list(predicted), intervals
+
+
+INF = math.inf
+FOUR_CASES = {
+    # s05 seed 451000001, bronze whale statue at 63.6 m (prewarm 5): stored window min 56.5 m = the predicted snow 56.6 m
+    # at the window's bottom row; four informative pixels with ground behind (69-89 m)
+    "s05_451000001": dict(tolerance=3.176, stored_min=56.5, predicted=[207.5] * 5 + [124.5] * 5 + [88.9] * 5 + [69.2] * 5
+                          + [56.6] * 5, informative={11: (62.84, 64.2), 12: (62.84, 64.2), 16: (62.84, 64.2),
+                                                     17: (62.84, 64.2)}, neighbour=None),
+    # s04 seed 441000009, old television at 63.5 m: one informative pixel, a rock at 29.0 m beside it and below it
+    "s04_441000009": dict(tolerance=3.114, stored_min=28.547, predicted=[167.3] * 5 + [29.4, 100.4, 100.4, 100.4, 100.4]
+                          + [29.0, 29.0, 71.7, 71.7, 71.7] + [28.7, 28.9, 29.4, 55.8, 55.8]
+                          + [28.6, 28.8, 45.6, 45.6, 45.6], informative={12: (62.04, 62.51)}, neighbour=29.0),
+    # s06 seed 461000000, green armchair at 74.3 m: one informative pixel among trees at 10.4 m
+    "s06_461000000": dict(tolerance=3.564, stored_min=8.797, predicted=[216.0, 216.0, 9.0, 216.0, 8.8]
+                          + [10.4, 10.5, 129.6, 129.6, 129.6] + [10.5, 10.4, 92.6, 92.6, 92.6]
+                          + [48.1, 10.4, 10.4, 72.0, 72.0] + [10.4, 10.3, 10.3, 58.9, 10.7],
+                          informative={12: (70.95, 71.69)}, neighbour=10.4),
+    # s02 seed 421000010, orange cone at 74.3 m: one informative pixel, trees at 51.5 m and 52.6 m on either side
+    "s02_421000010": dict(tolerance=3.621, stored_min=50.188, predicted=[50.2, 51.9, 50.3, 50.7, 50.7]
+                          + [51.1, 51.5, 183.8, 52.6, 51.3] + [110.3, 110.3, 52.6, 52.3, 110.3]
+                          + [78.8, 78.8, 52.3, 52.2, 78.8] + [61.3, 61.3, 61.3, 52.6, 61.3],
+                          informative={7: (71.83, 72.8)}, neighbour=51.5),
+}
+
+
+@pytest.mark.parametrize("case", sorted(FOUR_CASES))
+def test_the_four_stored_missing_records_re_derived_by_the_new_rule(case):
+    from autofly_ue5.validate.visibility import classify_window
+
+    c = FOUR_CASES[case]
+    observed, background, intervals = _window(c["predicted"], c["informative"])
+    assert min(observed) == pytest.approx(c["stored_min"], abs=0.11), "the stored minimum is predicted geometry"
+    # the informative pixels reading what lies behind the target: the target is genuinely not drawn
+    verdict = classify_window(observed, background, intervals, c["tolerance"])
+    assert verdict["status"] == "missing" and verdict["informative_px"] == len(c["informative"])
+    if c["neighbour"] is not None:
+        # the occluder beside the single informative pixel, one pixel over (the RGB showed a rock edge, trees): nearer
+        covered = [c["neighbour"] if interval is not None else value for value, interval in zip(observed, intervals)]
+        verdict = classify_window(covered, background, intervals, c["tolerance"])
+        assert verdict["status"] == "occluded_unmodeled" and verdict["unmodeled_depth_m"] == pytest.approx(c["neighbour"])
+
+
 def test_a_spawned_box_stands_as_apply_setup_stands_it():
     from autofly_ue5.expert.episode import standing_z_ned
     from autofly_ue5.scenes.model import load_registry
