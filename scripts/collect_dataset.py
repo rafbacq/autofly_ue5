@@ -22,8 +22,12 @@ is recorded as M3's gate.
   object is drawn only frames after its spawn), with `first_use` saying whether it spawned an object new to the
   simulator session (plan 6 step 2a), and `first_frame_visibility`: whether that first recorded frame shows the target
   (visible, missing, occluded, occluded_unmodeled, out_of_view or undetermined; validate/visibility.py), counted in the
-  record's collection summary, every `missing` said on stderr. Without it, M3's way: the orange cylinder under `--target-name` (default "orange
-  cylinder", a placeholder in the card). Not both.
+  record's collection summary, every `missing` said on stderr. Before a simulator session's first episode the env
+  warms every (asset, material) pair the scene could draw, each spawned ahead of a clear view and held until the depth
+  camera shows it (expert/env.py's session warm-up, at most 60 hover steps a pair), so first use stays out of the
+  episodes: each warm-up is in the record's collection summary (`session_warmups`) and in the provenance of the first
+  episode after it (`session_warmup`), a pair never shown said on stderr (WARMUP-NEVER). Without `--targets`, M3's
+  way: the orange cylinder under `--target-name` (default "orange cylinder", a placeholder in the card). Not both.
 - The gate record (default docs/gates/m3_gate.json, never written over) passes when the requested episodes were kept,
   the validator passes, and the engine-fault audit is clean. The TFDS read-back is recorded next to it.
 - `--no-export` skips the store's own RLDS export (and so any `--check-python` read-back, refused beside it): plan 6
@@ -198,6 +202,8 @@ def run(*, scene: str, model_path: Path, scene_config: str, name: str, n_episode
                     target_name_status=TARGET_NAME_STATUS if pool is None else None)
         finally:
             progress["wall_s"] = round(time.monotonic() - t0, 1)
+            if pool is not None:  # every warm-up completed, one whose first flight never got recorded (a crash) too
+                progress["session_warmups"] = env.unwrapped.session_warmups
             try:
                 progress["backend_faults"] = {"before": before, "after": env.get_fault_summary()}
             except Exception as err:

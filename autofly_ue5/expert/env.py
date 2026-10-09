@@ -605,6 +605,10 @@ class AutoFlyEnv(gym.Env):
             record["error"] = f"no clear view to warm up from ({err})"
             return
         record["view"] = [view.x, view.y, view.z, view.yaw]
+        if record["attempts"] > 1:
+            # A fault may have cut the last attempt short before its actor was destroyed: it would hide the pairs after
+            # it and stand, unmodelled, in this session's episodes.
+            clear_setup(sim, (WARMUP_SPAWN_NAME,))
         done = {(p["asset"], p["material"]) for p in record["per_pair"]}  # shown or failed in an earlier attempt
         for asset_key, material_key, entry in pairs:
             if (asset_key, material_key) in done:
@@ -631,6 +635,9 @@ class AutoFlyEnv(gym.Env):
                 if type(err).__module__.split(".")[0] == "pynng":
                     raise  # the client's own transport errors reach us raw (MEMORY.md): the backend, not the pair
                 pair["error"] = f"{type(err).__name__}: {err}"
+                # The backend raises a refused material after the actor exists (airsim_backend.spawn); left there it
+                # would hide the next pair and stand, unmodelled, in this session's episodes.
+                clear_setup(sim, (WARMUP_SPAWN_NAME,))
             else:
                 try:
                     for k in range(1, WARMUP_MAX_STEPS + 1):

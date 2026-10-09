@@ -160,14 +160,38 @@ def test_a_warm_up_cut_short_by_a_fault_resumes_where_it_stopped(tmp_path):
     assert all(p["attempt"] == 1 for p in warmup["per_pair"] if (p["asset"], p["material"]) in warmed_before)
 
 
+def test_a_warm_up_actor_a_fault_left_in_the_level_is_destroyed_when_the_warm_up_resumes(tmp_path):
+    from pynng.exceptions import Timeout
+
+    class DestroyTimesOutOnce(LaggingFake):
+        timed_out = False
+
+        def destroy(self, name):
+            if name.startswith("autofly_warmup") and not DestroyTimesOutOnce.timed_out:
+                DestroyTimesOutOnce.timed_out = True
+                raise Timeout("Timed out", 5)  # raw from the client (MEMORY.md), errno 5; the actor stays
+            return super().destroy(name)
+
+    env = _env(tmp_path, sim=DestroyTimesOutOnce)
+    with pytest.raises(Timeout):
+        env.reset(seed=3)
+    assert [n for n in env._sim._objects if n.startswith("autofly_warmup")], "the fault left the actor in the level"
+    warmup = env.reset(seed=3)[1]["session_warmup"]
+    assert warmup["attempts"] == 2 and warmup["warmed"] == 5 and len(warmup["per_pair"]) == 6
+    assert not [n for n in env._sim._objects if n.startswith("autofly_warmup")], "nothing of the warm-up stays"
+
+
 def test_a_spawn_that_fails_for_the_backend_is_a_fault_and_one_the_runtime_refuses_is_a_failed_pair(tmp_path, capsys):
     from autofly_ue5.sim.types import SimConnectionLostError
 
     class SpawnFails(LaggingFake):
-        error: Exception = RuntimeError("There were no objects with name Cube found in the Registry")
+        """As the real backend's spawn does when the material cannot be set: the actor exists, then it raises."""
+
+        error: Exception = RuntimeError("set_object_material('autofly_warmup_target', '/Game/...') failed")
 
         def spawn(self, name, asset, pose, scale, material=None):
             if asset == "Cube" and name.startswith("autofly_warmup"):
+                super().spawn(name, asset, pose, scale, material)
                 raise type(self).error
             return super().spawn(name, asset, pose, scale, material)
 
@@ -176,6 +200,7 @@ def test_a_spawn_that_fails_for_the_backend_is_a_fault_and_one_the_runtime_refus
     refused = {f["name"]: f["reason"] for f in warmup["failed"]}
     assert set(refused) == {"orange cube", "grid cube", "white box", "grey boulder"} and "RuntimeError" in refused["grid cube"]
     assert "WARMUP-NEVER instance 0: orange cube" in capsys.readouterr().err
+    assert not [n for n in env._sim._objects if n.startswith("autofly_warmup")], "a refused spawn's actor is destroyed"
 
     class ConnectionLost(SpawnFails):
         error = SimConnectionLostError("the simulator stopped answering")
@@ -211,6 +236,18 @@ def test_the_collector_records_each_session_warm_up_and_gives_it_to_the_first_ep
     assert "WARMUP instance 0:" in capsys.readouterr().err
 
 
+def test_a_collection_that_crashes_after_a_warm_up_still_records_it(tmp_path):
+    # A crashed pilot's record keeps its counts (the M3 review); the warm-up its first flight followed is one of them.
+    from tests.test_collect import _DiesAfter, _pilot
+    from tests.test_dataset_targets import write_pool
+
+    path = write_pool(tmp_path / "pool" / "targets.json")
+    record = _pilot(tmp_path, model=_DiesAfter(0), n_episodes=2, targets=path, sim_factory=LaggingFake)
+    assert record["status"] == "failed" and "the pilot crashed" in record["error"]
+    warmups = record["collection"]["session_warmups"]
+    assert len(warmups) == 1 and warmups[0]["pairs"] == 6 and warmups[0]["warmed"] == 5
+
+
 def test_the_harness_records_each_session_warm_up_with_its_scene_and_the_first_episode_after_it(tmp_path):
     # The evaluation harness flies its scenes with the real pool (assets/targets.json): the same warm-up, recorded.
     from tests.test_eval_harness import Constant, _condition, _run
@@ -222,6 +259,28 @@ def test_the_harness_records_each_session_warm_up_with_its_scene_and_the_first_e
     first, second = record["episodes"]
     assert first["session_warmup"] == scene["session_warmups"][0] and "session_warmup" not in second
     assert first["prewarm_steps"] == second["prewarm_steps"] == 5 and isinstance(second["first_use"], bool)
+
+
+def test_a_harness_scene_that_fails_after_its_warm_up_still_records_it(tmp_path):
+    from tests.test_eval_harness import Constant, _condition, _run
+
+    class DiesInTheEpisode(LaggingFake):
+        episode_began = False
+
+        def spawn(self, name, asset, pose, scale, material=None):
+            self.episode_began = not name.startswith("autofly_warmup")
+            return super().spawn(name, asset, pose, scale, material)
+
+        def step(self, dt=0.2):
+            if self.episode_began:
+                raise RuntimeError("the engine died")
+            return super().step(dt)
+
+    record = _run(tmp_path, Constant(), _condition(tmp_path, n=2), max_steps=2,
+                  sim_factory=lambda resolved, config: DiesInTheEpisode)
+    scene = record["scenes"]["s01"]
+    assert scene["status"] == "failed" and "the engine died" in scene["error"] and record["episodes"] == []
+    assert len(scene["session_warmups"]) == 1 and scene["session_warmups"][0]["pairs"] == 43
 
 
 def test_without_a_pool_there_is_no_warm_up():

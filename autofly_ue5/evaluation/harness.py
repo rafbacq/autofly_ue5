@@ -279,7 +279,7 @@ def _pending_scene(plan: _ScenePlan) -> dict:
             "requires_gate": plan.entry.get("requires_gate"), "gate": None,
             "scene_sha256": plan.entry["scene_sha256"], "layout_sha256": plan.entry["layout_sha256"], "map": None,
             "scene_config": None, "target_split": plan.entry["target_split"], "episodes_requested": len(plan.episodes),
-            "contact_rules": None, "dynamic": None, "metrics": None, "backend_faults": None}
+            "contact_rules": None, "dynamic": None, "metrics": None, "backend_faults": None, "session_warmups": None}
 
 
 def _config_record(name: str) -> dict:
@@ -419,6 +419,8 @@ def run_condition(policy: Any, condition_file: Path | ConditionFile, *, instance
             finally:
                 try:
                     if env is not None:
+                        # every warm-up completed, one whose first episode never got flown (the scene failed) too
+                        scene["session_warmups"] = env.unwrapped.session_warmups
                         scene["backend_faults"] = env.get_fault_summary()
                         teardown(env, [instance], sim_root)  # bounded close, then this slot only
                     else:
