@@ -1,0 +1,410 @@
+{
+  "description": "Plan 6 (revision 1) pilots: each training scene's collection pilot and its kept-rate under true collection conditions (the 60-entry target pool with per-scene exclusions, a0 aligned starts, stochastic, the reset's first-use hold, the task's contact rules: the outline at 1.05 m on mesh scenes), measured by the thin slice: one 50-kept store per scene, seed slice 1 + 10 x scene index. The bar: Wilson 95 % lower bound >= 0.25. Crossing: kept_core_share is the share of kept flights entering the field's core (its obstacles' bounding box shrunk by 3 m); obstacles_near_line compares how many obstacles lie within 2 m of the straight start-target line in kept and in rejected episodes (a selection-bias check). PER interval: straight line to the physical shortest path. The thin-slice stores measure the pilots and test the pipeline; they are not in the final dataset (docs/decisions/2026-10-08-reset-hold-and-warmup.md).",
+  "date": "2026-10-08 22:09",
+  "scenes": {
+    "s01": {
+      "pilot": "s01_best",
+      "checkpoint": "runs/expert/s01_r2/best/best_model.zip",
+      "sha256": "8c2c7500041907a98d5d696b9007e30578731ff5136f63c384270c0f4fcbf8dc",
+      "store": "data/s01_c0",
+      "seed_slice": null,
+      "seed_base": 401000000,
+      "kept": 50,
+      "flown": 52,
+      "kept_rate": 0.9615,
+      "wilson_95": [
+        0.8702,
+        0.9894
+      ],
+      "passes_bar": true,
+      "rejected": {
+        "collision": 1,
+        "out_of_bounds": 1
+      },
+      "per_interval": [
+        0.9309,
+        0.9814
+      ],
+      "per_straight_median": 0.9341,
+      "crossing": {
+        "kept_core_share": 0.9,
+        "obstacles_near_line_kept_mean": 5.94,
+        "obstacles_near_line_rejected_mean": 6.5,
+        "n_kept": 50,
+        "n_rejected": 2
+      },
+      "contact_rules": null,
+      "collector_git_head": "c77ca1396db66c737d9a2b4d42c1cf17168aa171",
+      "record": "runs/collect/s01_c0.json",
+      "record_sha256": "cae885b187e8856d0cee47edff899c49814479bae9e580158c84821b332efc81"
+    },
+    "s01d": {
+      "pilot": "s01d_mean",
+      "checkpoint": "runs/expert/s01d_r6/averaged/avg_250k_550k.zip",
+      "sha256": "55e666a555800de5a1fe97c89de58a667b333d45c2cb17a4ff6ce1c3944efbfd",
+      "store": "data/s01d_c0",
+      "seed_slice": null,
+      "seed_base": 411000000,
+      "kept": 50,
+      "flown": 55,
+      "kept_rate": 0.9091,
+      "wilson_95": [
+        0.8042,
+        0.9605
+      ],
+      "passes_bar": true,
+      "rejected": {
+        "collision": 3,
+        "out_of_bounds": 2
+      },
+      "per_interval": [
+        0.9033,
+        null
+      ],
+      "per_straight_median": 0.9139,
+      "crossing": {
+        "kept_core_share": 0.9,
+        "obstacles_near_line_kept_mean": 5.88,
+        "obstacles_near_line_rejected_mean": 7.0,
+        "n_kept": 50,
+        "n_rejected": 5
+      },
+      "contact_rules": null,
+      "collector_git_head": "c77ca1396db66c737d9a2b4d42c1cf17168aa171",
+      "record": "runs/collect/s01d_c0.json",
+      "record_sha256": "8e998bc7cbe5893a14fec5d704ba4fef633eeeefb85f3fa72846493a96f8a07b"
+    },
+    "s02": {
+      "pilot": "s02_pick",
+      "checkpoint": "runs/expert/s02_r1/averaged/avg_350k_end.zip",
+      "sha256": "0971010abb0512c2660c4dd33ad7f75e8d19acbcbb400d38935ba12c08f3ca73",
+      "store": "data/s02_c0",
+      "seed_slice": null,
+      "seed_base": 421000000,
+      "kept": 50,
+      "flown": 68,
+      "kept_rate": 0.7353,
+      "wilson_95": [
+        0.6199,
+        0.8255
+      ],
+      "passes_bar": true,
+      "rejected": {
+        "collision": 6,
+        "out_of_bounds": 10,
+        "timeout": 2
+      },
+      "per_interval": [
+        0.9334,
+        0.9824
+      ],
+      "per_straight_median": 0.939,
+      "crossing": {
+        "kept_core_share": 0.94,
+        "obstacles_near_line_kept_mean": 2.08,
+        "obstacles_near_line_rejected_mean": 2.5,
+        "n_kept": 50,
+        "n_rejected": 18
+      },
+      "contact_rules": {
+        "footprint": {
+          "contact_m": 1.05,
+          "obstacles": 27,
+          "shape": "outline",
+          "fields": {
+            "island_tree_02": "a14f640a0176311482540d13028adeb20d22c80858eb144f103e844789a51b2e",
+            "island_tree_03": "e0879028492e7bb512da08d24115ad87aaa052d60b27ddaafe50f23b1e18110e",
+            "quiver_tree_01": "dc1a8cff4cb2a5f3920ad3a6523fce5d6797ec1614525e497616cfcf54842288",
+            "searsia_lucida_a": "3c67906a49726dae30d2fb381282c64821ce1df414606654d06562f85ef30e70",
+            "searsia_lucida_b": "051d9caa0a97a8a63c1a7d8217ce4d223a14a351e254357a837b0b4635380ce0",
+            "tree_small_02": "bd4c9ea5290b7d660a86b2947a382fb30ef8e28932b21de8612802a47d636a26"
+          },
+          "fields_manifest_sha256": "c40efeab38b4519976be685b9e30455f1cd7ebfe4c3c668dedba591d7d3bddc8",
+          "trained_shape": "circle"
+        }
+      },
+      "collector_git_head": "c77ca1396db66c737d9a2b4d42c1cf17168aa171",
+      "record": "runs/collect/s02_c0.json",
+      "record_sha256": "d7c5927abaeaf58b6d849bdf73d0caa5a91e0c4bc331dea0526f5f473beb0080"
+    },
+    "s03": {
+      "pilot": "s02_pick",
+      "checkpoint": "runs/expert/s02_r1/averaged/avg_350k_end.zip",
+      "sha256": "0971010abb0512c2660c4dd33ad7f75e8d19acbcbb400d38935ba12c08f3ca73",
+      "store": "data/s03_c0",
+      "seed_slice": null,
+      "seed_base": 431000000,
+      "kept": 50,
+      "flown": 83,
+      "kept_rate": 0.6024,
+      "wilson_95": [
+        0.4948,
+        0.7009
+      ],
+      "passes_bar": true,
+      "rejected": {
+        "collision": 18,
+        "out_of_bounds": 12,
+        "timeout": 3
+      },
+      "per_interval": [
+        0.918,
+        0.9785
+      ],
+      "per_straight_median": 0.9199,
+      "crossing": {
+        "kept_core_share": 0.88,
+        "obstacles_near_line_kept_mean": 2.3,
+        "obstacles_near_line_rejected_mean": 2.12,
+        "n_kept": 50,
+        "n_rejected": 33
+      },
+      "contact_rules": {
+        "footprint": {
+          "contact_m": 1.05,
+          "obstacles": 29,
+          "shape": "outline",
+          "fields": {
+            "boulder_01": "a0065e1c76b5b26213aa0eb8b1f2d942d50d19fc8158486f476a7107c08fdefe",
+            "namaqualand_boulder_02": "e7e86037660a8a4bf07fd46ddac10df95cbdf15c5e40530abffb0c61c2f09161",
+            "namaqualand_boulder_03": "14c2c2c503589b37e809038ce85ca6a4afc7070a53cec624ef7929739b47d1b4",
+            "namaqualand_boulder_04": "cb48d8036b66ca55f33531abd778a787a0aead424519548613d908326aed8479",
+            "namaqualand_boulder_06": "c96cad6fa63f2708b6e1348ddf7a87e530ef49e67883760263ec9529b7fc2a58"
+          },
+          "fields_manifest_sha256": "c40efeab38b4519976be685b9e30455f1cd7ebfe4c3c668dedba591d7d3bddc8",
+          "trained_shape": "circle"
+        }
+      },
+      "collector_git_head": "c77ca1396db66c737d9a2b4d42c1cf17168aa171",
+      "record": "runs/collect/s03_c0.json",
+      "record_sha256": "66af124f4879b3088b6ac20957ec8d0dc97ba08ccec99ef06f77ca4066f27d59"
+    },
+    "s04": {
+      "pilot": "s02_pick",
+      "checkpoint": "runs/expert/s02_r1/averaged/avg_350k_end.zip",
+      "sha256": "0971010abb0512c2660c4dd33ad7f75e8d19acbcbb400d38935ba12c08f3ca73",
+      "store": "data/s04_c0",
+      "seed_slice": null,
+      "seed_base": 441000000,
+      "kept": 50,
+      "flown": 89,
+      "kept_rate": 0.5618,
+      "wilson_95": [
+        0.4583,
+        0.6602
+      ],
+      "passes_bar": true,
+      "rejected": {
+        "collision": 31,
+        "out_of_bounds": 8
+      },
+      "per_interval": [
+        0.9325,
+        0.9835
+      ],
+      "per_straight_median": 0.9487,
+      "crossing": {
+        "kept_core_share": 0.92,
+        "obstacles_near_line_kept_mean": 2.56,
+        "obstacles_near_line_rejected_mean": 2.18,
+        "n_kept": 50,
+        "n_rejected": 39
+      },
+      "contact_rules": {
+        "footprint": {
+          "contact_m": 1.05,
+          "obstacles": 33,
+          "shape": "outline",
+          "fields": {
+            "boulder_01": "a0065e1c76b5b26213aa0eb8b1f2d942d50d19fc8158486f476a7107c08fdefe",
+            "namaqualand_boulder_02": "e7e86037660a8a4bf07fd46ddac10df95cbdf15c5e40530abffb0c61c2f09161",
+            "namaqualand_boulder_05": "04befa9f8012c679efe3877430dbce8bbec8a3640e606e1737447534c3403fbd",
+            "namaqualand_boulder_06": "c96cad6fa63f2708b6e1348ddf7a87e530ef49e67883760263ec9529b7fc2a58"
+          },
+          "fields_manifest_sha256": "c40efeab38b4519976be685b9e30455f1cd7ebfe4c3c668dedba591d7d3bddc8",
+          "trained_shape": "circle"
+        }
+      },
+      "collector_git_head": "c77ca1396db66c737d9a2b4d42c1cf17168aa171",
+      "record": "runs/collect/s04_c0.json",
+      "record_sha256": "aba281339c4d3c8b48dd308d8aa338f1148bfc71fbab3f4fff032780c1ee4630"
+    },
+    "s05": {
+      "pilot": "s02_pick",
+      "checkpoint": "runs/expert/s02_r1/averaged/avg_350k_end.zip",
+      "sha256": "0971010abb0512c2660c4dd33ad7f75e8d19acbcbb400d38935ba12c08f3ca73",
+      "store": "data/s05_c0",
+      "seed_slice": null,
+      "seed_base": 451000000,
+      "kept": 50,
+      "flown": 101,
+      "kept_rate": 0.495,
+      "wilson_95": [
+        0.3995,
+        0.5909
+      ],
+      "passes_bar": true,
+      "rejected": {
+        "collision": 24,
+        "out_of_bounds": 25,
+        "timeout": 2
+      },
+      "per_interval": [
+        0.9224,
+        0.9745
+      ],
+      "per_straight_median": 0.9352,
+      "crossing": {
+        "kept_core_share": 0.86,
+        "obstacles_near_line_kept_mean": 1.42,
+        "obstacles_near_line_rejected_mean": 2.43,
+        "n_kept": 50,
+        "n_rejected": 51
+      },
+      "contact_rules": {
+        "footprint": {
+          "contact_m": 1.05,
+          "obstacles": 24,
+          "shape": "outline",
+          "fields": {
+            "boulder_01": "a0065e1c76b5b26213aa0eb8b1f2d942d50d19fc8158486f476a7107c08fdefe",
+            "namaqualand_boulder_02": "e7e86037660a8a4bf07fd46ddac10df95cbdf15c5e40530abffb0c61c2f09161",
+            "namaqualand_boulder_03": "14c2c2c503589b37e809038ce85ca6a4afc7070a53cec624ef7929739b47d1b4",
+            "namaqualand_boulder_04": "cb48d8036b66ca55f33531abd778a787a0aead424519548613d908326aed8479"
+          },
+          "fields_manifest_sha256": "c40efeab38b4519976be685b9e30455f1cd7ebfe4c3c668dedba591d7d3bddc8",
+          "trained_shape": "circle"
+        }
+      },
+      "collector_git_head": "c77ca1396db66c737d9a2b4d42c1cf17168aa171",
+      "record": "runs/collect/s05_c0.json",
+      "record_sha256": "f0921aab4695f4f0d5b2f8041c9030a655feadacc52b62ff6d9b9e0b2fde0fcc"
+    },
+    "s06": {
+      "pilot": "s02_pick",
+      "checkpoint": "runs/expert/s02_r1/averaged/avg_350k_end.zip",
+      "sha256": "0971010abb0512c2660c4dd33ad7f75e8d19acbcbb400d38935ba12c08f3ca73",
+      "store": "data/s06_c0",
+      "seed_slice": null,
+      "seed_base": 461000000,
+      "kept": 50,
+      "flown": 127,
+      "kept_rate": 0.3937,
+      "wilson_95": [
+        0.313,
+        0.4806
+      ],
+      "passes_bar": true,
+      "rejected": {
+        "collision": 62,
+        "out_of_bounds": 15
+      },
+      "per_interval": [
+        0.9291,
+        0.9839
+      ],
+      "per_straight_median": 0.942,
+      "crossing": {
+        "kept_core_share": 0.84,
+        "obstacles_near_line_kept_mean": 2.82,
+        "obstacles_near_line_rejected_mean": 3.17,
+        "n_kept": 50,
+        "n_rejected": 77
+      },
+      "contact_rules": {
+        "footprint": {
+          "contact_m": 1.05,
+          "obstacles": 40,
+          "shape": "outline",
+          "fields": {
+            "island_tree_02": "a14f640a0176311482540d13028adeb20d22c80858eb144f103e844789a51b2e",
+            "searsia_burchellii_large": "9fdd5a597726e59e5c52db479f3c5ac8da0a851e68a32dcd8d546607ff46c87a",
+            "searsia_burchellii_medium": "f434796e358d7f6e17c18edc7b5155cdc46d9ba7eb988a6c454707252a8efcd8",
+            "searsia_burchellii_small": "f2a05139e6963fcff0a73d99fa53fdabb8cac3291a2d5d18838acd605afc1b2a",
+            "searsia_lucida_c": "168c5048b8ed5a860d4a321fdc9b8b691aca72eaf188c50810b3ae341c015f2a",
+            "tree_small_02": "bd4c9ea5290b7d660a86b2947a382fb30ef8e28932b21de8612802a47d636a26"
+          },
+          "fields_manifest_sha256": "c40efeab38b4519976be685b9e30455f1cd7ebfe4c3c668dedba591d7d3bddc8",
+          "trained_shape": "circle"
+        }
+      },
+      "collector_git_head": "c77ca1396db66c737d9a2b4d42c1cf17168aa171",
+      "record": "runs/collect/s06_c0.json",
+      "record_sha256": "129f6d431f5c1aea52a983120bc9e45448015ac7e5a79fe8fb1a090178f16a67"
+    },
+    "s07": {
+      "pilot": "s01d_mean",
+      "checkpoint": "runs/expert/s01d_r6/averaged/avg_250k_550k.zip",
+      "sha256": "55e666a555800de5a1fe97c89de58a667b333d45c2cb17a4ff6ce1c3944efbfd",
+      "store": "data/s07_c0",
+      "seed_slice": null,
+      "seed_base": 471000000,
+      "kept": 50,
+      "flown": 51,
+      "kept_rate": 0.9804,
+      "wilson_95": [
+        0.897,
+        0.9965
+      ],
+      "passes_bar": true,
+      "rejected": {
+        "collision": 1
+      },
+      "per_interval": [
+        0.9526,
+        0.9931
+      ],
+      "per_straight_median": 0.9535,
+      "crossing": {
+        "kept_core_share": 0.92,
+        "obstacles_near_line_kept_mean": 3.96,
+        "obstacles_near_line_rejected_mean": 15.0,
+        "n_kept": 50,
+        "n_rejected": 1
+      },
+      "contact_rules": null,
+      "collector_git_head": "c77ca1396db66c737d9a2b4d42c1cf17168aa171",
+      "record": "runs/collect/s07_c0.json",
+      "record_sha256": "af5d84465f477a4dd8b8c12c176e86a6a94dfb69e552d0de284e9a0bf7694dab"
+    },
+    "s09": {
+      "pilot": "s01d_mean",
+      "checkpoint": "runs/expert/s01d_r6/averaged/avg_250k_550k.zip",
+      "sha256": "55e666a555800de5a1fe97c89de58a667b333d45c2cb17a4ff6ce1c3944efbfd",
+      "store": "data/s09_c0",
+      "seed_slice": null,
+      "seed_base": 481000000,
+      "kept": 50,
+      "flown": 50,
+      "kept_rate": 1.0,
+      "wilson_95": [
+        0.9287,
+        1.0
+      ],
+      "passes_bar": true,
+      "rejected": {},
+      "per_interval": [
+        0.9402,
+        0.9887
+      ],
+      "per_straight_median": 0.9436,
+      "crossing": {
+        "kept_core_share": 0.9,
+        "obstacles_near_line_kept_mean": 5.7,
+        "obstacles_near_line_rejected_mean": null,
+        "n_kept": 50,
+        "n_rejected": 0
+      },
+      "contact_rules": null,
+      "collector_git_head": "6a00002ea7d5bad70a05dd3487215b42f54a3df4",
+      "record": "runs/collect/s09_c0.json",
+      "record_sha256": "a72530074047e0c3a56611492d081799aa01dd1d1ce00deb36b28edda1db51c4"
+    }
+  },
+  "all_pass": true,
+  "overall": {
+    "kept": 450,
+    "flown": 676
+  },
+  "figures": "runs/report/thin/ (scripts/dataset_figures.py on the nine stores)"
+}
