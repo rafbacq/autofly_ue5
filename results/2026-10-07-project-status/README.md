@@ -286,6 +286,16 @@ Kept flights cross the obstacle field (84-94 % enter its core); collisions clust
   back exactly and an OpenVLA-style loader iterated; the evaluation harness flew seen, test_seen and unseen-target
   episodes live.
 
+## 11. Done: the prototype dataset and final_results (2026-10-09)
+
+The final campaign collected 200 fresh episodes per scene with the fixed reset: **1,800 episodes, 339,007 records**,
+merged into one TFDS dataset (`data/autofly_ue5_proto/1.0.0`, train 1,710 / val 90) that TFDS reads back exactly and an
+OpenVLA-style loader iterates. Through the evaluation harness every pilot reproduces its kept-rate, and a privileged
+straight-line baseline scores 0.06. The rebalancing split the records 0.69 / 0.31 (the paper: 0.73 / 0.27).
+
+Everything for readers, with figures, videos, records and the dataset card, is in
+[`final_results/`](../../final_results/README.md).
+
 ## Numbers worth knowing
 
 - Simulation runs at 1 ms real-time update rate in lock-step at 5 Hz; four simulators plus an evaluator share one
