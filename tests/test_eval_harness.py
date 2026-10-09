@@ -3,8 +3,8 @@ flies a frozen condition file's episodes as the dataset's were flown (a0, the ta
 sees exactly what a record holds, never the privileged target fields unless asked, has its faulted attempts replayed and
 never scored, and is scored per scene and overall (SR, CR, out-of-bounds, timeout, PER) in a record written as it goes.
 
-AutoFlyEnv's `target_split` (the unseen-target draw) lands with plan 6's target work: the test that needs it skips until
-then, and the harness's plumbing and refusal are tested against stand-ins either way."""
+AutoFlyEnv's `target_split` (the unseen-target draw) landed with plan 6's target work (2026-10-08): the test that needs it
+runs wherever the env takes it, and the harness's plumbing and refusal are tested against stand-ins either way."""
 
 from __future__ import annotations
 
@@ -204,11 +204,16 @@ def test_a_policy_sees_exactly_what_the_collector_records(tmp_path):
 
 
 def test_a_backend_fault_replays_the_seed_from_a_fresh_policy_and_is_never_scored(tmp_path):
+    from autofly_ue5.expert.env import PREWARM_HOLD_STEPS
     from tests.test_expert_train import _FlakyFakeSimulator
 
     path = _condition(tmp_path, n=1)
     policy = Recording(Constant((2.0, 0.0, 0.0)))
-    flaky = functools.partial(_FlakyFakeSimulator, fail_on_step_calls=(3,), error=CameraPoseError)
+    # The fault falls on the attempt's second flight step: the session's first reset steps once to re-render and holds
+    # PREWARM_HOLD_STEPS more for the pool objects new to it (expert/env.py), and a fault inside a reset is retried
+    # there, never replayed.
+    first_reset_steps = 1 + PREWARM_HOLD_STEPS
+    flaky = functools.partial(_FlakyFakeSimulator, fail_on_step_calls=(first_reset_steps + 2,), error=CameraPoseError)
     record = _run(tmp_path, policy, path, max_steps=10, sim_factory=lambda resolved, config: flaky)
     (episode,) = record["episodes"]
     assert episode["retries"] == 1 and episode["fault_counts"] == {"CameraPoseError": 1}
