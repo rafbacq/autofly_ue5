@@ -23,7 +23,8 @@ The score of a frame is the highest box confidence the model gives the target ph
 max over text tokens of sigmoid(logit), which is what Grounding DINO's own inference utility thresholds (`box_threshold`)
 and what the processor's `post_process_grounded_object_detection` returns as `scores` (checked equal on pilot frames).
 The box of that query is kept too, normalised (cx, cy, w, h), so a later check can ask whether a detection sat where the
-target really was.
+target really was. The phrase is the target name the episode's instruction uses (a pool entry's name, e.g. "blue
+hatchback"), and an episode whose target name its instruction does not contain (a registry key, say) is refused.
 
 The output is the appendable cache of `dataset/detections.py`: a header line, then one line per finished episode, each
 synced as it is written, so a host freeze (MEMORY.md) costs at most the episode being scored, and a torn last line is
@@ -44,6 +45,7 @@ if str(_ROOT) not in sys.path:
 import argparse  # noqa: E402
 import json  # noqa: E402
 import os  # noqa: E402
+import re  # noqa: E402
 import time  # noqa: E402
 
 from PIL import Image  # noqa: E402
@@ -72,6 +74,18 @@ def prompt_for(target_name: str) -> str:
     if "." in name:
         raise ValueError(f"target name {target_name!r} contains a period, which Grounding DINO reads as a phrase break")
     return name + "."
+
+
+def check_target_phrase(entry: dict) -> None:
+    """The detector looks for what the episode's instruction asks for. The collector writes the drawn pool entry's
+    `name` into both the instruction and the manifest's `target_name` (collect/collector.py; the validator holds the two
+    equal), so a target name the instruction does not contain -- a registry key, a placeholder -- is a store this
+    stage would score for the wrong words."""
+    name, instruction = entry.get("target_name"), entry.get("instruction")
+    if not isinstance(name, str) or not isinstance(instruction, str) \
+            or not re.search(rf"(?<!\w){re.escape(name.strip())}(?!\w)", instruction):
+        raise ValueError(f"episode {entry.get('id')}: its target name {name!r} is not a phrase of its instruction "
+                         f"{instruction!r}, so the detector would not look for what the instruction names")
 
 
 class GroundingDino:
@@ -279,6 +293,8 @@ def run(raw: Path, out: Path, detector, *, episodes: int | None = None, batch: i
     search = None if sparse is None else sparse_search.describe(**sparse)
     manifest = json.loads((raw / "manifest.json").read_text())
     wanted = manifest["episodes"][:episodes] if episodes is not None else manifest["episodes"]
+    for entry in wanted:  # before anything is scored or written
+        check_target_phrase(entry)
     header = {"kind": "header", "format": FORMAT, "dataset": manifest["name"], "dataset_created": manifest["created"],
               "score": SCORE_DOC, "detector": detector.identity(), "sparse": search}
     with _Lock(out):

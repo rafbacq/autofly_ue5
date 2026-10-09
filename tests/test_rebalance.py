@@ -781,6 +781,20 @@ def test_the_cli_runs_the_sparse_search_with_the_study_s_alert_by_default(tmp_pa
     assert not (tmp_path / "x.jsonl").exists()
 
 
+def test_the_prompt_is_the_target_phrase_the_instruction_names_never_a_registry_key(tmp_path):
+    from scripts.detect_targets import run
+
+    _summary, root = _collect(tmp_path, n_keep=2)
+    manifest = json.loads((root / "manifest.json").read_text())
+    assert all(entry["target_name"] in entry["instruction"] for entry in manifest["episodes"])
+    manifest["episodes"][1]["target_name"] = "kenney_car_sedan"  # a registry key, not the phrase the instruction names
+    (root / "manifest.json").write_text(json.dumps(manifest))
+    detector = _MeanPixelDetector()
+    with pytest.raises(ValueError, match="instruction"):
+        run(root, tmp_path / "detections.jsonl", detector)
+    assert detector.frames_scored == 0, "refused before anything is scored"
+
+
 # ------------------------------------------------------------------------------------------------------------------
 # autofly_ue5/dataset/rebalance.py: sparse detections, and several stores at once
 # ------------------------------------------------------------------------------------------------------------------
