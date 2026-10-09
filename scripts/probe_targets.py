@@ -21,7 +21,9 @@ the pool keeps out of the draw). One simulator on the slot given (the launch gua
           step 2a), against the frame before the spawn: inside the target's projected box the depth changed to within
           its near and far faces on at least 3 % of the pixels (4 at least), and nothing there is nearer than its near
           face less 0.3 m. The same check on the first step's frame is recorded as `first_step_visible`, for information
-          (live, a target new to the session drew nothing there; runs/m4/targets_settle_diag/settle.json);
+          (live, a target new to the session drew nothing there; runs/m4/targets_settle_diag/settle.json), and on every
+          step's as `visible_per_step` and `first_visible_step` (the summary counts each): the render lag after a
+          spawn, measured (beside 7 collectors on 2026-10-08, 59 of 60 targets showed only after step 1);
   colour  for a runtime colour with an RGBA in the registry: the target's pixels keep the colour's channel order (red over
           green and blue ...), which the mesh's own grey does not;
 
@@ -49,6 +51,7 @@ import math  # noqa: E402
 import os  # noqa: E402
 import time  # noqa: E402
 import traceback  # noqa: E402
+from collections import Counter  # noqa: E402
 
 import cv2  # noqa: E402
 import numpy as np  # noqa: E402
@@ -177,7 +180,8 @@ def run_probe(sim, pool: TargetPool, registry: AssetRegistry, layout: Layout, *,
                "distance_m": round(distance, 3), "position": [round(v, 4) for v in position], "listed": short in table,
                "spawned": False, "spawn_error": None, "collided": None, "bounds": _bounds_check(None, centre, size),
                "depth": {"ok": False}, "colour": None, "rgb_png": None, "depth_png": None, "settle_steps": settle_steps,
-               "first_step_visible": None, "first_step_depth": None}
+               "first_step_visible": None, "first_step_depth": None, "visible_per_step": None,
+               "first_visible_step": None}
         rows.append(row)
         region_box = None
         if row["listed"]:
@@ -191,9 +195,13 @@ def run_probe(sim, pool: TargetPool, registry: AssetRegistry, layout: Layout, *,
                 region, region_box = _region(centre, size, view, n)
                 row["first_step_depth"], _target = _depth_check(obs0.depth, obs1.depth, region, region_box)
                 row["first_step_visible"] = row["first_step_depth"]["ok"]  # information: the settled frame decides
+                # every step's frame judged (information): the render lag after a spawn, measured step by step
+                row["visible_per_step"] = [row["first_step_visible"]]
                 settled = obs1
                 for _ in range(settle_steps):
                     settled = _hold(sim)
+                    row["visible_per_step"].append(_depth_check(obs0.depth, settled.depth, region, region_box)[0]["ok"])
+                row["first_visible_step"] = next((i + 1 for i, ok in enumerate(row["visible_per_step"]) if ok), None)
                 row["collided"] = bool(settled.collided)
                 row["bounds"] = _bounds_check(sim.object_bounds(spawned), centre, size)
                 row["depth"], target = _depth_check(obs0.depth, settled.depth, region, region_box)
@@ -231,6 +239,10 @@ def run_probe(sim, pool: TargetPool, registry: AssetRegistry, layout: Layout, *,
     return {"view_pose": [view.x, view.y, view.z, view.yaw], "spawn_table": {"size": len(table), "missing": missing},
             "settle_steps": settle_steps, "targets": rows, "failed": [r["name"] for r in rows if not r["pass"]],
             "first_step_invisible": [r["name"] for r in rows if r["first_step_visible"] is False],
+            # how many spawned targets showed first on step k (1 = the frame right after the spawn), or never
+            "first_visible_step_counts": dict(sorted(Counter(
+                str(r["first_visible_step"]) if r["first_visible_step"] is not None else "never"
+                for r in rows if r["visible_per_step"] is not None).items())),
             "pass": bool(rows) and all(r["pass"] for r in rows)}
 
 

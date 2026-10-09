@@ -237,6 +237,22 @@ def test_the_probe_judges_a_target_after_the_env_s_settle_steps_and_records_its_
     assert summary["pass"] is False and all("depth" in r["failed"] for r in summary["targets"])
 
 
+def test_the_probe_records_visibility_at_every_step_so_it_measures_the_render_lag(tmp_path):
+    # 2026-10-08 evening, beside 7 collectors: 59 of 60 targets were not drawn on the first step after their spawn and
+    # all 60 were after 5 more (m4_targets_probe_run2.json): the lag is the measurement, step by step.
+    from autofly_ue5.expert.env import PREWARM_HOLD_STEPS
+    from scripts.probe_targets import run_probe
+
+    summary = run_probe(*_late_setup(tmp_path, appear_after=2)[:4], out_dir=tmp_path / "out")
+    n = len(summary["targets"])
+    for row in summary["targets"]:
+        assert row["visible_per_step"] == [False] + [True] * PREWARM_HOLD_STEPS and row["first_visible_step"] == 2
+    assert summary["first_visible_step_counts"] == {"2": n}
+    never = run_probe(*_late_setup(tmp_path / "b", appear_after=99)[:4], out_dir=tmp_path / "out_b", settle_steps=2)
+    assert all(r["visible_per_step"] == [False] * 3 and r["first_visible_step"] is None for r in never["targets"])
+    assert never["first_visible_step_counts"] == {"never": n}
+
+
 def test_a_target_visible_at_once_is_first_step_visible(tmp_path):
     from scripts.probe_targets import run_probe
 
