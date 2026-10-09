@@ -16,6 +16,12 @@ come out as its 0.68 / 1.85.
 The result is written to `data/<name>/rebalance.json`: the weights, every episode's transition, and how the detector
 behaved there. The raw store and the RLDS shards are never rewritten (spec §10.3); a training pipeline applies the
 weights, or `stratified_resample` draws the paper's rebalanced set from them.
+
+A later addition (plan 6 step 5): the detector may score only the records a sparse search visits
+(`autofly_ue5/dataset/sparse.py`); such a file carries each episode's first detection, which is accepted only after
+the search is replayed on the recorded scores and finds the same record, and only at the threshold the search ran at
+(it stopped at that threshold's first detection: any other threshold's is unknown). What needs every record's score
+(`records_above_threshold`, `detection_persistence`) is then None.
 """
 
 from __future__ import annotations
@@ -28,8 +34,11 @@ from typing import Sequence
 
 import numpy as np
 
+from autofly_ue5.dataset import sparse as sparse_search
+from autofly_ue5.dataset.detections import FORMAT as DETECTIONS_FORMAT  # the detector's own (scripts/detect_targets.py)
+from autofly_ue5.dataset.detections import FORMAT_V1 as DETECTIONS_FORMAT_V1
+
 FORMAT = "autofly_ue5_rebalance/1"
-DETECTIONS_FORMAT = "autofly_ue5_detections/1"  # scripts/detect_targets.py's FORMAT, which cannot be imported here
 PHASES = ("obstacle_avoidance", "target_seeking")  # the paper's k = 1, 2
 DEFAULT_THRESHOLD = 0.7
 METHOD = ("AutoFly App. A.2.4 (spec 10.3): a record is target seeking from the first record whose detection confidence "
@@ -132,13 +141,59 @@ def box_on_target(box: Sequence[float], bearing_rad: float, *, margin: float = O
     return bool(abs(column - cx) <= w / 2.0 + margin)
 
 
-def _check_detections(manifest: dict, detections: dict, *, allow_partial: bool) -> list[dict]:
+def _check_threshold(threshold: float) -> None:
+    if not (isinstance(threshold, (int, float)) and not isinstance(threshold, bool) and math.isfinite(threshold)
+            and 0.0 <= threshold < 1.0):
+        raise ValueError(f"threshold must be a confidence in [0, 1), got {threshold!r}")
+
+
+def _check_search(search: dict, threshold: float) -> None:
+    """A sparse file's search: a known strategy with valid parameters, run at the threshold asked for."""
+    if search.get("strategy") != sparse_search.STRATEGY:
+        raise ValueError(f"the detections come from an unknown sparse search {search.get('strategy')!r}")
+    sparse_search.describe(search.get("stride"), search.get("threshold"), search.get("alert"))  # raises on bad values
+    if search["threshold"] != threshold:
+        raise ValueError(f"the sparse search stopped at each episode's first record above {search['threshold']}, so the "
+                         f"first record above threshold {threshold} is unknown: rebalance at {search['threshold']}, or "
+                         f"score the store again at {threshold} (sparse) or densely")
+
+
+def _check_sparse_episode(entry: dict, ep: dict, search: dict) -> None:
+    """A sparse episode is accepted only when the search, replayed on the records the run scored, needs no record it
+    did not score and finds the first detection the run recorded."""
+    eid, n = entry["id"], entry["steps"]
+    if ep.get("records") != n:
+        raise ValueError(f"episode {eid}: the sparse run scored it as {ep.get('records')} records, the store holds {n} records")
+    visited = ep.get("visited")
+    if (not isinstance(visited, list) or any(isinstance(i, bool) or not isinstance(i, int) for i in visited)
+            or visited != sorted(set(visited)) or (visited and not 0 <= visited[0] <= visited[-1] < n)):
+        raise ValueError(f"episode {eid}: the visited records must be ascending, distinct indices into its {n} records")
+    scores, boxes = ep.get("scores", ()), ep.get("boxes", ())
+    if len(scores) != len(visited):
+        raise ValueError(f"episode {eid}: {len(scores)} scores for {len(visited)} visited records")
+    if len(boxes) != len(visited):
+        raise ValueError(f"episode {eid}: {len(boxes)} boxes for {len(visited)} visited records")
+    try:
+        first = sparse_search.verify(n, dict(zip(visited, scores)), stride=search["stride"], threshold=search["threshold"],
+                                     alert=search["alert"])
+    except ValueError as err:
+        raise ValueError(f"episode {eid}: {err}") from err
+    if first != ep.get("first_detection"):
+        raise ValueError(f"episode {eid}: the sparse run recorded first detection {ep.get('first_detection')}, the search "
+                         f"on its own scores finds {first}")
+
+
+def _check_detections(manifest: dict, detections: dict, *, allow_partial: bool, threshold: float) -> list[dict]:
     """The manifest episodes the detections cover, in manifest order; raises on anything that does not match the store."""
-    if detections.get("format") != DETECTIONS_FORMAT:
-        raise ValueError(f"detections format {detections.get('format')!r}, expected {DETECTIONS_FORMAT!r}")
+    if detections.get("format") not in (DETECTIONS_FORMAT, DETECTIONS_FORMAT_V1):
+        raise ValueError(f"detections format {detections.get('format')!r}, expected {DETECTIONS_FORMAT!r} "
+                         f"(or the pilot's {DETECTIONS_FORMAT_V1!r})")
     if detections.get("dataset") != manifest["name"] or detections.get("dataset_created") != manifest["created"]:
         raise ValueError(f"the detections are for store {detections.get('dataset')!r} created "
                          f"{detections.get('dataset_created')!r}, not {manifest['name']!r} created {manifest['created']!r}")
+    search = detections.get("sparse")
+    if search is not None:
+        _check_search(search, threshold)
     scored = detections.get("episodes", {})
     ids = {e["id"] for e in manifest["episodes"]}
     unknown = sorted(set(scored) - ids)
@@ -153,68 +208,108 @@ def _check_detections(manifest: dict, detections: dict, *, allow_partial: bool) 
         ep = scored.get(entry["id"])
         if ep is None:
             continue
-        if len(ep["scores"]) != entry["steps"]:
-            raise ValueError(f"episode {entry['id']}: {len(ep['scores'])} scores for {entry['steps']} records")
-        if len(ep.get("boxes", ())) != entry["steps"]:
-            raise ValueError(f"episode {entry['id']}: {len(ep.get('boxes', ()))} boxes for {entry['steps']} records")
+        if search is None:
+            if len(ep["scores"]) != entry["steps"]:
+                raise ValueError(f"episode {entry['id']}: {len(ep['scores'])} scores for {entry['steps']} records")
+            if len(ep.get("boxes", ())) != entry["steps"]:
+                raise ValueError(f"episode {entry['id']}: {len(ep.get('boxes', ()))} boxes for {entry['steps']} records")
+        else:
+            _check_sparse_episode(entry, ep, search)
         if ep.get("query") != entry["target_name"]:
             raise ValueError(f"episode {entry['id']}: scored for query {ep.get('query')!r}, its target is {entry['target_name']!r}")
         covered.append(entry)
     return covered
 
 
+def _store_tally(manifest: dict, detections: dict, *, threshold: float, allow_partial: bool,
+                 states: dict[str, np.ndarray] | None) -> dict:
+    """Everything one store contributes to a rebalance document, checked against its manifest."""
+    covered = _check_detections(manifest, detections, allow_partial=allow_partial, threshold=threshold)
+    for entry in covered:
+        if states is not None and len(np.asarray(states[entry["id"]])) != entry["steps"]:
+            raise ValueError(f"episode {entry['id']}: states has {len(np.asarray(states[entry['id']]))} rows for "
+                             f"{entry['steps']} records")
+    dense = detections.get("sparse") is None
+    tally = {"covered": len(covered), "of": len(manifest["episodes"]), "records": [0, 0], "sub_trajectories": [0, 0],
+             # the paper's other wording, "2 if detected, otherwise 1", counted per record for comparison; and the share
+             # of records from each first detection on that stay above the threshold: both need every record's score
+             "records_above": 0 if dense else None, "persistence": [0, 0] if dense else None,
+             "distances": [], "on_target": {"on_target": 0, "off_target": 0, "off_target_out_of_view": 0},
+             "episodes": []}
+    for entry in covered:
+        ep = detections["episodes"][entry["id"]]
+        if dense:
+            try:
+                first = first_detection(ep["scores"], threshold)
+            except ValueError as err:
+                raise ValueError(f"episode {entry['id']}: {err}") from err
+            tally["records_above"] += int((np.asarray(ep["scores"], dtype=float) > threshold).sum())
+            box = ep["boxes"][first] if first is not None else None
+        else:
+            first = ep["first_detection"]  # verified by _check_detections
+            box = ep["boxes"][ep["visited"].index(first)] if first is not None else None
+        split = phase_records(entry["steps"], first)
+        for k in range(2):
+            tally["records"][k] += split[k]
+            tally["sub_trajectories"][k] += int(split[k] > 0)
+        episode = {"id": entry["id"], "records": entry["steps"], "first_detection": first, "phase_records": list(split)}
+        if dense and first is not None:
+            tail = np.asarray(ep["scores"][first:], dtype=float)
+            tally["persistence"][0] += int((tail > threshold).sum())
+            tally["persistence"][1] += tail.size
+        if states is not None and first is not None:
+            state = np.asarray(states[entry["id"]])
+            distance, bearing = float(state[first, 0]), float(state[first, 1])
+            verdict = box_on_target(box, bearing)
+            tally["distances"].append(distance)
+            tally["on_target"]["on_target" if verdict else "off_target"] += 1
+            if not target_in_view(bearing):
+                tally["on_target"]["off_target_out_of_view"] += 1  # a sub-count of off_target: the target was not in the image
+            episode.update(first_detection_distance_m=distance, first_detection_on_target=verdict)
+        elif states is not None:
+            episode.update(first_detection_distance_m=None, first_detection_on_target=None)
+        tally["episodes"].append((entry, episode))
+    return tally
+
+
+def _median(values: Sequence[float]) -> float | None:
+    return float(np.median(values)) if len(values) else None
+
+
+def _counts(records, sub_trajectories, records_above, episodes: Sequence[dict]) -> dict:
+    return {"records": list(records), "sub_trajectories": list(sub_trajectories), "records_above_threshold": records_above,
+            "episodes_never_detected": sum(e["first_detection"] is None for e in episodes),
+            "episodes_detected_at_first_record": sum(e["first_detection"] == 0 for e in episodes)}
+
+
+def _weights_block(records: Sequence[int], sub_trajectories: Sequence[int], alpha: float) -> dict:
+    p0 = phase_distribution(records)
+    weights = resampling_weights(p0, alpha)
+    return {"p0": list(p0), "kl_nats": kl_from_uniform(p0), "p_target": list(target_distribution(p0, alpha)),
+            "weights": list(weights), "degenerate": any(w is None for w in weights),
+            "resample_sizes": list(resample_sizes(sub_trajectories, weights))}
+
+
+def _persistence(hits_total) -> float | None:
+    """Of the records from each episode's first detection on, the share the detector still scores above the threshold:
+    near 1 means the transition is firm, low means the threshold sits where the detector flickers."""
+    if hits_total is None or not hits_total[1]:
+        return None
+    return hits_total[0] / hits_total[1]
+
+
 def build_rebalance(manifest: dict, detections: dict, *, threshold: float = DEFAULT_THRESHOLD, alpha: float = 0.0,
                     allow_partial: bool = False, states: dict[str, np.ndarray] | None = None) -> dict:
-    """The rebalance.json document for a store (its manifest) and its frames' detection scores.
+    """The rebalance.json document for a store (its manifest) and its frames' detection scores (either cache form; dense
+    or sparse, see the module docstring).
 
     `states`: optional {episode id: state[9] array (T, 9)} from the store's steps.npz, adding what the simulator knew at
     each transition: the distance to the target (state[0]) and whether the detected box sat on the target's bearing
     (state[1]), so a detector that fires on a distractor or a pillar is caught rather than trusted.
     """
-    if not (isinstance(threshold, (int, float)) and math.isfinite(threshold) and 0.0 <= threshold < 1.0):
-        raise ValueError(f"threshold must be a confidence in [0, 1), got {threshold!r}")
-    covered = _check_detections(manifest, detections, allow_partial=allow_partial)
-    for entry in covered:
-        if states is not None and len(np.asarray(states[entry["id"]])) != entry["steps"]:
-            raise ValueError(f"episode {entry['id']}: states has {len(np.asarray(states[entry['id']]))} rows for "
-                             f"{entry['steps']} records")
-    episodes = []
-    records = [0, 0]
-    sub_trajectories = [0, 0]
-    persistence_hits = persistence_total = 0
-    records_above = 0  # the paper's other wording, "2 if detected, otherwise 1", counted per record for comparison
-    transition_distances: list[float] = []
-    on_target = {"on_target": 0, "off_target": 0, "off_target_out_of_view": 0}
-    for entry in covered:
-        scores = detections["episodes"][entry["id"]]["scores"]
-        try:
-            first = first_detection(scores, threshold)
-        except ValueError as err:
-            raise ValueError(f"episode {entry['id']}: {err}") from err
-        records_above += int((np.asarray(scores, dtype=float) > threshold).sum())
-        split = phase_records(entry["steps"], first)
-        for k in range(2):
-            records[k] += split[k]
-            sub_trajectories[k] += int(split[k] > 0)
-        episode = {"id": entry["id"], "records": entry["steps"], "first_detection": first, "phase_records": list(split)}
-        if first is not None:
-            tail = np.asarray(scores[first:], dtype=float)
-            persistence_hits += int((tail > threshold).sum())
-            persistence_total += tail.size
-        if states is not None and first is not None:
-            state = np.asarray(states[entry["id"]])
-            distance, bearing = float(state[first, 0]), float(state[first, 1])
-            verdict = box_on_target(detections["episodes"][entry["id"]]["boxes"][first], bearing)
-            transition_distances.append(distance)
-            on_target["on_target" if verdict else "off_target"] += 1
-            if not target_in_view(bearing):
-                on_target["off_target_out_of_view"] += 1  # a sub-count of off_target: the target was not even in the image
-            episode.update(first_detection_distance_m=distance, first_detection_on_target=verdict)
-        elif states is not None:
-            episode.update(first_detection_distance_m=None, first_detection_on_target=None)
-        episodes.append(episode)
-    p0 = phase_distribution(records)
-    weights = resampling_weights(p0, alpha)
+    _check_threshold(threshold)
+    tally = _store_tally(manifest, detections, threshold=threshold, allow_partial=allow_partial, states=states)
+    episodes = [episode for _entry, episode in tally["episodes"]]
     result = {
         "format": FORMAT,
         "dataset": manifest["name"],
@@ -223,24 +318,15 @@ def build_rebalance(manifest: dict, detections: dict, *, threshold: float = DEFA
         "threshold": threshold,
         "alpha": alpha,
         "detector": detections.get("detector"),
-        "coverage": {"episodes": len(covered), "of": len(manifest["episodes"]), "partial": len(covered) < len(manifest["episodes"])},
-        "counts": {"records": records, "sub_trajectories": sub_trajectories, "records_above_threshold": records_above,
-                   "episodes_never_detected": sum(e["first_detection"] is None for e in episodes),
-                   "episodes_detected_at_first_record": sum(e["first_detection"] == 0 for e in episodes)},
-        "p0": list(p0),
-        "kl_nats": kl_from_uniform(p0),
-        "p_target": list(target_distribution(p0, alpha)),
-        "weights": list(weights),
-        "degenerate": any(w is None for w in weights),
-        "resample_sizes": list(resample_sizes(sub_trajectories, weights)),
-        # Of the records from each episode's first detection on, the share the detector still scores above the
-        # threshold: near 1 means the transition is firm, low means the threshold sits where the detector flickers.
-        "detection_persistence": (persistence_hits / persistence_total) if persistence_total else None,
+        "sparse": detections.get("sparse"),
+        "coverage": {"episodes": tally["covered"], "of": tally["of"], "partial": tally["covered"] < tally["of"]},
+        "counts": _counts(tally["records"], tally["sub_trajectories"], tally["records_above"], episodes),
+        **_weights_block(tally["records"], tally["sub_trajectories"], alpha),
+        "detection_persistence": _persistence(tally["persistence"]),
         "episodes": episodes,
     }
     if states is not None:
-        result["first_detection"] = {"distance_m_median": (float(np.median(transition_distances)) if transition_distances else None),
-                                     **on_target}
+        result["first_detection"] = {"distance_m_median": _median(tally["distances"]), **tally["on_target"]}
     return result
 
 

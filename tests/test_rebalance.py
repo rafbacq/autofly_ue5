@@ -66,15 +66,16 @@ def test_the_prompt_follows_grounding_dino_s_convention():
 
 
 def test_every_frame_of_every_episode_is_scored_in_order_for_its_own_target(tmp_path):
+    from autofly_ue5.dataset.detections import parse
     from scripts.detect_targets import FORMAT, run
 
     _summary, root = _collect(tmp_path, n_keep=3)
-    out = tmp_path / "detections.json"
+    out = tmp_path / "detections.jsonl"
     detector = _MeanPixelDetector()
     doc = run(root, out, detector, batch=4)
     manifest = json.loads((root / "manifest.json").read_text())
-    saved = json.loads(out.read_text())
-    assert saved == doc
+    saved = parse(out.read_bytes()).doc
+    assert saved == doc and doc["sparse"] is None
     assert doc["format"] == FORMAT and doc["dataset"] == "pilot" and doc["dataset_created"] == manifest["created"]
     assert doc["complete"] is True and doc["episodes_total"] == 3 and doc["detector"]["model"] == "fake/mean-pixel"
     assert detector.frames_scored == manifest["counts"]["records"]
@@ -98,7 +99,7 @@ def test_a_pool_store_is_scored_for_the_target_each_episode_s_provenance_names(t
     from tests.test_dataset_targets import primitive_pool
 
     _summary, root = _collect(tmp_path, n_keep=4, target_pool=primitive_pool(tmp_path), target_name=None)
-    doc = run(root, tmp_path / "detections.json", _MeanPixelDetector(), batch=4)
+    doc = run(root, tmp_path / "detections.jsonl", _MeanPixelDetector(), batch=4)
     manifest = json.loads((root / "manifest.json").read_text())
     queries = []
     for entry in manifest["episodes"]:
@@ -113,7 +114,7 @@ def test_a_limited_run_is_resumed_without_rescoring_and_another_detector_or_stor
     from scripts.detect_targets import run
 
     _summary, root = _collect(tmp_path, n_keep=3)
-    out = tmp_path / "detections.json"
+    out = tmp_path / "detections.jsonl"
     first = _MeanPixelDetector()
     doc = run(root, out, first, episodes=2)
     assert doc["complete"] is False and len(doc["episodes"]) == 2
@@ -144,25 +145,32 @@ def test_a_crash_mid_run_leaves_a_valid_file_holding_the_finished_episodes(tmp_p
     from scripts.detect_targets import run
 
     _summary, root = _collect(tmp_path, n_keep=3)
-    out = tmp_path / "detections.json"
+    out = tmp_path / "detections.jsonl"
     manifest = json.loads((root / "manifest.json").read_text())
     calls_for_first = -(-manifest["episodes"][0]["steps"] // 8)  # ceil: batches of 8 for the first episode
     with pytest.raises(RuntimeError, match="fell over"):
         run(root, out, _MeanPixelDetector(fail_on_call=calls_for_first + 1), batch=8)
-    saved = json.loads(out.read_text())
+    from autofly_ue5.dataset.detections import parse
+    saved = parse(out.read_bytes()).doc
     assert list(saved["episodes"]) == [manifest["episodes"][0]["id"]] and saved["complete"] is False
+
+
+def _rewrite_episode_line(out: Path, eid: str, change) -> None:
+    lines = [json.loads(line) for line in out.read_text().splitlines()]
+    for line in lines:
+        if line.get("kind") == "episode" and line["id"] == eid:
+            change(line)
+    out.write_text("".join(json.dumps(line) + "\n" for line in lines))
 
 
 def test_a_stored_episode_whose_length_disagrees_with_the_manifest_is_refused_on_resume(tmp_path):
     from scripts.detect_targets import run
 
     _summary, root = _collect(tmp_path, n_keep=2)
-    out = tmp_path / "detections.json"
-    run(root, out, _MeanPixelDetector(), episodes=1)
-    doc = json.loads(out.read_text())
+    out = tmp_path / "detections.jsonl"
+    doc = run(root, out, _MeanPixelDetector(), episodes=1)
     (eid,) = doc["episodes"]
-    doc["episodes"][eid]["scores"].pop()
-    out.write_text(json.dumps(doc))
+    _rewrite_episode_line(out, eid, lambda line: line["scores"].pop())
     with pytest.raises(ValueError, match=eid):
         run(root, out, _MeanPixelDetector())
 
@@ -173,7 +181,7 @@ def test_a_second_scorer_of_the_same_file_is_refused_while_the_first_is_alive(tm
     from scripts.detect_targets import run
 
     _summary, root = _collect(tmp_path, n_keep=1)
-    out = tmp_path / "detections.json"
+    out = tmp_path / "detections.jsonl"
     lock = out.with_suffix(out.suffix + ".lock")
     lock.write_text(f"{os.getpid()}\n")  # a live scorer: this very process
     with pytest.raises(FileExistsError, match="lock"):
@@ -187,7 +195,7 @@ def test_bad_arguments_are_refused_before_anything_is_written(tmp_path):
     from scripts.detect_targets import run
 
     _summary, root = _collect(tmp_path, n_keep=1)
-    out = tmp_path / "detections.json"
+    out = tmp_path / "detections.jsonl"
     for kwargs in ({"batch": 0}, {"batch": -1}, {"episodes": -1}):
         with pytest.raises(ValueError):
             run(root, out, _MeanPixelDetector(), **kwargs)
@@ -209,14 +217,14 @@ def test_a_frame_that_is_not_the_store_s_size_is_refused(tmp_path):
     frame = sorted((root / entry["path"] / "frames").glob("*.png"))[3]
     Image.new("RGB", (128, 256)).save(frame)
     with pytest.raises(ValueError, match=frame.name):
-        run(root, tmp_path / "detections.json", _MeanPixelDetector())
+        run(root, tmp_path / "detections.jsonl", _MeanPixelDetector())
 
 
 def test_the_header_follows_the_manifest_on_resume(tmp_path):
     from scripts.detect_targets import run
 
     _summary, root = _collect(tmp_path, n_keep=2)
-    out = tmp_path / "detections.json"
+    out = tmp_path / "detections.jsonl"
     run(root, out, _MeanPixelDetector(), episodes=1)
     manifest = json.loads((root / "manifest.json").read_text())
     manifest["episodes"] = manifest["episodes"][:1]  # as if the first run had seen a store still being collected
@@ -248,7 +256,7 @@ def test_a_store_whose_frames_do_not_match_its_manifest_is_refused(tmp_path):
     entry = json.loads((root / "manifest.json").read_text())["episodes"][0]
     sorted((root / entry["path"] / "frames").glob("*.png"))[-1].unlink()
     with pytest.raises(ValueError, match=entry["id"]):
-        run(root, tmp_path / "detections.json", _MeanPixelDetector())
+        run(root, tmp_path / "detections.jsonl", _MeanPixelDetector())
 
 
 # ------------------------------------------------------------------------------------------------------------------
@@ -491,7 +499,7 @@ def test_a_degenerate_result_is_refused_at_the_store_s_own_path_but_can_be_inspe
     from scripts.rebalance_dataset import main
 
     _summary, root = _collect(tmp_path, n_keep=2)
-    run(root, root / "detections.json", _MeanPixelDetector())  # noise frames score about 0.5: never above 0.7
+    run(root, root / "detections.jsonl", _MeanPixelDetector())  # noise frames score about 0.5: never above 0.7
     assert main(["--raw", str(root)]) != 0 and not (root / "rebalance.json").exists()
     out = tmp_path / "look" / "rebalance.json"
     assert main(["--raw", str(root), "--out", str(out)]) == 0
@@ -501,8 +509,9 @@ def test_a_degenerate_result_is_refused_at_the_store_s_own_path_but_can_be_inspe
 
 
 def _rising_detections(root: Path) -> Path:
-    """A detections file for a fake store whose scores cross 0.7 at 60 % of every episode."""
-    from scripts.detect_targets import FORMAT
+    """A detections file for a fake store whose scores cross 0.7 at 60 % of every episode, in the pilot's whole-document
+    form (data/s01_pilot/detections.json), which the rebalancing stage still reads."""
+    from autofly_ue5.dataset.detections import FORMAT_V1 as FORMAT
 
     manifest = json.loads((root / "manifest.json").read_text())
     episodes = {}
@@ -548,7 +557,7 @@ def test_detections_written_by_stage_one_feed_stage_two_end_to_end(tmp_path):
     from scripts.rebalance_dataset import main
 
     _summary, root = _collect(tmp_path, n_keep=2)
-    run(root, root / "detections.json", _MeanPixelDetector())
+    run(root, root / "detections.jsonl", _MeanPixelDetector())
     out = tmp_path / "e2e" / "rebalance.json"  # noise frames average about 0.5: at 0.49 every episode is detected at
     assert main(["--raw", str(root), "--threshold", "0.49", "--out", str(out)]) == 0  # once, a degenerate split
     result = json.loads(out.read_text())
@@ -578,3 +587,326 @@ def test_the_cli_takes_partial_detections_only_with_the_flag_and_only_outside_th
     assert main(["--raw", str(root), "--allow-partial", "--out", str(out), "--threshold", "0.5"]) == 0
     result = json.loads(out.read_text())
     assert result["coverage"] == {"episodes": 1, "of": 2, "partial": True} and result["threshold"] == 0.5
+
+
+# ------------------------------------------------------------------------------------------------------------------
+# scripts/detect_targets.py: the appendable cache and the sparse search (plan 6 step 5)
+# ------------------------------------------------------------------------------------------------------------------
+
+
+def _pixels(image) -> bytes:
+    import hashlib
+
+    return hashlib.sha256(np.asarray(image.convert("RGB")).tobytes()).digest()
+
+
+class _ScriptedDetector(_MeanPixelDetector):
+    """Scores each frame from a table keyed by its pixels, so a test chooses every record's score and can replay the
+    sparse search offline on the same scores."""
+
+    def __init__(self, table: dict[bytes, float]) -> None:
+        super().__init__()
+        self._table = table
+
+    def detect(self, images, prompt):
+        self.calls += 1
+        assert prompt == prompt.lower().strip() and prompt.endswith("."), f"prompt {prompt!r} breaks the convention"
+        out = [(self._table[_pixels(image)], [0.5, 0.5, 0.1, 0.2]) for image in images]
+        self.frames_scored += len(images)
+        return out
+
+
+def _flicker_profile(n: int) -> list[float]:
+    """The pilot's shape: a ramp far out, one record above 0.7 a third of the way in, a hover just below 0.7, then the
+    sustained detection."""
+    f = n // 3
+    scores = []
+    for i in range(n):
+        if i < f:
+            v = 0.3 + 0.3 * i / max(f, 1)
+        elif i == f:
+            v = 0.71
+        elif i < 2 * n // 3:
+            v = 0.65
+        else:
+            v = 0.85
+        scores.append(round(v, 6))
+    return scores
+
+
+def _scripted(root: Path) -> tuple[_ScriptedDetector, dict[str, list[float]]]:
+    manifest = json.loads((root / "manifest.json").read_text())
+    table, scores = {}, {}
+    for entry in manifest["episodes"]:
+        frames = sorted((root / entry["path"] / "frames").glob("*.png"))
+        scores[entry["id"]] = _flicker_profile(len(frames))
+        for frame, score in zip(frames, scores[entry["id"]]):
+            table[_pixels(Image.open(frame))] = score
+    assert len(table) == sum(len(s) for s in scores.values()), "every frame is distinct, so the table is unambiguous"
+    return _ScriptedDetector(table), scores
+
+
+def test_the_cache_grows_by_one_synced_line_per_episode_and_is_never_rewritten(tmp_path, monkeypatch):
+    import os
+
+    from scripts.detect_targets import run
+
+    _summary, root = _collect(tmp_path, n_keep=3)
+    out = tmp_path / "detections.jsonl"
+    synced = []
+    real_fsync = os.fsync
+    monkeypatch.setattr(os, "fsync", lambda fd: (synced.append(os.path.realpath(os.readlink(f"/proc/self/fd/{fd}"))),
+                                                  real_fsync(fd)))
+    snapshots = []
+    run(root, out, _MeanPixelDetector(), log=lambda *a, **k: snapshots.append((out.read_bytes(), synced.count(os.path.realpath(out)))))
+    final = out.read_bytes()
+    assert len(snapshots) == 3
+    for (before, _), (after, _) in zip(snapshots, snapshots[1:] + [(final, None)]):
+        assert after.startswith(before) and len(after) > len(before), "appended, never rewritten"
+    assert [s for _, s in snapshots] == [2, 3, 4], "the run line and each episode's line are synced before the next"
+    kinds = [json.loads(line)["kind"] for line in final.decode().splitlines()]
+    assert kinds == ["header", "run", "episode", "episode", "episode", "run_end"]
+
+
+def test_a_resumed_run_cuts_off_a_torn_last_line_and_continues_after_the_last_complete_one(tmp_path):
+    from autofly_ue5.dataset.detections import parse
+    from scripts.detect_targets import run
+
+    _summary, root = _collect(tmp_path, n_keep=3)
+    manifest = json.loads((root / "manifest.json").read_text())
+    out = tmp_path / "detections.jsonl"
+    run(root, out, _MeanPixelDetector(), episodes=2)
+    complete = out.read_bytes()
+    torn = json.dumps({"kind": "episode", "id": manifest["episodes"][2]["id"], "query": "orange cylinder"}).encode()[:25]
+    out.write_bytes(complete + torn)  # the host froze mid-append
+    assert parse(out.read_bytes()).torn is True
+    second = _MeanPixelDetector()
+    messages = []
+    doc = run(root, out, second, log=lambda *a, **k: messages.append(" ".join(map(str, a))))
+    assert second.frames_scored == manifest["episodes"][2]["steps"], "only the episode whose line was torn is scored"
+    final = out.read_bytes()
+    assert final.startswith(complete) and final[len(complete):].startswith(b'{"kind":"run"'), "the fragment is cut off"
+    parsed = parse(final)
+    assert parsed.torn is False and doc["complete"] is True
+    assert list(parsed.doc["episodes"]) == [e["id"] for e in manifest["episodes"]]
+    assert any("torn" in m for m in messages), "the cut is reported"
+
+    lines = final.split(b"\n")
+    lines[2] = b'{"kind":"episode","id":'  # a damaged line that is not the last one is corruption, not a torn append
+    out.write_bytes(b"\n".join(lines))
+    with pytest.raises(ValueError, match="line 3"):
+        run(root, out, _MeanPixelDetector())
+
+
+def test_the_sparse_mode_scores_only_what_the_search_visits_and_stride_one_is_the_dense_first_detection(tmp_path):
+    from autofly_ue5.dataset.detections import parse
+    from autofly_ue5.dataset.sparse import replay
+    from scripts.detect_targets import run
+
+    _summary, root = _collect(tmp_path, n_keep=3)
+    dense_detector, scores = _scripted(root)
+    dense = run(root, tmp_path / "dense.jsonl", dense_detector)
+    exact_detector, _ = _scripted(root)
+    exact = run(root, tmp_path / "s1.jsonl", exact_detector, sparse={"stride": 1, "threshold": 0.7, "alert": 0.7}, batch=1)
+    sparse_detector, _ = _scripted(root)
+    out = tmp_path / "s4.jsonl"
+    sparse = run(root, out, sparse_detector, sparse={"stride": 4, "threshold": 0.7, "alert": 0.5}, batch=3)
+    assert parse(out.read_bytes()).doc == sparse
+    for eid, s in scores.items():
+        d = next(i for i, v in enumerate(dense["episodes"][eid]["scores"]) if v > 0.7)
+        assert d == len(s) // 3
+        assert exact["episodes"][eid]["first_detection"] == d, "stride 1 is the dense mode's first detection"
+        assert exact["episodes"][eid]["visited"] == list(range(d + 1))
+        first, visited = replay(s, stride=4, threshold=0.7, alert=0.5)
+        ep = sparse["episodes"][eid]
+        assert ep["first_detection"] == first == d
+        assert set(visited) <= set(ep["visited"]) and ep["visited"] == sorted(set(ep["visited"]))
+        assert ep["scores"] == [s[i] for i in ep["visited"]] and len(ep["boxes"]) == len(ep["visited"])
+        assert ep["records"] == len(s) and ep["frames_scored"] == len(ep["visited"])
+    assert (sparse["sparse"]["stride"], sparse["sparse"]["threshold"], sparse["sparse"]["alert"]) == (4, 0.7, 0.5)
+    assert dense["sparse"] is None and exact["sparse"]["stride"] == 1
+    scored = sum(len(e["visited"]) for e in sparse["episodes"].values())
+    assert sparse_detector.frames_scored == scored < dense_detector.frames_scored
+
+
+def test_a_file_is_continued_only_by_the_search_that_started_it(tmp_path):
+    from scripts.detect_targets import run
+
+    _summary, root = _collect(tmp_path, n_keep=2)
+    out = tmp_path / "detections.jsonl"
+    search = {"stride": 8, "threshold": 0.7, "alert": 0.5}
+    run(root, out, _MeanPixelDetector(), episodes=1)
+    with pytest.raises(FileExistsError, match="search"):
+        run(root, out, _MeanPixelDetector(), sparse=search)
+    sparse_out = tmp_path / "sparse.jsonl"
+    run(root, sparse_out, _MeanPixelDetector(), episodes=1, sparse=search)
+    for other in ({**search, "stride": 4}, {**search, "threshold": 0.75}, {**search, "alert": 0.55}, None):
+        with pytest.raises(FileExistsError, match="search"):
+            run(root, sparse_out, _MeanPixelDetector(), sparse=other)
+    assert run(root, sparse_out, _MeanPixelDetector(), sparse=search)["complete"] is True
+
+
+def test_the_pilot_s_whole_document_file_is_never_continued_and_the_default_cache_is_detections_jsonl(tmp_path, monkeypatch):
+    import scripts.detect_targets as detect_targets
+
+    _summary, root = _collect(tmp_path, n_keep=1)
+    _rising_detections(root)  # the pilot's form at <raw>/detections.json
+    with pytest.raises(FileExistsError, match="autofly_ue5_detections/1"):
+        detect_targets.run(root, root / "detections.json", _MeanPixelDetector())
+    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "")
+    monkeypatch.setattr(detect_targets, "GroundingDino", lambda *a, **k: _MeanPixelDetector())
+    assert detect_targets.main(["--raw", str(root)]) != 0, "the store is scored already: no silent second scoring"
+    assert not (root / "detections.jsonl").exists()
+    (root / "detections.json").unlink()
+    assert detect_targets.main(["--raw", str(root)]) == 0 and (root / "detections.jsonl").is_file()
+
+
+def test_the_cli_runs_the_sparse_search_with_the_study_s_alert_by_default(tmp_path, monkeypatch):
+    import scripts.detect_targets as detect_targets
+    from autofly_ue5.dataset.detections import parse
+    from autofly_ue5.dataset.sparse import describe
+
+    _summary, root = _collect(tmp_path, n_keep=2)
+    detector, _scores = _scripted(root)
+    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "")
+    monkeypatch.setattr(detect_targets, "GroundingDino", lambda *a, **k: detector)
+    assert detect_targets.main(["--raw", str(root), "--sparse-stride", "8", "--batch", "2"]) == 0
+    doc = parse((root / "detections.jsonl").read_bytes()).doc
+    assert doc["sparse"] == describe(stride=8, threshold=0.7, alert=detect_targets.DEFAULT_SPARSE_ALERT)
+    assert doc["complete"] is True
+    for bad in (["--sparse-stride", "0"], ["--sparse-stride", "8", "--sparse-alert", "0.8"], ["--sparse-alert", "0.5"],
+                ["--sparse-threshold", "0.7"]):
+        with pytest.raises(SystemExit):
+            detect_targets.main(["--raw", str(root), "--out", str(tmp_path / "x.jsonl"), *bad])
+    assert not (tmp_path / "x.jsonl").exists()
+
+
+# ------------------------------------------------------------------------------------------------------------------
+# autofly_ue5/dataset/rebalance.py: sparse detections
+# ------------------------------------------------------------------------------------------------------------------
+
+
+def _sparse_detections(manifest: dict, scores: dict[str, list[float]], *, stride=8, threshold=0.7, alert=0.5,
+                       **overrides) -> dict:
+    from autofly_ue5.dataset.detections import FORMAT
+    from autofly_ue5.dataset.sparse import describe, replay
+
+    episodes = {}
+    for eid, s in scores.items():
+        first, visited = replay(s, stride=stride, threshold=threshold, alert=alert)
+        order = sorted(visited)
+        episodes[eid] = {"query": "orange cylinder", "prompt": "orange cylinder.", "records": len(s), "visited": order,
+                         "scores": [s[i] for i in order], "boxes": [[0.5, 0.5, 0.1, 0.2]] * len(order),
+                         "first_detection": first}
+    doc = {"format": FORMAT, "dataset": manifest["name"], "dataset_created": manifest["created"], "score": "test",
+           "detector": {"model": "fake", "revision": "0"}, "sparse": describe(stride, threshold, alert), "runs": [],
+           "episodes": episodes}
+    doc.update(overrides)
+    return doc
+
+
+def _flicker(n: int = 40) -> list[float]:
+    scores = [0.3] * n
+    scores[5], scores[8] = 0.71, 0.62
+    scores[30:] = [0.85] * (n - 30)
+    return scores
+
+
+def test_build_rebalance_takes_a_sparse_search_s_first_detections_after_replaying_them():
+    from autofly_ue5.dataset.rebalance import build_rebalance
+
+    manifest = _manifest((40, 40))
+    scores = {"e0": _flicker(), "e1": [0.3] * 40}
+    sparse = _sparse_detections(manifest, scores)
+    result = build_rebalance(manifest, sparse, threshold=0.7)
+    dense = build_rebalance(manifest, _detections(manifest, scores), threshold=0.7)
+    assert [e["first_detection"] for e in result["episodes"]] == [5, None] == [e["first_detection"] for e in dense["episodes"]]
+    assert result["counts"]["records"] == dense["counts"]["records"] == [45, 35]
+    assert result["p0"] == dense["p0"] and result["weights"] == dense["weights"]
+    assert result["sparse"] == sparse["sparse"] and dense["sparse"] is None
+    assert result["counts"]["records_above_threshold"] is None and result["detection_persistence"] is None, \
+        "a sparse run never saw most records"
+    assert dense["counts"]["records_above_threshold"] == 11
+
+
+def test_build_rebalance_refuses_a_sparse_record_it_cannot_reproduce():
+    import copy
+
+    from autofly_ue5.dataset.rebalance import build_rebalance
+
+    manifest = _manifest((40,))
+    good = _sparse_detections(manifest, {"e0": _flicker()})
+    assert good["episodes"]["e0"]["visited"] == [0, 1, 2, 3, 4, 5, 8]
+    assert build_rebalance(manifest, good, threshold=0.7)["episodes"][0]["first_detection"] == 5
+    with pytest.raises(ValueError, match="threshold"):
+        build_rebalance(manifest, good, threshold=0.75)  # the search stopped at 0.7's first detection: 0.75's is unknown
+
+    def broken(change):
+        doc = copy.deepcopy(good)
+        change(doc["episodes"]["e0"])
+        return doc
+
+    cases = {
+        "first detection": lambda ep: ep.update(first_detection=30),
+        "record 3": lambda ep: [ep[k].pop(3) for k in ("visited", "scores", "boxes")],  # a window record it needed
+        "40 records": lambda ep: ep.update(records=39),
+        "visited": lambda ep: ep.update(visited=ep["visited"][::-1]),
+        "boxes": lambda ep: ep["boxes"].pop(),
+        "scores": lambda ep: ep["scores"].pop(),
+    }
+    for match, change in cases.items():
+        with pytest.raises(ValueError, match=match):
+            build_rebalance(manifest, broken(change), threshold=0.7)
+    with pytest.raises(ValueError, match="alert"):
+        build_rebalance(manifest, {**good, "sparse": {**good["sparse"], "alert": 0.9}}, threshold=0.7)
+
+
+def test_the_privileged_checks_read_a_sparse_run_s_box_at_its_first_detection():
+    import math
+
+    from autofly_ue5.dataset.rebalance import build_rebalance
+
+    manifest = _manifest((40,))
+    doc = _sparse_detections(manifest, {"e0": _flicker()})
+    ep = doc["episodes"]["e0"]
+    ep["boxes"][ep["visited"].index(5)] = [0.39, 0.5, 0.02, 0.03]  # on a target at bearing -11.5 deg
+    states = {"e0": np.zeros((40, 9), np.float32)}
+    states["e0"][:, 0] = np.linspace(60.0, 5.0, 40)
+    states["e0"][:, 1] = math.radians(-11.5)
+    (e0,) = build_rebalance(manifest, doc, threshold=0.7, states=states)["episodes"]
+    assert e0["first_detection_on_target"] is True
+    assert e0["first_detection_distance_m"] == pytest.approx(float(states["e0"][5, 0]))
+
+
+# ------------------------------------------------------------------------------------------------------------------
+# scripts/rebalance_dataset.py: either cache form, and sparse detections
+# ------------------------------------------------------------------------------------------------------------------
+
+
+def test_the_store_s_detections_are_found_in_either_form_but_never_guessed_between(tmp_path):
+    from scripts.detect_targets import run
+    from scripts.rebalance_dataset import main
+
+    _summary, root = _collect(tmp_path, n_keep=2)
+    _rising_detections(root)  # detections.json, the pilot's form
+    run(root, root / "detections.jsonl", _MeanPixelDetector())  # and the appendable one
+    assert main(["--raw", str(root), "--out", str(tmp_path / "x.json")]) != 0, "two caches: which one is meant?"
+    assert main(["--raw", str(root), "--detections", str(root / "detections.json"), "--out", str(tmp_path / "x.json")]) == 0
+    (root / "detections.json").unlink()
+    assert main(["--raw", str(root), "--threshold", "0.49", "--out", str(tmp_path / "y.json")]) == 0
+    assert json.loads((tmp_path / "y.json").read_text())["detections"]["path"].endswith("detections.jsonl")
+
+
+def test_a_sparse_scoring_feeds_the_weights_end_to_end(tmp_path):
+    from scripts.detect_targets import run
+    from scripts.rebalance_dataset import main
+
+    _summary, root = _collect(tmp_path, n_keep=3)
+    detector, scores = _scripted(root)
+    run(root, root / "detections.jsonl", detector, sparse={"stride": 4, "threshold": 0.7, "alert": 0.5})
+    assert main(["--raw", str(root), "--threshold", "0.75"]) != 0, "the search answers for its own threshold only"
+    assert not (root / "rebalance.json").exists()
+    assert main(["--raw", str(root)]) == 0
+    result = json.loads((root / "rebalance.json").read_text())
+    assert [ep["first_detection"] for ep in result["episodes"]] == [len(scores[ep["id"]]) // 3 for ep in result["episodes"]]
+    assert result["sparse"]["stride"] == 4 and result["detection_persistence"] is None
