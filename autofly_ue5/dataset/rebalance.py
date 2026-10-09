@@ -17,11 +17,13 @@ The result is written to `data/<name>/rebalance.json`: the weights, every episod
 behaved there. The raw store and the RLDS shards are never rewritten (spec §10.3); a training pipeline applies the
 weights, or `stratified_resample` draws the paper's rebalanced set from them.
 
-A later addition (plan 6 step 5): the detector may score only the records a sparse search visits
+Two later additions (plan 6 step 5). The detector may score only the records a sparse search visits
 (`autofly_ue5/dataset/sparse.py`); such a file carries each episode's first detection, which is accepted only after
 the search is replayed on the recorded scores and finds the same record, and only at the threshold the search ran at
 (it stopped at that threshold's first detection: any other threshold's is unknown). What needs every record's score
-(`records_above_threshold`, `detection_persistence`) is then None.
+(`records_above_threshold`, `detection_persistence`) is then None. And several stores (a prototype's scenes and
+batches) can be weighted as one dataset (`build_union_rebalance`), with the counts summed, per-store and per-target
+summaries, and a refusal to mix dense and sparse detections, or two detectors, without being told.
 """
 
 from __future__ import annotations
@@ -39,6 +41,7 @@ from autofly_ue5.dataset.detections import FORMAT as DETECTIONS_FORMAT  # the de
 from autofly_ue5.dataset.detections import FORMAT_V1 as DETECTIONS_FORMAT_V1
 
 FORMAT = "autofly_ue5_rebalance/1"
+UNION_FORMAT = "autofly_ue5_rebalance_union/1"  # several stores; its episodes are keyed by store and id
 PHASES = ("obstacle_avoidance", "target_seeking")  # the paper's k = 1, 2
 DEFAULT_THRESHOLD = 0.7
 METHOD = ("AutoFly App. A.2.4 (spec 10.3): a record is target seeking from the first record whose detection confidence "
@@ -235,7 +238,7 @@ def _store_tally(manifest: dict, detections: dict, *, threshold: float, allow_pa
              # of records from each first detection on that stay above the threshold: both need every record's score
              "records_above": 0 if dense else None, "persistence": [0, 0] if dense else None,
              "distances": [], "on_target": {"on_target": 0, "off_target": 0, "off_target_out_of_view": 0},
-             "episodes": []}
+             "targets": {}, "episodes": [], "with_states": states is not None}
     for entry in covered:
         ep = detections["episodes"][entry["id"]]
         if dense:
@@ -257,6 +260,13 @@ def _store_tally(manifest: dict, detections: dict, *, threshold: float, allow_pa
             tail = np.asarray(ep["scores"][first:], dtype=float)
             tally["persistence"][0] += int((tail > threshold).sum())
             tally["persistence"][1] += tail.size
+        target = tally["targets"].setdefault(entry["target_name"], {"episodes": 0, "never_detected": 0, "fractions": [],
+                                                                    "distances": [], "on_target": 0, "off_target": 0})
+        target["episodes"] += 1
+        if first is None:
+            target["never_detected"] += 1
+        else:
+            target["fractions"].append(first / entry["steps"])
         if states is not None and first is not None:
             state = np.asarray(states[entry["id"]])
             distance, bearing = float(state[first, 0]), float(state[first, 1])
@@ -265,6 +275,8 @@ def _store_tally(manifest: dict, detections: dict, *, threshold: float, allow_pa
             tally["on_target"]["on_target" if verdict else "off_target"] += 1
             if not target_in_view(bearing):
                 tally["on_target"]["off_target_out_of_view"] += 1  # a sub-count of off_target: the target was not in the image
+            target["distances"].append(distance)
+            target["on_target" if verdict else "off_target"] += 1
             episode.update(first_detection_distance_m=distance, first_detection_on_target=verdict)
         elif states is not None:
             episode.update(first_detection_distance_m=None, first_detection_on_target=None)
@@ -298,6 +310,21 @@ def _persistence(hits_total) -> float | None:
     return hits_total[0] / hits_total[1]
 
 
+def _by_target(targets: dict, with_states: bool) -> dict:
+    """Per target name: how often the detector never confirmed it, and where it first did. With 50+ targets some may never
+    reach the threshold; their episodes are then all obstacle avoidance, which the weights cannot see."""
+    return {name: {"episodes": t["episodes"], "never_detected": t["never_detected"],
+                   "first_detection_fraction_median": _median(t["fractions"]),
+                   "distance_m_median": _median(t["distances"]) if with_states else None,
+                   "on_target": t["on_target"] if with_states else None,
+                   "off_target": t["off_target"] if with_states else None}
+            for name, t in sorted(targets.items())}
+
+
+def _never_detected(by_target: dict) -> list[str]:
+    return [name for name, t in by_target.items() if t["never_detected"] == t["episodes"]]
+
+
 def build_rebalance(manifest: dict, detections: dict, *, threshold: float = DEFAULT_THRESHOLD, alpha: float = 0.0,
                     allow_partial: bool = False, states: dict[str, np.ndarray] | None = None) -> dict:
     """The rebalance.json document for a store (its manifest) and its frames' detection scores (either cache form; dense
@@ -310,6 +337,7 @@ def build_rebalance(manifest: dict, detections: dict, *, threshold: float = DEFA
     _check_threshold(threshold)
     tally = _store_tally(manifest, detections, threshold=threshold, allow_partial=allow_partial, states=states)
     episodes = [episode for _entry, episode in tally["episodes"]]
+    by_target = _by_target(tally["targets"], states is not None)
     result = {
         "format": FORMAT,
         "dataset": manifest["name"],
@@ -323,10 +351,101 @@ def build_rebalance(manifest: dict, detections: dict, *, threshold: float = DEFA
         "counts": _counts(tally["records"], tally["sub_trajectories"], tally["records_above"], episodes),
         **_weights_block(tally["records"], tally["sub_trajectories"], alpha),
         "detection_persistence": _persistence(tally["persistence"]),
+        "by_target": by_target,
+        "targets_never_detected": _never_detected(by_target),
         "episodes": episodes,
     }
     if states is not None:
         result["first_detection"] = {"distance_m_median": _median(tally["distances"]), **tally["on_target"]}
+    return result
+
+
+def build_union_rebalance(stores: Sequence[tuple[dict, dict, dict[str, np.ndarray] | None]], *,
+                          threshold: float = DEFAULT_THRESHOLD, alpha: float = 0.0, allow_partial: bool = False,
+                          allow_mixed_search: bool = False) -> dict:
+    """One rebalance document for several stores taken as one dataset: `stores` is [(manifest, detections, states or
+    None)], each checked as `build_rebalance` checks one. The phase records are summed over the stores, so P0 and the
+    weights are the union's; each store keeps its own summary, and every target its first-detection summary.
+
+    Refused: a store named twice, stores scored by different detectors (the threshold would mean something else in
+    each), and -- unless `allow_mixed_search` -- stores whose detections come from different searches (dense and
+    sparse, or two sparse searches): the union then records each store's search, and what only dense scores can tell
+    (records above the threshold, persistence) is None for the union.
+    """
+    if not stores:
+        raise ValueError("no stores to rebalance")
+    _check_threshold(threshold)
+    names = [manifest["name"] for manifest, _d, _s in stores]
+    for name in names:
+        if names.count(name) > 1:
+            raise ValueError(f"store {name!r} appears twice: each store is counted once")
+    detectors = [detections.get("detector") for _m, detections, _s in stores]
+    if any(d != detectors[0] for d in detectors):
+        raise ValueError(f"the stores were scored by different detectors ({detectors}): a threshold means something else "
+                         f"for each, so they are not weighted together")
+    searches = [detections.get("sparse") for _m, detections, _s in stores]
+    mixed = any(s != searches[0] for s in searches)
+    if mixed and not allow_mixed_search:
+        raise ValueError(f"the stores' detections come from different searches ({dict(zip(names, searches))}); pass "
+                         f"allow_mixed_search to weight them together, each store's search recorded")
+    tallies = [_store_tally(manifest, detections, threshold=threshold, allow_partial=allow_partial, states=states)
+               for manifest, detections, states in stores]
+    records = [sum(t["records"][k] for t in tallies) for k in range(2)]
+    sub_trajectories = [sum(t["sub_trajectories"][k] for t in tallies) for k in range(2)]
+    dense = all(t["records_above"] is not None for t in tallies)
+    with_states = all(t["with_states"] for t in tallies)
+    targets: dict[str, dict] = {}
+    episodes = []
+    store_docs = {}
+    for name, (_manifest, detections, _states), tally in zip(names, stores, tallies):
+        store_episodes = [episode for _entry, episode in tally["episodes"]]
+        store_targets = _by_target(tally["targets"], tally["with_states"])
+        store_docs[name] = {
+            "coverage": {"episodes": tally["covered"], "of": tally["of"], "partial": tally["covered"] < tally["of"]},
+            "sparse": detections.get("sparse"),
+            "counts": _counts(tally["records"], tally["sub_trajectories"], tally["records_above"], store_episodes),
+            **_weights_block(tally["records"], tally["sub_trajectories"], alpha),
+            "detection_persistence": _persistence(tally["persistence"]),
+            **({"first_detection": {"distance_m_median": _median(tally["distances"]), **tally["on_target"]}}
+               if tally["with_states"] else {}),
+            "by_target": store_targets,
+            "targets_never_detected": _never_detected(store_targets),
+        }
+        for target_name, t in tally["targets"].items():
+            merged = targets.setdefault(target_name, {"episodes": 0, "never_detected": 0, "fractions": [], "distances": [],
+                                                      "on_target": 0, "off_target": 0})
+            for key in ("episodes", "never_detected", "on_target", "off_target"):
+                merged[key] += t[key]
+            merged["fractions"] += t["fractions"]
+            merged["distances"] += t["distances"]
+        episodes += [{"store": name, "id": episode["id"], "target": entry["target_name"],
+                      **{k: v for k, v in episode.items() if k != "id"}} for entry, episode in tally["episodes"]]
+    by_target = _by_target(targets, with_states)
+    covered, of = sum(t["covered"] for t in tallies), sum(t["of"] for t in tallies)
+    result = {
+        "format": UNION_FORMAT,
+        "datasets": names,
+        "method": METHOD,
+        "phases": list(PHASES),
+        "threshold": threshold,
+        "alpha": alpha,
+        "detector": detectors[0],
+        "search_mixed": mixed,
+        "coverage": {"episodes": covered, "of": of, "partial": covered < of,
+                     "by_store": {name: store_docs[name]["coverage"] for name in names}},
+        "counts": _counts(records, sub_trajectories, sum(t["records_above"] for t in tallies) if dense else None, episodes),
+        **_weights_block(records, sub_trajectories, alpha),
+        "detection_persistence": (_persistence([sum(t["persistence"][k] for t in tallies) for k in range(2)])
+                                  if dense else None),
+        "stores": store_docs,
+        "by_target": by_target,
+        "targets_never_detected": _never_detected(by_target),
+        "episodes": episodes,
+    }
+    if with_states:
+        result["first_detection"] = {
+            "distance_m_median": _median([d for t in tallies for d in t["distances"]]),
+            **{key: sum(t["on_target"][key] for t in tallies) for key in ("on_target", "off_target", "off_target_out_of_view")}}
     return result
 
 

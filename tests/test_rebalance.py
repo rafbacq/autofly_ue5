@@ -782,7 +782,7 @@ def test_the_cli_runs_the_sparse_search_with_the_study_s_alert_by_default(tmp_pa
 
 
 # ------------------------------------------------------------------------------------------------------------------
-# autofly_ue5/dataset/rebalance.py: sparse detections
+# autofly_ue5/dataset/rebalance.py: sparse detections, and several stores at once
 # ------------------------------------------------------------------------------------------------------------------
 
 
@@ -878,9 +878,100 @@ def test_the_privileged_checks_read_a_sparse_run_s_box_at_its_first_detection():
     assert e0["first_detection_distance_m"] == pytest.approx(float(states["e0"][5, 0]))
 
 
+def _two_stores():
+    a = {**_manifest((10, 10)), "name": "s07_a"}
+    b = {**_manifest((20, 12)), "name": "s09_a"}
+    b["episodes"][0]["target_name"], b["episodes"][1]["target_name"] = "red cube", "blue cone"
+    det_a = _detections(a, {"e0": [0.1] * 7 + [0.8, 0.6, 0.9], "e1": [0.1] * 10})
+    det_b = _detections(b, {"e0": [0.1] * 5 + [0.9] * 15, "e1": [0.2] * 12})
+    det_b["episodes"]["e0"]["query"], det_b["episodes"]["e1"]["query"] = "red cube", "blue cone"
+    return a, det_a, b, det_b
+
+
+def test_the_union_of_several_stores_sums_their_records_and_weights_them_together():
+    from autofly_ue5.dataset.rebalance import (UNION_FORMAT, build_rebalance, build_union_rebalance, phase_distribution,
+                                               resampling_weights)
+
+    a, det_a, b, det_b = _two_stores()
+    union = build_union_rebalance([(a, det_a, None), (b, det_b, None)], threshold=0.7)
+    assert union["format"] == UNION_FORMAT and union["datasets"] == ["s07_a", "s09_a"] and union["threshold"] == 0.7
+    records = [7 + 10 + 5 + 12, 3 + 0 + 15 + 0]
+    assert union["counts"]["records"] == records and union["counts"]["sub_trajectories"] == [4, 2]
+    assert union["counts"]["episodes_never_detected"] == 2 and union["counts"]["records_above_threshold"] == 2 + 15
+    p0 = phase_distribution(records)
+    assert union["p0"] == list(p0) and union["weights"] == list(resampling_weights(p0))
+    assert union["detection_persistence"] == pytest.approx((2 + 15) / (3 + 15))
+    assert union["coverage"] == {"episodes": 4, "of": 4, "partial": False,
+                                 "by_store": {"s07_a": {"episodes": 2, "of": 2, "partial": False},
+                                              "s09_a": {"episodes": 2, "of": 2, "partial": False}}}
+    for manifest, detections in ((a, det_a), (b, det_b)):
+        single = build_rebalance(manifest, detections, threshold=0.7)
+        store = union["stores"][manifest["name"]]
+        for key in ("counts", "p0", "weights", "detection_persistence", "sparse", "degenerate"):
+            assert store[key] == single[key], key
+    assert [(e["store"], e["id"], e["target"], e["first_detection"]) for e in union["episodes"]] == [
+        ("s07_a", "e0", "orange cylinder", 7), ("s07_a", "e1", "orange cylinder", None),
+        ("s09_a", "e0", "red cube", 5), ("s09_a", "e1", "blue cone", None)]
+    targets = union["by_target"]
+    assert (targets["orange cylinder"]["episodes"], targets["orange cylinder"]["never_detected"]) == (2, 1)
+    assert (targets["red cube"]["episodes"], targets["red cube"]["never_detected"]) == (1, 0)
+    assert targets["red cube"]["first_detection_fraction_median"] == pytest.approx(5 / 20)
+    assert (targets["blue cone"]["episodes"], targets["blue cone"]["never_detected"]) == (1, 1)
+    assert union["targets_never_detected"] == ["blue cone"], "a target the detector never found in any episode"
+    assert union["stores"]["s09_a"]["by_target"]["blue cone"]["never_detected"] == 1
+
+
+def test_the_union_reports_distances_per_target_from_the_states():
+    from autofly_ue5.dataset.rebalance import build_union_rebalance
+
+    a, det_a, b, det_b = _two_stores()
+    states_a = {"e0": np.zeros((10, 9), np.float32), "e1": np.zeros((10, 9), np.float32)}
+    states_b = {"e0": np.zeros((20, 9), np.float32), "e1": np.zeros((12, 9), np.float32)}
+    states_a["e0"][:, 0] = 30.0
+    states_b["e0"][:, 0] = 12.0
+    union = build_union_rebalance([(a, det_a, states_a), (b, det_b, states_b)], threshold=0.7)
+    assert union["by_target"]["orange cylinder"]["distance_m_median"] == pytest.approx(30.0)
+    assert union["by_target"]["red cube"]["distance_m_median"] == pytest.approx(12.0)
+    assert union["by_target"]["blue cone"]["distance_m_median"] is None
+    assert union["first_detection"]["distance_m_median"] == pytest.approx(21.0)
+    assert union["stores"]["s09_a"]["first_detection"]["distance_m_median"] == pytest.approx(12.0)
+    assert union["episodes"][0]["first_detection_distance_m"] == pytest.approx(30.0)
+
+
+def test_the_union_refuses_to_mix_searches_or_detectors_unless_told():
+    from autofly_ue5.dataset.rebalance import build_union_rebalance
+
+    a = {**_manifest((40,)), "name": "a"}
+    b = {**_manifest((40,)), "name": "b"}
+    dense_a = _detections(a, {"e0": _flicker()})
+    sparse_b = _sparse_detections(b, {"e0": _flicker()})
+    with pytest.raises(ValueError, match="search"):
+        build_union_rebalance([(a, dense_a, None), (b, sparse_b, None)], threshold=0.7)
+    mixed = build_union_rebalance([(a, dense_a, None), (b, sparse_b, None)], threshold=0.7, allow_mixed_search=True)
+    assert mixed["stores"]["a"]["sparse"] is None and mixed["stores"]["b"]["sparse"]["stride"] == 8
+    assert mixed["counts"]["records_above_threshold"] is None and mixed["detection_persistence"] is None
+    assert mixed["stores"]["a"]["detection_persistence"] is not None, "the dense store keeps its own"
+    with pytest.raises(ValueError, match="search"):
+        build_union_rebalance([(a, _sparse_detections(a, {"e0": _flicker()}), None),
+                               (b, _sparse_detections(b, {"e0": _flicker()}, stride=4), None)], threshold=0.7)
+    with pytest.raises(ValueError, match="detector"):
+        build_union_rebalance([(a, dense_a, None), (b, _detections(b, {"e0": _flicker()}, detector={"model": "other"}), None)],
+                              threshold=0.7)
+    with pytest.raises(ValueError, match="twice"):
+        build_union_rebalance([(a, dense_a, None), (a, dense_a, None)], threshold=0.7)
+    with pytest.raises(ValueError):
+        build_union_rebalance([], threshold=0.7)
+
+
 # ------------------------------------------------------------------------------------------------------------------
-# scripts/rebalance_dataset.py: either cache form, and sparse detections
+# scripts/rebalance_dataset.py: either cache form, sparse detections, several stores
 # ------------------------------------------------------------------------------------------------------------------
+
+
+def _rename_store(root: Path, name: str) -> None:
+    manifest = json.loads((root / "manifest.json").read_text())
+    manifest["name"] = name
+    (root / "manifest.json").write_text(json.dumps(manifest))
 
 
 def test_the_store_s_detections_are_found_in_either_form_but_never_guessed_between(tmp_path):
@@ -910,3 +1001,30 @@ def test_a_sparse_scoring_feeds_the_weights_end_to_end(tmp_path):
     result = json.loads((root / "rebalance.json").read_text())
     assert [ep["first_detection"] for ep in result["episodes"]] == [len(scores[ep["id"]]) // 3 for ep in result["episodes"]]
     assert result["sparse"]["stride"] == 4 and result["detection_persistence"] is None
+    assert result["by_target"]["orange cylinder"]["episodes"] == 3
+    assert result["by_target"]["orange cylinder"]["distance_m_median"] is not None
+
+
+def test_the_cli_writes_one_document_for_several_stores(tmp_path):
+    import hashlib
+
+    from scripts.rebalance_dataset import main
+
+    _s, a = _collect(tmp_path / "a", n_keep=2)
+    _s, b = _collect(tmp_path / "b", n_keep=1)
+    _rename_store(b, "pilot_b")
+    _rising_detections(a)
+    _rising_detections(b)
+    out = tmp_path / "union" / "rebalance.json"
+    assert main(["--raw", str(a), "--raw", str(b)]) != 0, "several stores need an --out: the union is no store's own"
+    assert main(["--raw", str(a), "--raw", str(b), "--detections", str(a / "detections.json"), "--out", str(out)]) != 0
+    assert main(["--raw", str(a), "--raw", str(b), "--allow-partial", "--out", str(b / "union.json")]) != 0
+    assert not out.exists() and not (b / "union.json").exists()
+    assert main(["--raw", str(a), "--raw", str(b), "--out", str(out)]) == 0
+    result = json.loads(out.read_text())
+    assert result["datasets"] == ["pilot", "pilot_b"] and result["coverage"]["episodes"] == 3
+    assert result["stores"]["pilot"]["detections"]["sha256"] == hashlib.sha256((a / "detections.json").read_bytes()).hexdigest()
+    assert {e["store"] for e in result["episodes"]} == {"pilot", "pilot_b"}
+    assert result["by_target"]["orange cylinder"]["episodes"] == 3
+    assert not (a / "rebalance.json").exists() and not (b / "rebalance.json").exists()
+    assert main(["--raw", str(a), "--raw", str(b), "--out", str(out)]) != 0, "an existing document is never replaced"
